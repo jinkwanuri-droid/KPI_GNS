@@ -12,8 +12,7 @@
 body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-height:100vh;}
 #loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
 #loadingOverlay.hide{opacity:0;pointer-events:none;}
-.ov-icon{font-size:52px;margin-bottom:16px;}
-.ov-title{font-size:20px;font-weight:800;margin-bottom:8px;}
+.ov-icon{font-size:52px;margin-bottom:16px;}.ov-title{font-size:20px;font-weight:800;margin-bottom:8px;}
 .ov-sub{font-size:13px;opacity:.8;margin-bottom:28px;text-align:center;line-height:1.7;}
 .ov-spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;}
 .ov-msg{font-size:12px;opacity:.7;margin-top:6px;}
@@ -21,8 +20,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
 .ov-retry-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:12px 32px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:16px;display:none;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* ── 사이드바 ── */
 .sidebar{width:224px;background:#fff;display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(0,0,0,.08);position:fixed;height:100vh;z-index:100;overflow-y:auto;}
 .sidebar-header{display:flex;align-items:center;gap:10px;padding:18px;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;min-height:68px;flex-shrink:0;}
 .sidebar-logo{width:38px;height:38px;background:rgba(255,255,255,.25);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
@@ -43,8 +40,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .member-pos-sm{font-size:10px;color:#aaa;}
 .member-hours-sm{font-size:11px;font-weight:700;color:#6c63ff;margin-left:auto;white-space:nowrap;}
 .sidebar-divider{height:1px;background:#f0eeff;margin:7px 18px;flex-shrink:0;}
-
-/* ── 새 슬라이드 필터 ── */
+/* 슬라이드 필터 */
 .sidebar-filters{padding:14px 12px 16px;border-top:2px solid #f0eeff;margin-top:auto;flex-shrink:0;}
 .sf-lbl{font-size:10px;color:#9999bb;letter-spacing:.6px;text-transform:uppercase;font-weight:700;margin-bottom:7px;}
 .sf-track{display:flex;background:#f4f3ff;border-radius:10px;padding:3px;gap:2px;border:1px solid #ebe8ff;position:relative;margin-bottom:14px;user-select:none;}
@@ -66,8 +62,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .sf-status{font-size:11px;color:#6c63ff;background:#f0eeff;padding:5px 9px;border-radius:8px;font-weight:600;margin-bottom:8px;}
 .sf-reset{width:100%;padding:7px;border-radius:8px;border:1px solid #e8e8ff;background:#fff;color:#9999bb;font-size:11px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;}
 .sf-reset:hover{border-color:#6c63ff;color:#6c63ff;}
-
-/* ── 메인 ── */
+/* 메인 */
 .main{margin-left:224px;flex:1;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0;}
 .header{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:14px 22px;box-shadow:0 2px 10px rgba(0,0,0,.05);flex-wrap:wrap;gap:10px;}
 .header-title{font-size:16px;font-weight:800;color:#3d3d5c;}
@@ -161,8 +156,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .dp-top5-item:hover{background:#f9f9ff;border-radius:8px;}
 .dp-top5-item.highlighted{background:#f0eeff;border-radius:8px;transform:translateX(3px);}
 .dp-top5-item.dimmed{opacity:0.35;}
-
-/* ── KPI 역량평가 ── */
+/* 역량평가 탭 */
 .eval-page-header{background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .eval-page-title{font-size:17px;font-weight:800;color:#3d3d5c;}
 .eval-page-sub{font-size:12px;color:#aaa;margin-top:3px;}
@@ -179,7 +173,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .eval-dropdown-item.active{background:#f0eeff;font-weight:800;border-left-color:#6c63ff;}
 .eval-dropdown-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;}
 .eval-main-layout{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start;}
-.eval-profile-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:2px solid transparent;transition:all .3s;}
+.eval-profile-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:2px solid transparent;transition:all .3s;position:relative;}
 .eval-profile-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:2px solid #f0f1f5;}
 .eval-profile-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;}
 .eval-profile-name{font-size:18px;font-weight:800;color:#3d3d5c;}
@@ -190,13 +184,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .eval-score-big-label{font-size:12px;color:#aaa;margin-top:4px;}
 .eval-score-grade{display:inline-block;padding:4px 16px;border-radius:20px;font-size:13px;font-weight:800;margin-top:8px;}
 .eval-scores-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
-.eval-score-item{display:flex;align-items:center;gap:10px;}
-.eval-score-item-label{font-size:12px;font-weight:600;color:#555;width:60px;flex-shrink:0;}
+.eval-score-item{display:flex;align-items:center;gap:10px;padding:4px 6px;border-radius:6px;transition:all .2s;}
+.eval-score-item.hl{background:#f0eeff;}
+.eval-score-item-label{font-size:12px;font-weight:600;color:#555;width:60px;flex-shrink:0;transition:all .2s;}
+.eval-score-item.hl .eval-score-item-label{font-weight:800;color:#3d3d5c;}
 .eval-score-item-bar-wrap{flex:1;height:8px;background:#f0eeff;border-radius:6px;overflow:hidden;}
 .eval-score-item-bar{height:100%;border-radius:6px;transition:width .8s ease;}
-.eval-score-item-val{font-size:12px;font-weight:800;width:28px;text-align:right;flex-shrink:0;}
-
-/* TOP5 박스 그리드 */
+.eval-score-item-val{font-size:12px;font-weight:800;width:28px;text-align:right;flex-shrink:0;transition:all .2s;}
+.eval-score-item.hl .eval-score-item-val{font-size:14px;}
 .eval-top5-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}
 .eval-top5-box{border-radius:12px;padding:10px 6px;text-align:center;position:relative;border:1.5px solid transparent;transition:transform .15s;}
 .eval-top5-box:hover{transform:translateY(-2px);}
@@ -204,12 +199,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .eval-top5-label{font-size:10px;font-weight:700;color:#555;margin-bottom:5px;line-height:1.3;}
 .eval-top5-score{font-size:17px;font-weight:900;}
 .eval-top5-trend{font-size:10px;font-weight:700;margin-top:3px;}
-
-.eval-radar-wrap{height:200px;margin-bottom:4px;}
 .eval-charts-col{display:flex;flex-direction:column;gap:18px;}
-.eval-trend-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
-.eval-trend-title{font-size:13px;font-weight:700;color:#3d3d5c;margin-bottom:4px;}
-.eval-trend-sub{font-size:11px;color:#aaa;margin-bottom:14px;}
+.eval-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.eval-card-title{font-size:13px;font-weight:700;color:#3d3d5c;margin-bottom:4px;}
+.eval-card-sub{font-size:11px;color:#aaa;margin-bottom:14px;}
 .eval-bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
 .eval-radar-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .eval-table-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
@@ -221,69 +214,55 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .eval-trend-table td:first-child{text-align:left;font-weight:700;}
 .eval-trend-table tr:hover td{background:#fafaff;}
 .eval-trend-table tr.current-q td{background:#f0eeff;font-weight:700;}
+/* highlighted col in table */
+.eval-trend-table .col-hl{background:#f0eeff;font-weight:900!important;}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:12px;color:#666;}
-.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:12px;color:#666;cursor:pointer;padding:3px 6px;border-radius:6px;transition:all .2s;}
+.legend-item.hl{font-weight:800;}
 .tooltip-box{position:fixed;background:#3d3d5c;color:#fff;padding:7px 11px;border-radius:9px;font-size:12px;pointer-events:none;z-index:9998;display:none;box-shadow:0 4px 12px rgba(0,0,0,.2);line-height:1.6;}
 .tab-btns-sm{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
 .tab-btn-sm{padding:4px 10px;border-radius:20px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:#f0eeff;color:#6c63ff;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
 .tab-btn-sm.active{background:#6c63ff;color:#fff;}
-
-/* 레이더 툴팁 */
-.radar-tooltip{position:absolute;background:#3d3d5c;color:#fff;padding:8px 12px;border-radius:10px;font-size:11px;line-height:1.6;pointer-events:none;z-index:300;display:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);}
-
+.radar-tooltip{position:fixed;background:#3d3d5c;color:#fff;padding:8px 12px;border-radius:10px;font-size:11px;line-height:1.6;pointer-events:none;z-index:9999;display:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .eval-main-layout{animation:fadeIn .3s ease;}
 @media(max-width:1200px){
-.grid-top{grid-template-columns:1fr 1fr;}
-.grid-mid,.grid-bot{grid-template-columns:1fr 1fr;}
-.member-overview-grid{grid-template-columns:1fr 1fr;}
-.eval-main-layout{grid-template-columns:1fr;}
-.detail-top-row{grid-template-columns:1fr;}
-.detail-kpi-row{grid-template-columns:1fr 1fr;}
-.eval-bottom-row{grid-template-columns:1fr;}
-.eval-top5-grid{grid-template-columns:repeat(3,1fr);}
+.grid-top{grid-template-columns:1fr 1fr;}.grid-mid,.grid-bot{grid-template-columns:1fr 1fr;}
+.member-overview-grid{grid-template-columns:1fr 1fr;}.eval-main-layout{grid-template-columns:1fr;}
+.detail-top-row{grid-template-columns:1fr;}.detail-kpi-row{grid-template-columns:1fr 1fr;}
+.eval-bottom-row{grid-template-columns:1fr;}.eval-top5-grid{grid-template-columns:repeat(3,1fr);}
 }
 @media(max-width:768px){
-.sidebar{display:none;}
-.main{margin-left:0;}
+.sidebar{display:none;}.main{margin-left:0;}
 .grid-top,.grid-mid,.grid-bot,.member-overview-grid{grid-template-columns:1fr;}
-.eval-bottom-row{grid-template-columns:1fr;}
-.eval-top5-grid{grid-template-columns:repeat(3,1fr);}
+.eval-bottom-row{grid-template-columns:1fr;}.eval-top5-grid{grid-template-columns:repeat(3,1fr);}
 }
 </style>
 </head>
 <body>
 <div id="loadingOverlay">
-<div class="ov-icon">🏥</div>
-<div class="ov-title">경상남도 서부의료원 KPI</div>
+<div class="ov-icon">🏥</div><div class="ov-title">경상남도 서부의료원 KPI</div>
 <div class="ov-sub">구글 시트에서 데이터를 불러오는 중입니다...<br>잠시만 기다려 주세요</div>
-<div class="ov-spinner"></div>
-<div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
+<div class="ov-spinner"></div><div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
 <div class="ov-progress"><div class="ov-progress-fill" id="ovProgress"></div></div>
 <button class="ov-retry-btn" id="ovRetryBtn" onclick="loadDataFromSheets()">🔄 다시 시도</button>
 </div>
 <div class="tooltip-box" id="tooltip"></div>
+<div class="radar-tooltip" id="radarTooltip"></div>
 
 <nav class="sidebar">
 <div class="sidebar-header"><div class="sidebar-logo">KPI</div><div class="sidebar-title">서부의료원<br>설립사업</div></div>
 <div class="sidebar-section-title">메인 메뉴</div>
 <div class="nav-item active" onclick="showView('dashboard',this)"><div class="nav-icon-wrap">📊</div><span class="nav-label">대시보드</span></div>
-<div class="nav-item" onclick="showView('members',this)"><div class="nav-icon-wrap">👥</div><span class="nav-label">업무시간</span></div>
+<div class="nav-item" onclick="showView('members',this)"><div class="nav-icon-wrap">👥</div><span class="nav-label">팀원별 업무시간</span></div>
 <div class="nav-item" onclick="showView('kpieval',this)"><div class="nav-icon-wrap">⭐</div><span class="nav-label">KPI 역량평가</span></div>
 <div class="sidebar-divider"></div>
 <div class="sidebar-section-title">팀원</div>
 <div class="member-list" id="sidebarMembers"></div>
 <div class="sidebar-divider"></div>
-
-<!-- ── 새 슬라이드 필터 ── -->
 <div class="sidebar-filters">
   <div class="sf-lbl">연도</div>
-  <div class="sf-track" id="sfYearTrack">
-    <div class="sf-thumb" id="sfYearThumb"></div>
-    <div class="sf-item" onclick="sfClick(event,'year',0)">전체</div>
-    <div class="sf-item" id="sfYearDynamic"></div><!-- 동적 연도 채움 -->
-  </div>
+  <div class="sf-track" id="sfYearTrack"><div class="sf-thumb" id="sfYearThumb"></div></div>
   <div class="sf-lbl">분기</div>
   <div class="sf-track" id="sfQTrack">
     <div class="sf-thumb" id="sfQThumb"></div>
@@ -337,9 +316,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 <div class="card"><div class="card-section-title">📅 월별 투입시간 일정</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
 </div>
 
-<!-- 팀원별 탭 -->
+<!-- 팀원별 업무시간 탭 -->
 <div id="view-members" class="view-section">
-<div style="font-size:17px;font-weight:800;color:#3d3d5c;">👥 팀원별 상세 현황</div>
+<div style="font-size:17px;font-weight:800;color:#3d3d5c;">👥 팀원별 업무시간 상세 현황</div>
 <div class="member-overview-grid" id="memberOverviewGrid"></div>
 <div class="detail-panel" id="memberDetailPanel">
 <div class="detail-header" id="dpHeader"></div>
@@ -362,27 +341,35 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 <div class="eval-dropdown-menu" id="evalDropdownMenu"></div>
 </div>
 </div>
-<div class="eval-main-layout" id="evalMainLayout">
+<div class="eval-main-layout">
 <div id="evalProfileCard" class="eval-profile-card"></div>
 <div class="eval-charts-col">
-<div class="eval-trend-card">
-<div class="eval-trend-title">📈 분기별 역량 점수 추이</div>
-<div class="eval-trend-sub" id="evalTrendSub">항목을 클릭하면 해당 항목이 하이라이트됩니다</div>
-<div style="height:220px;"><canvas id="evalTrendChart"></canvas></div>
-<div class="legend" style="justify-content:center;margin-top:8px;" id="evalTrendLegend"></div>
-</div>
-<div class="eval-bottom-row">
-<div class="eval-radar-card">
-<div class="card-section-title">📡 역량데이터 <span style="font-size:11px;color:#aaa;font-weight:400;margin-left:6px;" id="evalRadarQuarterLabel"></span></div>
-<div style="position:relative;max-width:360px;margin:0 auto;height:260px;"><canvas id="evalRadarAll"></canvas></div>
-<div id="radarTooltip" class="radar-tooltip"></div>
-<div style="margin-top:10px;padding:10px;background:#f8f8ff;border-radius:10px;" id="evalPrevCompare"></div>
-</div>
-<div class="eval-table-card">
-<div class="card-section-title">📋 분기별 역량평가 추이</div>
-<div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
-</div>
-</div>
+  <!-- 분기별 소분류 누적 투입시간 (역량평가와 위아래 비교) -->
+  <div class="eval-card">
+    <div class="eval-card-title">📊 분기별 소분류 누적 투입시간</div>
+    <div class="eval-card-sub" id="evalSubStackSub">선택된 팀원의 분기별 업무시간 분포</div>
+    <div style="height:200px;"><canvas id="evalSubStackChart"></canvas></div>
+    <div class="legend" style="justify-content:center;margin-top:6px;" id="evalSubStackLegend"></div>
+  </div>
+  <!-- 분기별 역량 점수 추이 -->
+  <div class="eval-card">
+    <div class="eval-card-title">📈 분기별 역량 점수 추이</div>
+    <div class="eval-card-sub" id="evalTrendSub">항목을 클릭하면 해당 항목이 하이라이트됩니다</div>
+    <div style="height:220px;"><canvas id="evalTrendChart"></canvas></div>
+    <div class="legend" style="justify-content:center;margin-top:8px;" id="evalTrendLegend"></div>
+  </div>
+  <!-- 역량데이터 + 추이 테이블 -->
+  <div class="eval-bottom-row">
+    <div class="eval-radar-card">
+      <div class="card-section-title">📡 역량데이터 <span style="font-size:11px;color:#aaa;font-weight:400;margin-left:6px;" id="evalRadarQuarterLabel"></span></div>
+      <div style="max-width:360px;margin:0 auto;height:260px;"><canvas id="evalRadarAll"></canvas></div>
+      <div style="margin-top:10px;padding:10px;background:#f8f8ff;border-radius:10px;" id="evalPrevCompare"></div>
+    </div>
+    <div class="eval-table-card">
+      <div class="card-section-title">📋 분기별 역량평가 추이</div>
+      <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
+    </div>
+  </div>
 </div>
 </div>
 </div>
@@ -391,7 +378,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 
 <script>
 Chart.register(ChartDataLabels);
-
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 const MC={'윤진관':'#f97316','이혜인B':'#22c55e','정인태':'#0ea5e9'};
 const INITIALS={'윤진관':'진관','이혜인B':'혜인','정인태':'인태'};
@@ -403,40 +389,35 @@ const RADAR_LABELS=['적극성','생산성','전문성','창의성','협업능�
 const RADAR_COLORS_ARR=['#6c63ff','#f97316','#22c55e','#ec4899','#0ea5e9'];
 const MONTH_KO=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const MEMBERS=['윤진관','이혜인B','정인태'];
+const QM={Q1:['01','02','03'],Q2:['04','05','06'],Q3:['07','08','09'],Q4:['10','11','12']};
 
 let EVAL_DATA=[];let RAW=[];
-let G={heatYear:null,selectedMember:null,dpHeatYear:null};
+let G={heatYear:null,selectedMember:null,dpHeatYear:null,yearFilters:null,qFilters:null};
 let CH={};let H={dashSub:null,dpSub:null};
 let G_evalMember='윤진관';
-let G_evalHighlightIdx=-1;
+let G_evalHighlightIdx=-1; // -1=none
 
-/* ═══════════════════════════
-  새 슬라이드 필터 상태
-═══════════════════════════ */
-const SF_YEAR_LABELS=['전체']; // 동적으로 채워짐
-const SF_Q_LABELS=['전체','Q1','Q2','Q3','Q4'];
+/* ══ 슬라이드 필터 상태 ══ */
 let SF={
   year:{anchor:0,single:0,rangeSet:new Set(),multiSet:new Set(),labels:['전체']},
-  q:{anchor:0,single:0,rangeSet:new Set(),multiSet:new Set(),labels:SF_Q_LABELS}
+  q:{anchor:0,single:0,rangeSet:new Set(),multiSet:new Set(),labels:['전체','Q1','Q2','Q3','Q4']}
 };
-
 function sfGetCombined(t){return new Set([...SF[t].rangeSet,...SF[t].multiSet]);}
 function sfIsSingle(t){return SF[t].rangeSet.size===0&&SF[t].multiSet.size===0;}
 
 function sfBuildYearTrack(years){
   SF.year.labels=['전체',...years];
   const track=document.getElementById('sfYearTrack');
-  // 기존 아이템 모두 제거 후 재생성
   track.innerHTML='<div class="sf-thumb" id="sfYearThumb"></div>';
   SF.year.labels.forEach((lbl,i)=>{
     const el=document.createElement('div');el.className='sf-item';el.textContent=lbl;
-    el.onclick=(e)=>sfClick(e,'year',i);track.appendChild(el);
+    el.addEventListener('click',(e)=>sfClick(e,'year',i));track.appendChild(el);
   });
   sfRender('year');
 }
 
 function sfClick(e,type,idx){
-  e.preventDefault();
+  e.preventDefault();e.stopPropagation();
   const isShift=e.shiftKey,isCtrl=e.ctrlKey||e.metaKey,s=SF[type];
   if(!isShift&&!isCtrl){
     s.single=idx;s.anchor=idx;s.rangeSet=new Set();s.multiSet=new Set();
@@ -448,12 +429,11 @@ function sfClick(e,type,idx){
   }else if(isCtrl&&!isShift){
     s.single=null;
     if(idx===0){s.rangeSet=new Set();s.multiSet=new Set();s.single=0;s.anchor=0;}
-    else{s.rangeSet.has(idx)?s.rangeSet.delete(idx):s.multiSet.has(idx)?s.multiSet.delete(idx):s.multiSet.add(idx);}
+    else{if(s.rangeSet.has(idx))s.rangeSet.delete(idx);else if(s.multiSet.has(idx))s.multiSet.delete(idx);else s.multiSet.add(idx);}
   }
   const c=sfGetCombined(type);
   if(c.size===0&&s.single===null){s.single=0;s.anchor=0;}
-  sfRender(type);
-  sfApplyFilters();
+  sfRender(type);sfApplyFilters();
 }
 
 function sfRender(type){
@@ -461,20 +441,20 @@ function sfRender(type){
   const thumbId=type==='year'?'sfYearThumb':'sfQThumb';
   const chipsId=type==='year'?'sfYearChips':'sfQChips';
   const s=SF[type];const labels=s.labels;
-  const track=document.getElementById(trackId);
+  const track=document.getElementById(trackId);if(!track)return;
   const items=track.querySelectorAll('.sf-item');
   const thumb=document.getElementById(thumbId);
   const single=sfIsSingle(type);
-  if(single&&s.single!==null){
+  if(single&&s.single!==null&&thumb){
     const w=100/items.length;
     thumb.style.opacity='1';thumb.style.left=(w*s.single)+'%';thumb.style.width=w+'%';
-  }else{thumb.style.opacity='0';}
+  }else if(thumb){thumb.style.opacity='0';}
   items.forEach((item,i)=>{
     item.classList.remove('s-active','range-active','multi-active');
     if(single){if(i===s.single)item.classList.add('s-active');}
     else{if(s.rangeSet.has(i))item.classList.add('range-active');if(s.multiSet.has(i))item.classList.add('multi-active');}
   });
-  const chipsEl=document.getElementById(chipsId);
+  const chipsEl=document.getElementById(chipsId);if(!chipsEl)return;
   if(single){
     const lbl=labels[s.single??0];
     chipsEl.innerHTML=lbl==='전체'?`<span class="sf-none">전체</span>`:`<span class="sf-chip multi">${lbl}<span class="sf-chip-x" onclick="sfResetType('${type}')">×</span></span>`;
@@ -488,82 +468,78 @@ function sfRender(type){
 }
 function sfClearRange(t){SF[t].rangeSet=new Set();if(sfGetCombined(t).size===0&&SF[t].single===null)SF[t].single=0;sfRender(t);sfApplyFilters();}
 function sfRemoveMulti(t,idx){SF[t].multiSet.delete(idx);if(sfGetCombined(t).size===0&&SF[t].single===null)SF[t].single=0;sfRender(t);sfApplyFilters();}
-function sfResetType(t){SF[t]={...SF[t],anchor:0,single:0,rangeSet:new Set(),multiSet:new Set()};sfRender(t);sfApplyFilters();}
-function sfResetAll(){
-  ['year','q'].forEach(t=>{SF[t].anchor=0;SF[t].single=0;SF[t].rangeSet=new Set();SF[t].multiSet=new Set();sfRender(t);});
-  sfApplyFilters();
-}
+function sfResetType(t){SF[t].anchor=0;SF[t].single=0;SF[t].rangeSet=new Set();SF[t].multiSet=new Set();sfRender(t);sfApplyFilters();}
+function sfResetAll(){['year','q'].forEach(t=>{SF[t].anchor=0;SF[t].single=0;SF[t].rangeSet=new Set();SF[t].multiSet=new Set();sfRender(t);});sfApplyFilters();}
 
-/* 필터 → G 상태로 변환 후 renderAll 호출 */
 function sfApplyFilters(){
-  // 연도
-  const ySingle=sfIsSingle('year');
-  const yCombined=sfGetCombined('year');
-  const yLabels=SF.year.labels;
-  if(ySingle){
-    G.yearFilters=SF.year.single===0?null:[yLabels[SF.year.single]];
-  }else{
-    const arr=[...yCombined].sort((a,b)=>a-b).filter(i=>i!==0);
-    G.yearFilters=arr.length?arr.map(i=>yLabels[i]):null;
-  }
-  // 분기
-  const qSingle=sfIsSingle('q');
-  const qCombined=sfGetCombined('q');
-  const qLabels=SF.q.labels;
-  if(qSingle){
-    G.qFilters=SF.q.single===0?null:[qLabels[SF.q.single]];
-  }else{
-    const arr=[...qCombined].sort((a,b)=>a-b).filter(i=>i!==0);
-    G.qFilters=arr.length?arr.map(i=>qLabels[i]):null;
-  }
-  // 상태 텍스트
+  // 연도 필터
+  const ySingle=sfIsSingle('year');const yCombined=sfGetCombined('year');const yLabels=SF.year.labels;
+  if(ySingle){G.yearFilters=SF.year.single===0?null:[yLabels[SF.year.single]];}
+  else{const arr=[...yCombined].sort((a,b)=>a-b).filter(i=>i!==0);G.yearFilters=arr.length?arr.map(i=>yLabels[i]):null;}
+  // 분기 필터
+  const qSingle=sfIsSingle('q');const qCombined=sfGetCombined('q');const qLabels=SF.q.labels;
+  if(qSingle){G.qFilters=SF.q.single===0?null:[qLabels[SF.q.single]];}
+  else{const arr=[...qCombined].sort((a,b)=>a-b).filter(i=>i!==0);G.qFilters=arr.length?arr.map(i=>qLabels[i]):null;}
+  // 상태 표시
   const parts=[];
   if(G.yearFilters)parts.push(G.yearFilters.join('·')+'년');
   if(G.qFilters)parts.push(G.qFilters.join('·'));
   const txt=parts.length?parts.join(' / '):'전체 기간';
-  document.getElementById('sfStatus').textContent=txt;
-  document.getElementById('filterBadge').textContent=txt;
-  renderAll();renderEvalTab();
+  const sfS=document.getElementById('sfStatus');if(sfS)sfS.textContent=txt;
+  const fb=document.getElementById('filterBadge');if(fb)fb.textContent=txt;
+  // 모든 뷰 재렌더
+  renderAll();
+  if(G.selectedMember)renderDetailPanel(G.selectedMember);
+  renderEvalTab();
 }
 
-/* filtered() — 다중 선택 지원 */
+/* ══ filtered() — 다중 연도·분기 지원 ══ */
 function filtered(){
   let d=RAW;
-  if(G.yearFilters&&G.yearFilters.length>0)d=d.filter(r=>G.yearFilters.includes(r.date.slice(0,4)));
-  if(G.qFilters&&G.qFilters.length>0){
-    const qm={Q1:['01','02','03'],Q2:['04','05','06'],Q3:['07','08','09'],Q4:['10','11','12']};
-    const validMonths=[...new Set(G.qFilters.flatMap(q=>qm[q]||[]))];
-    d=d.filter(r=>validMonths.includes(r.date.slice(5,7)));
+  if(G.yearFilters&&G.yearFilters.length)d=d.filter(r=>G.yearFilters.includes(r.date.slice(0,4)));
+  if(G.qFilters&&G.qFilters.length){
+    const validM=[...new Set(G.qFilters.flatMap(q=>QM[q]||[]))];
+    d=d.filter(r=>validM.includes(r.date.slice(5,7)));
   }
   return d;
 }
+
+/* filteredEvalQs — EVAL_DATA 기준으로 분기 목록 반환 */
 function filteredEvalQs(){
   const all=[...new Set(EVAL_DATA.map(d=>d.q))].sort();
   return all.filter(q=>{
-    const [y,qt]=q.split('-');
-    if(G.yearFilters&&G.yearFilters.length>0&&!G.yearFilters.includes(y))return false;
-    if(G.qFilters&&G.qFilters.length>0&&!G.qFilters.includes(qt))return false;
+    const parts=q.split('-');// e.g. "2025-Q2"
+    const y=parts[0],qt=parts[1];
+    if(G.yearFilters&&G.yearFilters.length&&!G.yearFilters.includes(y))return false;
+    if(G.qFilters&&G.qFilters.length&&!G.qFilters.includes(qt))return false;
     return true;
   });
 }
 
+/* ══ 날짜→분기 변환 ══ */
+function dateToQKey(dateStr){
+  const mo=dateStr.slice(5,7);
+  for(const[q,ms]of Object.entries(QM)){if(ms.includes(mo))return dateStr.slice(0,4)+'-'+q;}
+  return null;
+}
+
 /* 로딩 */
-function setLoadingProgress(pct,msg){const bar=document.getElementById('ovProgress');const msgEl=document.getElementById('ovMsg');if(bar)bar.style.width=pct+'%';if(msgEl)msgEl.textContent=msg;}
+function setLoadingProgress(p,m){const b=document.getElementById('ovProgress');const el=document.getElementById('ovMsg');if(b)b.style.width=p+'%';if(el)el.textContent=m;}
 function hideLoadingOverlay(){const el=document.getElementById('loadingOverlay');if(el){el.classList.add('hide');setTimeout(()=>el.remove(),600);}}
-function showOverlayError(msg){const ovEl=document.getElementById('loadingOverlay');if(ovEl){const sp=ovEl.querySelector('.ov-spinner');const retryBtn=document.getElementById('ovRetryBtn');const msgEl=document.getElementById('ovMsg');if(sp)sp.style.display='none';if(msgEl)msgEl.innerHTML=`<span style="color:#ffcdd2;font-weight:700;">❌ ${msg}</span>`;if(retryBtn)retryBtn.style.display='block';}}
+function showOverlayError(msg){const ov=document.getElementById('loadingOverlay');if(ov){const sp=ov.querySelector('.ov-spinner');const rb=document.getElementById('ovRetryBtn');const me=document.getElementById('ovMsg');if(sp)sp.style.display='none';if(me)me.innerHTML=`<span style="color:#ffcdd2;font-weight:700;">❌ ${msg}</span>`;if(rb)rb.style.display='block';}}
 
 async function loadDataFromSheets(){
-  const ovEl=document.getElementById('loadingOverlay');
-  if(ovEl){ovEl.classList.remove('hide');ovEl.style.opacity='1';ovEl.style.pointerEvents='auto';const sp=ovEl.querySelector('.ov-spinner');const retryBtn=document.getElementById('ovRetryBtn');if(sp)sp.style.display='block';if(retryBtn)retryBtn.style.display='none';const msgEl=document.getElementById('ovMsg');if(msgEl){msgEl.textContent='데이터 연결 중...';msgEl.style.color='rgba(255,255,255,0.7)';}}
+  const ov=document.getElementById('loadingOverlay');
+  if(ov){ov.classList.remove('hide');ov.style.opacity='1';ov.style.pointerEvents='auto';const sp=ov.querySelector('.ov-spinner');const rb=document.getElementById('ovRetryBtn');if(sp)sp.style.display='block';if(rb)rb.style.display='none';const me=document.getElementById('ovMsg');if(me){me.textContent='데이터 연결 중...';me.style.color='rgba(255,255,255,0.7)';}}
   try{
     setLoadingProgress(15,'📡 구글 시트 연결 중...');
-    const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),60000);
-    let response;
-    try{response=await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`,{method:'GET',redirect:'follow',signal:controller.signal});clearTimeout(timeoutId);}
-    catch(fetchErr){clearTimeout(timeoutId);throw new Error('API 연결 실패: '+fetchErr.message);}
-    if(!response.ok)throw new Error(`HTTP 오류: ${response.status}`);
+    const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),60000);
+    let resp;
+    try{resp=await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`,{method:'GET',redirect:'follow',signal:ctrl.signal});clearTimeout(tid);}
+    catch(fe){clearTimeout(tid);throw new Error('API 연결 실패: '+fe.message);}
+    if(!resp.ok)throw new Error(`HTTP 오류: ${resp.status}`);
     setLoadingProgress(45,'📋 데이터 수신 중...');
-    let json;try{const text=await response.text();json=JSON.parse(text);}catch(e){throw new Error('JSON 파싱 실패: '+e.message);}
+    let json;try{const txt=await resp.text();json=JSON.parse(txt);}catch(e){throw new Error('JSON 파싱 실패: '+e.message);}
     if(!json||json.status!=='ok')throw new Error(json?.message||'데이터 오류');
     setLoadingProgress(65,'🔄 데이터 변환 중...');
     EVAL_DATA=(json.eval||[]).map(row=>{
@@ -572,18 +548,18 @@ async function loadDataFromSheets(){
       return{q:`${year}-${qtrF}`,year,qtr:qtrF,name:String(row['성명']||'').trim(),
         vals:[parseFloat(row['적극성'])||0,parseFloat(row['생산성'])||0,parseFloat(row['전문성'])||0,parseFloat(row['창의성'])||0,parseFloat(row['협업능력'])||0]};
     }).filter(d=>d.name&&d.q);
-    RAW=(json.work||[]).filter(row=>row.name&&row.date&&row.min>0).map(row=>({
-      name:String(row.name||'').trim(),pos:String(row.pos||'').trim(),
-      date:String(row.date||'').slice(0,10),cat:String(row.cat||'미분류').trim(),
-      sub:String(row.sub||'기타').trim(),min:parseInt(row.min)||0,
+    RAW=(json.work||[]).filter(r=>r.name&&r.date&&r.min>0).map(r=>({
+      name:String(r.name||'').trim(),pos:String(r.pos||'').trim(),
+      date:String(r.date||'').slice(0,10),cat:String(r.cat||'미분류').trim(),
+      sub:String(r.sub||'기타').trim(),min:parseInt(r.min)||0
     }));
     const mos=getMos(RAW);
     document.getElementById('headerSub').textContent=`PJ CODE: 24188 | ${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'} | ${MEMBERS.length}명 | ${RAW.length}건`;
     const now=new Date();
     document.getElementById('lastUpdated').textContent=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} 업데이트`;
-    setLoadingProgress(85,'🎨 대시보드 렌더링 중...');
+    setLoadingProgress(85,'🎨 렌더링 중...');
     initDashboard();setLoadingProgress(100,'✅ 완료!');setTimeout(()=>hideLoadingOverlay(),400);
-  }catch(err){console.error('데이터 로드 실패:',err);showOverlayError(err.message);}
+  }catch(err){console.error(err);showOverlayError(err.message);}
 }
 
 function initDashboard(){
@@ -595,8 +571,8 @@ function initDashboard(){
   buildEvalDropdown();renderEvalTab();
 }
 
+/* 유틸 */
 const mToH=m=>(m/60).toFixed(1);
-function mToHM(m){const h=Math.floor(m/60);const min=m%60;return min>0?`${h}h ${min}m`:`${h}h`;}
 const grpMin=(arr,key)=>arr.reduce((m,r)=>{m[r[key]]=(m[r[key]]||0)+r.min;return m;},{});
 const getMos=data=>[...new Set(data.map(r=>r.date.slice(0,7)))].sort();
 function destroyChart(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
@@ -627,32 +603,23 @@ function renderKPI(){
     document.getElementById('pctM'+idx).textContent=pct+'%';setTimeout(()=>{const p=document.getElementById('progM'+idx);if(p)p.style.width=pct+'%';},200);
   });
 }
-
 function renderLine(){
   const all=filtered();const mos=getMos(all);const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
   destroyChart('line');const ctx=document.getElementById('lineChart').getContext('2d');
-  const dss=MEMBERS.map(name=>{
-    const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});
-    const color=MC[name];const grad=ctx.createLinearGradient(0,0,0,200);grad.addColorStop(0,color+'55');grad.addColorStop(1,color+'05');
-    return{label:name,data:mos.map(m=>parseFloat(mToH(moMap[m]||0))),borderColor:color,backgroundColor:grad,borderWidth:1.5,tension:.4,fill:true,pointBackgroundColor:color,pointRadius:3,pointHoverRadius:5};
-  });
+  const dss=MEMBERS.map(name=>{const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});const color=MC[name];const grad=ctx.createLinearGradient(0,0,0,200);grad.addColorStop(0,color+'55');grad.addColorStop(1,color+'05');return{label:name,data:mos.map(m=>parseFloat(mToH(moMap[m]||0))),borderColor:color,backgroundColor:grad,borderWidth:1.5,tension:.4,fill:true,pointBackgroundColor:color,pointRadius:3,pointHoverRadius:5};});
   document.getElementById('lineLegend').innerHTML=MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
   CH.line=new Chart(ctx,{type:'line',data:{labels,datasets:dss},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#3d3d5c'},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>v+'h'}}}}});
 }
-
 function renderStage(){
   const all=filtered();const catMap=grpMin(all,'cat');const totalMin=all.reduce((s,r)=>s+r.min,0);
   const cats=CAT_ORDER.filter(c=>catMap[c]>0);const pcts=cats.map(c=>totalMin>0?Math.round((catMap[c]||0)/totalMin*100):0);const hours=cats.map(c=>parseFloat(mToH(catMap[c]||0)));
-  destroyChart('stage');
-  CH.stage=new Chart(document.getElementById('stageChart').getContext('2d'),{type:'bar',data:{labels:[''],datasets:cats.map((cat,i)=>({label:cat,data:[pcts[i]],backgroundColor:CAT_COLORS[CAT_ORDER.indexOf(cat)],borderRadius:0}))},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.x}% / ${hours[c.datasetIndex]}h`}},datalabels:{color:'#fff',font:{size:10,weight:'700',family:'Noto Sans KR'},textAlign:'center',formatter:(val,ctx)=>{if(val<8)return '';const i=ctx.datasetIndex;return `${cats[i]}\n${hours[i]}h\n(${val}%)`;},anchor:'center',align:'center'}},scales:{x:{stacked:true,max:100,grid:{display:false},ticks:{font:{size:10},callback:v=>v+'%'}},y:{stacked:true,grid:{display:false},ticks:{display:false}}}}});
+  destroyChart('stage');CH.stage=new Chart(document.getElementById('stageChart').getContext('2d'),{type:'bar',data:{labels:[''],datasets:cats.map((cat,i)=>({label:cat,data:[pcts[i]],backgroundColor:CAT_COLORS[CAT_ORDER.indexOf(cat)],borderRadius:0}))},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.x}% / ${hours[c.datasetIndex]}h`}},datalabels:{color:'#fff',font:{size:10,weight:'700',family:'Noto Sans KR'},textAlign:'center',formatter:(val,ctx)=>{if(val<8)return '';const i=ctx.datasetIndex;return `${cats[i]}\n${hours[i]}h\n(${val}%)`;},anchor:'center',align:'center'}},scales:{x:{stacked:true,max:100,grid:{display:false},ticks:{font:{size:10},callback:v=>v+'%'}},y:{stacked:true,grid:{display:false},ticks:{display:false}}}}});
 }
-
 function renderCompare(){
   const all=filtered();const cats=CAT_ORDER.filter(c=>all.some(r=>r.cat===c));
   const dss=MEMBERS.map(name=>{const cm=grpMin(all.filter(r=>r.name===name),'cat');const c=MC[name];return{label:name,data:cats.map(c2=>parseFloat(mToH(cm[c2]||0))),backgroundColor:c+'bb',borderRadius:5};});
   destroyChart('compare');CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{type:'bar',data:{labels:cats,datasets:dss},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10},boxWidth:10}},tooltip:{backgroundColor:'#3d3d5c'},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>v+'h'}}}}});
 }
-
 function renderDonut(hl){
   const all=filtered();const subMap=grpMin(all,'sub');const totalMin=all.reduce((s,r)=>s+r.min,0);
   const top=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,10);const labels=top.map(x=>x[0]);const data=top.map(x=>parseFloat(mToH(x[1])));const colors=labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
@@ -662,9 +629,7 @@ function renderDonut(hl){
   destroyChart('donut');const bgColors=hl?labels.map((l,i)=>l===hl?colors[i]:colors[i]+'44'):colors;
   CH.donut=new Chart(document.getElementById('donutChart').getContext('2d'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'52%',layout:{padding:28},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${c.parsed}h`}},datalabels:{display:ctx=>ctx.dataIndex<5,color:(ctx)=>hl&&labels[ctx.dataIndex]!==hl?'rgba(100,100,100,0.3)':'#3d3d5c',font:{size:9,weight:'700',family:'Noto Sans KR'},formatter:(val,ctx)=>{const t=data.reduce((a,b)=>a+b,0);return `${labels[ctx.dataIndex]}\n(${t>0?Math.round(val/t*100):0}%)`;},anchor:'end',align:'end',offset:6,textAlign:'center'}},onClick:(e,els)=>{if(els.length)dashClickSub(labels[els[0].index]);}}});
 }
-
 function dashClickSub(sub){H.dashSub=H.dashSub===sub?null:sub;renderDonut(H.dashSub);renderTop5(H.dashSub);if(G.selectedMember){H.dpSub=H.dashSub;renderDpTop5Highlight();renderDpStackedHighlight();}}
-
 function renderTop5(hl){
   const all=filtered();const subMap=grpMin(all,'sub');const totalMin=all.reduce((s,r)=>s+r.min,0);const top5=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const list=document.getElementById('top5List');list.innerHTML='';
@@ -673,7 +638,6 @@ function renderTop5(hl){
     li.innerHTML=`<div class="top5-rank-badge" style="background:${rc};">${i+1}</div><span class="top5-rank-name" style="color:${isHL?rc:'#3d3d5c'};">${sub}</span><span class="top5-rank-time">${mToH(min)}h</span><span class="top5-rank-pct" style="color:${rc};">${pct}%</span>`;
     li.addEventListener('click',()=>dashClickSub(sub));list.appendChild(li);});
 }
-
 function renderHeat(){
   const all=filtered();const years=[...new Set(all.map(r=>r.date.slice(0,4)))].sort();if(!years.length)return;
   if(!G.heatYear||!years.includes(G.heatYear))G.heatYear=years[years.length-1];
@@ -681,9 +645,8 @@ function renderHeat(){
   years.forEach(y=>{const b=document.createElement('button');b.className='tab-btn-sm'+(y===G.heatYear?' active':'');b.textContent=y+'년';b.onclick=()=>{G.heatYear=y;wrap.querySelectorAll('.tab-btn-sm').forEach(x=>x.classList.remove('active'));b.classList.add('active');drawHeat(all,y,'heatTable','#6c63ff');};wrap.appendChild(b);});
   drawHeat(all,G.heatYear,'heatTable','#6c63ff');
 }
-
 function drawHeat(data,year,tableId,color){
-  const table=document.getElementById(tableId);const tip=document.getElementById('tooltip');table.innerHTML='';
+  const table=document.getElementById(tableId);const tip=document.getElementById('tooltip');if(!table)return;table.innerHTML='';
   const src=data.filter(r=>r.date.startsWith(year+'-'));const mat=Array.from({length:5},()=>new Array(12).fill(0));const hasMo=new Array(12).fill(false);
   src.forEach(r=>{const p=r.date.split('-');if(p.length<3)return;const mo=parseInt(p[1])-1,day=parseInt(p[2]);const fd=new Date(parseInt(year),mo,1).getDay();const wk=Math.ceil((day+fd)/7)-1;if(wk>=0&&wk<5){mat[wk][mo]+=r.min;hasMo[mo]=true;}});
   let maxV=0;mat.forEach(row=>row.forEach(v=>{if(v>maxV)maxV=v;}));if(!maxV)maxV=1;
@@ -700,7 +663,6 @@ function drawHeat(data,year,tableId,color){
         (function(m2,w2,v2){cell.addEventListener('mouseenter',()=>{tip.style.display='block';tip.innerHTML=`<strong>${year}년 ${MONTH_KO[m2]} ${w2+1}주차</strong><br>${mToH(v2)}h`;});cell.addEventListener('mousemove',e=>{tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY-28)+'px';});cell.addEventListener('mouseleave',()=>{tip.style.display='none';});})(mo,w,v);}
       td.appendChild(cell);tr.appendChild(td);}tbody.appendChild(tr);}table.appendChild(tbody);
 }
-
 function renderTimeline(){
   const all=filtered();const mos=getMos(all);const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
   const dss=MEMBERS.map(name=>{const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});const c=MC[name];return{label:name,data:mos.map(m=>parseFloat(mToH(moMap[m]||0))),backgroundColor:c+'99',borderColor:c,borderRadius:4};});
@@ -717,6 +679,7 @@ function showView(view,navEl){
   if(view==='kpieval')renderEvalTab();
 }
 
+/* ══ 팀원별 업무시간 탭 ══ */
 function renderMembers(){
   const all=filtered();const totalMin=all.reduce((s,r)=>s+r.min,0);
   const grid=document.getElementById('memberOverviewGrid');grid.innerHTML='';
@@ -773,35 +736,34 @@ function dpClickSub(sub){H.dpSub=H.dpSub===sub?null:sub;H.dashSub=H.dpSub;render
 function renderDpTop5Highlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);renderDpTop5(grpMin(d,'sub'),d.reduce((s,r)=>s+r.min,0),MC[name]);}
 function renderDpStackedHighlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);const mos=getMos(d);const moMap={};d.forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});renderDpStacked(d,mos,grpMin(d,'sub'),moMap,MC[name]);}
 
-/* ═══════════════════════════
-  역량평가 탭
-═══════════════════════════ */
+/* ══ 역량평가 탭 ══ */
 function buildEvalDropdown(){
   const menu=document.getElementById('evalDropdownMenu');menu.innerHTML='';
-  const labelEl=document.getElementById('evalDropdownLabel');
-  if(labelEl)labelEl.textContent=G_evalMember;
+  const labelEl=document.getElementById('evalDropdownLabel');if(labelEl)labelEl.textContent=G_evalMember;
   MEMBERS.forEach(name=>{
-    const color=MC[name];
-    const item=document.createElement('div');item.className='eval-dropdown-item'+(name===G_evalMember?' active':'');
+    const color=MC[name];const item=document.createElement('div');item.className='eval-dropdown-item'+(name===G_evalMember?' active':'');
     if(name===G_evalMember)item.style.color=color;
     item.innerHTML=`<div class="eval-dropdown-avatar" style="background:${color};">${INITIALS[name]}</div><span>${name}</span>`;
-    item.onclick=()=>{G_evalMember=name;G_evalHighlightIdx=-1;document.getElementById('evalDropdownLabel').textContent=name;document.getElementById('evalDropdownBtn').classList.remove('open');document.getElementById('evalDropdownMenu').classList.remove('open');buildEvalDropdown();renderEvalProfile();renderEvalTrendChart();renderEvalRadarAll();renderEvalTrendTable();};
+    item.onclick=()=>{G_evalMember=name;G_evalHighlightIdx=-1;document.getElementById('evalDropdownLabel').textContent=name;document.getElementById('evalDropdownBtn').classList.remove('open');document.getElementById('evalDropdownMenu').classList.remove('open');buildEvalDropdown();renderEvalTab();};
     menu.appendChild(item);
   });
 }
-function toggleEvalDropdown(){
-  document.getElementById('evalDropdownBtn').classList.toggle('open');
-  document.getElementById('evalDropdownMenu').classList.toggle('open');
+function toggleEvalDropdown(){document.getElementById('evalDropdownBtn').classList.toggle('open');document.getElementById('evalDropdownMenu').classList.toggle('open');}
+document.addEventListener('click',e=>{const w=document.getElementById('evalDropdownWrap');if(w&&!w.contains(e.target)){document.getElementById('evalDropdownBtn')?.classList.remove('open');document.getElementById('evalDropdownMenu')?.classList.remove('open');}});
+
+function renderEvalTab(){
+  buildEvalDropdown();
+  renderEvalProfile();
+  renderEvalSubStackChart();  // 분기별 소분류 누적 투입시간
+  renderEvalTrendChart();     // 분기별 역량 점수 추이
+  renderEvalRadarAll();       // 역량데이터
+  renderEvalTrendTable();     // 추이 테이블
 }
-document.addEventListener('click',e=>{
-  const wrap=document.getElementById('evalDropdownWrap');
-  if(wrap&&!wrap.contains(e.target)){document.getElementById('evalDropdownBtn')?.classList.remove('open');document.getElementById('evalDropdownMenu')?.classList.remove('open');}
-});
 
-function renderEvalTab(){buildEvalDropdown();renderEvalProfile();renderEvalTrendChart();renderEvalRadarAll();renderEvalTrendTable();}
-
+/* 프로필 카드 */
 function renderEvalProfile(){
-  const name=G_evalMember;const color=MC[name];const qs=filteredEvalQs();const pos=RAW.find(r=>r.name===name)?.pos||'';
+  const name=G_evalMember;const color=MC[name];
+  const qs=filteredEvalQs();const pos=RAW.find(r=>r.name===name)?.pos||'';
   const latestQ=qs[qs.length-1];const latestEv=latestQ?EVAL_DATA.find(e=>e.q===latestQ&&e.name===name):null;
   const itemAvgs=RADAR_LABELS.map((lbl,i)=>{
     const vals=qs.map(q=>{const ev=EVAL_DATA.find(e=>e.q===q&&e.name===name);return ev?ev.vals[i]:null;}).filter(v=>v!==null);
@@ -809,7 +771,7 @@ function renderEvalProfile(){
   });
   const overallAvg=itemAvgs.length?parseFloat((itemAvgs.reduce((s,x)=>s+x.avg,0)/itemAvgs.length).toFixed(1)):0;
   const sorted=[...itemAvgs].sort((a,b)=>b.avg-a.avg);
-  function getGrade(score){if(score>=4.5)return{grade:'S',color:'#f59e0b',bg:'#fef9ee'};if(score>=4.0)return{grade:'A+',color:'#22c55e',bg:'#f0fdf4'};if(score>=3.5)return{grade:'A',color:'#6c63ff',bg:'#f0eeff'};if(score>=3.0)return{grade:'B+',color:'#0ea5e9',bg:'#eff6ff'};return{grade:'B',color:'#f97316',bg:'#fff7ed'};}
+  function getGrade(s){if(s>=4.5)return{grade:'S',color:'#f59e0b',bg:'#fef9ee'};if(s>=4.0)return{grade:'A+',color:'#22c55e',bg:'#f0fdf4'};if(s>=3.5)return{grade:'A',color:'#6c63ff',bg:'#f0eeff'};if(s>=3.0)return{grade:'B+',color:'#0ea5e9',bg:'#eff6ff'};return{grade:'B',color:'#f97316',bg:'#fff7ed'};}
   const gd=getGrade(overallAvg);
   function getTrend(idx){
     if(qs.length<2)return '';
@@ -824,31 +786,30 @@ function renderEvalProfile(){
   const rankEmoji=['🥇','🥈','🥉','4위','5위'];
   const rankBg=['#fef9ee','#f8fafc','#fdf6f0','#f8f8ff','#f8f8ff'];
   const rankBorder=['#f59e0b44','#94a3b844','#cd7c3b44','#e0e0ff','#e0e0ff'];
+  const hlIdx=G_evalHighlightIdx;
   const card=document.getElementById('evalProfileCard');
   card.style.borderColor=color+'44';
   card.innerHTML=`
 <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${color};border-radius:20px 20px 0 0;"></div>
 <div class="eval-profile-top" style="margin-top:8px;">
-  <div class="eval-profile-avatar" style="background:${color};"><span style="font-size:22px;font-weight:800;">${INITIALS[name]}</span></div>
-  <div style="flex:1;">
-    <div class="eval-profile-name">${name}</div>
-    <div class="eval-profile-pos">${pos}</div>
-    <span class="eval-profile-badge" style="background:${color}18;color:${color};">${qs[0]||'-'} ~ ${qs[qs.length-1]||'-'}</span>
-  </div>
+  <div class="eval-profile-avatar" style="background:${color};">${INITIALS[name]}</div>
+  <div style="flex:1;"><div class="eval-profile-name">${name}</div><div class="eval-profile-pos">${pos}</div>
+  <span class="eval-profile-badge" style="background:${color}18;color:${color};">${qs[0]||'-'} ~ ${qs[qs.length-1]||'-'}</span></div>
 </div>
 <div class="eval-score-big">
   <div class="eval-score-big-num" style="color:${color};">${overallAvg.toFixed(1)}</div>
   <div class="eval-score-big-label">종합 역량 점수 / 5.0점</div>
   <span class="eval-score-grade" style="background:${gd.bg};color:${gd.color};">등급 ${gd.grade}</span>
 </div>
-<div class="eval-scores-list">
+<div class="eval-scores-list" id="evalScoresList">
 ${itemAvgs.map((item,i)=>{
   const barColor=RADAR_COLORS_ARR[i];const pct=Math.round(item.avg/5*100);
   const scoreColor=item.avg>=4.5?'#22c55e':item.avg>=3.5?'#6c63ff':item.avg>=2.5?'#f97316':'#ef4444';
-  return `<div class="eval-score-item">
+  const isHL=hlIdx===i;
+  return `<div class="eval-score-item${isHL?' hl':''}" data-idx="${i}" style="cursor:pointer;" onclick="evalClickScoreItem(${i})">
     <span class="eval-score-item-label">${item.lbl}</span>
-    <div class="eval-score-item-bar-wrap"><div class="eval-score-item-bar" style="width:${pct}%;background:${barColor};"></div></div>
-    <span class="eval-score-item-val" style="color:${scoreColor};">${item.avg.toFixed(1)}</span>
+    <div class="eval-score-item-bar-wrap"><div class="eval-score-item-bar" style="width:${pct}%;background:${barColor};${isHL?'height:10px;':''}" ></div></div>
+    <span class="eval-score-item-val" style="color:${scoreColor};${isHL?'font-size:14px;font-weight:900;':''}">${item.avg.toFixed(1)}</span>
   </div>`;
 }).join('')}
 </div>
@@ -861,152 +822,165 @@ ${sorted.slice(0,5).map((item,rank)=>`
   <div class="eval-top5-score" style="color:${item.avg>=4?'#22c55e':item.avg>=3?'#6c63ff':'#f97316'};">${item.avg.toFixed(1)}</div>
   ${getTrend(item.idx)}
 </div>`).join('')}
-</div>
-<div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;margin-top:14px;text-transform:uppercase;letter-spacing:.5px;">📡 역량 레이더 (최신 분기)</div>
-<div class="eval-radar-wrap"><canvas id="evalRadarSingle"></canvas></div>`;
-
-  setTimeout(()=>{
-    destroyChart('evalRadarSingle');
-    const vals=latestEv?latestEv.vals:[0,0,0,0,0];
-    CH.evalRadarSingle=new Chart(document.getElementById('evalRadarSingle').getContext('2d'),{
-      type:'radar',data:{labels:RADAR_LABELS,datasets:[{label:name,data:vals,backgroundColor:color+'33',borderColor:color,borderWidth:2.5,pointBackgroundColor:color,pointRadius:4,pointHoverRadius:6}]},
-      options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9},backdropColor:'transparent'},grid:{color:'#e0dbff'},angleLines:{color:'#e0dbff'},pointLabels:{font:{size:11,weight:'700',family:'Noto Sans KR'},color:'#3d3d5c'}}},plugins:{legend:{display:false},datalabels:{display:false},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.label}: ${c.raw}점`}}}}
-    });
-  },50);
+</div>`;
 }
 
-/* 역량 점수 추이 — 모든 레이블 표시, 클릭시 하이라이트+흐린 글씨 */
+/* 프로필 카드 항목 클릭 → 트렌드 차트 하이라이트 연동 */
+function evalClickScoreItem(idx){
+  G_evalHighlightIdx=(G_evalHighlightIdx===idx)?-1:idx;
+  renderEvalProfile();renderEvalTrendChart();renderEvalRadarAll();renderEvalTrendTable();
+}
+
+/* ══ 분기별 소분류 누적 투입시간 (역량평가 탭) ══ */
+function renderEvalSubStackChart(){
+  destroyChart('evalSubStackChart');
+  const name=G_evalMember;const color=MC[name];
+  const allData=filtered().filter(r=>r.name===name);
+  document.getElementById('evalSubStackSub').textContent=`${name}의 분기별 업무시간 분포`;
+  if(!allData.length){return;}
+  // 날짜 → 분기 매핑
+  const qKeys=[...new Set(allData.map(r=>dateToQKey(r.date)).filter(Boolean))].sort();
+  const subMap=grpMin(allData,'sub');
+  const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(x=>x[0]);
+  const qSubMap={};
+  allData.forEach(r=>{const qk=dateToQKey(r.date);if(!qk)return;if(!qSubMap[qk])qSubMap[qk]={};qSubMap[qk][r.sub]=(qSubMap[qk][r.sub]||0)+r.min;});
+  const dss=subList.map((sub,i)=>({label:sub,data:qKeys.map(q=>parseFloat(mToH((qSubMap[q]&&qSubMap[q][sub])||0))),backgroundColor:SUB_PAL[i%SUB_PAL.length]+'cc',borderRadius:3,stack:'s'}));
+  const legendEl=document.getElementById('evalSubStackLegend');
+  legendEl.innerHTML=subList.map((s,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i%SUB_PAL.length]};"></div>${s}</div>`).join('');
+  CH.evalSubStackChart=new Chart(document.getElementById('evalSubStackChart').getContext('2d'),{
+    type:'bar',data:{labels:qKeys,datasets:dss},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y}h`}},datalabels:{display:false}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>v+'h'}}}}
+  });
+}
+
+/* ══ 분기별 역량 점수 추이 ══ */
 function renderEvalTrendChart(){
   destroyChart('evalTrendChart');
-  const name=G_evalMember;const color=MC[name];const qs=filteredEvalQs();
+  const name=G_evalMember;const qs=filteredEvalQs();
   if(!qs.length)return;
   const hlIdx=G_evalHighlightIdx;
 
+  // 모든 막대에 datalabel 표시 (선택시 해당것만 강조)
   const barDs=RADAR_LABELS.map((lbl,i)=>{
     const isHL=hlIdx===-1||hlIdx===i;
-    return{
-      type:'bar',label:lbl,
+    return{type:'bar',label:lbl,
       data:qs.map(q=>{const ev=EVAL_DATA.find(e=>e.q===q&&e.name===name);return ev?ev.vals[i]:0;}),
-      backgroundColor:isHL?hexRgba(RADAR_COLORS_ARR[i],0.85):hexRgba(RADAR_COLORS_ARR[i],0.18),
+      backgroundColor:isHL?hexRgba(RADAR_COLORS_ARR[i],0.85):hexRgba(RADAR_COLORS_ARR[i],0.2),
       borderColor:isHL?RADAR_COLORS_ARR[i]:hexRgba(RADAR_COLORS_ARR[i],0.3),
-      borderWidth:isHL?1.5:0.5,borderRadius:4,stack:'s',order:2,
-    };
+      borderWidth:isHL?1.5:0.5,borderRadius:4,stack:'s',order:2};
   });
 
-  // 선택된 항목만 바 안에 값 레이블, 비선택은 흐리게
+  // 레이블: 모든 항목 항상 표시, 하이라이트 항목은 더 크고 볼드하게
   const datalabelsConfig={
-    display:(ctx)=>ctx.datasetIndex===(hlIdx===-1?-99:hlIdx)&&ctx.parsed.y>0,
-    color:'#fff',font:{size:10,weight:'800',family:'Noto Sans KR'},
-    formatter:(val)=>val>0?val.toFixed(1):'',anchor:'center',align:'center',clamp:true,
+    display:(ctx)=>{
+      const v=ctx.dataset.data[ctx.dataIndex];
+      if(!v||v<=0)return false;
+      if(hlIdx===-1)return true; // 전체 표시
+      return ctx.datasetIndex===hlIdx;
+    },
+    color:(ctx)=>{
+      if(hlIdx===-1)return ctx.parsed.y>0?'#fff':'transparent';
+      return ctx.datasetIndex===hlIdx?'#fff':'transparent';
+    },
+    font:(ctx)=>({size:hlIdx===ctx.datasetIndex?11:9,weight:hlIdx===ctx.datasetIndex?'900':'700',family:'Noto Sans KR'}),
+    formatter:(val)=>val>0?val.toFixed(1):'',
+    anchor:'center',align:'center',clamp:true,
   };
 
   const legendEl=document.getElementById('evalTrendLegend');legendEl.innerHTML='';
   RADAR_LABELS.forEach((l,i)=>{
     const isHL=hlIdx===-1||hlIdx===i;
-    const div=document.createElement('div');div.className='legend-item';div.style.cursor='pointer';
+    const div=document.createElement('div');div.className='legend-item'+(hlIdx===i?' hl':'');
     div.style.opacity=isHL?'1':'0.4';
-    div.style.fontWeight=hlIdx===i?'800':'400';
     div.style.color=hlIdx===i?RADAR_COLORS_ARR[i]:'#666';
-    div.style.transition='all .2s';
     div.innerHTML=`<div class="legend-dot" style="background:${RADAR_COLORS_ARR[i]};width:${hlIdx===i?'12px':'8px'};height:${hlIdx===i?'12px':'8px'};transition:all .2s;"></div>${l}`;
-    div.addEventListener('click',()=>{G_evalHighlightIdx=(G_evalHighlightIdx===i)?-1:i;renderEvalTrendChart();});
+    div.addEventListener('click',()=>{G_evalHighlightIdx=(G_evalHighlightIdx===i)?-1:i;renderEvalProfile();renderEvalTrendChart();renderEvalRadarAll();renderEvalTrendTable();});
     legendEl.appendChild(div);
   });
 
   CH.evalTrendChart=new Chart(document.getElementById('evalTrendChart').getContext('2d'),{
     data:{labels:qs,datasets:barDs},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{
-          label:c=>{
-            // 항목 선택 시 해당 항목만, 미선택 시 모두 표시
-            if(hlIdx!==-1&&c.datasetIndex!==hlIdx)return null;
-            return ` ${c.dataset.label}: ${c.parsed.y}점`;
-          }
-        }},
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>{if(hlIdx!==-1&&c.datasetIndex!==hlIdx)return null;return ` ${c.dataset.label}: ${c.parsed.y}점`;}}},
         datalabels:datalabelsConfig
       },
-      scales:{
-        x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},
-        y:{stacked:true,grid:{color:'#f0eeff'},ticks:{font:{size:11}},title:{display:true,text:'점수',font:{size:11}}}
-      },
-      onClick:(e,els)=>{if(els.length){const idx=els[0].datasetIndex;G_evalHighlightIdx=(G_evalHighlightIdx===idx)?-1:idx;renderEvalTrendChart();}}
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,grid:{color:'#f0eeff'},ticks:{font:{size:11}},title:{display:true,text:'점수',font:{size:11}}}},
+      onClick:(e,els)=>{if(els.length){const idx=els[0].datasetIndex;G_evalHighlightIdx=(G_evalHighlightIdx===idx)?-1:idx;renderEvalProfile();renderEvalTrendChart();renderEvalRadarAll();renderEvalTrendTable();}}
     }
   });
 }
 
-/* 역량데이터: 나의 최신값 + 지난 분기 비교 */
+/* ══ 역량데이터 레이더: 현재 vs 지난 분기, 클릭항목 하이라이트 ══ */
 function renderEvalRadarAll(){
   destroyChart('evalRadarAll');
   const name=G_evalMember;const color=MC[name];
   const qs=filteredEvalQs();const latestQ=qs[qs.length-1]||'';const prevQ=qs[qs.length-2]||'';
   document.getElementById('evalRadarQuarterLabel').textContent=latestQ?`(${latestQ} 기준)`:'';
-
   const myEv=latestQ?EVAL_DATA.find(e=>e.q===latestQ&&e.name===name):null;
   const prevEv=prevQ?EVAL_DATA.find(e=>e.q===prevQ&&e.name===name):null;
   const myVals=myEv?myEv.vals:[0,0,0,0,0];
   const prevVals=prevEv?prevEv.vals:[0,0,0,0,0];
+  const hlIdx=G_evalHighlightIdx;
+
+  // 레이더 포인트 크기: 하이라이트 항목 강조
+  const pointRadius=RADAR_LABELS.map((_,i)=>(hlIdx===-1||hlIdx===i)?6:3);
+  const pointBorderWidth=RADAR_LABELS.map((_,i)=>(hlIdx===-1||hlIdx===i)?2:0);
 
   const dss=[
-    {label:`${name} (${latestQ||'최신'})`,data:myVals,backgroundColor:color+'33',borderColor:color,borderWidth:2.5,pointBackgroundColor:color,pointRadius:5,pointHoverRadius:7},
-    ...(prevEv?[{label:`지난 분기 (${prevQ})`,data:prevVals,backgroundColor:'rgba(150,150,180,0.1)',borderColor:'#9999bb',borderWidth:1.5,borderDash:[5,4],pointBackgroundColor:'#9999bb',pointRadius:3,pointHoverRadius:5}]:[])
+    {label:`${name} (${latestQ||'최신'})`,data:myVals,
+      backgroundColor:color+'33',borderColor:color,borderWidth:2.5,
+      pointBackgroundColor:RADAR_LABELS.map((_,i)=>hlIdx===-1||hlIdx===i?color:color+'44'),
+      pointRadius,pointHoverRadius:8,pointBorderWidth,pointBorderColor:'#fff'},
+    ...(prevEv?[{label:`지난 분기 (${prevQ})`,data:prevVals,
+      backgroundColor:'rgba(150,150,180,0.08)',borderColor:'#9999bb',borderWidth:1.5,borderDash:[5,4],
+      pointBackgroundColor:'#9999bb',pointRadius:3,pointHoverRadius:5}]:[])
   ];
 
   const radarTip=document.getElementById('radarTooltip');
-
   CH.evalRadarAll=new Chart(document.getElementById('evalRadarAll').getContext('2d'),{
     type:'radar',data:{labels:RADAR_LABELS,datasets:dss},
     options:{responsive:true,maintainAspectRatio:false,
-      scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10},backdropColor:'transparent'},grid:{color:'#e0dbff'},angleLines:{color:'#e0dbff'},pointLabels:{font:{size:12,weight:'700',family:'Noto Sans KR'},color:'#3d3d5c'}}},
+      scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10},backdropColor:'transparent'},grid:{color:'#e0dbff'},angleLines:{color:'#e0dbff'},
+        pointLabels:{font:(ctx)=>({size:12,weight:hlIdx===ctx.index?'900':'700',family:'Noto Sans KR'}),color:(ctx)=>hlIdx===ctx.index?color:'#3d3d5c'}}},
       plugins:{
         legend:{position:'bottom',labels:{font:{size:11,family:'Noto Sans KR'},boxWidth:10,padding:8}},
         datalabels:{
-          display:true,
-          color:(ctx)=>ctx.datasetIndex===0?color:'#9999bb',
-          font:{size:10,weight:'800',family:'Noto Sans KR'},
+          display:(ctx)=>ctx.datasetIndex===0,
+          color:(ctx)=>hlIdx===-1||hlIdx===ctx.dataIndex?color:color+'55',
+          font:(ctx)=>({size:hlIdx===ctx.dataIndex?12:9,weight:hlIdx===ctx.dataIndex?'900':'700',family:'Noto Sans KR'}),
           formatter:(val)=>val>0?val.toFixed(1):'',
           anchor:'end',align:'end',offset:4,
         },
-        tooltip:{
-          external:(ctx)=>{
-            const tip=ctx.tooltip;
-            if(!radarTip)return;
-            if(tip.opacity===0){radarTip.style.display='none';return;}
-            let html=`<strong style="font-size:12px;">${RADAR_LABELS[tip.dataPoints[0].dataIndex]}</strong><br>`;
-            html+=`<span style="color:${color};">현재 ${latestQ}: <strong>${myVals[tip.dataPoints[0].dataIndex].toFixed(1)}점</strong></span>`;
-            if(prevEv){
-              const diff=myVals[tip.dataPoints[0].dataIndex]-prevVals[tip.dataPoints[0].dataIndex];
-              const dc=diff>0?'#4ade80':diff<0?'#f87171':'#aaa';
-              const ds=diff>0?`▲+${diff.toFixed(1)}`:diff<0?`▼${diff.toFixed(1)}`:'–';
-              html+=`<br><span style="color:#aaa;">지난 ${prevQ}: ${prevVals[tip.dataPoints[0].dataIndex].toFixed(1)}점</span>`;
-              html+=`<br><span style="color:${dc};font-weight:700;">${ds}</span>`;
-            }
-            radarTip.innerHTML=html;
-            radarTip.style.display='block';
-            const canvas=document.getElementById('evalRadarAll');
-            const rect=canvas.getBoundingClientRect();
-            radarTip.style.left=(tip.caretX+rect.left-radarTip.offsetWidth/2)+'px';
-            radarTip.style.top=(tip.caretY+rect.top-radarTip.offsetHeight-12)+'px';
-          },
-          enabled:false
-        }
+        tooltip:{external:(ctx)=>{
+          const tip=ctx.tooltip;if(!radarTip)return;
+          if(tip.opacity===0){radarTip.style.display='none';return;}
+          if(!tip.dataPoints||!tip.dataPoints.length)return;
+          const di=tip.dataPoints[0].dataIndex;
+          let html=`<strong style="font-size:12px;">${RADAR_LABELS[di]}</strong><br>`;
+          html+=`<span style="color:${color};">현재 ${latestQ}: <strong>${myVals[di].toFixed(1)}점</strong></span>`;
+          if(prevEv){const diff=myVals[di]-prevVals[di];const dc=diff>0?'#4ade80':diff<0?'#f87171':'#aaa';const ds=diff>0?`▲+${diff.toFixed(1)}`:diff<0?`▼${diff.toFixed(1)}`:'–';html+=`<br><span style="color:#aaa;">이전 ${prevQ}: ${prevVals[di].toFixed(1)}점</span><br><span style="color:${dc};font-weight:700;">${ds}</span>`;}
+          radarTip.innerHTML=html;radarTip.style.display='block';
+          const canvas=document.getElementById('evalRadarAll');const rect=canvas.getBoundingClientRect();
+          radarTip.style.left=(tip.caretX+rect.left-60)+'px';radarTip.style.top=(tip.caretY+rect.top-80)+'px';
+        },enabled:false}
       }
     }
   });
 
-  // 이전 분기 비교 표 (외부 div)
+  // 이전 분기 비교 표
   const prevEl=document.getElementById('evalPrevCompare');
   if(prevEl){
     let html=`<div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;">지난 분기(${prevQ||'-'}) 대비</div>`;
     html+=RADAR_LABELS.map((lbl,i)=>{
       const myV=myVals[i]||0;const prevV=prevVals[i]||0;const diff=myV-prevV;
-      const dc=diff>0?'#22c55e':diff<0?'#ef4444':'#aaa';
-      const ds=diff>0?`▲+${diff.toFixed(1)}`:diff<0?`▼${diff.toFixed(1)}`:'–';
-      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+      const dc=diff>0?'#22c55e':diff<0?'#ef4444':'#aaa';const ds=diff>0?`▲+${diff.toFixed(1)}`:diff<0?`▼${diff.toFixed(1)}`:'–';
+      const isHL=hlIdx===i;
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:3px 5px;border-radius:5px;background:${isHL?'#f0eeff':'transparent'};">
         <div style="width:6px;height:6px;border-radius:50%;background:${RADAR_COLORS_ARR[i]};flex-shrink:0;"></div>
-        <span style="font-size:11px;color:#555;width:50px;flex-shrink:0;">${lbl}</span>
-        <span style="font-size:12px;font-weight:800;color:${color};">${myV.toFixed(1)}</span>
+        <span style="font-size:11px;color:#555;width:50px;flex-shrink:0;font-weight:${isHL?'800':'400'};">${lbl}</span>
+        <span style="font-size:${isHL?'13px':'12px'};font-weight:${isHL?'900':'800'};color:${color};">${myV.toFixed(1)}</span>
         <span style="font-size:10px;color:#aaa;">/ 이전 ${prevV.toFixed(1)}</span>
         <span style="font-size:10px;font-weight:700;color:${dc};margin-left:auto;">${ds}</span>
       </div>`;
@@ -1015,14 +989,15 @@ function renderEvalRadarAll(){
   }
 }
 
-/* 분기별 역량평가 추이 테이블 */
+/* ══ 분기별 역량평가 추이 테이블: 하이라이트 열 강조 ══ */
 function renderEvalTrendTable(){
   const wrap=document.getElementById('evalTrendTableWrap');
   const name=G_evalMember;const color=MC[name];
   const qs=[...filteredEvalQs()].reverse();
+  const hlIdx=G_evalHighlightIdx;
   let html=`<table class="eval-trend-table"><thead><tr>
   <th style="text-align:left;border-radius:8px 0 0 8px;">분기</th>
-  ${RADAR_LABELS.map((l,i)=>`<th style="color:${RADAR_COLORS_ARR[i]};">${l}</th>`).join('')}
+  ${RADAR_LABELS.map((l,i)=>`<th style="color:${RADAR_COLORS_ARR[i]};${hlIdx===i?'background:#e0dbff;font-size:12px;':''}${hlIdx!==-1&&hlIdx!==i?'opacity:0.5;':''}">${l}</th>`).join('')}
   <th style="border-radius:0 8px 8px 0;color:${color};">평균</th>
 </tr></thead><tbody>`;
   qs.forEach((q,idx)=>{
@@ -1032,7 +1007,11 @@ function renderEvalTrendTable(){
     else{
       const avg=(ev.vals.reduce((a,b)=>a+b,0)/ev.vals.length).toFixed(1);
       const ac=parseFloat(avg)>=4?'#22c55e':parseFloat(avg)>=3?'#6c63ff':'#f97316';
-      html+=ev.vals.map((v,i)=>{const vc=v>=4.5?'#22c55e':v>=3.5?'#6c63ff':v>=2.5?'#f97316':'#ef4444';return `<td><span style="color:${vc};font-weight:700;">${v.toFixed(1)}</span></td>`;}).join('');
+      html+=ev.vals.map((v,i)=>{
+        const vc=v>=4.5?'#22c55e':v>=3.5?'#6c63ff':v>=2.5?'#f97316':'#ef4444';
+        const isHL=hlIdx===i;
+        return `<td class="${isHL?'col-hl':''}"><span style="color:${vc};font-weight:${isHL?'900':'700'};font-size:${isHL?'13px':'12px'};">${v.toFixed(1)}</span></td>`;
+      }).join('');
       html+=`<td><strong style="color:${ac};">${avg}</strong></td>`;
     }
     html+=`</tr>`;
@@ -1040,7 +1019,7 @@ function renderEvalTrendTable(){
   html+=`</tbody></table>`;wrap.innerHTML=html;
 }
 
-window.addEventListener('DOMContentLoaded',()=>{ loadDataFromSheets(); });
+window.addEventListener('DOMContentLoaded',()=>{loadDataFromSheets();});
 </script>
 </body>
 </html>
