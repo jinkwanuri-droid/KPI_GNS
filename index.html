@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경상남도 서부의료원 KPI 대시보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-height:100vh;}
+#loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
+#loadingOverlay.hide{opacity:0;pointer-events:none;}
+.ov-icon{font-size:52px;margin-bottom:16px;}
+.ov-title{font-size:20px;font-weight:800;margin-bottom:8px;}
+.ov-sub{font-size:13px;opacity:.8;margin-bottom:28px;text-align:center;line-height:1.7;}
+.ov-spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;}
+.ov-msg{font-size:12px;opacity:.7;margin-top:6px;}
+.ov-progress{width:260px;height:5px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden;margin-top:12px;}
+.ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
+.ov-retry-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:12px 32px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:16px;display:none;}
+.ov-retry-btn:hover{background:#f0eeff;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sidebar{width:224px;background:#fff;display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(0,0,0,.08);position:fixed;height:100vh;z-index:100;overflow-y:auto;}
+.sidebar-header{display:flex;align-items:center;gap:10px;padding:18px;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;min-height:68px;flex-shrink:0;}
+.sidebar-logo{width:38px;height:38px;background:rgba(255,255,255,.25);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+.sidebar-title{font-size:13px;font-weight:700;line-height:1.4;}
+.sidebar-section-title{font-size:11px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:1px;padding:13px 18px 7px;flex-shrink:0;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;color:#666;transition:all .2s;border-left:3px solid transparent;}
+.nav-item:hover{background:#f5f3ff;color:#6c63ff;}
+.nav-item.active{background:#f0eeff;color:#6c63ff;border-left-color:#6c63ff;font-weight:700;}
+.nav
