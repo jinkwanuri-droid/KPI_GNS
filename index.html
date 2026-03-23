@@ -413,7 +413,7 @@ async function loadDataFromSheets(){
   try {
     setLoadingProgress(15,'📡 구글 시트 연결 중...');
     const controller=new AbortController();
-    const timeoutId=setTimeout(()=>controller.abort(),30000);
+    const timeoutId=setTimeout(()=>controller.abort(),60000);
     let response;
     try {
       response=await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`,{
