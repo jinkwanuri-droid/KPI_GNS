@@ -298,14 +298,11 @@ Chart.register(ChartDataLabels);
 
 /* ════════════════════════════════════
    ★ 구글 Apps Script URL
-   - 탭: "업무시간" (3명 통합) [2]
-   - 탭: "팀원평가" [1]
+   - "업무시간" 탭 → RAW [2]
+   - "팀원평가" 탭 → EVAL_DATA [1]
 ════════════════════════════════════ */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiaeoLXp0w1Q3jjxzt_HPCLClFABu2f3e406UKAjJtCBq5AgYqOXCh2XBUpbzilcuD1A/exec';
 
-/* ════════════════════════════════════
-   상수
-════════════════════════════════════ */
 const MC = {'윤진관':'#f97316','이혜인B':'#22c55e','정인태':'#0ea5e9'};
 const INITIALS = {'윤진관':'진관','이혜인B':'혜인','정인태':'인태'};
 const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
@@ -317,24 +314,30 @@ const RADAR_COLORS = ['#6c63ff','#f97316','#22c55e','#ec4899','#0ea5e9'];
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const MEMBERS = ['윤진관','이혜인B','정인태'];
 
-/* ════════════════════════════════════
-   전역 데이터 - 구글시트에서만 로드
-════════════════════════════════════ */
-let EVAL_DATA = [];  // "팀원평가" 탭 [1]
-let RAW = [];        // "업무시간" 탭 [2]
-
-/* ════════════════════════════════════
-   전역 상태
-════════════════════════════════════ */
+/* ★ 데이터는 구글시트에서만 로드 */
+let EVAL_DATA = [];
+let RAW = [];
 let G = {yearFilter:'all',qtrFilter:'all',heatYear:null,selectedMember:null,dpHeatYear:null};
 let CH = {};
 let H = {dashSub:null,dpSub:null};
 let G_evalMember = null;
 
 /* ════════════════════════════════════
-   유틸
+   ★ 시간 변환 유틸 [2]
 ════════════════════════════════════ */
+// "8h 20m" → 500분
+function parseTimeToMin(str){
+  str = String(str||'0').trim();
+  const mHM = str.match(/(\d+)h\s*(\d+)m/i); if(mHM) return parseInt(mHM[1])*60+parseInt(mHM[2]);
+  const mH = str.match(/(\d+)h/i); if(mH) return parseInt(mH[1])*60;
+  const mM = str.match(/(\d+)m/i); if(mM) return parseInt(mM[1]);
+  return parseFloat(str)*60||0;
+}
+// 500분 → "8.3" (소수점 1자리)
 const mToH = m => (m/60).toFixed(1);
+// 500분 → "8h 20m"
+function mToHM(m){ const h=Math.floor(m/60); const min=m%60; return min>0?`${h}h ${min}m`:`${h}h`; }
+
 const grpMin = (arr,key) => arr.reduce((m,r)=>{ m[r[key]]=(m[r[key]]||0)+r.min; return m; },{});
 const getMos = data => [...new Set(data.map(r=>r.date.slice(0,7)))].sort();
 function destroyChart(id){ if(CH[id]){ CH[id].destroy(); delete CH[id]; } }
@@ -358,16 +361,9 @@ function filteredEvalQs(){
     return true;
   });
 }
-function parseTimeToMin(str){
-  str=String(str||'0').trim();
-  const mHM=str.match(/(\d+)h\s*(\d+)m/i); if(mHM) return parseInt(mHM[1])*60+parseInt(mHM[2]);
-  const mH=str.match(/(\d+)h/i); if(mH) return parseInt(mH[1])*60;
-  const mM=str.match(/(\d+)m/i); if(mM) return parseInt(mM[1]);
-  return parseFloat(str)*60||0;
-}
 
 /* ════════════════════════════════════
-   로딩 UI
+   ★ 로딩 UI
 ════════════════════════════════════ */
 function setLoadingProgress(pct,msg){
   const bar=document.getElementById('ovProgress');
@@ -393,23 +389,18 @@ function showOverlayError(msg){
 
 /* ════════════════════════════════════
    ★ 구글 시트 데이터 로드
-   "업무시간" 탭 → RAW [2]
-   "팀원평가" 탭 → EVAL_DATA [1]
+   - "팀원평가" 탭 → EVAL_DATA [1]
+   - "업무시간" 탭 → RAW [2]
 ════════════════════════════════════ */
 async function loadDataFromSheets(){
   const ovEl=document.getElementById('loadingOverlay');
   if(ovEl){
-    ovEl.classList.remove('hide');
-    ovEl.style.opacity='1';
-    ovEl.style.pointerEvents='auto';
-    const sp=ovEl.querySelector('.ov-spinner');
-    const retryBtn=document.getElementById('ovRetryBtn');
-    if(sp) sp.style.display='block';
-    if(retryBtn) retryBtn.style.display='none';
+    ovEl.classList.remove('hide'); ovEl.style.opacity='1'; ovEl.style.pointerEvents='auto';
+    const sp=ovEl.querySelector('.ov-spinner'); const retryBtn=document.getElementById('ovRetryBtn');
+    if(sp) sp.style.display='block'; if(retryBtn) retryBtn.style.display='none';
     const msgEl=document.getElementById('ovMsg');
     if(msgEl){ msgEl.textContent='데이터 연결 중...'; msgEl.style.color='rgba(255,255,255,0.7)'; }
   }
-
   try {
     setLoadingProgress(15,'📡 구글 시트 연결 중...');
     const controller=new AbortController();
@@ -422,21 +413,17 @@ async function loadDataFromSheets(){
       clearTimeout(timeoutId);
     } catch(fetchErr){
       clearTimeout(timeoutId);
-      throw new Error('API 연결 실패: '+fetchErr.message+'\n\n해결: Apps Script 배포 → 액세스 권한 "모든 사용자"로 설정');
+      throw new Error('API 연결 실패: Apps Script 배포 설정에서 "액세스 권한 → 모든 사용자"로 변경 후 재배포해주세요.\n오류: '+fetchErr.message);
     }
     if(!response.ok) throw new Error(`HTTP 오류: ${response.status}`);
-
     setLoadingProgress(45,'📋 데이터 수신 중...');
     let json;
     try{ const text=await response.text(); json=JSON.parse(text); }
     catch(e){ throw new Error('JSON 파싱 실패: '+e.message); }
     if(!json||json.status!=='ok') throw new Error(json?.message||'데이터 오류');
-    if(json.warning) console.warn('⚠️ '+json.warning);
-
     setLoadingProgress(65,'🔄 데이터 변환 중...');
 
-    /* ── ★ "팀원평가" 탭 → EVAL_DATA [1] ── */
-    /* 컬럼: 연도 | 분기 | 성명 | 적극성 | 생산성 | 전문성 | 창의성 | 협업능력 */
+    /* ── "팀원평가" 탭 → EVAL_DATA [1] ── */
     EVAL_DATA=(json.eval||[]).map(row=>{
       const year=String(row['연도']||'').trim();
       const qtr=String(row['분기']||'').trim();
@@ -454,8 +441,7 @@ async function loadDataFromSheets(){
       };
     }).filter(d=>d.name&&d.q);
 
-    /* ── ★ "업무시간" 탭 → RAW [2] ── */
-    /* 컬럼: 성명 | 직위 | 일자 | PJ CODE | PJ명 | 대분류 | 소분류 | 투입시간 */
+    /* ── "업무시간" 탭 → RAW [2] (min은 Apps Script에서 변환완료) ── */
     RAW=(json.work||[])
       .filter(row=>row.name&&row.date&&row.min>0)
       .map(row=>({
@@ -464,7 +450,7 @@ async function loadDataFromSheets(){
         date:String(row.date||'').slice(0,10),
         cat: String(row.cat||'미분류').trim(),
         sub: String(row.sub||'기타').trim(),
-        min: parseInt(row.min)||0,
+        min: parseInt(row.min)||0,  // ★ 분 단위 숫자 [2]
       }));
 
     console.log(`✅ 팀원평가: ${EVAL_DATA.length}건 [1] / 업무시간: ${RAW.length}건 [2]`);
@@ -472,7 +458,6 @@ async function loadDataFromSheets(){
     const mos=getMos(RAW);
     document.getElementById('headerSub').textContent=
       `PJ CODE: 24188 | ${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'} | ${MEMBERS.length}명 | ${RAW.length}건`;
-
     const now=new Date();
     document.getElementById('lastUpdated').textContent=
       `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} 업데이트`;
@@ -481,23 +466,15 @@ async function loadDataFromSheets(){
     initDashboard();
     setLoadingProgress(100,'✅ 완료!');
     setTimeout(()=>hideLoadingOverlay(),400);
-
   } catch(err){
     console.error('데이터 로드 실패:',err);
     showOverlayError(err.message);
   }
 }
 
-/* ════════════════════════════════════
-   대시보드 초기화
-════════════════════════════════════ */
 function initDashboard(){
-  buildYearFilters();
-  buildSidebarMembers();
-  renderAll();
-  renderEvalSelectScreen();
-  renderEvalTrendChart();
-  renderEvalTrendTable();
+  buildYearFilters(); buildSidebarMembers(); renderAll();
+  renderEvalSelectScreen(); renderEvalTrendChart(); renderEvalTrendTable();
 }
 
 /* ════════════════════════════════════
@@ -548,7 +525,7 @@ function updateFilterLabel(){
 }
 
 /* ════════════════════════════════════
-   사이드바 팀원
+   사이드바
 ════════════════════════════════════ */
 function buildSidebarMembers(){
   const wrap=document.getElementById('sidebarMembers'); wrap.innerHTML='';
@@ -570,7 +547,6 @@ function buildSidebarMembers(){
 ════════════════════════════════════ */
 function renderAll(){ renderKPI(); renderLine(); renderStage(); renderCompare(); renderDonut(); renderTop5(); renderHeat(); renderTimeline(); }
 
-/* KPI */
 function renderKPI(){
   const all=filtered(); const totalMin=all.reduce((s,r)=>s+r.min,0); const mos=getMos(all);
   document.getElementById('kpiTotal').textContent=mToH(totalMin)+'h';
@@ -588,7 +564,6 @@ function renderKPI(){
   });
 }
 
-/* 라인차트 */
 function renderLine(){
   const all=filtered(); const mos=getMos(all);
   const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
@@ -603,7 +578,6 @@ function renderLine(){
   CH.line=new Chart(ctx,{type:'line',data:{labels,datasets:dss},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#3d3d5c'},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>v+'h'}}}}});
 }
 
-/* 단계별 투입비율 */
 function renderStage(){
   const all=filtered(); const catMap=grpMin(all,'cat'); const totalMin=all.reduce((s,r)=>s+r.min,0);
   const cats=CAT_ORDER.filter(c=>catMap[c]>0);
@@ -616,7 +590,6 @@ function renderStage(){
   });
 }
 
-/* 팀원 비교 */
 function renderCompare(){
   const all=filtered(); const cats=CAT_ORDER.filter(c=>all.some(r=>r.cat===c));
   const dss=MEMBERS.map(name=>{ const cm=grpMin(all.filter(r=>r.name===name),'cat'); const c=MC[name]; return {label:name,data:cats.map(c2=>parseFloat(mToH(cm[c2]||0))),backgroundColor:c+'bb',borderRadius:5}; });
@@ -624,7 +597,6 @@ function renderCompare(){
   CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{type:'bar',data:{labels:cats,datasets:dss},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10},boxWidth:10}},tooltip:{backgroundColor:'#3d3d5c'},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>v+'h'}}}}});
 }
 
-/* 도넛 */
 function renderDonut(hl){
   const all=filtered(); const subMap=grpMin(all,'sub'); const totalMin=all.reduce((s,r)=>s+r.min,0);
   const top=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
@@ -655,7 +627,6 @@ function dashClickSub(sub){
   if(G.selectedMember){ H.dpSub=H.dashSub; renderDpTop5Highlight(); renderDpStackedHighlight(); }
 }
 
-/* TOP5 */
 function renderTop5(hl){
   const all=filtered(); const subMap=grpMin(all,'sub'); const totalMin=all.reduce((s,r)=>s+r.min,0);
   const top5=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
@@ -671,7 +642,6 @@ function renderTop5(hl){
   });
 }
 
-/* 히트맵 */
 function renderHeat(){
   const all=filtered(); const years=[...new Set(all.map(r=>r.date.slice(0,4)))].sort();
   if(!years.length) return;
@@ -708,7 +678,6 @@ function drawHeat(data,year,tableId,color){
   table.appendChild(tbody);
 }
 
-/* 타임라인 */
 function renderTimeline(){
   const all=filtered(); const mos=getMos(all);
   const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
