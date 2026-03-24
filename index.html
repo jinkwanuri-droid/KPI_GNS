@@ -1,19 +1,4 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<style>
-								body {
-									background-color: white; /* Ensure the iframe has a white background */
-								}
-
-								
-							</style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -26,7 +11,6 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-height:100vh;}
 #loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
-#loadingOverlay.hide{opacity:0;pointer-events:none;}
 .ov-icon{font-size:52px;margin-bottom:16px;}
 .ov-title{font-size:20px;font-weight:800;margin-bottom:8px;}
 .ov-sub{font-size:13px;opacity:.8;margin-bottom:28px;text-align:center;line-height:1.7;}
@@ -82,7 +66,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .refresh-btn:hover{background:#e0dbff;}
 .last-updated{font-size:10px;color:#aaa;}
 
-/* 대시보드 상단 카드 동적 배열을 위한 수정 */
 .grid-top{display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px;}
 .grid-mid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
 .grid-bot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
@@ -444,7 +427,7 @@ let G_evalMember = '';
 let G_evalHighlightIdx = -1; // 클릭된 항목 인덱스 (-1이면 없음)
 
 // ==========================================
-// ★ 숫자 포맷 관련 헬퍼 함수 추가
+// ★ 숫자 포맷 관련 헬퍼 함수
 // ==========================================
 const formatNum = val => typeof val === 'number' ? val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : val;
 const mToH = m => parseFloat((m / 60).toFixed(1)); // 차트 연산 등에 사용할 순수 float 숫자 반환
@@ -490,10 +473,13 @@ function setLoadingProgress(pct,msg){
   if(bar) bar.style.width = pct+'%'; if(msgEl) msgEl.textContent = msg;
 }
 
-// 오버레이 숨기기 함수 수정 (클래스 부여로만 숨기고 재사용 가능하게 함)
+// 오버레이 완전 숨기기 (인라인 스타일 제어 추가)
 function hideLoadingOverlay(){
   const el = document.getElementById('loadingOverlay');
-  if(el){ el.classList.add('hide'); }
+  if(el){ 
+    el.style.opacity = '0'; 
+    el.style.pointerEvents = 'none'; 
+  }
 }
 
 function showOverlayError(msg){
@@ -509,7 +495,9 @@ function showOverlayError(msg){
 async function loadDataFromSheets(){
   const ovEl = document.getElementById('loadingOverlay');
   if(ovEl){
-    ovEl.classList.remove('hide'); ovEl.style.opacity='1'; ovEl.style.pointerEvents='auto';
+    // 다시 나타나도록 설정
+    ovEl.style.opacity = '1'; 
+    ovEl.style.pointerEvents = 'auto';
     
     // UI 초기화 (새로고침 대응)
     const sp = ovEl.querySelector('.ov-spinner');
@@ -1193,10 +1181,3 @@ window.addEventListener('DOMContentLoaded', () => { loadDataFromSheets(); });
 </script>
 </body>
 </html>
-
-							<script>
-                            	
-							</script>
-                        </body>
-                        </html>
-                    
