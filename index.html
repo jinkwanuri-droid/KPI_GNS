@@ -229,6 +229,24 @@ body { display:flex; min-height:100vh; }
 </head>
 <body>
 
+<!-- 동적 이동을 위한 SortableJS 라이브러리 추가 및 스타일 -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<style>
+  .drag-handle {
+    cursor: grab;
+    margin-right: 8px;
+    color: #cbd5e1;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+  .drag-handle:hover { color: #6c63ff; }
+  .drag-handle:active { cursor: grabbing; }
+  .sortable-ghost { opacity: 0.4; background-color: #f8f8ff; border: 2px dashed #6c63ff; border-radius: 16px; }
+  .sortable-drag { cursor: grabbing !important; }
+</style>
+
 <!-- 로딩 오버레이 -->
 <div id="loadingOverlay">
   <div class="ov-icon">🏥</div>
@@ -305,52 +323,57 @@ body { display:flex; min-height:100vh; }
 
   <!-- 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
+    <!-- 상단 KPI (이동 불가 구역) -->
     <div class="grid-top" id="topKpiGrid"></div>
     
-    <!-- 1행: 월별 투입시간 일정(넓게) / 단계별 비율 / 팀원 비교 -->
-    <!-- 인라인 스타일로 비율 재조정 (1.8 : 1 : 1.2) -->
-    <div class="grid-mid" style="grid-template-columns: 1.8fr 1fr 1.2fr; align-items: stretch;">
-      <!-- 1번: 월별 투입시간 일정 -->
+    <!-- 1행: 월별 투입시간 일정 / 단계별 비율 / 팀원 비교 -->
+    <div class="grid-mid" id="dashGridMid" style="grid-template-columns: 1.8fr 1fr 1.2fr; align-items: stretch;">
+      <!-- 1번 -->
       <div class="card" style="display:flex; flex-direction:column;">
-        <div class="card-section-title">📅 월별 투입시간 일정</div>
+        <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📅 월별 투입시간 일정</div>
         <div style="flex:1; min-height:220px; position:relative;"><canvas id="timelineChart"></canvas></div>
         <div class="legend" style="justify-content:center;margin-top:10px;" id="timelineLegend"></div>
       </div>
-      <!-- 3번: 단계별 투입비율 -->
+      <!-- 3번 -->
       <div class="card" style="display:flex; flex-direction:column;">
-        <div class="card-section-title">📊 단계별 투입비율</div>
+        <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📊 단계별 투입비율</div>
         <div style="flex:1; min-height:220px; position:relative;"><canvas id="stageChart"></canvas></div>
       </div>
-      <!-- 4번: 팀원 설계단계별 비교 -->
+      <!-- 4번 -->
       <div class="card" style="display:flex; flex-direction:column;">
-        <div class="card-section-title">⚖️ 팀원 설계단계별 비교</div>
+        <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>⚖️ 팀원 설계단계별 비교</div>
         <div style="flex:1; min-height:220px; position:relative;"><canvas id="compareChart"></canvas></div>
       </div>
     </div>
     
     <!-- 2행: 분류별 업무(전체) / TOP 5 / 월별 근무 밀도 -->
-    <div class="grid-bot">
+    <div class="grid-bot" id="dashGridBot">
       <div class="card">
-        <div class="card-section-title">📋 분류별 업무 투입시간 (전체)</div>
+        <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📋 분류별 업무 투입시간 (전체)</div>
         <div class="donut-layout">
           <div class="donut-legend-left" id="donutLegendLeft"></div>
           <div class="donut-chart-right"><canvas id="donutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="donutCenter">-</div><div style="font-size:10px;color:#aaa;">총 투입(h)</div></div></div>
         </div>
       </div>
-      <div class="card"><div class="card-section-title">🏆 업무분류별 TOP 5</div><ul class="top5-rank-list" id="top5List"></ul></div>
       <div class="card">
-        <div class="card-section-title">🗓️ 월별 근무 밀도</div>
+        <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>🏆 업무분류별 TOP 5</div>
+        <ul class="top5-rank-list" id="top5List"></ul>
+      </div>
+      <div class="card">
+        <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>🗓️ 월별 근무 밀도</div>
         <div class="tab-btns-sm" id="heatYearTabs"></div>
         <div style="overflow-x:auto;"><table class="heat-table" id="heatTable"></table></div>
         <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span></div>
       </div>
     </div>
     
-    <!-- 3행: 월별 누적 투입시간 추이 (전체 너비 차지) -->
-    <div class="card">
-      <div class="card-section-title">📈 월별 누적 투입시간 추이 (h)</div>
-      <div style="height:300px;"><canvas id="lineChart"></canvas></div>
-      <div class="legend" style="justify-content:center;margin-top:10px;" id="lineLegend"></div>
+    <!-- 3행: 월별 누적 투입시간 추이 (전체 너비) -->
+    <div id="dashGridBottom" style="display:grid; grid-template-columns:1fr; gap:14px;">
+      <div class="card">
+        <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📈 월별 누적 투입시간 추이 (h)</div>
+        <div style="height:300px;"><canvas id="lineChart"></canvas></div>
+        <div class="legend" style="justify-content:center;margin-top:10px;" id="lineLegend"></div>
+      </div>
     </div>
   </div>
 
@@ -581,12 +604,32 @@ async function loadDataFromSheets(){
   }
 }
 
+// --------------------------------------------------------
+// 대시보드 동적 이동(SortableJS) 초기화 함수
+// --------------------------------------------------------
+function initSortable() {
+  const commonOptions = {
+    group: 'dashboard', 
+    handle: '.drag-handle', // ⠿ 아이콘을 잡았을 때만 이동
+    animation: 200,
+    ghostClass: 'sortable-ghost',
+    dragClass: 'sortable-drag'
+  };
+  
+  new Sortable(document.getElementById('dashGridMid'), commonOptions);
+  new Sortable(document.getElementById('dashGridBot'), commonOptions);
+  new Sortable(document.getElementById('dashGridBottom'), commonOptions);
+}
+
 function initDashboard(){
   buildYearFilters();
   buildSidebarMembers();
   renderAll();
   buildEvalDropdown();
   renderEvalTab();
+  
+  // Sortable 초기화
+  initSortable();
 }
 
 function buildYearFilters(){
