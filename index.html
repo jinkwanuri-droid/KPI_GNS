@@ -4,12 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>경상남도 서부의료원 KPI 대시보드</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Pretendard 폰트 임포트 -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-height:100vh;}
+body, button, input, select, textarea {
+  /* 전체 폰트 Pretendard 적용 */
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  background:#eef0f8;
+}
+body { display:flex; min-height:100vh; }
 #loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
 .ov-icon{font-size:52px;margin-bottom:16px;}
 .ov-title{font-size:20px;font-weight:800;margin-bottom:8px;}
@@ -18,13 +24,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .ov-msg{font-size:12px;opacity:.7;margin-top:6px;}
 .ov-progress{width:260px;height:5px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden;margin-top:12px;}
 .ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
-.ov-retry-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:12px 32px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:16px;display:none;}
-
-/* 대시보드 입장 버튼 스타일 */
-.ov-enter-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:20px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:all 0.2s;}
+.ov-retry-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:12px 32px;font-size:14px;font-weight:800;cursor:pointer;margin-top:16px;display:none;}
+.ov-enter-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:800;cursor:pointer;margin-top:20px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:all 0.2s;}
 .ov-enter-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.2);}
-
 @keyframes spin{to{transform:rotate(360deg);}}
+
 .sidebar{width:224px;background:#fff;display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(0,0,0,.08);position:fixed;height:100vh;z-index:100;overflow-y:auto;}
 .sidebar-header{display:flex;align-items:center;gap:10px;padding:18px;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;min-height:68px;flex-shrink:0;}
 .sidebar-logo{width:38px;height:38px;background:rgba(255,255,255,.25);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
@@ -51,18 +55,19 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .fchip-full{width:100%;text-align:center;margin-bottom:4px;display:block;}
 .fchip-row{display:flex;gap:4px;width:100%;}
 .fchip-row .fchip{flex:1;text-align:center;}
-.fchip{padding:4px 10px;border-radius:20px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:#f0eeff;color:#6c63ff;transition:all .2s;font-family:'Noto Sans KR',sans-serif;}
+.fchip{padding:4px 10px;border-radius:20px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:#f0eeff;color:#6c63ff;transition:all .2s;}
 .fchip.active{background:#6c63ff;color:#fff;}
 .fchip:hover:not(.active){background:#e0dbff;}
-.filter-reset-btn{width:100%;padding:8px;border-radius:10px;border:1.5px solid #f0eeff;background:#fff;color:#6c63ff;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;transition:all .2s;}
+.filter-reset-btn{width:100%;padding:8px;border-radius:10px;border:1.5px solid #f0eeff;background:#fff;color:#6c63ff;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;transition:all .2s;}
 .filter-reset-btn:hover{background:#f0eeff;border-color:#6c63ff;}
 .filter-summary-badge{font-size:11px;font-weight:700;color:#6c63ff;background:#f0eeff;padding:5px 10px;border-radius:20px;text-align:center;margin-bottom:5px;}
+
 .main{margin-left:224px;flex:1;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0;}
 .header{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:14px 22px;box-shadow:0 2px 10px rgba(0,0,0,.05);flex-wrap:wrap;gap:10px;}
 .header-title{font-size:16px;font-weight:800;color:#3d3d5c;}
 .subtitle{font-size:11px;color:#9999bb;margin-top:3px;}
 .header-right{display:flex;align-items:center;gap:10px;}
-.refresh-btn{background:#f0eeff;border:none;border-radius:10px;padding:8px 14px;color:#6c63ff;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.refresh-btn{background:#f0eeff;border:none;border-radius:10px;padding:8px 14px;color:#6c63ff;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
 .refresh-btn:hover{background:#e0dbff;}
 .last-updated{font-size:10px;color:#aaa;}
 
@@ -141,30 +146,20 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .detail-chart-title{font-size:12px;font-weight:700;color:#3d3d5c;margin-bottom:10px;}
 .detail-stacked-card{background:#f8f8ff;border-radius:10px;padding:14px;margin-bottom:14px;}
 .detail-bottom-single{background:#f8f8ff;border-radius:10px;padding:14px;}
-.dp-top5-item{display:flex;align-items:center;gap:8px;padding:7px 6px;border-bottom:1px solid #f0f1f5;transition:all .2s;cursor:pointer;}
-.dp-top5-item:last-child{border-bottom:none;}
-.dp-top5-item:hover{background:#f9f9ff;border-radius:8px;}
-.dp-top5-item.highlighted{background:#f0eeff;border-radius:8px;transform:translateX(3px);}
-.dp-top5-item.dimmed{opacity:0.35;}
 
-/* KPI 역량평가 탭 */
-.eval-page-header{background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.eval-page-title{font-size:17px;font-weight:800;color:#3d3d5c;}
-.eval-page-sub{font-size:12px;color:#aaa;margin-top:3px;}
-/* 드롭다운 (이름만 표시) */
+/* KPI 역량평가 탭 관련 */
 .eval-dropdown-wrap{position:relative;display:inline-block;}
-.eval-dropdown-btn{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:12px;border:2px solid #e8e8ff;background:#f8f8ff;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:#3d3d5c;transition:all .2s;min-width:140px;justify-content:space-between;}
+.eval-dropdown-btn{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:12px;border:2px solid #e8e8ff;background:#f8f8ff;cursor:pointer;font-size:14px;font-weight:700;color:#3d3d5c;transition:all .2s;}
 .eval-dropdown-btn:hover{border-color:#6c63ff;background:#f0eeff;}
 .eval-dropdown-btn .arrow{font-size:10px;color:#aaa;transition:transform .2s;}
 .eval-dropdown-btn.open .arrow{transform:rotate(180deg);}
-.eval-dropdown-menu{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1.5px solid #e8e8ff;overflow:hidden;z-index:200;min-width:140px;display:none;}
+.eval-dropdown-menu{position:absolute;left:0;right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1.5px solid #e8e8ff;overflow:hidden;z-index:200;display:none;}
 .eval-dropdown-menu.open{display:block;animation:dropDown .15s ease;}
 @keyframes dropDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
 .eval-dropdown-item{display:block;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;color:#3d3d5c;transition:all .15s;border-left:3px solid transparent;}
 .eval-dropdown-item:hover{background:#f5f3ff;color:#6c63ff;}
 .eval-dropdown-item.active{background:#f0eeff;font-weight:800;border-left-color:#6c63ff;}
 
-/* 메인 레이아웃 */
 .eval-main-layout{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start;}
 .eval-profile-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:2px solid transparent;transition:all .3s;}
 .eval-profile-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:2px solid #f0f1f5;}
@@ -193,8 +188,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .eval-trend-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .eval-trend-title{font-size:13px;font-weight:700;color:#3d3d5c;margin-bottom:4px;}
 .eval-trend-sub{font-size:11px;color:#aaa;margin-bottom:14px;}
-
-/* 나란히 배치 (1fr 1fr) */
 .eval-bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
 .eval-radar-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .eval-table-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
@@ -212,7 +205,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:all 0.2s;}
 .tooltip-box{position:fixed;background:#3d3d5c;color:#fff;padding:7px 11px;border-radius:9px;font-size:12px;pointer-events:none;z-index:9998;display:none;box-shadow:0 4px 12px rgba(0,0,0,.2);line-height:1.6;}
 .tab-btns-sm{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
-.tab-btn-sm{padding:4px 10px;border-radius:20px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:#f0eeff;color:#6c63ff;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.tab-btn-sm{padding:4px 10px;border-radius:20px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:#f0eeff;color:#6c63ff;transition:all .2s;}
 .tab-btn-sm.active{background:#6c63ff;color:#fff;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .eval-main-layout{animation:fadeIn .3s ease;}
@@ -236,7 +229,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 </head>
 <body>
 
-<!-- 로딩 오버레이 (버튼 포함) -->
+<!-- 로딩 오버레이 -->
 <div id="loadingOverlay">
   <div class="ov-icon">🏥</div>
   <div class="ov-title">경상남도 서부의료원 KPI</div>
@@ -245,11 +238,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
   <div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
   
   <div class="ov-progress" id="ovProgressWrap"><div class="ov-progress-fill" id="ovProgress"></div></div>
-  
-  <!-- 에러 시 표시되는 버튼 -->
   <button class="ov-retry-btn" id="ovRetryBtn" onclick="loadDataFromSheets()">🔄 다시 시도</button>
-  
-  <!-- 로딩 완료 후 대시보드 입장 버튼 -->
   <button class="ov-enter-btn" id="ovEnterBtn" onclick="hideLoadingOverlay()">🚀 대시보드 입장하기</button>
 </div>
 
@@ -266,7 +255,20 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
   <div class="sidebar-section-title">팀원</div>
   <div class="member-list" id="sidebarMembers"></div>
   <div class="sidebar-divider"></div>
-  <div class="sidebar-filters">
+  
+  <!-- 역량평가 탭 진입 시에만 나타나는 드롭다운 컨테이너 -->
+  <div id="sidebarEvalContainer" style="display:none; padding:13px 15px; border-top:2px solid #f0eeff;">
+    <div class="filter-block-title" style="color:#6c63ff;">⭐ 역량평가 대상팀원</div>
+    <div class="eval-dropdown-wrap" id="evalDropdownWrap" style="width:100%; display:block;">
+      <button class="eval-dropdown-btn" id="evalDropdownBtn" onclick="toggleEvalDropdown()" style="width:100%; justify-content:space-between;">
+        <span id="evalDropdownLabel">팀원 선택</span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="eval-dropdown-menu" id="evalDropdownMenu" style="top:calc(100% + 4px);"></div>
+    </div>
+  </div>
+
+  <div class="sidebar-filters" id="sidebarFilters">
     <div class="filter-block">
       <div class="filter-block-title">📅 연도</div>
       <button class="fchip fchip-full active" id="yAll" onclick="setYFilter('all',this)">전체</button>
@@ -303,9 +305,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 
   <!-- 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
-    <!-- 동적 팀원수를 위한 컨테이너 -->
     <div class="grid-top" id="topKpiGrid"></div>
-
     <div class="grid-mid">
       <div class="card"><div class="card-section-title">📈 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
       <div class="card"><div class="card-section-title">📊 단계별 투입비율</div><div style="height:200px;"><canvas id="stageChart"></canvas></div></div>
@@ -346,29 +346,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
     </div>
   </div>
 
-  <!-- ★ KPI 역량평가 탭 -->
+  <!-- ★ KPI 역량평가 탭 (상단 헤더 제거됨) -->
   <div id="view-kpieval" class="view-section">
-    <!-- 헤더 + 드롭다운 -->
-    <div class="eval-page-header">
-      <div>
-        <div class="eval-page-title">⭐ KPI 역량평가</div>
-        <div class="eval-page-sub">팀원을 선택하여 개인별 역량 평가를 확인하세요</div>
-      </div>
-      <div class="eval-dropdown-wrap" id="evalDropdownWrap">
-        <button class="eval-dropdown-btn" id="evalDropdownBtn" onclick="toggleEvalDropdown()">
-          <span id="evalDropdownLabel">팀원 선택</span>
-          <span class="arrow">▼</span>
-        </button>
-        <div class="eval-dropdown-menu" id="evalDropdownMenu"></div>
-      </div>
-    </div>
-    
     <!-- 좌(프로필) + 우(차트) -->
     <div class="eval-main-layout" id="evalMainLayout">
       <div id="evalProfileCard" class="eval-profile-card"></div>
       
       <div class="eval-charts-col">
-        <!-- 역량 점수 추이 (클릭 시 하이라이트/레이블 표시) -->
+        <!-- 역량 점수 추이 (레이블 및 점선 표시) -->
         <div class="eval-trend-card">
           <div class="eval-trend-title">📈 분기별 역량 점수 추이</div>
           <div class="eval-trend-sub" id="evalTrendSub">항목을 클릭하면 해당 항목이 하이라이트 되며 레이블이 표시됩니다.</div>
@@ -376,7 +361,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
           <div class="legend" style="justify-content:center;margin-top:8px;" id="evalTrendLegend"></div>
         </div>
         
-        <!-- 역량데이터 + 분기별 추이 테이블 나란히 (1fr 1fr) -->
+        <!-- 역량데이터 + 분기별 추이 테이블 나란히 -->
         <div class="eval-bottom-row">
           <!-- 역량데이터 (나의 값 + 평균) -->
           <div class="eval-radar-card">
@@ -388,7 +373,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
             </div>
           </div>
           
-          <!-- 분기별 역량평가 전체 추이 (나의 값만 표시) -->
+          <!-- 분기별 역량평가 전체 추이 -->
           <div class="eval-table-card">
             <div class="card-section-title">📋 분기별 역량평가 추이</div>
             <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
@@ -403,7 +388,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef0f8;display:flex;min-h
 Chart.register(ChartDataLabels);
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 
-// 동적으로 처리될 전역 변수들
 let MEMBERS = [];
 let MC = {};
 let INITIALS = {};
@@ -424,24 +408,11 @@ let CH = {};
 let H = {dashSub:null,dpSub:null};
 
 let G_evalMember = '';
-let G_evalHighlightIdx = -1; // 클릭된 항목 인덱스 (-1이면 없음)
+let G_evalHighlightIdx = -1; 
 
-// ==========================================
-// ★ 숫자 포맷 관련 헬퍼 함수
-// ==========================================
 const formatNum = val => typeof val === 'number' ? val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : val;
-const mToH = m => parseFloat((m / 60).toFixed(1)); // 차트 연산 등에 사용할 순수 float 숫자 반환
-const formatHour = m => formatNum(mToH(m)); // 화면이나 툴팁에 보여줄 "0,000.0" 형태의 문자열 반환
-// ==========================================
-
-function parseTimeToMin(str){
-  str = String(str||'0').trim();
-  if(typeof str==='number' && !isNaN(str)) { return (str > 0 && str < 5) ? Math.round(str*24*60) : Math.round(str*60); }
-  const mHM = str.match(/(\d+)h\s*(\d+)m/i); if(mHM) return parseInt(mHM[1])*60 + parseInt(mHM[2]);
-  const mH = str.match(/(\d+)h/i); if(mH) return parseInt(mH[1])*60;
-  const mM = str.match(/(\d+)m/i); if(mM) return parseInt(mM[1]);
-  return parseFloat(str)*60 || 0;
-}
+const mToH = m => parseFloat((m / 60).toFixed(1)); 
+const formatHour = m => formatNum(mToH(m)); 
 
 const grpMin = (arr,key) => arr.reduce((m,r) => { m[r[key]]=(m[r[key]]||0)+r.min; return m; }, {});
 const getMos = data => [...new Set(data.map(r=>r.date.slice(0,7)))].sort();
@@ -473,13 +444,9 @@ function setLoadingProgress(pct,msg){
   if(bar) bar.style.width = pct+'%'; if(msgEl) msgEl.textContent = msg;
 }
 
-// 오버레이 완전 숨기기 (인라인 스타일 제어 추가)
 function hideLoadingOverlay(){
   const el = document.getElementById('loadingOverlay');
-  if(el){ 
-    el.style.opacity = '0'; 
-    el.style.pointerEvents = 'none'; 
-  }
+  if(el){ el.style.opacity = '0'; el.style.pointerEvents = 'none'; }
 }
 
 function showOverlayError(msg){
@@ -495,25 +462,12 @@ function showOverlayError(msg){
 async function loadDataFromSheets(){
   const ovEl = document.getElementById('loadingOverlay');
   if(ovEl){
-    // 다시 나타나도록 설정
-    ovEl.style.opacity = '1'; 
-    ovEl.style.pointerEvents = 'auto';
-    
-    // UI 초기화 (새로고침 대응)
-    const sp = ovEl.querySelector('.ov-spinner');
-    if(sp) sp.style.display = 'block';
-    
-    const progressWrap = document.getElementById('ovProgressWrap');
-    if(progressWrap) progressWrap.style.display = 'block';
-
-    const retryBtn = document.getElementById('ovRetryBtn');
-    if(retryBtn) retryBtn.style.display = 'none';
-    
-    const enterBtn = document.getElementById('ovEnterBtn');
-    if(enterBtn) enterBtn.style.display = 'none';
-    
-    const msgEl = document.getElementById('ovMsg'); 
-    if(msgEl){ msgEl.textContent='데이터 연결 중...'; msgEl.style.color='rgba(255,255,255,0.7)'; }
+    ovEl.style.opacity = '1'; ovEl.style.pointerEvents = 'auto';
+    const sp = ovEl.querySelector('.ov-spinner'); if(sp) sp.style.display = 'block';
+    const progressWrap = document.getElementById('ovProgressWrap'); if(progressWrap) progressWrap.style.display = 'block';
+    const retryBtn = document.getElementById('ovRetryBtn'); if(retryBtn) retryBtn.style.display = 'none';
+    const enterBtn = document.getElementById('ovEnterBtn'); if(enterBtn) enterBtn.style.display = 'none';
+    const msgEl = document.getElementById('ovMsg'); if(msgEl){ msgEl.textContent='데이터 연결 중...'; msgEl.style.color='rgba(255,255,255,0.7)'; }
   }
 
   try{
@@ -548,10 +502,8 @@ async function loadDataFromSheets(){
       sub: String(row.sub||'기타').trim(), min: parseInt(row.min)||0,
     }));
 
-    // 동적으로 멤버 추출 및 색상/이니셜 설정
     const memberSet = new Set([...RAW.map(r=>r.name), ...EVAL_DATA.map(e=>e.name)]);
     MEMBERS = Array.from(memberSet).filter(n=>n);
-    
     MEMBERS.forEach((name, idx) => {
       MC[name] = DYNAMIC_COLORS[idx % DYNAMIC_COLORS.length];
       let initial = name;
@@ -568,18 +520,12 @@ async function loadDataFromSheets(){
     
     setLoadingProgress(85,'🎨 대시보드 렌더링 중...');
     initDashboard(); 
-    
     setLoadingProgress(100,'✅ 데이터 로딩 완료!');
     
-    // 로딩 100% 도달 시 스피너/프로그레스바 숨기고 입장 버튼 표시
     if(ovEl){
-      const sp = ovEl.querySelector('.ov-spinner');
-      if(sp) sp.style.display = 'none';
-      const progressWrap = document.getElementById('ovProgressWrap');
-      if(progressWrap) progressWrap.style.display = 'none';
-      
-      const enterBtn = document.getElementById('ovEnterBtn');
-      if(enterBtn) enterBtn.style.display = 'block';
+      const sp = ovEl.querySelector('.ov-spinner'); if(sp) sp.style.display = 'none';
+      const progressWrap = document.getElementById('ovProgressWrap'); if(progressWrap) progressWrap.style.display = 'none';
+      const enterBtn = document.getElementById('ovEnterBtn'); if(enterBtn) enterBtn.style.display = 'block';
     }
 
   }catch(err){ 
@@ -644,34 +590,23 @@ function renderAll(){
   renderKPI(); renderLine(); renderStage(); renderCompare(); renderDonut(); renderTop5(); renderHeat(); renderTimeline();
 }
 
-// 상단 KPI 카드 동적 생성
 function renderKPI(){
-  const all = filtered(); 
-  const totalMin = all.reduce((s,r)=>s+r.min,0); 
-  const mos = getMos(all);
-  const grid = document.getElementById('topKpiGrid');
-  grid.innerHTML = '';
+  const all = filtered(); const totalMin = all.reduce((s,r)=>s+r.min,0); const mos = getMos(all);
+  const grid = document.getElementById('topKpiGrid'); grid.innerHTML = '';
 
-  // 전체 카드 생성
   const mTots = MEMBERS.map(n => ({n, v: all.filter(r=>r.name===n).reduce((s,r)=>s+r.min,0)})); 
   const maxV = Math.max(...mTots.map(m=>m.v), 1);
   let barsHTML = '';
-  mTots.forEach(m => {
-    barsHTML += `<div class="compare-row"><span class="compare-name" title="${m.n}">${m.n}</span><div class="compare-bar-wrap"><div class="compare-bar-fill" style="width:${Math.round(m.v/maxV*100)}%;background:${MC[m.n]};"></div></div><span class="compare-val">${formatHour(m.v)}h</span></div>`;
-  });
+  mTots.forEach(m => { barsHTML += `<div class="compare-row"><span class="compare-name" title="${m.n}">${m.n}</span><div class="compare-bar-wrap"><div class="compare-bar-fill" style="width:${Math.round(m.v/maxV*100)}%;background:${MC[m.n]};"></div></div><span class="compare-val">${formatHour(m.v)}h</span></div>`; });
 
   const totalCard = document.createElement('div');
   totalCard.className = 'card kpi-card';
   totalCard.innerHTML = `<div class="card-section-title">🕐 총 투입시간</div><div class="card-value">${formatHour(totalMin)}h</div><div class="card-sub">총 ${mos.length}개월 | ${MEMBERS.length}명 참여</div><div style="margin-top:12px;">${barsHTML}</div>`;
   grid.appendChild(totalCard);
 
-  // 멤버별 카드 생성
   MEMBERS.forEach(name => {
-    const d = all.filter(r=>r.name===name); 
-    const tot = d.reduce((s,r)=>s+r.min,0); 
-    const pct = totalMin>0 ? Math.round(tot/totalMin*100) : 0;
+    const d = all.filter(r=>r.name===name); const tot = d.reduce((s,r)=>s+r.min,0); const pct = totalMin>0 ? Math.round(tot/totalMin*100) : 0;
     const color = MC[name];
-
     const memberCard = document.createElement('div');
     memberCard.className = 'card kpi-card';
     memberCard.style.setProperty('--card-color', color);
@@ -703,7 +638,7 @@ function renderStage(){
   const all=filtered(); const catMap=grpMin(all,'cat'); const totalMin=all.reduce((s,r)=>s+r.min,0);
   const cats=CAT_ORDER.filter(c=>catMap[c]>0); const pcts=cats.map(c=>totalMin>0?Math.round((catMap[c]||0)/totalMin*100):0); const hours=cats.map(c=>mToH(catMap[c]||0));
   destroyChart('stage');
-  CH.stage=new Chart(document.getElementById('stageChart').getContext('2d'),{type:'bar',data:{labels:[''],datasets:cats.map((cat,i)=>({label:cat,data:[pcts[i]],backgroundColor:CAT_COLORS[CAT_ORDER.indexOf(cat)],borderRadius:0}))},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.x}% / ${formatNum(hours[c.datasetIndex])}h`}},datalabels:{color:'#fff',font:{size:10,weight:'700',family:'Noto Sans KR'},textAlign:'center',formatter:(val,ctx)=>{if(val<8)return '';const i=ctx.datasetIndex;return `${cats[i]}\n${formatNum(hours[i])}h\n(${val}%)`;},anchor:'center',align:'center'}},scales:{x:{stacked:true,max:100,grid:{display:false},ticks:{font:{size:10},callback:v=>v+'%'}},y:{stacked:true,grid:{display:false},ticks:{display:false}}}}});
+  CH.stage=new Chart(document.getElementById('stageChart').getContext('2d'),{type:'bar',data:{labels:[''],datasets:cats.map((cat,i)=>({label:cat,data:[pcts[i]],backgroundColor:CAT_COLORS[CAT_ORDER.indexOf(cat)],borderRadius:0}))},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.x}% / ${formatNum(hours[c.datasetIndex])}h`}},datalabels:{color:'#fff',font:{size:10,weight:'700'},textAlign:'center',formatter:(val,ctx)=>{if(val<8)return '';const i=ctx.datasetIndex;return `${cats[i]}\n${formatNum(hours[i])}h\n(${val}%)`;},anchor:'center',align:'center'}},scales:{x:{stacked:true,max:100,grid:{display:false},ticks:{font:{size:10},callback:v=>v+'%'}},y:{stacked:true,grid:{display:false},ticks:{display:false}}}}});
 }
 
 function renderCompare(){
@@ -719,7 +654,7 @@ function renderDonut(hl){
   const legendEl=document.getElementById('donutLegendLeft'); legendEl.innerHTML='';
   labels.forEach((l,i)=>{const pct=totalMin>0?Math.round((subMap[l]||0)/totalMin*100):0;const isHL=hl===l;const isDim=hl&&hl!==l;const div=document.createElement('div');div.className='donut-legend-item'+(isHL?' highlighted':'')+(isDim?' dimmed':'');div.innerHTML=`<div class="donut-legend-dot" style="background:${colors[i]};"></div><span>${l} <span style="color:#aaa;">${formatNum(data[i])}h(${pct}%)</span></span>`;div.addEventListener('click',()=>dashClickSub(l));legendEl.appendChild(div);});
   destroyChart('donut'); const bgColors=hl?labels.map((l,i)=>l===hl?colors[i]:colors[i]+'44'):colors;
-  CH.donut=new Chart(document.getElementById('donutChart').getContext('2d'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'52%',layout:{padding:28},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},datalabels:{display:ctx=>ctx.dataIndex<5,color:(ctx)=>hl&&labels[ctx.dataIndex]!==hl?'rgba(100,100,100,0.3)':'#3d3d5c',font:{size:9,weight:'700',family:'Noto Sans KR'},formatter:(val,ctx)=>{const t=data.reduce((a,b)=>a+b,0);return `${labels[ctx.dataIndex]}\n(${t>0?Math.round(val/t*100):0}%)`;},anchor:'end',align:'end',offset:6,textAlign:'center'}},onClick:(e,els)=>{if(els.length)dashClickSub(labels[els[0].index]);}}});
+  CH.donut=new Chart(document.getElementById('donutChart').getContext('2d'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'52%',layout:{padding:28},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},datalabels:{display:ctx=>ctx.dataIndex<5,color:(ctx)=>hl&&labels[ctx.dataIndex]!==hl?'rgba(100,100,100,0.3)':'#3d3d5c',font:{size:9,weight:'700'},formatter:(val,ctx)=>{const t=data.reduce((a,b)=>a+b,0);return `${labels[ctx.dataIndex]}\n(${t>0?Math.round(val/t*100):0}%)`;},anchor:'end',align:'end',offset:6,textAlign:'center'}},onClick:(e,els)=>{if(els.length)dashClickSub(labels[els[0].index]);}}});
 }
 
 function dashClickSub(sub){ H.dashSub=H.dashSub===sub?null:sub; renderDonut(H.dashSub); renderTop5(H.dashSub); if(G.selectedMember){H.dpSub=H.dashSub; renderDpTop5Highlight(); renderDpStackedHighlight();} }
@@ -771,13 +706,25 @@ function renderTimeline(){
   destroyChart('timeline'); CH.timeline=new Chart(document.getElementById('timelineChart').getContext('2d'),{type:'bar',data:{labels,datasets:dss},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}}}});
 }
 
+// 뷰 전환: 역량평가 탭 진입 시에만 드롭다운 표시
 function showView(view,navEl){
   document.querySelectorAll('.view-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');
   if(navEl) navEl.classList.add('active');
-  if(view==='members') renderMembers();
-  if(view==='kpieval') renderEvalTab();
+  
+  const sidebarEval = document.getElementById('sidebarEvalContainer');
+  const sidebarFilters = document.getElementById('sidebarFilters');
+  if(view === 'kpieval') {
+    sidebarEval.style.display = 'block';
+    sidebarFilters.style.borderTop = 'none'; // 필터 위 여백 조절
+    renderEvalTab();
+  } else {
+    sidebarEval.style.display = 'none';
+    sidebarFilters.style.borderTop = '2px solid #f0eeff';
+  }
+  
+  if(view === 'members') renderMembers();
 }
 
 function renderMembers(){
@@ -809,7 +756,7 @@ function renderDetailPanel(name){
   const allYears=[...new Set(mos.map(m=>m.split('-')[0]))].sort(); if(!G.dpHeatYear||!allYears.includes(G.dpHeatYear)) G.dpHeatYear=allYears[allYears.length-1]||'2025';
   
   const panel=document.getElementById('memberDetailPanel'); panel.classList.add('show');
-  document.getElementById('dpHeader').innerHTML=`<div class="detail-avatar" style="background:${color};">${INITIALS[name]}</div><div><div style="font-size:17px;font-weight:800;color:#3d3d5c;">${name}</div><div style="font-size:12px;color:#aaa;margin-top:2px;">${pos}</div><span style="background:${color}18;color:${color};font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px;">${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'}</span></div><button onclick="closeDetail()" style="margin-left:auto;background:#f0eeff;border:none;border-radius:10px;padding:7px 14px;color:#6c63ff;font-weight:700;cursor:pointer;font-size:13px;font-family:'Noto Sans KR',sans-serif;">✕ 닫기</button>`;
+  document.getElementById('dpHeader').innerHTML=`<div class="detail-avatar" style="background:${color};">${INITIALS[name]}</div><div><div style="font-size:17px;font-weight:800;color:#3d3d5c;">${name}</div><div style="font-size:12px;color:#aaa;margin-top:2px;">${pos}</div><span style="background:${color}18;color:${color};font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px;">${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'}</span></div><button onclick="closeDetail()" style="margin-left:auto;background:#f0eeff;border:none;border-radius:10px;padding:7px 14px;color:#6c63ff;font-weight:700;cursor:pointer;font-size:13px;">✕ 닫기</button>`;
   document.getElementById('dpKpi').innerHTML=[{v:formatHour(tot)+'h',l:'총 투입시간',c:color},{v:mos.length+'개월',l:'참여기간',c:'#f97316'},{v:formatHour(tot/Math.max(mos.length,1)*60)+'h',l:'월평균',c:'#22c55e'},{v:pkM?pkM[0]:'-',l:'최다 투입월',c:'#ec4899'}].map(k=>`<div class="detail-kpi" style="border-color:${k.c};"><div class="detail-kpi-val" style="color:${k.c};">${k.v}</div><div class="detail-kpi-lbl">${k.l}</div></div>`).join('');
   
   const cats2=CAT_ORDER.filter(c=>catMap[c]>0); const catData=cats2.map(c=>mToH(catMap[c]||0)); const catColors=cats2.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]); const catTotal=catData.reduce((a,b)=>a+b,0);
@@ -850,28 +797,23 @@ function renderDpStackedHighlight(){ const name=G.selectedMember; if(!name)retur
 ★ KPI 역량평가 탭
 ════════════════════════════════════ */
 
-/* 역량평가: 드롭다운 메뉴 (이름만) */
+/* 역량평가: 드롭다운 메뉴 (이름만, 사이드바에 위치) */
 function buildEvalDropdown(){
   const menu = document.getElementById('evalDropdownMenu');
   menu.innerHTML = '';
-  
   const labelEl = document.getElementById('evalDropdownLabel');
   if(labelEl) labelEl.textContent = G_evalMember;
 
   MEMBERS.forEach(name => {
     const item = document.createElement('div');
     item.className = 'eval-dropdown-item' + (name === G_evalMember ? ' active' : '');
-    
-    // 이름만 나오게 세팅
     item.innerHTML = `<span>${name}</span>`;
-    
     item.onclick = () => {
       G_evalMember = name;
       G_evalHighlightIdx = -1; // 선택된 항목 초기화
       document.getElementById('evalDropdownLabel').textContent = name;
       document.getElementById('evalDropdownBtn').classList.remove('open');
       document.getElementById('evalDropdownMenu').classList.remove('open');
-      
       buildEvalDropdown();
       renderEvalProfile();
       renderEvalTrendChart();
@@ -887,7 +829,6 @@ function toggleEvalDropdown(){
   document.getElementById('evalDropdownMenu').classList.toggle('open');
 }
 
-// 드롭다운 외부 클릭 시 닫기
 document.addEventListener('click', e => {
   const wrap = document.getElementById('evalDropdownWrap');
   if(wrap && !wrap.contains(e.target)){
@@ -980,45 +921,68 @@ function renderEvalProfile(){
     CH.evalRadarSingle = new Chart(document.getElementById('evalRadarSingle').getContext('2d'), {
       type: 'radar',
       data: { labels: RADAR_LABELS, datasets: [{ label: name, data: vals, backgroundColor: color+'33', borderColor: color, borderWidth: 2.5, pointBackgroundColor: color, pointRadius: 4, pointHoverRadius: 6 }] },
-      options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: '#e0dbff' }, angleLines: { color: '#e0dbff' }, pointLabels: { font: { size: 11, weight: '700', family: 'Noto Sans KR' }, color: '#3d3d5c' } } }, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { backgroundColor: '#3d3d5c', callbacks: { label: c => `${c.label}: ${c.raw}점` } } } }
+      options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: '#e0dbff' }, angleLines: { color: '#e0dbff' }, pointLabels: { font: { size: 11, weight: '700' }, color: '#3d3d5c' } } }, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { backgroundColor: '#3d3d5c', callbacks: { label: c => `${c.label}: ${c.raw}점` } } } }
     });
   }, 50);
 }
 
-/* 역량 점수 추이 바차트 (클릭 시 하이라이트/레이블 표시) */
+/* 역량 점수 추이 차트 (점선 라인 및 데이터 레이블 전체 표시 적용) */
 function renderEvalTrendChart(){
   destroyChart('evalTrendChart');
   const name = G_evalMember; const qs = filteredEvalQs();
   if(!qs.length) return;
   
   const hlIdx = G_evalHighlightIdx;
+  const datasets = [];
   
-  const barDs = RADAR_LABELS.map((lbl, i) => {
+  RADAR_LABELS.forEach((lbl, i) => {
     const isHL = hlIdx === -1 || hlIdx === i;
-    return {
+    const dataVals = qs.map(q => { const ev = EVAL_DATA.find(e=>e.q===q&&e.name===name); return ev ? ev.vals[i] : 0; });
+    
+    // 막대 데이터
+    datasets.push({
       type: 'bar',
       label: lbl,
-      data: qs.map(q => { const ev = EVAL_DATA.find(e=>e.q===q&&e.name===name); return ev ? ev.vals[i] : 0; }),
+      data: dataVals,
       backgroundColor: isHL ? hexRgba(RADAR_COLORS_ARR[i], 0.85) : hexRgba(RADAR_COLORS_ARR[i], 0.18),
       borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.3),
       borderWidth: isHL ? 1.5 : 0.5,
       borderRadius: 4,
       stack: 's',
       order: 2,
-    };
+    });
+    
+    // 점선 라인 데이터 (동일 항목 연결)
+    datasets.push({
+      type: 'line',
+      label: lbl + '_line',
+      data: dataVals,
+      borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.2),
+      borderWidth: isHL ? 2 : 1,
+      borderDash: [4, 4],
+      backgroundColor: 'transparent',
+      tension: 0,
+      pointRadius: isHL ? 4 : 0,
+      pointBackgroundColor: RADAR_COLORS_ARR[i],
+      stack: 's', // 바 차트와 동일한 스택 위에 그림
+      order: 1,
+    });
   });
   
   const datalabelsConfig = {
     display: (ctx) => {
-      if(hlIdx === -1) return false;
-      return ctx.datasetIndex === hlIdx;
+      // 라인 차트에는 레이블 숨김 (막대 차트 레이블과 겹침 방지)
+      if (ctx.dataset.type === 'line') return false;
+      
+      const originalIdx = Math.floor(ctx.datasetIndex / 2);
+      if(hlIdx === -1) return true; // 아무것도 클릭 안 했을 땐 모두 표시
+      return originalIdx === hlIdx;
     },
     color: '#fff',
-    font: { size: 10, weight: '800', family: 'Noto Sans KR' },
+    font: { size: 10, weight: '800' },
     formatter: (val) => val > 0 ? val.toFixed(1) : '',
     anchor: 'center',
     align: 'center',
-    clamp: true,
   };
   
   const legendEl = document.getElementById('evalTrendLegend');
@@ -1038,16 +1002,18 @@ function renderEvalTrendChart(){
   });
   
   CH.evalTrendChart = new Chart(document.getElementById('evalTrendChart').getContext('2d'), {
-    data: { labels: qs, datasets: barDs },
+    data: { labels: qs, datasets: datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(61,61,92,.95)',
+          filter: (item) => item.dataset.type === 'bar', // 바 차트에서만 툴팁 표시
           callbacks: {
             label: c => {
-              if(hlIdx !== -1 && c.datasetIndex !== hlIdx) return null;
+              const originalIdx = Math.floor(c.datasetIndex / 2);
+              if(hlIdx !== -1 && originalIdx !== hlIdx) return null;
               return `${c.dataset.label}: ${c.parsed.y.toFixed(1)}점`;
             }
           }
@@ -1060,8 +1026,9 @@ function renderEvalTrendChart(){
       },
       onClick: (e, els) => {
         if(els.length){
-          const idx = els[0].datasetIndex;
-          G_evalHighlightIdx = (G_evalHighlightIdx === idx) ? -1 : idx;
+          // 클릭한 엘리먼트가 막대든 라인이든 실제 카테고리 인덱스를 찾음
+          const originalIdx = Math.floor(els[0].datasetIndex / 2);
+          G_evalHighlightIdx = (G_evalHighlightIdx === originalIdx) ? -1 : originalIdx;
           renderEvalTrendChart();
         }
       }
@@ -1076,7 +1043,6 @@ function renderEvalRadarAll(){
   const qs = filteredEvalQs(); const latestQ = qs[qs.length-1] || '';
   
   document.getElementById('evalRadarQuarterLabel').textContent = latestQ ? `(${latestQ} 기준)` : '';
-  
   const myEv = latestQ ? EVAL_DATA.find(e=>e.q===latestQ&&e.name===name) : null;
   const myVals = myEv ? myEv.vals : [0,0,0,0,0];
   
@@ -1086,28 +1052,17 @@ function renderEvalRadarAll(){
   });
   
   const dss = [
-    {
-      label: `${name} (최신)`,
-      data: myVals,
-      backgroundColor: color+'33', borderColor: color, borderWidth: 2.5,
-      pointBackgroundColor: color, pointRadius: 5, pointHoverRadius: 7,
-    },
-    {
-      label: '기간 평균',
-      data: periodAvgs,
-      backgroundColor: 'rgba(150,150,180,0.12)', borderColor: '#9999bb', borderWidth: 1.5,
-      borderDash: [5,4],
-      pointBackgroundColor: '#9999bb', pointRadius: 3, pointHoverRadius: 5,
-    }
+    { label: `${name} (최신)`, data: myVals, backgroundColor: color+'33', borderColor: color, borderWidth: 2.5, pointBackgroundColor: color, pointRadius: 5, pointHoverRadius: 7 },
+    { label: '기간 평균', data: periodAvgs, backgroundColor: 'rgba(150,150,180,0.12)', borderColor: '#9999bb', borderWidth: 1.5, borderDash: [5,4], pointBackgroundColor: '#9999bb', pointRadius: 3, pointHoverRadius: 5 }
   ];
   
   CH.evalRadarAll = new Chart(document.getElementById('evalRadarAll').getContext('2d'), {
     type: 'radar', data: { labels: RADAR_LABELS, datasets: dss },
     options: { 
       responsive: true, maintainAspectRatio: false,
-      scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 10 }, backdropColor: 'transparent' }, grid: { color: '#e0dbff' }, angleLines: { color: '#e0dbff' }, pointLabels: { font: { size: 12, weight: '700', family: 'Noto Sans KR' }, color: '#3d3d5c' } } },
+      scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 10 }, backdropColor: 'transparent' }, grid: { color: '#e0dbff' }, angleLines: { color: '#e0dbff' }, pointLabels: { font: { size: 12, weight: '700' }, color: '#3d3d5c' } } },
       plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11, family: 'Noto Sans KR' }, boxWidth: 10, padding: 8 } },
+        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 8 } },
         datalabels: { display: false },
         tooltip: { backgroundColor: '#3d3d5c', callbacks: { label: c => `${c.dataset.label}: ${c.raw}점` } }
       }
