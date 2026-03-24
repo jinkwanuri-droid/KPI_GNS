@@ -927,7 +927,7 @@ function renderEvalTrendChart(hlLabel = null){
   });
 }
 
-/* ── ③ 역량데이터 (축 숫자 제거, 값 레이블 표시, 항목비교 좌측 이동) ── */
+/* ── ③ 역량데이터 (축 숫자 제거, 값 레이블 표시, 텍스트 겹침 방지) ── */
 function renderEvalRadarDual(){
   destroyChart('evalRadarYear');destroyChart('evalRadarQtr');
   const name=G_evalMember;const color=MC[name];
@@ -956,21 +956,27 @@ function renderEvalRadarDual(){
     type:'radar',
     data:{labels:RADAR_LABELS,datasets:[{label,data,backgroundColor:bc+'33',borderColor:bc,borderWidth:2.5,pointBackgroundColor:bc,pointRadius:4,pointHoverRadius:6}]},
     options:{
+      layout: { padding: 16 }, // 글씨 잘림 방지를 위한 차트 외부 여백
       responsive:true,maintainAspectRatio:false,
       scales:{
         r:{
           min:0,max:5,
           ticks:{display:false, stepSize:1}, // 축 번호 숨김
           grid:{color:'#e0dbff'},angleLines:{color:'#e0dbff'},
-          pointLabels:{font:{size:10,weight:'700'},color:'#3d3d5c'}
+          pointLabels:{
+            font:{size:10,weight:'700'},
+            color:'#3d3d5c',
+            padding: 12 // 축 글자(적극성 등)와 차트 끝점 사이의 간격을 넓힘
+          }
         }
       },
       plugins:{
         legend:{display:false},
         datalabels:{
-          display:true, color:bc, font:{size:9, weight:'800'},
+          display:true, color:bc, font:{size:10, weight:'800'},
           formatter:v=>v>0?v.toFixed(1):'',
-          align:'end', anchor:'end' // 값 레이블 표시
+          align:'end', anchor:'end', offset: 3,
+          textStrokeColor: '#fff', textStrokeWidth: 3 // 글자 겹침 시 가독성 확보용 흰색 테두리
         },
         tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.label}: ${c.raw}점`}}
       }
@@ -980,7 +986,7 @@ function renderEvalRadarDual(){
   CH.evalRadarYear=new Chart(document.getElementById('evalRadarYear').getContext('2d'),radarOpts(yLabel,yearAvgs,'#9999bb'));
   CH.evalRadarQtr=new Chart(document.getElementById('evalRadarQtr').getContext('2d'),radarOpts(qLabel,qtrVals,color));
   
-  /* 항목별 비교 렌더링 (Profile 카드의 evalAvgCompareProfile 컨테이너로 위치 이동) */
+  /* 항목별 비교 렌더링 */
   const avgEl=document.getElementById('evalAvgCompareProfile');
   if(avgEl){
     avgEl.innerHTML= '<div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:6px;">항목별 비교 (최신분기 vs 연도평균)</div>' + 
@@ -999,57 +1005,7 @@ function renderEvalRadarDual(){
   }
 }
 
-/* ── ④ 분기별 역량평가 추이 테이블 (기존 동일) ── */
-function renderEvalTrendTable(){
-  const wrap=document.getElementById('evalTrendTableWrap');
-  const name=G_evalMember;const color=MC[name];
-  const qs=[...filteredEvalQs()].reverse();
-  let html=`<table class="eval-trend-table"><thead><tr>
-    <th style="text-align:left;border-radius:8px 0 0 8px;">분기</th>
-    ${RADAR_LABELS.map((l,i)=>`<th style="color:${RADAR_COLORS_ARR[i]};">${l}</th>`).join('')}
-    <th style="border-radius:0 8px 8px 0;color:${color};">평균</th>
-  </tr></thead><tbody>`;
-  qs.forEach((q,idx)=>{
-    const ev=EVAL_DATA.find(e=>e.q===q&&e.name===name);
-    const isLatest=idx===0;
-    const prevQ=qs[idx+1];
-    const prevEv=prevQ?EVAL_DATA.find(e=>e.q===prevQ&&e.name===name):null;
-    html+=`<tr class="${isLatest?'current-q':''}"><td style="font-weight:700;color:${isLatest?'#6c63ff':'#555'};">`;
-    if(!ev){
-      html+=`${q}</td>${RADAR_LABELS.map(()=>`<td>-</td>`).join('')}<td>-</td></tr>`;
-      return;
-    }
-    const avg=(ev.vals.reduce((a,b)=>a+b,0)/ev.vals.length);
-    const ac=avg>=4?'#22c55e':avg>=3?'#6c63ff':'#f97316';
-    if(isLatest&&prevEv){
-      const prevAvg=prevEv.vals.reduce((a,b)=>a+b,0)/prevEv.vals.length;
-      const diff=avg-prevAvg;
-      let diffStr='';
-      if(diff>0) diffStr=`<span style="font-size:10px;color:#22c55e;font-weight:700;margin-left:4px;">(▲${diff.toFixed(1)})</span>`;
-      else if(diff<0) diffStr=`<span style="font-size:10px;color:#ef4444;font-weight:700;margin-left:4px;">(▼${Math.abs(diff).toFixed(1)})</span>`;
-      else diffStr=`<span style="font-size:10px;color:#aaa;font-weight:700;margin-left:4px;">(→)</span>`;
-      html+=`${q}${diffStr}`;
-    } else {
-      html+=q;
-    }
-    html+=`</td>`;
-    html+=ev.vals.map((v,vi)=>{
-      const vColor=v>=4.5?'#22c55e':v>=3.5?'#6c63ff':v>=2.5?'#f97316':'#ef4444';
-      let diffBadge='';
-      if(isLatest&&prevEv){
-        const d=v-prevEv.vals[vi];
-        if(d>0) diffBadge=`<span style="font-size:9px;color:#22c55e;">▲${d.toFixed(1)}</span>`;
-        else if(d<0) diffBadge=`<span style="font-size:9px;color:#ef4444;">▼${Math.abs(d).toFixed(1)}</span>`;
-      }
-      return `<td><span style="color:${vColor};font-weight:700;">${v.toFixed(1)}</span>${diffBadge}</td>`;
-    }).join('');
-    html+=`<td><strong style="color:${ac};">${avg.toFixed(1)}</strong></td></tr>`;
-  });
-  html+=`</tbody></table>`;
-  wrap.innerHTML=html;
-}
-
-/* ── ⑤ 등급 기준 변경 및 툴팁 추가, 최신분기 레이더 값 표시, 항목 비교 추가 ── */
+/* ── ⑤ 등급 기준 변경 및 툴팁 추가, 최신분기 레이더 겹침 방지 ── */
 function renderEvalProfile(){
   const name=G_evalMember;const color=MC[name];const qs=filteredEvalQs();const pos=RAW.find(r=>r.name===name)?.pos||'';
   const latestQ=qs[qs.length-1];const latestEv=latestQ?EVAL_DATA.find(e=>e.q===latestQ&&e.name===name):null;
@@ -1060,7 +1016,6 @@ function renderEvalProfile(){
   const overallAvg=itemAvgs.length?parseFloat((itemAvgs.reduce((s,x)=>s+x.avg,0)/itemAvgs.length).toFixed(1)):0;
   const sorted=[...itemAvgs].sort((a,b)=>b.avg-a.avg);
   
-  // 평가 등급 기준 수정
   function getGrade(score){
     if(score>3.5) return {grade:'S',color:'#f59e0b',bg:'#fef9ee'};
     if(score>3.2) return {grade:'A+',color:'#22c55e',bg:'#f0fdf4'};
@@ -1094,7 +1049,6 @@ function renderEvalProfile(){
     <div class="eval-score-big">
       <div class="eval-score-big-num" style="color:${color};">${overallAvg.toFixed(1)}</div>
       <div class="eval-score-big-label">종합 역량 점수 / 5.0점</div>
-      <!-- 평가 등급 안내 툴팁 추가 -->
       <span class="eval-score-grade" style="background:${gd.bg};color:${gd.color};">등급 ${gd.grade}
         <span class="grade-info-wrap">
           <span class="grade-info-icon">i</span>
@@ -1125,7 +1079,6 @@ function renderEvalProfile(){
       ${getTrend(item.idx)}
     </div>`).join('')}
     </div>
-    <!-- 항목별 비교 컨테이너 추가 (우측에서 여기로 이동됨) -->
     <div id="evalAvgCompareProfile" style="margin-top:12px;padding:10px;background:#f8f8ff;border-radius:10px;"></div>
     
     <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;margin-top:14px;text-transform:uppercase;letter-spacing:.5px;">📡 역량 레이더 (최신 분기)</div>
@@ -1139,13 +1092,18 @@ function renderEvalProfile(){
       type:'radar',
       data:{labels:RADAR_LABELS,datasets:[{label:name,data:vals,backgroundColor:color+'33',borderColor:color,borderWidth:2.5,pointBackgroundColor:color,pointRadius:4,pointHoverRadius:6}]},
       options:{
+        layout: { padding: 16 }, // 여백 확보
         responsive:true,maintainAspectRatio:false,
         scales:{
           r:{
             min:0,max:5,
-            ticks:{display:false, stepSize:1}, // 축 번호 숨김
+            ticks:{display:false, stepSize:1},
             grid:{color:'#e0dbff'},angleLines:{color:'#e0dbff'},
-            pointLabels:{font:{size:11,weight:'700'},color:'#3d3d5c'}
+            pointLabels:{
+              font:{size:11,weight:'700'},
+              color:'#3d3d5c',
+              padding: 12 // 축 글자 여백 확보
+            }
           }
         },
         plugins:{
@@ -1153,7 +1111,8 @@ function renderEvalProfile(){
           datalabels:{
             display:true, color:color, font:{size:10, weight:'800'},
             formatter:v=>v>0?v.toFixed(1):'',
-            align:'end', anchor:'end' // 값 레이블 표시
+            align:'end', anchor:'end', offset: 3,
+            textStrokeColor: '#fff', textStrokeWidth: 3 // 가독성 향상
           },
           tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.label}: ${c.raw}점`}}
         }
@@ -1161,6 +1120,7 @@ function renderEvalProfile(){
     });
   },50);
 }
+  
 window.addEventListener('DOMContentLoaded',()=>{loadDataFromSheets();});
 </script>
 </body>
