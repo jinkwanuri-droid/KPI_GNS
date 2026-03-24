@@ -1005,6 +1005,56 @@ function renderEvalRadarDual(){
   }
 }
 
+/* ── ④ 분기별 역량평가 추이 테이블 (기존 동일) ── */
+function renderEvalTrendTable(){
+  const wrap=document.getElementById('evalTrendTableWrap');
+  const name=G_evalMember;const color=MC[name];
+  const qs=[...filteredEvalQs()].reverse();
+  let html=`<table class="eval-trend-table"><thead><tr>
+    <th style="text-align:left;border-radius:8px 0 0 8px;">분기</th>
+    ${RADAR_LABELS.map((l,i)=>`<th style="color:${RADAR_COLORS_ARR[i]};">${l}</th>`).join('')}
+    <th style="border-radius:0 8px 8px 0;color:${color};">평균</th>
+  </tr></thead><tbody>`;
+  qs.forEach((q,idx)=>{
+    const ev=EVAL_DATA.find(e=>e.q===q&&e.name===name);
+    const isLatest=idx===0;
+    const prevQ=qs[idx+1];
+    const prevEv=prevQ?EVAL_DATA.find(e=>e.q===prevQ&&e.name===name):null;
+    html+=`<tr class="${isLatest?'current-q':''}"><td style="font-weight:700;color:${isLatest?'#6c63ff':'#555'};">`;
+    if(!ev){
+      html+=`${q}</td>${RADAR_LABELS.map(()=>`<td>-</td>`).join('')}<td>-</td></tr>`;
+      return;
+    }
+    const avg=(ev.vals.reduce((a,b)=>a+b,0)/ev.vals.length);
+    const ac=avg>=4?'#22c55e':avg>=3?'#6c63ff':'#f97316';
+    if(isLatest&&prevEv){
+      const prevAvg=prevEv.vals.reduce((a,b)=>a+b,0)/prevEv.vals.length;
+      const diff=avg-prevAvg;
+      let diffStr='';
+      if(diff>0) diffStr=`<span style="font-size:10px;color:#22c55e;font-weight:700;margin-left:4px;">(▲${diff.toFixed(1)})</span>`;
+      else if(diff<0) diffStr=`<span style="font-size:10px;color:#ef4444;font-weight:700;margin-left:4px;">(▼${Math.abs(diff).toFixed(1)})</span>`;
+      else diffStr=`<span style="font-size:10px;color:#aaa;font-weight:700;margin-left:4px;">(→)</span>`;
+      html+=`${q}${diffStr}`;
+    } else {
+      html+=q;
+    }
+    html+=`</td>`;
+    html+=ev.vals.map((v,vi)=>{
+      const vColor=v>=4.5?'#22c55e':v>=3.5?'#6c63ff':v>=2.5?'#f97316':'#ef4444';
+      let diffBadge='';
+      if(isLatest&&prevEv){
+        const d=v-prevEv.vals[vi];
+        if(d>0) diffBadge=`<span style="font-size:9px;color:#22c55e;">▲${d.toFixed(1)}</span>`;
+        else if(d<0) diffBadge=`<span style="font-size:9px;color:#ef4444;">▼${Math.abs(d).toFixed(1)}</span>`;
+      }
+      return `<td><span style="color:${vColor};font-weight:700;">${v.toFixed(1)}</span>${diffBadge}</td>`;
+    }).join('');
+    html+=`<td><strong style="color:${ac};">${avg.toFixed(1)}</strong></td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  wrap.innerHTML=html;
+}
+
 /* ── ⑤ 등급 기준 변경 및 툴팁 추가, 최신분기 레이더 겹침 방지 ── */
 function renderEvalProfile(){
   const name=G_evalMember;const color=MC[name];const qs=filteredEvalQs();const pos=RAW.find(r=>r.name===name)?.pos||'';
