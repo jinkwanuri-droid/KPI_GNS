@@ -307,13 +307,28 @@ body { display:flex; min-height:100vh; }
   <div id="view-dashboard" class="view-section active">
     <div class="grid-top" id="topKpiGrid"></div>
     
-    <!-- 위치 조정: timelineChart가 위로, lineChart가 아래로 -->
-    <div class="grid-mid">
-      <div class="card"><div class="card-section-title">📅 월별 투입시간 일정</div><div style="height:220px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
-      <div class="card"><div class="card-section-title">📊 단계별 투입비율</div><div style="height:220px;"><canvas id="stageChart"></canvas></div></div>
-      <div class="card"><div class="card-section-title">⚖️ 팀원 설계단계별 비교</div><div style="height:220px;"><canvas id="compareChart"></canvas></div></div>
+    <!-- 1행: 월별 투입시간 일정(넓게) / 단계별 비율 / 팀원 비교 -->
+    <!-- 인라인 스타일로 비율 재조정 (1.8 : 1 : 1.2) -->
+    <div class="grid-mid" style="grid-template-columns: 1.8fr 1fr 1.2fr; align-items: stretch;">
+      <!-- 1번: 월별 투입시간 일정 -->
+      <div class="card" style="display:flex; flex-direction:column;">
+        <div class="card-section-title">📅 월별 투입시간 일정</div>
+        <div style="flex:1; min-height:220px; position:relative;"><canvas id="timelineChart"></canvas></div>
+        <div class="legend" style="justify-content:center;margin-top:10px;" id="timelineLegend"></div>
+      </div>
+      <!-- 3번: 단계별 투입비율 -->
+      <div class="card" style="display:flex; flex-direction:column;">
+        <div class="card-section-title">📊 단계별 투입비율</div>
+        <div style="flex:1; min-height:220px; position:relative;"><canvas id="stageChart"></canvas></div>
+      </div>
+      <!-- 4번: 팀원 설계단계별 비교 -->
+      <div class="card" style="display:flex; flex-direction:column;">
+        <div class="card-section-title">⚖️ 팀원 설계단계별 비교</div>
+        <div style="flex:1; min-height:220px; position:relative;"><canvas id="compareChart"></canvas></div>
+      </div>
     </div>
     
+    <!-- 2행: 분류별 업무(전체) / TOP 5 / 월별 근무 밀도 -->
     <div class="grid-bot">
       <div class="card">
         <div class="card-section-title">📋 분류별 업무 투입시간 (전체)</div>
@@ -331,8 +346,12 @@ body { display:flex; min-height:100vh; }
       </div>
     </div>
     
-    <!-- 누적 시간으로 변경된 추이 그래프가 하단 넓게 위치 -->
-    <div class="card"><div class="card-section-title">📈 월별 누적 투입시간 추이 (h)</div><div style="height:300px;"><canvas id="lineChart"></canvas></div><div class="legend" style="justify-content:center;margin-top:10px;" id="lineLegend"></div></div>
+    <!-- 3행: 월별 누적 투입시간 추이 (전체 너비 차지) -->
+    <div class="card">
+      <div class="card-section-title">📈 월별 누적 투입시간 추이 (h)</div>
+      <div style="height:300px;"><canvas id="lineChart"></canvas></div>
+      <div class="legend" style="justify-content:center;margin-top:10px;" id="lineLegend"></div>
+    </div>
   </div>
 
   <!-- 팀원별 탭 -->
@@ -363,7 +382,7 @@ body { display:flex; min-height:100vh; }
           @media(max-width:1200px){ .eval-top-row-grid { grid-template-columns:1fr !important; } }
         </style>
         <div class="eval-top-row-grid">
-          <!-- 도넛 차트 (크기 조정 및 범례 좌측 정렬) -->
+          <!-- 도넛 차트 -->
           <div class="eval-trend-card" style="margin-bottom:0; display:flex; flex-direction:column;">
             <div class="eval-trend-title">📊 소분류 투입시간</div>
             <div class="eval-trend-sub">현재 필터 기간 누적</div>
@@ -615,7 +634,7 @@ function buildSidebarMembers(){
 }
 
 function renderAll(){
-  renderKPI(); renderLine(); renderStage(); renderCompare(); renderDonut(); renderTop5(); renderHeat(); renderTimeline();
+  renderKPI(); renderTimeline(); renderStage(); renderCompare(); renderDonut(); renderTop5(); renderHeat(); renderLine();
 }
 
 function renderKPI(){
@@ -650,39 +669,66 @@ function renderKPI(){
   });
 }
 
-// 월별 누적 투입시간 추이 (선형)
-function renderLine(){
-  const all = filtered(); const mos = getMos(all); const labels = mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
-  destroyChart('line'); const ctx = document.getElementById('lineChart').getContext('2d');
-  
-  const dss = MEMBERS.map(name => {
-    const moMap = {}; all.filter(r=>r.name===name).forEach(r=>{ const mo=r.date.slice(0,7); moMap[mo]=(moMap[mo]||0)+r.min; });
-    const color = MC[name]; 
-    const grad = ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,color+'55'); grad.addColorStop(1,color+'05');
+// 📅 월별 투입시간 일정 (막대 상단 레이블 표시, 클릭 시 하이라이트)
+function renderTimeline(){
+  const all=filtered(); const mos=getMos(all); const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
+  const dss=MEMBERS.map(name=>{
+    const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});
+    const c=MC[name];
+    const isHL = G_dashTimelineMember === name;
+    const isDim = G_dashTimelineMember !== null && G_dashTimelineMember !== name;
     
-    let acc = 0;
-    const dataAcc = mos.map(m => { acc += mToH(moMap[m]||0); return acc; });
-    
-    return { label:name, data:dataAcc, borderColor:color, backgroundColor:grad, borderWidth:2, tension:.4, fill:true, pointBackgroundColor:color, pointRadius:4, pointHoverRadius:6 };
+    return {
+      label:name,
+      data:mos.map(m=>mToH(moMap[m]||0)),
+      backgroundColor: isDim ? hexRgba(c, 0.4) : hexRgba(c, 0.9),
+      borderColor: isDim ? 'transparent' : c,
+      borderWidth: 1,
+      borderRadius:4,
+      datalabels: {
+        display: true,
+        align: 'end',
+        anchor: 'end',
+        color: isHL ? c : (isDim ? 'transparent' : '#999'), // 평소 회색, 하이라이트 시 진한 본인색
+        font: { size: 9, weight: isHL ? '800' : '600' },
+        formatter: v => v > 0 ? formatNum(v) : ''
+      }
+    };
   });
   
-  document.getElementById('lineLegend').innerHTML = MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
+  document.getElementById('timelineLegend').innerHTML=MEMBERS.map(n=>{
+    const isHL = G_dashTimelineMember === n;
+    const isDim = G_dashTimelineMember !== null && G_dashTimelineMember !== n;
+    const opacity = isDim ? '0.35' : '1';
+    const fw = isHL ? '800' : '400';
+    return `<div class="legend-item" style="opacity:${opacity}; font-weight:${fw}; cursor:pointer;" onclick="toggleTimelineMember('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`;
+  }).join('');
   
-  CH.line = new Chart(ctx,{
-    type:'line', data:{labels,datasets:dss}, 
+  destroyChart('timeline'); 
+  CH.timeline=new Chart(document.getElementById('timelineChart').getContext('2d'),{
+    type:'bar',data:{labels,datasets:dss},
     options:{
-      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      responsive:true,maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
-        tooltip:{backgroundColor:'#3d3d5c', callbacks:{label:c=>`${c.dataset.label}: 누적 ${formatNum(c.parsed.y)}h`}},
-        datalabels:{display:false}
+        tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
       },
       scales:{
         x:{grid:{display:false},ticks:{font:{size:10}}},
-        y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}
+        y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}, grace: '5%'}
+      },
+      onClick: (e, els) => {
+        if(els.length) {
+          toggleTimelineMember(MEMBERS[els[0].datasetIndex]);
+        }
       }
     }
   });
+}
+
+function toggleTimelineMember(name) {
+  G_dashTimelineMember = G_dashTimelineMember === name ? null : name;
+  renderTimeline();
 }
 
 function renderStage(){
@@ -692,35 +738,42 @@ function renderStage(){
   CH.stage=new Chart(document.getElementById('stageChart').getContext('2d'),{type:'bar',data:{labels:[''],datasets:cats.map((cat,i)=>({label:cat,data:[pcts[i]],backgroundColor:CAT_COLORS[CAT_ORDER.indexOf(cat)],borderRadius:0}))},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.x}% / ${formatNum(hours[c.datasetIndex])}h`}},datalabels:{color:'#fff',font:{size:10,weight:'700'},textAlign:'center',formatter:(val,ctx)=>{if(val<8)return '';const i=ctx.datasetIndex;return `${cats[i]}\n${formatNum(hours[i])}h\n(${val}%)`;},anchor:'center',align:'center'}},scales:{x:{stacked:true,max:100,grid:{display:false},ticks:{font:{size:10},callback:v=>v+'%'}},y:{stacked:true,grid:{display:false},ticks:{display:false}}}}});
 }
 
-// ⚖️ 팀원 설계단계별 비교 (가로형 막대)
+// ⚖️ 팀원 설계단계별 비교 (가로형 막대, y축=팀원)
 function renderCompare(){
-  const all=filtered(); const cats=CAT_ORDER.filter(c=>all.some(r=>r.cat===c));
-  const dss=MEMBERS.map(name=>{
-    const cm=grpMin(all.filter(r=>r.name===name),'cat');
-    const c=MC[name];
+  const all=filtered(); 
+  const cats=CAT_ORDER.filter(c=>all.some(r=>r.cat===c));
+  
+  const labels = MEMBERS;
+  const dss = cats.map(cat => {
+    const cIdx = CAT_ORDER.indexOf(cat);
+    const color = CAT_COLORS[cIdx];
     return {
-      label:name,
-      data:cats.map(c2=>mToH(cm[c2]||0)),
-      backgroundColor:c+'cc',
-      borderRadius:4
+      label: cat,
+      data: MEMBERS.map(name => {
+        const d = all.filter(r => r.name === name && r.cat === cat);
+        const min = d.reduce((s,r)=>s+r.min,0);
+        return mToH(min);
+      }),
+      backgroundColor: color + 'cc',
+      borderRadius: 4
     };
   });
   
   destroyChart('compare'); 
   CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{
     type:'bar',
-    data:{labels:cats,datasets:dss},
+    data:{labels: labels, datasets:dss},
     options:{
-      indexAxis: 'y', // 가로형 변경
+      indexAxis: 'y', // 가로형 
       responsive:true,maintainAspectRatio:false,
       plugins:{
-        legend:{labels:{font:{size:10},boxWidth:10}},
+        legend:{position:'bottom', labels:{font:{size:10},boxWidth:10,padding:6}},
         tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.x)}h`}},
         datalabels:{display:false}
       },
       scales:{
         x:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}},
-        y:{grid:{display:false},ticks:{font:{size:10}}}
+        y:{grid:{display:false},ticks:{font:{size:11,weight:'700'}}}
       }
     }
   });
@@ -778,64 +831,41 @@ function drawHeat(data,year,tableId,color){
   table.appendChild(tbody);
 }
 
-// 대시보드 - 월별 투입시간 일정 (막대 그래프 레이블 & 하이라이트)
-function renderTimeline(){
-  const all=filtered(); const mos=getMos(all); const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
-  const dss=MEMBERS.map(name=>{
-    const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});
-    const c=MC[name];
-    const isHL = G_dashTimelineMember === name;
-    const isDim = G_dashTimelineMember !== null && G_dashTimelineMember !== name;
+// 📈 월별 누적 투입시간 추이 (h)
+function renderLine(){
+  const all = filtered(); const mos = getMos(all); const labels = mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
+  destroyChart('line'); const ctx = document.getElementById('lineChart').getContext('2d');
+  
+  const dss = MEMBERS.map(name => {
+    const moMap = {}; all.filter(r=>r.name===name).forEach(r=>{ const mo=r.date.slice(0,7); moMap[mo]=(moMap[mo]||0)+r.min; });
+    const color = MC[name]; 
+    const grad = ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,color+'55'); grad.addColorStop(1,color+'05');
     
-    return {
-      label:name,
-      data:mos.map(m=>mToH(moMap[m]||0)),
-      backgroundColor: isDim ? hexRgba(c, 0.4) : hexRgba(c, 0.9),
-      borderColor: isDim ? 'transparent' : c,
-      borderWidth: 1,
-      borderRadius:4,
-      datalabels: {
-        display: true,
-        align: 'end',
-        anchor: 'end',
-        color: isHL ? c : (isDim ? 'transparent' : '#888'), // 평소 회색, 하이라이트 시 원래 색
-        font: { size: 9, weight: isHL ? '800' : '600' },
-        formatter: v => v > 0 ? formatNum(v) : ''
-      }
-    };
+    let acc = 0;
+    const dataAcc = mos.map(m => { acc += mToH(moMap[m]||0); return acc; });
+    
+    return { label:name, data:dataAcc, borderColor:color, backgroundColor:grad, borderWidth:2, tension:.4, fill:true, pointBackgroundColor:color, pointRadius:4, pointHoverRadius:6 };
   });
   
-  document.getElementById('timelineLegend').innerHTML=MEMBERS.map(n=>{
-    const isHL = G_dashTimelineMember === n;
-    const isDim = G_dashTimelineMember !== null && G_dashTimelineMember !== n;
-    const opacity = isDim ? '0.35' : '1';
-    const fw = isHL ? '800' : '400';
-    return `<div class="legend-item" style="opacity:${opacity}; font-weight:${fw}; cursor:pointer;" onclick="toggleTimelineMember('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`;
-  }).join('');
+  document.getElementById('lineLegend').innerHTML = MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
   
-  destroyChart('timeline'); 
-  CH.timeline=new Chart(document.getElementById('timelineChart').getContext('2d'),{
-    type:'bar',data:{labels,datasets:dss},
+  CH.line = new Chart(ctx,{
+    type:'line', data:{labels,datasets:dss}, 
     options:{
-      responsive:true,maintainAspectRatio:false,
+      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{display:false},
-        tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
+        tooltip:{backgroundColor:'#3d3d5c', callbacks:{label:c=>`${c.dataset.label}: 누적 ${formatNum(c.parsed.y)}h`}},
+        datalabels:{display:false}
       },
-      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}},
-      onClick: (e, els) => {
-        if(els.length) {
-          toggleTimelineMember(MEMBERS[els[0].datasetIndex]);
-        }
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10}}},
+        y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}
       }
     }
   });
 }
 
-function toggleTimelineMember(name) {
-  G_dashTimelineMember = G_dashTimelineMember === name ? null : name;
-  renderTimeline();
-}
 
 function showView(view,navEl){
   document.querySelectorAll('.view-section').forEach(s=>s.classList.remove('active'));
@@ -843,7 +873,6 @@ function showView(view,navEl){
   document.getElementById('view-'+view).classList.add('active');
   if(navEl) navEl.classList.add('active');
   
-  // 역량평가 탭일 때만 사이드바 드롭다운 표시
   const sidebarEval = document.getElementById('sidebarEvalContainer');
   const sidebarFilters = document.getElementById('sidebarFilters');
   if(view === 'kpieval') {
@@ -911,7 +940,6 @@ function renderDpTop5(subMap,tot,color){
     li.addEventListener('click',()=>dpClickSub(sub)); list.appendChild(li);});
 }
 
-// 팀원별 탭 - 선형 차트 얇은 점선 및 클릭 하이라이트 기능 추가
 function renderDpStacked(d,mos,subMap,moMap,color){
   const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const moSubMap={}; d.forEach(r=>{const mo=r.date.slice(0,7);if(!moSubMap[mo])moSubMap[mo]={};moSubMap[mo][r.sub]=(moSubMap[mo][r.sub]||0)+r.min;});
@@ -929,8 +957,8 @@ function renderDpStacked(d,mos,subMap,moMap,color){
       data: mos.map(m => mToH((moSubMap[m] && moSubMap[m][sub]) || 0)),
       borderColor: isHL ? bc : hexRgba(bc, isSelectedAny ? 0.1 : 0.5),
       backgroundColor: 'transparent',
-      borderWidth: isHL ? 2.5 : 1.5,
-      borderDash: isHL ? [] : [4, 4], // 기본 얇은 점선, 클릭 시 실선
+      borderWidth: isHL ? 2.5 : 1, 
+      borderDash: isHL ? [] : [4, 4], 
       tension: 0.45,
       fill: false,
       pointRadius: isHL ? 4 : 0, 
@@ -938,7 +966,7 @@ function renderDpStacked(d,mos,subMap,moMap,color){
       stack: 'unstacked_line', 
       order: 1,
       datalabels: {
-        display: isHL, // 하이라이트 시에만 레이블 표시
+        display: isHL, 
         align: 'top',
         anchor: 'end',
         color: bc,
@@ -1024,7 +1052,6 @@ function renderEvalTab(){
   renderEvalTrendTable();
 }
 
-/* 역량평가 상단 - 소분류 투입시간 도넛 차트 */
 function renderEvalDonut(hl){
   const name = G_evalMember;
   const all = filtered().filter(r => r.name === name);
@@ -1066,7 +1093,7 @@ function renderEvalDonut(hl){
         legend:{display:false},
         tooltip:{backgroundColor:'rgba(61,61,92,.95)', callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},
         datalabels:{
-          display: (ctx) => ctx.dataIndex < 5, // 상위 5개 표시
+          display: (ctx) => ctx.dataIndex < 5, 
           color: (ctx) => hl && labels[ctx.dataIndex]!==hl ? 'transparent' : '#555',
           font: { size: 10, weight: '700' },
           formatter: (val, ctx) => {
@@ -1171,7 +1198,6 @@ function renderEvalProfile(){
   }, 50);
 }
 
-/* 역량 점수 추이 차트 (점선 연결 & 막대 레이블 표시) */
 function renderEvalTrendChart(){
   destroyChart('evalTrendChart');
   const name = G_evalMember; const qs = filteredEvalQs();
@@ -1184,7 +1210,6 @@ function renderEvalTrendChart(){
     const isHL = hlIdx === -1 || hlIdx === i;
     const dataVals = qs.map(q => { const ev = EVAL_DATA.find(e=>e.q===q&&e.name===name); return ev ? ev.vals[i] : 0; });
     
-    // 바 차트
     datasets.push({
       type: 'bar',
       label: lbl,
@@ -1197,17 +1222,16 @@ function renderEvalTrendChart(){
       order: 2,
     });
     
-    // 점선 라인 차트 (독립 렌더링, 얇은 점선, DOT 없음)
     datasets.push({
       type: 'line',
       label: lbl + '_line',
       data: dataVals,
       borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.4),
-      borderWidth: 1, // 얇게
-      borderDash: [3, 3], // 점선
+      borderWidth: 1, 
+      borderDash: [3, 3], 
       backgroundColor: 'transparent',
       tension: 0, 
-      pointRadius: 0, // DOT 없애기
+      pointRadius: 0, 
       pointHoverRadius: 0,
       stack: 'unstacked_eval', 
       order: 1,
