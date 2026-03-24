@@ -229,22 +229,50 @@ body { display:flex; min-height:100vh; }
 </head>
 <body>
 
-<!-- 동적 이동을 위한 SortableJS 라이브러리 추가 및 스타일 -->
+<!-- 동적 이동 및 크기 조절을 위한 라이브러리 및 스타일 -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <style>
+  /* 드래그 핸들 (제목 옆 ⠿ 아이콘) */
   .drag-handle {
     cursor: grab;
     margin-right: 8px;
     color: #cbd5e1;
     font-size: 16px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     transition: color 0.2s;
   }
   .drag-handle:hover { color: #6c63ff; }
   .drag-handle:active { cursor: grabbing; }
-  .sortable-ghost { opacity: 0.4; background-color: #f8f8ff; border: 2px dashed #6c63ff; border-radius: 16px; }
-  .sortable-drag { cursor: grabbing !important; }
+  
+  /* 드래그 중인 카드 위치 표시 효과 */
+  .sortable-ghost { opacity: 0.3; background-color: #f8f8ff; border: 2px dashed #6c63ff; border-radius: 16px; }
+  .sortable-drag { cursor: grabbing !important; box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important; }
+
+  /* 대시보드 메인 레이아웃 (유동적 래핑 적용) */
+  .dash-sortable-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  /* 리사이즈 가능한 카드 스타일 */
+  .card.resizable {
+    resize: both; /* 가로, 세로 크기 조절 허용 */
+    overflow: hidden; /* resize를 적용하기 위해 필수 */
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto; /* 남는 공간을 자동으로 채움 */
+    transition: box-shadow 0.2s;
+  }
+  
+  /* 크기 조절 핸들 커스텀 (우측 하단) */
+  .card.resizable::-webkit-resizer {
+    background-image: linear-gradient(135deg, transparent 50%, #c4b5fd 50%);
+    border-bottom-right-radius: 14px;
+  }
 </style>
 
 <!-- 로딩 오버레이 -->
@@ -323,57 +351,67 @@ body { display:flex; min-height:100vh; }
 
   <!-- 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
-    <!-- 상단 KPI (이동 불가 구역) -->
+    <!-- 상단 KPI 현황 (이동/크기조절 제외 구역) -->
     <div class="grid-top" id="topKpiGrid"></div>
     
-    <!-- 1행: 월별 투입시간 일정 / 단계별 비율 / 팀원 비교 -->
-    <div class="grid-mid" id="dashGridMid" style="grid-template-columns: 1.8fr 1fr 1.2fr; align-items: stretch;">
-      <!-- 1번 -->
-      <div class="card" style="display:flex; flex-direction:column;">
+    <!-- 동적 크기조절 및 이동 가능한 차트 구역 -->
+    <div class="dash-sortable-layout" id="dashSortableLayout">
+      
+      <!-- 1번: 월별 투입시간 일정 (비율 크게 45%) -->
+      <div class="card resizable" style="width: 45%; min-width: 400px; min-height: 280px;">
         <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📅 월별 투입시간 일정</div>
-        <div style="flex:1; min-height:220px; position:relative;"><canvas id="timelineChart"></canvas></div>
+        <div style="flex:1; position:relative; min-height:0;"><canvas id="timelineChart"></canvas></div>
         <div class="legend" style="justify-content:center;margin-top:10px;" id="timelineLegend"></div>
       </div>
-      <!-- 3번 -->
-      <div class="card" style="display:flex; flex-direction:column;">
+      
+      <!-- 3번: 단계별 투입비율 (비율 작게 20%) -->
+      <div class="card resizable" style="width: 20%; min-width: 250px; min-height: 280px;">
         <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📊 단계별 투입비율</div>
-        <div style="flex:1; min-height:220px; position:relative;"><canvas id="stageChart"></canvas></div>
+        <div style="flex:1; position:relative; min-height:0;"><canvas id="stageChart"></canvas></div>
       </div>
-      <!-- 4번 -->
-      <div class="card" style="display:flex; flex-direction:column;">
+      
+      <!-- 4번: 팀원 설계단계별 비교 (비율 중간 30%) -->
+      <div class="card resizable" style="width: 30%; min-width: 280px; min-height: 280px;">
         <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>⚖️ 팀원 설계단계별 비교</div>
-        <div style="flex:1; min-height:220px; position:relative;"><canvas id="compareChart"></canvas></div>
+        <div style="flex:1; position:relative; min-height:0;"><canvas id="compareChart"></canvas></div>
       </div>
-    </div>
-    
-    <!-- 2행: 분류별 업무(전체) / TOP 5 / 월별 근무 밀도 -->
-    <div class="grid-bot" id="dashGridBot">
-      <div class="card">
+      
+      <!-- 2열 차트들 (각 32% 할당하여 3개가 한 줄에 들어가도록) -->
+      <div class="card resizable" style="width: 32%; min-width: 300px; min-height: 320px;">
         <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📋 분류별 업무 투입시간 (전체)</div>
-        <div class="donut-layout">
-          <div class="donut-legend-left" id="donutLegendLeft"></div>
-          <div class="donut-chart-right"><canvas id="donutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="donutCenter">-</div><div style="font-size:10px;color:#aaa;">총 투입(h)</div></div></div>
+        <div class="donut-layout" style="flex:1; display:flex; flex-direction:column;">
+          <div class="donut-chart-right" style="flex:1; min-height:160px; width:100%;">
+            <canvas id="donutChart"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+              <div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="donutCenter">-</div>
+              <div style="font-size:10px;color:#aaa;">총 투입(h)</div>
+            </div>
+          </div>
+          <div class="donut-legend-left" id="donutLegendLeft" style="width:100%; display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:6px; margin-top:10px;"></div>
         </div>
       </div>
-      <div class="card">
+      
+      <div class="card resizable" style="width: 32%; min-width: 300px; min-height: 320px; overflow-y:auto;">
         <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>🏆 업무분류별 TOP 5</div>
         <ul class="top5-rank-list" id="top5List"></ul>
       </div>
-      <div class="card">
+      
+      <div class="card resizable" style="width: 32%; min-width: 300px; min-height: 320px;">
         <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>🗓️ 월별 근무 밀도</div>
         <div class="tab-btns-sm" id="heatYearTabs"></div>
-        <div style="overflow-x:auto;"><table class="heat-table" id="heatTable"></table></div>
-        <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span></div>
+        <div style="overflow-x:auto; flex:1;"><table class="heat-table" id="heatTable"></table></div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:auto;padding-top:10px;font-size:10px;color:#888;">
+          <span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span>
+        </div>
       </div>
-    </div>
-    
-    <!-- 3행: 월별 누적 투입시간 추이 (전체 너비) -->
-    <div id="dashGridBottom" style="display:grid; grid-template-columns:1fr; gap:14px;">
-      <div class="card">
+      
+      <!-- 2번: 누적 시간 추이 (너비 100% 할당하여 맨 아래 넓게 배치) -->
+      <div class="card resizable" style="width: 100%; min-width: 600px; min-height: 350px;">
         <div class="card-section-title"><span class="drag-handle" title="드래그하여 이동">⠿</span>📈 월별 누적 투입시간 추이 (h)</div>
-        <div style="height:300px;"><canvas id="lineChart"></canvas></div>
+        <div style="flex:1; position:relative; min-height:0;"><canvas id="lineChart"></canvas></div>
         <div class="legend" style="justify-content:center;margin-top:10px;" id="lineLegend"></div>
       </div>
+      
     </div>
   </div>
 
@@ -405,7 +443,7 @@ body { display:flex; min-height:100vh; }
           @media(max-width:1200px){ .eval-top-row-grid { grid-template-columns:1fr !important; } }
         </style>
         <div class="eval-top-row-grid">
-          <!-- 도넛 차트 -->
+          <!-- 도넛 차트 (크기 조정 및 범례 좌측 정렬) -->
           <div class="eval-trend-card" style="margin-bottom:0; display:flex; flex-direction:column;">
             <div class="eval-trend-title">📊 소분류 투입시간</div>
             <div class="eval-trend-sub">현재 필터 기간 누적</div>
@@ -604,21 +642,19 @@ async function loadDataFromSheets(){
   }
 }
 
-// --------------------------------------------------------
-// 대시보드 동적 이동(SortableJS) 초기화 함수
-// --------------------------------------------------------
+// ------------------------------------------
+// SortableJS 초기화 (드래그 앤 드롭 이동)
+// ------------------------------------------
 function initSortable() {
-  const commonOptions = {
-    group: 'dashboard', 
-    handle: '.drag-handle', // ⠿ 아이콘을 잡았을 때만 이동
-    animation: 200,
-    ghostClass: 'sortable-ghost',
-    dragClass: 'sortable-drag'
-  };
-  
-  new Sortable(document.getElementById('dashGridMid'), commonOptions);
-  new Sortable(document.getElementById('dashGridBot'), commonOptions);
-  new Sortable(document.getElementById('dashGridBottom'), commonOptions);
+  const container = document.getElementById('dashSortableLayout');
+  if(container) {
+    new Sortable(container, {
+      handle: '.drag-handle', // ⠿ 아이콘을 잡았을 때만 이동 가능
+      animation: 200,
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag'
+    });
+  }
 }
 
 function initDashboard(){
@@ -628,7 +664,7 @@ function initDashboard(){
   buildEvalDropdown();
   renderEvalTab();
   
-  // Sortable 초기화
+  // 드래그 앤 드롭 이동 활성화
   initSortable();
 }
 
@@ -793,6 +829,7 @@ function renderCompare(){
     return {
       label: cat,
       data: MEMBERS.map(name => {
+        // ▼ 여기가 끊어졌던 부분입니다 ▼
         const d = all.filter(r => r.name === name && r.cat === cat);
         const min = d.reduce((s,r)=>s+r.min,0);
         return mToH(min);
@@ -821,544 +858,7 @@ function renderCompare(){
     }
   });
 }
-
-function renderDonut(hl){
-  const all=filtered(); const subMap=grpMin(all,'sub'); const totalMin=all.reduce((s,r)=>s+r.min,0);
-  const top=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,10); const labels=top.map(x=>x[0]); const data=top.map(x=>mToH(x[1])); const colors=labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
-  document.getElementById('donutCenter').textContent=formatHour(totalMin)+'h';
-  const legendEl=document.getElementById('donutLegendLeft'); legendEl.innerHTML='';
-  labels.forEach((l,i)=>{const pct=totalMin>0?Math.round((subMap[l]||0)/totalMin*100):0;const isHL=hl===l;const isDim=hl&&hl!==l;const div=document.createElement('div');div.className='donut-legend-item'+(isHL?' highlighted':'')+(isDim?' dimmed':'');div.innerHTML=`<div class="donut-legend-dot" style="background:${colors[i]};"></div><span>${l} <span style="color:#aaa;">${formatNum(data[i])}h(${pct}%)</span></span>`;div.addEventListener('click',()=>dashClickSub(l));legendEl.appendChild(div);});
-  destroyChart('donut'); const bgColors=hl?labels.map((l,i)=>l===hl?colors[i]:colors[i]+'44'):colors;
-  CH.donut=new Chart(document.getElementById('donutChart').getContext('2d'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'52%',layout:{padding:28},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},datalabels:{display:ctx=>ctx.dataIndex<5,color:(ctx)=>hl&&labels[ctx.dataIndex]!==hl?'rgba(100,100,100,0.3)':'#3d3d5c',font:{size:9,weight:'700'},formatter:(val,ctx)=>{const t=data.reduce((a,b)=>a+b,0);return `${labels[ctx.dataIndex]}\n(${t>0?Math.round(val/t*100):0}%)`;},anchor:'end',align:'end',offset:6,textAlign:'center'}},onClick:(e,els)=>{if(els.length)dashClickSub(labels[els[0].index]);}}});
-}
-
-function dashClickSub(sub){ H.dashSub=H.dashSub===sub?null:sub; renderDonut(H.dashSub); renderTop5(H.dashSub); if(G.selectedMember){H.dpSub=H.dashSub; renderDpTop5Highlight(); renderDpStackedHighlight();} }
-
-function renderTop5(hl){
-  const all=filtered(); const subMap=grpMin(all,'sub'); const totalMin=all.reduce((s,r)=>s+r.min,0); const top5=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const list=document.getElementById('top5List'); list.innerHTML='';
-  top5.forEach(([sub,min],i)=>{const pct=totalMin>0?Math.round(min/totalMin*100):0;const rc=RANK_C[i%RANK_C.length];const isHL=hl===sub;const isDim=hl&&hl!==sub;
-    const li=document.createElement('li'); li.className='top5-rank-item'+(isHL?' highlighted':'')+(isDim?' dimmed':'');
-    li.innerHTML=`<div class="top5-rank-badge" style="background:${rc};">${i+1}</div><span class="top5-rank-name" style="color:${isHL?rc:'#3d3d5c'};">${sub}</span><span class="top5-rank-time">${formatHour(min)}h</span><span class="top5-rank-pct" style="color:${rc};">${pct}%</span>`;
-    li.addEventListener('click',()=>dashClickSub(sub)); list.appendChild(li);});
-}
-
-function renderHeat(){
-  const all=filtered(); const years=[...new Set(all.map(r=>r.date.slice(0,4)))].sort(); if(!years.length)return;
-  if(!G.heatYear||!years.includes(G.heatYear)) G.heatYear=years[years.length-1];
-  const wrap=document.getElementById('heatYearTabs'); wrap.innerHTML='';
-  years.forEach(y=>{const b=document.createElement('button');b.className='tab-btn-sm'+(y===G.heatYear?' active':'');b.textContent=y+'년';b.onclick=()=>{G.heatYear=y;wrap.querySelectorAll('.tab-btn-sm').forEach(x=>x.classList.remove('active'));b.classList.add('active');drawHeat(all,y,'heatTable','#6c63ff');};wrap.appendChild(b);});
-  drawHeat(all,G.heatYear,'heatTable','#6c63ff');
-}
-
-function drawHeat(data,year,tableId,color){
-  const table=document.getElementById(tableId); const tip=document.getElementById('tooltip'); table.innerHTML='';
-  const src=data.filter(r=>r.date.startsWith(year+'-')); const mat=Array.from({length:5},()=>new Array(12).fill(0)); const hasMo=new Array(12).fill(false);
-  src.forEach(r=>{const p=r.date.split('-');if(p.length<3)return;const mo=parseInt(p[1])-1,day=parseInt(p[2]);const fd=new Date(parseInt(year),mo,1).getDay();const wk=Math.ceil((day+fd)/7)-1;if(wk>=0&&wk<5){mat[wk][mo]+=r.min;hasMo[mo]=true;}});
-  let maxV=0; mat.forEach(row=>row.forEach(v=>{if(v>maxV)maxV=v;})); if(!maxV)maxV=1;
-  const thead=document.createElement('thead'); const hRow=document.createElement('tr'); const th0=document.createElement('th'); th0.style.width='26px'; hRow.appendChild(th0);
-  MONTH_KO.forEach((lbl,mi)=>{const th=document.createElement('th');th.textContent=lbl;th.style.cssText=`font-size:9px;font-weight:${hasMo[mi]?'700':'400'};color:${hasMo[mi]?color:'#ddd'};`;hRow.appendChild(th);});
-  thead.appendChild(hRow); table.appendChild(thead); const tbody=document.createElement('tbody');
-  for(let w=0;w<5;w++){
-    const tr=document.createElement('tr'); const td0=document.createElement('td'); td0.className='week-label'; td0.textContent=(w+1)+'주'; tr.appendChild(td0);
-    for(let mo=0;mo<12;mo++){
-      const td=document.createElement('td'); td.style.padding='1px'; const cell=document.createElement('div'); cell.className='hm-cell'; const v=mat[w][mo];
-      if(!hasMo[mo]){cell.style.cssText='background:#f4f4fb;opacity:.3;cursor:default;';}
-      else if(v<=0){cell.style.background='#f0eeff';cell.style.border='1px solid #ebe8ff';}
-      else{const ratio=v/maxV;cell.style.background=hexRgba(color,(0.15+ratio*0.85));
-        (function(m2,w2,v2){cell.addEventListener('mouseenter',()=>{tip.style.display='block';tip.innerHTML=`<strong>${year}년 ${MONTH_KO[m2]} ${w2+1}주차</strong><br>${formatHour(v2)}h`;});cell.addEventListener('mousemove',e=>{tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY-28)+'px';});cell.addEventListener('mouseleave',()=>{tip.style.display='none';});})(mo,w,v);}
-      td.appendChild(cell); tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  }
-  table.appendChild(tbody);
-}
-
-// 📈 월별 누적 투입시간 추이 (h)
-function renderLine(){
-  const all = filtered(); const mos = getMos(all); const labels = mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
-  destroyChart('line'); const ctx = document.getElementById('lineChart').getContext('2d');
-  
-  const dss = MEMBERS.map(name => {
-    const moMap = {}; all.filter(r=>r.name===name).forEach(r=>{ const mo=r.date.slice(0,7); moMap[mo]=(moMap[mo]||0)+r.min; });
-    const color = MC[name]; 
-    const grad = ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,color+'55'); grad.addColorStop(1,color+'05');
-    
-    let acc = 0;
-    const dataAcc = mos.map(m => { acc += mToH(moMap[m]||0); return acc; });
-    
-    return { label:name, data:dataAcc, borderColor:color, backgroundColor:grad, borderWidth:2, tension:.4, fill:true, pointBackgroundColor:color, pointRadius:4, pointHoverRadius:6 };
-  });
-  
-  document.getElementById('lineLegend').innerHTML = MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
-  
-  CH.line = new Chart(ctx,{
-    type:'line', data:{labels,datasets:dss}, 
-    options:{
-      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'#3d3d5c', callbacks:{label:c=>`${c.dataset.label}: 누적 ${formatNum(c.parsed.y)}h`}},
-        datalabels:{display:false}
-      },
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:10}}},
-        y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}
-      }
-    }
-  });
-}
-
-
-function showView(view,navEl){
-  document.querySelectorAll('.view-section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('view-'+view).classList.add('active');
-  if(navEl) navEl.classList.add('active');
-  
-  const sidebarEval = document.getElementById('sidebarEvalContainer');
-  const sidebarFilters = document.getElementById('sidebarFilters');
-  if(view === 'kpieval') {
-    sidebarEval.style.display = 'block';
-    sidebarFilters.style.borderTop = 'none';
-    renderEvalTab();
-  } else {
-    sidebarEval.style.display = 'none';
-    sidebarFilters.style.borderTop = '2px solid #f0eeff';
-  }
-  
-  if(view === 'members') renderMembers();
-}
-
-function renderMembers(){
-  const all=filtered(); const totalMin=all.reduce((s,r)=>s+r.min,0);
-  const grid=document.getElementById('memberOverviewGrid'); grid.innerHTML='';
-  MEMBERS.forEach(name=>{
-    const color=MC[name]; const d=all.filter(r=>r.name===name); const tot=d.reduce((s,r)=>s+r.min,0);
-    const pos=RAW.find(r=>r.name===name)?.pos||''; const mos=getMos(d); const catMap=grpMin(d,'cat'); const maxCat=Math.max(...Object.values(catMap),1); const pct=totalMin>0?Math.round(tot/totalMin*100):0;
-    const isSelected=G.selectedMember===name; const card=document.createElement('div'); card.className='member-detail-card';
-    card.style.borderColor=isSelected?color:'transparent'; card.style.boxShadow=isSelected?`0 0 0 3px ${color}28`:'';
-    card.innerHTML=`<div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color};border-radius:16px 16px 0 0;"></div>
-<div class="member-top" style="margin-top:8px;"><div class="member-avatar-lg" style="background:${color};">${INITIALS[name]}</div><div style="flex:1;"><div style="font-size:16px;font-weight:800;color:#3d3d5c;">${name}</div><div style="font-size:12px;color:#aaa;">${pos}</div></div><div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:${color};">${formatHour(tot)}h</div><div style="font-size:12px;color:#aaa;">기여 ${pct}%</div></div></div>
-<div class="stats-grid"><div class="stat-cell"><div class="stat-val" style="color:${color};">${formatHour(tot)}h</div><div class="stat-lbl">총 투입</div></div><div class="stat-cell"><div class="stat-val">${mos.length}</div><div class="stat-lbl">참여월</div></div><div class="stat-cell"><div class="stat-val">${formatHour(tot/Math.max(mos.length,1)*60)}</div><div class="stat-lbl">월평균h</div></div><div class="stat-cell"><div class="stat-val">${pct}%</div><div class="stat-lbl">기여율</div></div></div>
-<div class="stage-bars">${CAT_ORDER.filter(c=>catMap[c]>0).map(c=>{const ci=CAT_ORDER.indexOf(c);return `<div class="stage-row"><span class="stage-name">${c.replace('설계','')}</span><div class="stage-track"><div class="stage-fill" style="width:${Math.round((catMap[c]||0)/maxCat*100)}%;background:${CAT_COLORS[ci]};"></div></div><span class="stage-val">${formatHour(catMap[c]||0)}h</span></div>`;}).join('')}</div>
-<div style="text-align:center;margin-top:12px;padding-top:10px;border-top:1px solid #f0f1f5;font-size:12px;color:${isSelected?color:'#aaa'};font-weight:${isSelected?'700':'400'};">${isSelected?'▲ 상세 정보 접기':'📊 클릭하여 상세 보기 ▼'}</div>`;
-    card.addEventListener('click',()=>toggleDetail(name)); grid.appendChild(card);
-  });
-}
-
-function toggleDetail(name){ G.selectedMember===name?closeDetail():openDetail(name); }
-function openDetail(name){ H.dpSub=null; G.selectedMember=name; renderMembers(); renderDetailPanel(name); setTimeout(()=>document.getElementById('memberDetailPanel').scrollIntoView({behavior:'smooth',block:'start'}),100); }
-function closeDetail(){ G.selectedMember=null; H.dpSub=null; document.getElementById('memberDetailPanel').classList.remove('show'); renderMembers(); ['dpDonut','dpStackedBar'].forEach(id=>destroyChart(id)); }
-
-function renderDetailPanel(name){
-  const color=MC[name]; const all=filtered(); const d=all.filter(r=>r.name===name);
-  const tot=d.reduce((s,r)=>s+r.min,0); const pos=RAW.find(r=>r.name===name)?.pos||'';
-  const mos=getMos(d); const moMap={}; d.forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});
-  const catMap=grpMin(d,'cat'); const subMap=grpMin(d,'sub'); const pkM=Object.entries(moMap).sort((a,b)=>b[1]-a[1])[0];
-  const allYears=[...new Set(mos.map(m=>m.split('-')[0]))].sort(); if(!G.dpHeatYear||!allYears.includes(G.dpHeatYear)) G.dpHeatYear=allYears[allYears.length-1]||'2025';
-  
-  const panel=document.getElementById('memberDetailPanel'); panel.classList.add('show');
-  document.getElementById('dpHeader').innerHTML=`<div class="detail-avatar" style="background:${color};">${INITIALS[name]}</div><div><div style="font-size:17px;font-weight:800;color:#3d3d5c;">${name}</div><div style="font-size:12px;color:#aaa;margin-top:2px;">${pos}</div><span style="background:${color}18;color:${color};font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px;">${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'}</span></div><button onclick="closeDetail()" style="margin-left:auto;background:#f0eeff;border:none;border-radius:10px;padding:7px 14px;color:#6c63ff;font-weight:700;cursor:pointer;font-size:13px;">✕ 닫기</button>`;
-  document.getElementById('dpKpi').innerHTML=[{v:formatHour(tot)+'h',l:'총 투입시간',c:color},{v:mos.length+'개월',l:'참여기간',c:'#f97316'},{v:formatHour(tot/Math.max(mos.length,1)*60)+'h',l:'월평균',c:'#22c55e'},{v:pkM?pkM[0]:'-',l:'최다 투입월',c:'#ec4899'}].map(k=>`<div class="detail-kpi" style="border-color:${k.c};"><div class="detail-kpi-val" style="color:${k.c};">${k.v}</div><div class="detail-kpi-lbl">${k.l}</div></div>`).join('');
-  
-  const cats2=CAT_ORDER.filter(c=>catMap[c]>0); const catData=cats2.map(c=>mToH(catMap[c]||0)); const catColors=cats2.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]); const catTotal=catData.reduce((a,b)=>a+b,0);
-  document.getElementById('dpDonutCenter').innerHTML=`<div style="font-size:14px;font-weight:800;color:#3d3d5c;">${formatHour(tot)}h</div><div style="font-size:10px;color:#aaa;">총 투입</div>`;
-  document.getElementById('dpDonutLegend').innerHTML=cats2.map((c,i)=>{const p=catTotal>0?Math.round(catData[i]/catTotal*100):0;return `<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#555;"><div style="width:8px;height:8px;border-radius:50%;background:${catColors[i]};"></div>${c}(${p}%)</div>`;}).join('');
-  
-  destroyChart('dpDonut'); CH.dpDonut=new Chart(document.getElementById('dpDonut').getContext('2d'),{type:'doughnut',data:{labels:cats2,datasets:[{data:catData,backgroundColor:catColors,borderWidth:3,borderColor:'#f8f8ff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',layout:{padding:10},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},datalabels:{display:false}}}});
-  
-  renderDpTop5(subMap,tot,color); renderDpStacked(d,mos,subMap,moMap,color);
-  
-  const hytw=document.getElementById('dpHeatTabs'); hytw.innerHTML='';
-  allYears.forEach(y=>{const b=document.createElement('button');b.className='tab-btn-sm'+(y===G.dpHeatYear?' active':'');b.style.cssText='font-size:11px;padding:4px 10px;';b.textContent=y+'년';b.onclick=()=>{G.dpHeatYear=y;hytw.querySelectorAll('.tab-btn-sm').forEach(x=>x.classList.remove('active'));b.classList.add('active');drawHeat(d,y,'dpHeatTable',color);};hytw.appendChild(b);});
-  drawHeat(d,G.dpHeatYear,'dpHeatTable',color);
-}
-
-function renderDpTop5(subMap,tot,color){
-  const top5=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,5); const list=document.getElementById('dpTop5List'); list.innerHTML='';
-  top5.forEach(([sub,min],i)=>{const pct=tot>0?Math.round(min/tot*100):0;const rc=RANK_C[i%RANK_C.length];const isHL=H.dpSub===sub;const isDim=H.dpSub&&H.dpSub!==sub;
-    const li=document.createElement('li'); li.className='dp-top5-item'+(isHL?' highlighted':'')+(isDim?' dimmed':'');
-    li.innerHTML=`<div class="top5-rank-badge" style="background:${rc};">${i+1}</div><span class="top5-rank-name" style="color:${isHL?rc:'#3d3d5c'};font-weight:${isHL?'800':'700'};">${sub}</span><span class="top5-rank-time">${formatHour(min)}h</span><span class="top5-rank-pct" style="color:${rc};">${pct}%</span>`;
-    li.addEventListener('click',()=>dpClickSub(sub)); list.appendChild(li);});
-}
-
-function renderDpStacked(d,mos,subMap,moMap,color){
-  const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
-  const moSubMap={}; d.forEach(r=>{const mo=r.date.slice(0,7);if(!moSubMap[mo])moSubMap[mo]={};moSubMap[mo][r.sub]=(moSubMap[mo][r.sub]||0)+r.min;});
-  
-  const bgColors=subList.map((sub,i)=>H.dpSub===null?SUB_PAL[i%SUB_PAL.length]:(sub===H.dpSub?SUB_PAL[i%SUB_PAL.length]:SUB_PAL[i%SUB_PAL.length]+'33'));
-  
-  const lineDs = subList.map((sub,i)=>{
-    const bc = SUB_PAL[i%SUB_PAL.length];
-    const isHL = H.dpSub === sub;
-    const isSelectedAny = H.dpSub !== null;
-    
-    return {
-      type: 'line',
-      label: sub + '_line',
-      data: mos.map(m => mToH((moSubMap[m] && moSubMap[m][sub]) || 0)),
-      borderColor: isHL ? bc : hexRgba(bc, isSelectedAny ? 0.1 : 0.5),
-      backgroundColor: 'transparent',
-      borderWidth: isHL ? 2.5 : 1, 
-      borderDash: isHL ? [] : [4, 4], 
-      tension: 0.45,
-      fill: false,
-      pointRadius: isHL ? 4 : 0, 
-      pointBackgroundColor: bc,
-      stack: 'unstacked_line', 
-      order: 1,
-      datalabels: {
-        display: isHL, 
-        align: 'top',
-        anchor: 'end',
-        color: bc,
-        font: { size: 10, weight: '800' },
-        formatter: v => v > 0 ? formatNum(v) + 'h' : ''
-      }
-    };
-  });
-  
-  destroyChart('dpStackedBar');
-  CH.dpStackedBar=new Chart(document.getElementById('dpStackedBar').getContext('2d'),{
-    data:{
-      labels:mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2')),
-      datasets:[...subList.map((sub,i)=>({type:'bar',label:sub,data:mos.map(m=>mToH((moSubMap[m]&&moSubMap[m][sub])||0)),backgroundColor:bgColors[i],borderRadius:2,stack:'s',order:2})),...lineDs]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{position:'bottom',labels:{font:{size:9},boxWidth:8,padding:4,filter:item=>!item.text.endsWith('_line')},onClick:(e,item)=>{if(!item.text.endsWith('_line'))dpClickSub(subList[item.datasetIndex]);}},
-        tooltip:{backgroundColor:'rgba(61,61,92,.95)',filter:item=>item.dataset.type==='bar',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
-        datalabels:{display:false} 
-      },
-      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,grid:{color:'#f0f1f5'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}},
-      onClick:(e,els)=>{const barEls=els.filter(el=>CH.dpStackedBar&&CH.dpStackedBar.data.datasets[el.datasetIndex]?.type==='bar');if(barEls.length)dpClickSub(subList[barEls[0].datasetIndex]);}
-    }
-  });
-}
-
-function dpClickSub(sub){ H.dpSub=H.dpSub===sub?null:sub; H.dashSub=H.dpSub; renderDonut(H.dashSub); renderTop5(H.dashSub); renderDpTop5Highlight(); renderDpStackedHighlight(); }
-function renderDpTop5Highlight(){ const name=G.selectedMember; if(!name)return; const d=filtered().filter(r=>r.name===name); renderDpTop5(grpMin(d,'sub'),d.reduce((s,r)=>s+r.min,0),MC[name]); }
-function renderDpStackedHighlight(){ const name=G.selectedMember; if(!name)return; const d=filtered().filter(r=>r.name===name); const mos=getMos(d); const moMap={}; d.forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;}); renderDpStacked(d,mos,grpMin(d,'sub'),moMap,MC[name]); }
-
-/* ════════════════════════════════════
-★ KPI 역량평가 탭
-════════════════════════════════════ */
-
-function buildEvalDropdown(){
-  const menu = document.getElementById('evalDropdownMenu');
-  menu.innerHTML = '';
-  const labelEl = document.getElementById('evalDropdownLabel');
-  if(labelEl) labelEl.textContent = G_evalMember;
-
-  MEMBERS.forEach(name => {
-    const item = document.createElement('div');
-    item.className = 'eval-dropdown-item' + (name === G_evalMember ? ' active' : '');
-    item.innerHTML = `<span>${name}</span>`;
-    item.onclick = () => {
-      G_evalMember = name;
-      G_evalHighlightIdx = -1; 
-      document.getElementById('evalDropdownLabel').textContent = name;
-      document.getElementById('evalDropdownBtn').classList.remove('open');
-      document.getElementById('evalDropdownMenu').classList.remove('open');
-      buildEvalDropdown();
-      renderEvalProfile();
-      renderEvalDonut(null); 
-      renderEvalTrendChart();
-      renderEvalRadarAll();
-      renderEvalTrendTable();
-    };
-    menu.appendChild(item);
-  });
-}
-
-function toggleEvalDropdown(){
-  document.getElementById('evalDropdownBtn').classList.toggle('open');
-  document.getElementById('evalDropdownMenu').classList.toggle('open');
-}
-
-document.addEventListener('click', e => {
-  const wrap = document.getElementById('evalDropdownWrap');
-  if(wrap && !wrap.contains(e.target)){
-    document.getElementById('evalDropdownBtn')?.classList.remove('open');
-    document.getElementById('evalDropdownMenu')?.classList.remove('open');
-  }
-});
-
-function renderEvalTab(){
-  buildEvalDropdown();
-  renderEvalProfile();
-  renderEvalDonut(null); 
-  renderEvalTrendChart();
-  renderEvalRadarAll();
-  renderEvalTrendTable();
-}
-
-function renderEvalDonut(hl){
-  const name = G_evalMember;
-  const all = filtered().filter(r => r.name === name);
-  const subMap = grpMin(all,'sub'); 
-  const totalMin = all.reduce((s,r)=>s+r.min,0);
-  
-  const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]); 
-  const labels = top.map(x=>x[0]); 
-  const data = top.map(x=>mToH(x[1])); 
-  const colors = labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
-  
-  document.getElementById('evalDonutCenter').textContent = formatHour(totalMin)+'h';
-  
-  const legendEl = document.getElementById('evalDonutLegend'); 
-  legendEl.innerHTML='';
-  labels.forEach((l,i)=>{
-    const pct = totalMin>0 ? Math.round((subMap[l]||0)/totalMin*100) : 0;
-    const isHL = hl===l;
-    const isDim = hl && hl!==l;
-    const div = document.createElement('div');
-    div.className = 'donut-legend-item'+(isHL?' highlighted':'')+(isDim?' dimmed':'');
-    div.innerHTML = `<div class="donut-legend-dot" style="background:${colors[i]};"></div><span>${l} <span style="color:#aaa;">${formatNum(data[i])}h(${pct}%)</span></span>`;
-    div.addEventListener('click', () => {
-      let newHl = hl === l ? null : l;
-      renderEvalDonut(newHl);
-    });
-    legendEl.appendChild(div);
-  });
-  
-  destroyChart('evalDonut'); 
-  const bgColors = hl ? labels.map((l,i)=>l===hl?colors[i]:colors[i]+'44') : colors;
-  
-  CH.evalDonut = new Chart(document.getElementById('evalDonutChart').getContext('2d'), {
-    type:'doughnut',
-    data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},
-    options:{
-      responsive:true, maintainAspectRatio:false, cutout:'60%', layout:{padding:25},
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'rgba(61,61,92,.95)', callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},
-        datalabels:{
-          display: (ctx) => ctx.dataIndex < 5, 
-          color: (ctx) => hl && labels[ctx.dataIndex]!==hl ? 'transparent' : '#555',
-          font: { size: 10, weight: '700' },
-          formatter: (val, ctx) => {
-            const t = data.reduce((a,b)=>a+b,0);
-            const p = t > 0 ? Math.round(val/t*100) : 0;
-            return `${labels[ctx.dataIndex]}\n(${p}%)`;
-          },
-          anchor: 'end',
-          align: 'end',
-          offset: 4,
-          textAlign: 'center'
-        }
-      },
-      onClick:(e,els)=>{
-        if(els.length){
-          const l = labels[els[0].index];
-          let newHl = hl === l ? null : l;
-          renderEvalDonut(newHl);
-        }
-      }
-    }
-  });
-}
-
-function renderEvalProfile(){
-  const name = G_evalMember; const color = MC[name]; const qs = filteredEvalQs(); const pos = RAW.find(r=>r.name===name)?.pos||'';
-  const latestQ = qs[qs.length-1]; const latestEv = latestQ ? EVAL_DATA.find(e=>e.q===latestQ&&e.name===name) : null;
-  
-  const itemAvgs = RADAR_LABELS.map((lbl,i) => {
-    const vals = qs.map(q => { const ev = EVAL_DATA.find(e=>e.q===q&&e.name===name); return ev ? ev.vals[i] : null; }).filter(v=>v!==null);
-    return { lbl, avg: vals.length>0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i };
-  });
-  
-  const overallAvg = itemAvgs.length ? parseFloat((itemAvgs.reduce((s,x)=>s+x.avg,0)/itemAvgs.length).toFixed(1)) : 0;
-  const sorted = [...itemAvgs].sort((a,b) => b.avg - a.avg);
-  
-  function getGrade(score){ if(score>=4.5)return{grade:'S',color:'#f59e0b',bg:'#fef9ee'}; if(score>=4.0)return{grade:'A+',color:'#22c55e',bg:'#f0fdf4'}; if(score>=3.5)return{grade:'A',color:'#6c63ff',bg:'#f0eeff'}; if(score>=3.0)return{grade:'B+',color:'#0ea5e9',bg:'#eff6ff'}; return{grade:'B',color:'#f97316',bg:'#fff7ed'}; }
-  const gd = getGrade(overallAvg);
-  
-  function getTrend(idx){
-    if(qs.length<2) return '';
-    const curEv = EVAL_DATA.find(e=>e.q===qs[qs.length-1]&&e.name===name);
-    const prevEv = EVAL_DATA.find(e=>e.q===qs[qs.length-2]&&e.name===name);
-    if(!curEv || !prevEv) return '';
-    const diff = curEv.vals[idx] - prevEv.vals[idx];
-    if(diff>0) return `<div class="eval-top3-trend" style="color:#22c55e;">▲ +${diff.toFixed(1)}</div>`;
-    if(diff<0) return `<div class="eval-top3-trend" style="color:#ef4444;">▼ ${Math.abs(diff).toFixed(1)}</div>`;
-    return `<div class="eval-top3-trend" style="color:#aaa;">→ 유지</div>`;
-  }
-  
-  const rankColors = ['#f59e0b','#94a3b8','#cd7c3b']; const rankBg = ['#fef9ee','#f8fafc','#fdf6f0']; const rankEmoji = ['🥇','🥈','🥉'];
-  const card = document.getElementById('evalProfileCard');
-  card.style.borderColor = color+'44';
-  card.innerHTML = `
-    <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${color};border-radius:20px 20px 0 0;"></div>
-    <div class="eval-profile-top" style="margin-top:8px;">
-      <div class="eval-profile-avatar" style="background:${color};"><span style="font-size:22px;font-weight:800;">${INITIALS[name]}</span></div>
-      <div style="flex:1;">
-        <div class="eval-profile-name">${name}</div>
-        <div class="eval-profile-pos">${pos}</div>
-        <span class="eval-profile-badge" style="background:${color}18;color:${color};">${qs[0]||'-'} ~ ${qs[qs.length-1]||'-'}</span>
-      </div>
-    </div>
-    <div class="eval-score-big">
-      <div class="eval-score-big-num" style="color:${color};">${overallAvg.toFixed(1)}</div>
-      <div class="eval-score-big-label">종합 역량 점수 / 5.0점</div>
-      <span class="eval-score-grade" style="background:${gd.bg};color:${gd.color};">등급 ${gd.grade}</span>
-    </div>
-    <div class="eval-scores-list">
-    ${itemAvgs.map((item,i) => {
-      const barColor = RADAR_COLORS_ARR[i]; const pct = Math.round(item.avg/5*100);
-      const scoreColor = item.avg>=4.5?'#22c55e':item.avg>=3.5?'#6c63ff':item.avg>=2.5?'#f97316':'#ef4444';
-      return `<div class="eval-score-item">
-        <span class="eval-score-item-label">${item.lbl}</span>
-        <div class="eval-score-item-bar-wrap"><div class="eval-score-item-bar" style="width:${pct}%;background:${barColor};"></div></div>
-        <span class="eval-score-item-val" style="color:${scoreColor};">${item.avg.toFixed(1)}</span>
-      </div>`;
-    }).join('')}
-    </div>
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">🏆 기간 평균 TOP 3 강점</div>
-    <div class="eval-top3-row">
-    ${sorted.slice(0,3).map((item,rank) => `
-    <div class="eval-top3-card" style="background:${rankBg[rank]};border:1.5px solid ${rankColors[rank]}33;">
-      <div class="eval-top3-medal">${rankEmoji[rank]}</div>
-      <div class="eval-top3-label">${item.lbl}</div>
-      <div class="eval-top3-score" style="color:${item.avg>=4?'#22c55e':item.avg>=3?'#6c63ff':'#f97316'};">${item.avg.toFixed(1)}</div>
-      ${getTrend(item.idx)}
-    </div>`).join('')}
-    </div>
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;margin-top:14px;text-transform:uppercase;letter-spacing:.5px;">📡 역량 레이더 (최신 분기)</div>
-    <div class="eval-radar-wrap"><canvas id="evalRadarSingle"></canvas></div>
-  `;
-  
-  setTimeout(() => {
-    destroyChart('evalRadarSingle');
-    const vals = latestEv ? latestEv.vals : [0,0,0,0,0];
-    CH.evalRadarSingle = new Chart(document.getElementById('evalRadarSingle').getContext('2d'), {
-      type: 'radar',
-      data: { labels: RADAR_LABELS, datasets: [{ label: name, data: vals, backgroundColor: color+'33', borderColor: color, borderWidth: 2.5, pointBackgroundColor: color, pointRadius: 4, pointHoverRadius: 6 }] },
-      options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: '#e0dbff' }, angleLines: { color: '#e0dbff' }, pointLabels: { font: { size: 11, weight: '700' }, color: '#3d3d5c' } } }, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { backgroundColor: '#3d3d5c', callbacks: { label: c => `${c.label}: ${c.raw}점` } } } }
-    });
-  }, 50);
-}
-
-function renderEvalTrendChart(){
-  destroyChart('evalTrendChart');
-  const name = G_evalMember; const qs = filteredEvalQs();
-  if(!qs.length) return;
-  
-  const hlIdx = G_evalHighlightIdx;
-  const datasets = [];
-  
-  RADAR_LABELS.forEach((lbl, i) => {
-    const isHL = hlIdx === -1 || hlIdx === i;
-    const dataVals = qs.map(q => { const ev = EVAL_DATA.find(e=>e.q===q&&e.name===name); return ev ? ev.vals[i] : 0; });
-    
-    datasets.push({
-      type: 'bar',
-      label: lbl,
-      data: dataVals,
-      backgroundColor: isHL ? hexRgba(RADAR_COLORS_ARR[i], 0.85) : hexRgba(RADAR_COLORS_ARR[i], 0.18),
-      borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.3),
-      borderWidth: isHL ? 1.5 : 0.5,
-      borderRadius: 4,
-      stack: 's', 
-      order: 2,
-    });
-    
-    datasets.push({
-      type: 'line',
-      label: lbl + '_line',
-      data: dataVals,
-      borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.4),
-      borderWidth: 1, 
-      borderDash: [3, 3], 
-      backgroundColor: 'transparent',
-      tension: 0, 
-      pointRadius: 0, 
-      pointHoverRadius: 0,
-      stack: 'unstacked_eval', 
-      order: 1,
-    });
-  });
-  
-  const datalabelsConfig = {
-    display: (ctx) => {
-      if (ctx.dataset.type === 'line') return false; 
-      const originalIdx = Math.floor(ctx.datasetIndex / 2);
-      if(hlIdx === -1) return true;
-      return originalIdx === hlIdx;
-    },
-    color: '#fff',
-    font: { size: 10, weight: '800' },
-    formatter: (val) => val > 0 ? val.toFixed(1) : '',
-    anchor: 'center',
-    align: 'center',
-  };
-  
-  const legendEl = document.getElementById('evalTrendLegend');
-  legendEl.innerHTML = '';
-  RADAR_LABELS.forEach((l, i) => {
-    const isHL = hlIdx === -1 || hlIdx === i;
-    const div = document.createElement('div');
-    div.className = 'legend-item';
-    div.style.opacity = isHL ? '1' : '0.35';
-    div.style.fontWeight = hlIdx === i ? '800' : '400';
-    div.innerHTML = `<div class="legend-dot" style="background:${RADAR_COLORS_ARR[i]}; width:${hlIdx===i?'12px':'8px'}; height:${hlIdx===i?'12px':'8px'};"></div>${l}`;
-    div.addEventListener('click', () => {
-      G_evalHighlightIdx = (G_evalHighlightIdx === i) ? -1 : i;
-      renderEvalTrendChart();
-    });
-    legendEl.appendChild(div);
-  });
-  
-  CH.evalTrendChart = new Chart(document.getElementById('evalTrendChart').getContext('2d'), {
-    data: { labels: qs, datasets: datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: 'rgba(61,61,92,.95)',
-          filter: (item) => item.dataset.type === 'bar', 
-          callbacks: {
-            label: c => {
-              const originalIdx = Math.floor(c.datasetIndex / 2);
-              if(hlIdx !== -1 && originalIdx !== hlIdx) return null;
-              return `${c.dataset.label}: ${c.parsed.y.toFixed(1)}점`;
-            }
-          }
-        },
-        datalabels: datalabelsConfig
-      },
-      scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
-        y: { stacked: true, grid: { color: '#f0eeff' }, ticks: { font: { size: 11 } }, title: { display: true, text: '점수', font: { size: 11 } } }
-      },
-      onClick: (e, els) => {
-        if(els.length){
-          const originalIdx = Math.floor(els[0].datasetIndex / 2);
-          G_evalHighlightIdx = (G_evalHighlightIdx === originalIdx) ? -1 : originalIdx;
-          renderEvalTrendChart();
-        }
-      }
-    }
-  });
-}
-
-function renderEvalRadarAll(){
-  destroyChart('evalRadarAll');
-  const name = G_evalMember; const color = MC[name];
-  const qs = filteredEvalQs(); const latestQ = qs[qs.length-1] || '';
-  
-  document.getElementById('evalRadarQuarterLabel').textContent = latestQ ? `(${latestQ} 기준)` : '';
-  const myEv = latestQ ? EVAL_DATA.find(e=>e.q===latestQ&&e.name===name) : null;
-  const myVals = myEv ? myEv.vals : [0,0,0,0,0];
-  
-  const periodAvgs = RADAR_LABELS.map((_, i) => {
-    const vals = qs.map(q => { const ev = EVAL_DATA.find(e=>e.q===q&&e.name===name); return ev ? ev.vals[i] : null; }).filter(v=>v!==null);
-    return vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0;
-  });
-  
+  function renderDonut(hl){
   const dss = [
     { label: `${name} (최신)`, data: myVals, backgroundColor: color+'33', borderColor: color, borderWidth: 2.5, pointBackgroundColor: color, pointRadius: 5, pointHoverRadius: 7 },
     { label: '기간 평균', data: periodAvgs, backgroundColor: 'rgba(150,150,180,0.12)', borderColor: '#9999bb', borderWidth: 1.5, borderDash: [5,4], pointBackgroundColor: '#9999bb', pointRadius: 3, pointHoverRadius: 5 }
