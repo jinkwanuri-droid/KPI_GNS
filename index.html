@@ -306,11 +306,14 @@ body { display:flex; min-height:100vh; }
   <!-- 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
     <div class="grid-top" id="topKpiGrid"></div>
+    
+    <!-- 위치 조정: timelineChart가 위로, lineChart가 아래로 -->
     <div class="grid-mid">
-      <div class="card"><div class="card-section-title">📈 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
-      <div class="card"><div class="card-section-title">📊 단계별 투입비율</div><div style="height:200px;"><canvas id="stageChart"></canvas></div></div>
-      <div class="card"><div class="card-section-title">⚖️ 팀원 설계단계별 비교</div><div style="height:200px;"><canvas id="compareChart"></canvas></div></div>
+      <div class="card"><div class="card-section-title">📅 월별 투입시간 일정</div><div style="height:220px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
+      <div class="card"><div class="card-section-title">📊 단계별 투입비율</div><div style="height:220px;"><canvas id="stageChart"></canvas></div></div>
+      <div class="card"><div class="card-section-title">⚖️ 팀원 설계단계별 비교</div><div style="height:220px;"><canvas id="compareChart"></canvas></div></div>
     </div>
+    
     <div class="grid-bot">
       <div class="card">
         <div class="card-section-title">📋 분류별 업무 투입시간 (전체)</div>
@@ -327,7 +330,9 @@ body { display:flex; min-height:100vh; }
         <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span></div>
       </div>
     </div>
-    <div class="card"><div class="card-section-title">📅 월별 투입시간 일정</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
+    
+    <!-- 누적 시간으로 변경된 추이 그래프가 하단 넓게 위치 -->
+    <div class="card"><div class="card-section-title">📈 월별 누적 투입시간 추이 (h)</div><div style="height:300px;"><canvas id="lineChart"></canvas></div><div class="legend" style="justify-content:center;margin-top:10px;" id="lineLegend"></div></div>
   </div>
 
   <!-- 팀원별 탭 -->
@@ -354,31 +359,33 @@ body { display:flex; min-height:100vh; }
       <div class="eval-charts-col">
         <!-- 상단: 소분류 투입시간 도넛 + 분기별 역량점수 추이 -->
         <style>
-          .eval-top-row-grid { display:grid; grid-template-columns:1fr 1.8fr; gap:18px; }
+          .eval-top-row-grid { display:grid; grid-template-columns:1fr 1.8fr; gap:18px; align-items:stretch; }
           @media(max-width:1200px){ .eval-top-row-grid { grid-template-columns:1fr !important; } }
         </style>
         <div class="eval-top-row-grid">
-          <!-- 도넛 차트 -->
-          <div class="eval-trend-card" style="margin-bottom:0;">
+          <!-- 도넛 차트 (크기 조정 및 범례 좌측 정렬) -->
+          <div class="eval-trend-card" style="margin-bottom:0; display:flex; flex-direction:column;">
             <div class="eval-trend-title">📊 소분류 투입시간</div>
             <div class="eval-trend-sub">현재 필터 기간 누적</div>
-            <div class="donut-layout" style="margin-top:14px; flex-direction:column; gap:14px;">
-              <div class="donut-chart-right" style="height:180px; width:100%;">
-                <canvas id="evalDonutChart"></canvas>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-                  <div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="evalDonutCenter">-</div>
-                  <div style="font-size:10px;color:#aaa;">총 투입(h)</div>
+            <div class="donut-layout" style="margin-top:14px; flex-direction:column; gap:14px; flex:1; justify-content:center;">
+              <div class="donut-chart-right" style="height:160px; width:100%; display:flex; justify-content:center; align-items:center;">
+                <div style="position:relative; width:100%; height:100%;">
+                  <canvas id="evalDonutChart"></canvas>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+                    <div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="evalDonutCenter">-</div>
+                    <div style="font-size:10px;color:#aaa;">총 투입(h)</div>
+                  </div>
                 </div>
               </div>
-              <div class="donut-legend-left" id="evalDonutLegend" style="width:100%; flex-direction:row; flex-wrap:wrap; justify-content:center;"></div>
+              <div class="donut-legend-left" id="evalDonutLegend" style="width:100%; display:flex; flex-direction:row; flex-wrap:wrap; justify-content:flex-start; align-content:flex-start; gap:8px;"></div>
             </div>
           </div>
           
           <!-- 역량 점수 추이 (점선 & 레이블) -->
-          <div class="eval-trend-card" style="margin-bottom:0;">
+          <div class="eval-trend-card" style="margin-bottom:0; display:flex; flex-direction:column;">
             <div class="eval-trend-title">📈 분기별 역량 점수 추이</div>
             <div class="eval-trend-sub" id="evalTrendSub">항목을 클릭하면 해당 항목이 하이라이트 되며 점수 레이블이 강조됩니다.</div>
-            <div style="height:220px;"><canvas id="evalTrendChart"></canvas></div>
+            <div style="flex:1; position:relative; min-height:220px;"><canvas id="evalTrendChart"></canvas></div>
             <div class="legend" style="justify-content:center;margin-top:8px;" id="evalTrendLegend"></div>
           </div>
         </div>
@@ -429,6 +436,7 @@ let H = {dashSub:null,dpSub:null};
 
 let G_evalMember = '';
 let G_evalHighlightIdx = -1; 
+let G_dashTimelineMember = null; // 대시보드 일정 차트 하이라이트용
 
 const formatNum = val => typeof val === 'number' ? val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : val;
 const mToH = m => parseFloat((m / 60).toFixed(1)); 
@@ -642,16 +650,39 @@ function renderKPI(){
   });
 }
 
+// 월별 누적 투입시간 추이 (선형)
 function renderLine(){
   const all = filtered(); const mos = getMos(all); const labels = mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
   destroyChart('line'); const ctx = document.getElementById('lineChart').getContext('2d');
+  
   const dss = MEMBERS.map(name => {
     const moMap = {}; all.filter(r=>r.name===name).forEach(r=>{ const mo=r.date.slice(0,7); moMap[mo]=(moMap[mo]||0)+r.min; });
-    const color = MC[name]; const grad = ctx.createLinearGradient(0,0,0,200); grad.addColorStop(0,color+'55'); grad.addColorStop(1,color+'05');
-    return { label:name, data:mos.map(m=>mToH(moMap[m]||0)), borderColor:color, backgroundColor:grad, borderWidth:1.5, tension:.4, fill:true, pointBackgroundColor:color, pointRadius:3, pointHoverRadius:5 };
+    const color = MC[name]; 
+    const grad = ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,color+'55'); grad.addColorStop(1,color+'05');
+    
+    let acc = 0;
+    const dataAcc = mos.map(m => { acc += mToH(moMap[m]||0); return acc; });
+    
+    return { label:name, data:dataAcc, borderColor:color, backgroundColor:grad, borderWidth:2, tension:.4, fill:true, pointBackgroundColor:color, pointRadius:4, pointHoverRadius:6 };
   });
+  
   document.getElementById('lineLegend').innerHTML = MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
-  CH.line = new Chart(ctx,{type:'line', data:{labels,datasets:dss}, options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#3d3d5c', callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}}}});
+  
+  CH.line = new Chart(ctx,{
+    type:'line', data:{labels,datasets:dss}, 
+    options:{
+      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#3d3d5c', callbacks:{label:c=>`${c.dataset.label}: 누적 ${formatNum(c.parsed.y)}h`}},
+        datalabels:{display:false}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10}}},
+        y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}
+      }
+    }
+  });
 }
 
 function renderStage(){
@@ -661,10 +692,38 @@ function renderStage(){
   CH.stage=new Chart(document.getElementById('stageChart').getContext('2d'),{type:'bar',data:{labels:[''],datasets:cats.map((cat,i)=>({label:cat,data:[pcts[i]],backgroundColor:CAT_COLORS[CAT_ORDER.indexOf(cat)],borderRadius:0}))},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.x}% / ${formatNum(hours[c.datasetIndex])}h`}},datalabels:{color:'#fff',font:{size:10,weight:'700'},textAlign:'center',formatter:(val,ctx)=>{if(val<8)return '';const i=ctx.datasetIndex;return `${cats[i]}\n${formatNum(hours[i])}h\n(${val}%)`;},anchor:'center',align:'center'}},scales:{x:{stacked:true,max:100,grid:{display:false},ticks:{font:{size:10},callback:v=>v+'%'}},y:{stacked:true,grid:{display:false},ticks:{display:false}}}}});
 }
 
+// ⚖️ 팀원 설계단계별 비교 (가로형 막대)
 function renderCompare(){
   const all=filtered(); const cats=CAT_ORDER.filter(c=>all.some(r=>r.cat===c));
-  const dss=MEMBERS.map(name=>{const cm=grpMin(all.filter(r=>r.name===name),'cat');const c=MC[name];return{label:name,data:cats.map(c2=>mToH(cm[c2]||0)),backgroundColor:c+'bb',borderRadius:5};});
-  destroyChart('compare'); CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{type:'bar',data:{labels:cats,datasets:dss},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10},boxWidth:10}},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}}}});
+  const dss=MEMBERS.map(name=>{
+    const cm=grpMin(all.filter(r=>r.name===name),'cat');
+    const c=MC[name];
+    return {
+      label:name,
+      data:cats.map(c2=>mToH(cm[c2]||0)),
+      backgroundColor:c+'cc',
+      borderRadius:4
+    };
+  });
+  
+  destroyChart('compare'); 
+  CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:cats,datasets:dss},
+    options:{
+      indexAxis: 'y', // 가로형 변경
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{font:{size:10},boxWidth:10}},
+        tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.x)}h`}},
+        datalabels:{display:false}
+      },
+      scales:{
+        x:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}},
+        y:{grid:{display:false},ticks:{font:{size:10}}}
+      }
+    }
+  });
 }
 
 function renderDonut(hl){
@@ -719,30 +778,63 @@ function drawHeat(data,year,tableId,color){
   table.appendChild(tbody);
 }
 
-// 대시보드 - 막대그래프 상단 값 레이블 추가
+// 대시보드 - 월별 투입시간 일정 (막대 그래프 레이블 & 하이라이트)
 function renderTimeline(){
   const all=filtered(); const mos=getMos(all); const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
-  const dss=MEMBERS.map(name=>{const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});const c=MC[name];return{label:name,data:mos.map(m=>mToH(moMap[m]||0)),backgroundColor:c+'99',borderColor:c,borderRadius:4};});
-  document.getElementById('timelineLegend').innerHTML=MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
-  destroyChart('timeline'); CH.timeline=new Chart(document.getElementById('timelineChart').getContext('2d'),{
+  const dss=MEMBERS.map(name=>{
+    const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});
+    const c=MC[name];
+    const isHL = G_dashTimelineMember === name;
+    const isDim = G_dashTimelineMember !== null && G_dashTimelineMember !== name;
+    
+    return {
+      label:name,
+      data:mos.map(m=>mToH(moMap[m]||0)),
+      backgroundColor: isDim ? hexRgba(c, 0.4) : hexRgba(c, 0.9),
+      borderColor: isDim ? 'transparent' : c,
+      borderWidth: 1,
+      borderRadius:4,
+      datalabels: {
+        display: true,
+        align: 'end',
+        anchor: 'end',
+        color: isHL ? c : (isDim ? 'transparent' : '#888'), // 평소 회색, 하이라이트 시 원래 색
+        font: { size: 9, weight: isHL ? '800' : '600' },
+        formatter: v => v > 0 ? formatNum(v) : ''
+      }
+    };
+  });
+  
+  document.getElementById('timelineLegend').innerHTML=MEMBERS.map(n=>{
+    const isHL = G_dashTimelineMember === n;
+    const isDim = G_dashTimelineMember !== null && G_dashTimelineMember !== n;
+    const opacity = isDim ? '0.35' : '1';
+    const fw = isHL ? '800' : '400';
+    return `<div class="legend-item" style="opacity:${opacity}; font-weight:${fw}; cursor:pointer;" onclick="toggleTimelineMember('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`;
+  }).join('');
+  
+  destroyChart('timeline'); 
+  CH.timeline=new Chart(document.getElementById('timelineChart').getContext('2d'),{
     type:'bar',data:{labels,datasets:dss},
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
-        datalabels:{
-          display: true,
-          align: 'end',
-          anchor: 'end',
-          color: '#666',
-          font: { size: 9, weight: '700' },
-          formatter: v => v > 0 ? formatNum(v) : ''
-        }
       },
-      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}}
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}},
+      onClick: (e, els) => {
+        if(els.length) {
+          toggleTimelineMember(MEMBERS[els[0].datasetIndex]);
+        }
+      }
     }
   });
+}
+
+function toggleTimelineMember(name) {
+  G_dashTimelineMember = G_dashTimelineMember === name ? null : name;
+  renderTimeline();
 }
 
 function showView(view,navEl){
@@ -751,7 +843,7 @@ function showView(view,navEl){
   document.getElementById('view-'+view).classList.add('active');
   if(navEl) navEl.classList.add('active');
   
-  // 역량평가 탭일 때만 드롭다운 메뉴 보여주기
+  // 역량평가 탭일 때만 사이드바 드롭다운 표시
   const sidebarEval = document.getElementById('sidebarEvalContainer');
   const sidebarFilters = document.getElementById('sidebarFilters');
   if(view === 'kpieval') {
@@ -837,16 +929,16 @@ function renderDpStacked(d,mos,subMap,moMap,color){
       data: mos.map(m => mToH((moSubMap[m] && moSubMap[m][sub]) || 0)),
       borderColor: isHL ? bc : hexRgba(bc, isSelectedAny ? 0.1 : 0.5),
       backgroundColor: 'transparent',
-      borderWidth: isHL ? 2.5 : 1, // 하이라이트 시 두껍게, 기본 얇게
-      borderDash: isHL ? [] : [4, 4], // 하이라이트 시 실선, 기본 점선
+      borderWidth: isHL ? 2.5 : 1.5,
+      borderDash: isHL ? [] : [4, 4], // 기본 얇은 점선, 클릭 시 실선
       tension: 0.45,
       fill: false,
-      pointRadius: isHL ? 4 : 0, // 하이라이트 시 마커 표시
+      pointRadius: isHL ? 4 : 0, 
       pointBackgroundColor: bc,
-      stack: 'unstacked_line', // 누적 분리
+      stack: 'unstacked_line', 
       order: 1,
       datalabels: {
-        display: isHL, // 클릭해서 하이라이트 될 때만 레이블 표시
+        display: isHL, // 하이라이트 시에만 레이블 표시
         align: 'top',
         anchor: 'end',
         color: bc,
@@ -867,7 +959,7 @@ function renderDpStacked(d,mos,subMap,moMap,color){
       plugins:{
         legend:{position:'bottom',labels:{font:{size:9},boxWidth:8,padding:4,filter:item=>!item.text.endsWith('_line')},onClick:(e,item)=>{if(!item.text.endsWith('_line'))dpClickSub(subList[item.datasetIndex]);}},
         tooltip:{backgroundColor:'rgba(61,61,92,.95)',filter:item=>item.dataset.type==='bar',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
-        datalabels:{display:false} // 바 차트 기본 레이블 끔 (lineDs 설정 따름)
+        datalabels:{display:false} 
       },
       scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,grid:{color:'#f0f1f5'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}},
       onClick:(e,els)=>{const barEls=els.filter(el=>CH.dpStackedBar&&CH.dpStackedBar.data.datasets[el.datasetIndex]?.type==='bar');if(barEls.length)dpClickSub(subList[barEls[0].datasetIndex]);}
@@ -901,7 +993,7 @@ function buildEvalDropdown(){
       document.getElementById('evalDropdownMenu').classList.remove('open');
       buildEvalDropdown();
       renderEvalProfile();
-      renderEvalDonut(null); // 추가
+      renderEvalDonut(null); 
       renderEvalTrendChart();
       renderEvalRadarAll();
       renderEvalTrendTable();
@@ -926,7 +1018,7 @@ document.addEventListener('click', e => {
 function renderEvalTab(){
   buildEvalDropdown();
   renderEvalProfile();
-  renderEvalDonut(null); // 도넛 차트 호출
+  renderEvalDonut(null); 
   renderEvalTrendChart();
   renderEvalRadarAll();
   renderEvalTrendTable();
@@ -939,7 +1031,7 @@ function renderEvalDonut(hl){
   const subMap = grpMin(all,'sub'); 
   const totalMin = all.reduce((s,r)=>s+r.min,0);
   
-  const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,10); 
+  const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]); 
   const labels = top.map(x=>x[0]); 
   const data = top.map(x=>mToH(x[1])); 
   const colors = labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
@@ -969,11 +1061,24 @@ function renderEvalDonut(hl){
     type:'doughnut',
     data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},
     options:{
-      responsive:true, maintainAspectRatio:false, cutout:'52%', layout:{padding:10},
+      responsive:true, maintainAspectRatio:false, cutout:'60%', layout:{padding:25},
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:'rgba(61,61,92,.95)', callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},
-        datalabels:{display:false}
+        datalabels:{
+          display: (ctx) => ctx.dataIndex < 5, // 상위 5개 표시
+          color: (ctx) => hl && labels[ctx.dataIndex]!==hl ? 'transparent' : '#555',
+          font: { size: 10, weight: '700' },
+          formatter: (val, ctx) => {
+            const t = data.reduce((a,b)=>a+b,0);
+            const p = t > 0 ? Math.round(val/t*100) : 0;
+            return `${labels[ctx.dataIndex]}\n(${p}%)`;
+          },
+          anchor: 'end',
+          align: 'end',
+          offset: 4,
+          textAlign: 'center'
+        }
       },
       onClick:(e,els)=>{
         if(els.length){
@@ -1066,7 +1171,7 @@ function renderEvalProfile(){
   }, 50);
 }
 
-/* 역량 점수 추이 차트 (점선 라인 연결 & 바 차트 레이블) */
+/* 역량 점수 추이 차트 (점선 연결 & 막대 레이블 표시) */
 function renderEvalTrendChart(){
   destroyChart('evalTrendChart');
   const name = G_evalMember; const qs = filteredEvalQs();
@@ -1088,32 +1193,30 @@ function renderEvalTrendChart(){
       borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.3),
       borderWidth: isHL ? 1.5 : 0.5,
       borderRadius: 4,
-      stack: 's', // 누적
+      stack: 's', 
       order: 2,
     });
     
-    // 점선 라인 차트 (독립 렌더링)
+    // 점선 라인 차트 (독립 렌더링, 얇은 점선, DOT 없음)
     datasets.push({
       type: 'line',
       label: lbl + '_line',
       data: dataVals,
       borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.4),
-      borderWidth: isHL ? 2.5 : 1.5,
-      borderDash: [5, 5],
+      borderWidth: 1, // 얇게
+      borderDash: [3, 3], // 점선
       backgroundColor: 'transparent',
-      tension: 0, // 직선으로 이어짐
-      pointRadius: isHL ? 5 : 3,
-      pointBackgroundColor: RADAR_COLORS_ARR[i],
-      pointBorderColor: '#fff',
-      pointBorderWidth: 1.5,
-      stack: 'unstacked_eval', // 누적 해제
+      tension: 0, 
+      pointRadius: 0, // DOT 없애기
+      pointHoverRadius: 0,
+      stack: 'unstacked_eval', 
       order: 1,
     });
   });
   
   const datalabelsConfig = {
     display: (ctx) => {
-      if (ctx.dataset.type === 'line') return false; // 라인엔 레이블 숨김
+      if (ctx.dataset.type === 'line') return false; 
       const originalIdx = Math.floor(ctx.datasetIndex / 2);
       if(hlIdx === -1) return true;
       return originalIdx === hlIdx;
@@ -1149,7 +1252,7 @@ function renderEvalTrendChart(){
         legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(61,61,92,.95)',
-          filter: (item) => item.dataset.type === 'bar', // 툴팁 중복 방지
+          filter: (item) => item.dataset.type === 'bar', 
           callbacks: {
             label: c => {
               const originalIdx = Math.floor(c.datasetIndex / 2);
