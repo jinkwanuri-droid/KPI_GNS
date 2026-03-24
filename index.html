@@ -256,7 +256,7 @@ body { display:flex; min-height:100vh; }
   <div class="member-list" id="sidebarMembers"></div>
   <div class="sidebar-divider"></div>
   
-  <!-- 역량평가 탭 진입 시에만 나타나는 드롭다운 컨테이너 -->
+  <!-- 역량평가 탭 진입 시에만 나타나는 드롭다운 -->
   <div id="sidebarEvalContainer" style="display:none; padding:13px 15px; border-top:2px solid #f0eeff;">
     <div class="filter-block-title" style="color:#6c63ff;">⭐ 역량평가 대상팀원</div>
     <div class="eval-dropdown-wrap" id="evalDropdownWrap" style="width:100%; display:block;">
@@ -346,24 +346,45 @@ body { display:flex; min-height:100vh; }
     </div>
   </div>
 
-  <!-- ★ KPI 역량평가 탭 (상단 헤더 제거됨) -->
+  <!-- ★ KPI 역량평가 탭 -->
   <div id="view-kpieval" class="view-section">
-    <!-- 좌(프로필) + 우(차트) -->
     <div class="eval-main-layout" id="evalMainLayout">
       <div id="evalProfileCard" class="eval-profile-card"></div>
       
       <div class="eval-charts-col">
-        <!-- 역량 점수 추이 (레이블 및 점선 표시) -->
-        <div class="eval-trend-card">
-          <div class="eval-trend-title">📈 분기별 역량 점수 추이</div>
-          <div class="eval-trend-sub" id="evalTrendSub">항목을 클릭하면 해당 항목이 하이라이트 되며 레이블이 표시됩니다.</div>
-          <div style="height:220px;"><canvas id="evalTrendChart"></canvas></div>
-          <div class="legend" style="justify-content:center;margin-top:8px;" id="evalTrendLegend"></div>
+        <!-- 상단: 소분류 투입시간 도넛 + 분기별 역량점수 추이 -->
+        <style>
+          .eval-top-row-grid { display:grid; grid-template-columns:1fr 1.8fr; gap:18px; }
+          @media(max-width:1200px){ .eval-top-row-grid { grid-template-columns:1fr !important; } }
+        </style>
+        <div class="eval-top-row-grid">
+          <!-- 도넛 차트 -->
+          <div class="eval-trend-card" style="margin-bottom:0;">
+            <div class="eval-trend-title">📊 소분류 투입시간</div>
+            <div class="eval-trend-sub">현재 필터 기간 누적</div>
+            <div class="donut-layout" style="margin-top:14px; flex-direction:column; gap:14px;">
+              <div class="donut-chart-right" style="height:180px; width:100%;">
+                <canvas id="evalDonutChart"></canvas>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+                  <div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="evalDonutCenter">-</div>
+                  <div style="font-size:10px;color:#aaa;">총 투입(h)</div>
+                </div>
+              </div>
+              <div class="donut-legend-left" id="evalDonutLegend" style="width:100%; flex-direction:row; flex-wrap:wrap; justify-content:center;"></div>
+            </div>
+          </div>
+          
+          <!-- 역량 점수 추이 (점선 & 레이블) -->
+          <div class="eval-trend-card" style="margin-bottom:0;">
+            <div class="eval-trend-title">📈 분기별 역량 점수 추이</div>
+            <div class="eval-trend-sub" id="evalTrendSub">항목을 클릭하면 해당 항목이 하이라이트 되며 점수 레이블이 강조됩니다.</div>
+            <div style="height:220px;"><canvas id="evalTrendChart"></canvas></div>
+            <div class="legend" style="justify-content:center;margin-top:8px;" id="evalTrendLegend"></div>
+          </div>
         </div>
         
-        <!-- 역량데이터 + 분기별 추이 테이블 나란히 -->
+        <!-- 하단: 역량데이터 + 추이 테이블 -->
         <div class="eval-bottom-row">
-          <!-- 역량데이터 (나의 값 + 평균) -->
           <div class="eval-radar-card">
             <div class="card-section-title">📡 역량데이터 <span style="font-size:11px;color:#aaa;font-weight:400;margin-left:6px;" id="evalRadarQuarterLabel"></span></div>
             <div style="max-width:360px;margin:0 auto;height:260px;"><canvas id="evalRadarAll"></canvas></div>
@@ -373,7 +394,6 @@ body { display:flex; min-height:100vh; }
             </div>
           </div>
           
-          <!-- 분기별 역량평가 전체 추이 -->
           <div class="eval-table-card">
             <div class="card-section-title">📋 분기별 역량평가 추이</div>
             <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
@@ -699,25 +719,44 @@ function drawHeat(data,year,tableId,color){
   table.appendChild(tbody);
 }
 
+// 대시보드 - 막대그래프 상단 값 레이블 추가
 function renderTimeline(){
   const all=filtered(); const mos=getMos(all); const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
   const dss=MEMBERS.map(name=>{const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});const c=MC[name];return{label:name,data:mos.map(m=>mToH(moMap[m]||0)),backgroundColor:c+'99',borderColor:c,borderRadius:4};});
   document.getElementById('timelineLegend').innerHTML=MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
-  destroyChart('timeline'); CH.timeline=new Chart(document.getElementById('timelineChart').getContext('2d'),{type:'bar',data:{labels,datasets:dss},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}}}});
+  destroyChart('timeline'); CH.timeline=new Chart(document.getElementById('timelineChart').getContext('2d'),{
+    type:'bar',data:{labels,datasets:dss},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
+        datalabels:{
+          display: true,
+          align: 'end',
+          anchor: 'end',
+          color: '#666',
+          font: { size: 9, weight: '700' },
+          formatter: v => v > 0 ? formatNum(v) : ''
+        }
+      },
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0eeff'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}}
+    }
+  });
 }
 
-// 뷰 전환: 역량평가 탭 진입 시에만 드롭다운 표시
 function showView(view,navEl){
   document.querySelectorAll('.view-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');
   if(navEl) navEl.classList.add('active');
   
+  // 역량평가 탭일 때만 드롭다운 메뉴 보여주기
   const sidebarEval = document.getElementById('sidebarEvalContainer');
   const sidebarFilters = document.getElementById('sidebarFilters');
   if(view === 'kpieval') {
     sidebarEval.style.display = 'block';
-    sidebarFilters.style.borderTop = 'none'; // 필터 위 여백 조절
+    sidebarFilters.style.borderTop = 'none';
     renderEvalTab();
   } else {
     sidebarEval.style.display = 'none';
@@ -780,13 +819,60 @@ function renderDpTop5(subMap,tot,color){
     li.addEventListener('click',()=>dpClickSub(sub)); list.appendChild(li);});
 }
 
+// 팀원별 탭 - 선형 차트 얇은 점선 및 클릭 하이라이트 기능 추가
 function renderDpStacked(d,mos,subMap,moMap,color){
   const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const moSubMap={}; d.forEach(r=>{const mo=r.date.slice(0,7);if(!moSubMap[mo])moSubMap[mo]={};moSubMap[mo][r.sub]=(moSubMap[mo][r.sub]||0)+r.min;});
+  
   const bgColors=subList.map((sub,i)=>H.dpSub===null?SUB_PAL[i%SUB_PAL.length]:(sub===H.dpSub?SUB_PAL[i%SUB_PAL.length]:SUB_PAL[i%SUB_PAL.length]+'33'));
-  const lineDs=subList.map((sub,i)=>{const bc=SUB_PAL[i%SUB_PAL.length];const isHL=H.dpSub===null||sub===H.dpSub;return{type:'line',label:sub+'_line',data:mos.map(m=>mToH((moSubMap[m]&&moSubMap[m][sub])||0)),borderColor:hexRgba(bc,isHL?0.5:0.1),backgroundColor:'transparent',borderWidth:isHL?2:0.5,tension:0.45,fill:false,pointRadius:0,stack:undefined,order:1,datalabels:{display:false}};});
+  
+  const lineDs = subList.map((sub,i)=>{
+    const bc = SUB_PAL[i%SUB_PAL.length];
+    const isHL = H.dpSub === sub;
+    const isSelectedAny = H.dpSub !== null;
+    
+    return {
+      type: 'line',
+      label: sub + '_line',
+      data: mos.map(m => mToH((moSubMap[m] && moSubMap[m][sub]) || 0)),
+      borderColor: isHL ? bc : hexRgba(bc, isSelectedAny ? 0.1 : 0.5),
+      backgroundColor: 'transparent',
+      borderWidth: isHL ? 2.5 : 1, // 하이라이트 시 두껍게, 기본 얇게
+      borderDash: isHL ? [] : [4, 4], // 하이라이트 시 실선, 기본 점선
+      tension: 0.45,
+      fill: false,
+      pointRadius: isHL ? 4 : 0, // 하이라이트 시 마커 표시
+      pointBackgroundColor: bc,
+      stack: 'unstacked_line', // 누적 분리
+      order: 1,
+      datalabels: {
+        display: isHL, // 클릭해서 하이라이트 될 때만 레이블 표시
+        align: 'top',
+        anchor: 'end',
+        color: bc,
+        font: { size: 10, weight: '800' },
+        formatter: v => v > 0 ? formatNum(v) + 'h' : ''
+      }
+    };
+  });
+  
   destroyChart('dpStackedBar');
-  CH.dpStackedBar=new Chart(document.getElementById('dpStackedBar').getContext('2d'),{data:{labels:mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2')),datasets:[...subList.map((sub,i)=>({type:'bar',label:sub,data:mos.map(m=>mToH((moSubMap[m]&&moSubMap[m][sub])||0)),backgroundColor:bgColors[i],borderRadius:2,stack:'s',order:2})),...lineDs]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:9},boxWidth:8,padding:4,filter:item=>!item.text.endsWith('_line')},onClick:(e,item)=>{if(!item.text.endsWith('_line'))dpClickSub(subList[item.datasetIndex]);}},tooltip:{backgroundColor:'rgba(61,61,92,.95)',filter:item=>item.dataset.type==='bar',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,grid:{color:'#f0f1f5'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}},onClick:(e,els)=>{const barEls=els.filter(el=>CH.dpStackedBar&&CH.dpStackedBar.data.datasets[el.datasetIndex]?.type==='bar');if(barEls.length)dpClickSub(subList[barEls[0].datasetIndex]);}}});
+  CH.dpStackedBar=new Chart(document.getElementById('dpStackedBar').getContext('2d'),{
+    data:{
+      labels:mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2')),
+      datasets:[...subList.map((sub,i)=>({type:'bar',label:sub,data:mos.map(m=>mToH((moSubMap[m]&&moSubMap[m][sub])||0)),backgroundColor:bgColors[i],borderRadius:2,stack:'s',order:2})),...lineDs]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{font:{size:9},boxWidth:8,padding:4,filter:item=>!item.text.endsWith('_line')},onClick:(e,item)=>{if(!item.text.endsWith('_line'))dpClickSub(subList[item.datasetIndex]);}},
+        tooltip:{backgroundColor:'rgba(61,61,92,.95)',filter:item=>item.dataset.type==='bar',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
+        datalabels:{display:false} // 바 차트 기본 레이블 끔 (lineDs 설정 따름)
+      },
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,grid:{color:'#f0f1f5'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}}},
+      onClick:(e,els)=>{const barEls=els.filter(el=>CH.dpStackedBar&&CH.dpStackedBar.data.datasets[el.datasetIndex]?.type==='bar');if(barEls.length)dpClickSub(subList[barEls[0].datasetIndex]);}
+    }
+  });
 }
 
 function dpClickSub(sub){ H.dpSub=H.dpSub===sub?null:sub; H.dashSub=H.dpSub; renderDonut(H.dashSub); renderTop5(H.dashSub); renderDpTop5Highlight(); renderDpStackedHighlight(); }
@@ -797,7 +883,6 @@ function renderDpStackedHighlight(){ const name=G.selectedMember; if(!name)retur
 ★ KPI 역량평가 탭
 ════════════════════════════════════ */
 
-/* 역량평가: 드롭다운 메뉴 (이름만, 사이드바에 위치) */
 function buildEvalDropdown(){
   const menu = document.getElementById('evalDropdownMenu');
   menu.innerHTML = '';
@@ -810,12 +895,13 @@ function buildEvalDropdown(){
     item.innerHTML = `<span>${name}</span>`;
     item.onclick = () => {
       G_evalMember = name;
-      G_evalHighlightIdx = -1; // 선택된 항목 초기화
+      G_evalHighlightIdx = -1; 
       document.getElementById('evalDropdownLabel').textContent = name;
       document.getElementById('evalDropdownBtn').classList.remove('open');
       document.getElementById('evalDropdownMenu').classList.remove('open');
       buildEvalDropdown();
       renderEvalProfile();
+      renderEvalDonut(null); // 추가
       renderEvalTrendChart();
       renderEvalRadarAll();
       renderEvalTrendTable();
@@ -840,12 +926,66 @@ document.addEventListener('click', e => {
 function renderEvalTab(){
   buildEvalDropdown();
   renderEvalProfile();
+  renderEvalDonut(null); // 도넛 차트 호출
   renderEvalTrendChart();
   renderEvalRadarAll();
   renderEvalTrendTable();
 }
 
-/* 좌측 프로필 카드 */
+/* 역량평가 상단 - 소분류 투입시간 도넛 차트 */
+function renderEvalDonut(hl){
+  const name = G_evalMember;
+  const all = filtered().filter(r => r.name === name);
+  const subMap = grpMin(all,'sub'); 
+  const totalMin = all.reduce((s,r)=>s+r.min,0);
+  
+  const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,10); 
+  const labels = top.map(x=>x[0]); 
+  const data = top.map(x=>mToH(x[1])); 
+  const colors = labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
+  
+  document.getElementById('evalDonutCenter').textContent = formatHour(totalMin)+'h';
+  
+  const legendEl = document.getElementById('evalDonutLegend'); 
+  legendEl.innerHTML='';
+  labels.forEach((l,i)=>{
+    const pct = totalMin>0 ? Math.round((subMap[l]||0)/totalMin*100) : 0;
+    const isHL = hl===l;
+    const isDim = hl && hl!==l;
+    const div = document.createElement('div');
+    div.className = 'donut-legend-item'+(isHL?' highlighted':'')+(isDim?' dimmed':'');
+    div.innerHTML = `<div class="donut-legend-dot" style="background:${colors[i]};"></div><span>${l} <span style="color:#aaa;">${formatNum(data[i])}h(${pct}%)</span></span>`;
+    div.addEventListener('click', () => {
+      let newHl = hl === l ? null : l;
+      renderEvalDonut(newHl);
+    });
+    legendEl.appendChild(div);
+  });
+  
+  destroyChart('evalDonut'); 
+  const bgColors = hl ? labels.map((l,i)=>l===hl?colors[i]:colors[i]+'44') : colors;
+  
+  CH.evalDonut = new Chart(document.getElementById('evalDonutChart').getContext('2d'), {
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'52%', layout:{padding:10},
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'rgba(61,61,92,.95)', callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},
+        datalabels:{display:false}
+      },
+      onClick:(e,els)=>{
+        if(els.length){
+          const l = labels[els[0].index];
+          let newHl = hl === l ? null : l;
+          renderEvalDonut(newHl);
+        }
+      }
+    }
+  });
+}
+
 function renderEvalProfile(){
   const name = G_evalMember; const color = MC[name]; const qs = filteredEvalQs(); const pos = RAW.find(r=>r.name===name)?.pos||'';
   const latestQ = qs[qs.length-1]; const latestEv = latestQ ? EVAL_DATA.find(e=>e.q===latestQ&&e.name===name) : null;
@@ -926,7 +1066,7 @@ function renderEvalProfile(){
   }, 50);
 }
 
-/* 역량 점수 추이 차트 (점선 라인 및 데이터 레이블 전체 표시 적용) */
+/* 역량 점수 추이 차트 (점선 라인 연결 & 바 차트 레이블) */
 function renderEvalTrendChart(){
   destroyChart('evalTrendChart');
   const name = G_evalMember; const qs = filteredEvalQs();
@@ -939,7 +1079,7 @@ function renderEvalTrendChart(){
     const isHL = hlIdx === -1 || hlIdx === i;
     const dataVals = qs.map(q => { const ev = EVAL_DATA.find(e=>e.q===q&&e.name===name); return ev ? ev.vals[i] : 0; });
     
-    // 막대 데이터
+    // 바 차트
     datasets.push({
       type: 'bar',
       label: lbl,
@@ -948,34 +1088,34 @@ function renderEvalTrendChart(){
       borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.3),
       borderWidth: isHL ? 1.5 : 0.5,
       borderRadius: 4,
-      stack: 's',
+      stack: 's', // 누적
       order: 2,
     });
     
-    // 점선 라인 데이터 (동일 항목 연결)
+    // 점선 라인 차트 (독립 렌더링)
     datasets.push({
       type: 'line',
       label: lbl + '_line',
       data: dataVals,
-      borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.2),
-      borderWidth: isHL ? 2 : 1,
-      borderDash: [4, 4],
+      borderColor: isHL ? RADAR_COLORS_ARR[i] : hexRgba(RADAR_COLORS_ARR[i], 0.4),
+      borderWidth: isHL ? 2.5 : 1.5,
+      borderDash: [5, 5],
       backgroundColor: 'transparent',
-      tension: 0,
-      pointRadius: isHL ? 4 : 0,
+      tension: 0, // 직선으로 이어짐
+      pointRadius: isHL ? 5 : 3,
       pointBackgroundColor: RADAR_COLORS_ARR[i],
-      stack: 's', // 바 차트와 동일한 스택 위에 그림
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      stack: 'unstacked_eval', // 누적 해제
       order: 1,
     });
   });
   
   const datalabelsConfig = {
     display: (ctx) => {
-      // 라인 차트에는 레이블 숨김 (막대 차트 레이블과 겹침 방지)
-      if (ctx.dataset.type === 'line') return false;
-      
+      if (ctx.dataset.type === 'line') return false; // 라인엔 레이블 숨김
       const originalIdx = Math.floor(ctx.datasetIndex / 2);
-      if(hlIdx === -1) return true; // 아무것도 클릭 안 했을 땐 모두 표시
+      if(hlIdx === -1) return true;
       return originalIdx === hlIdx;
     },
     color: '#fff',
@@ -1009,7 +1149,7 @@ function renderEvalTrendChart(){
         legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(61,61,92,.95)',
-          filter: (item) => item.dataset.type === 'bar', // 바 차트에서만 툴팁 표시
+          filter: (item) => item.dataset.type === 'bar', // 툴팁 중복 방지
           callbacks: {
             label: c => {
               const originalIdx = Math.floor(c.datasetIndex / 2);
@@ -1026,7 +1166,6 @@ function renderEvalTrendChart(){
       },
       onClick: (e, els) => {
         if(els.length){
-          // 클릭한 엘리먼트가 막대든 라인이든 실제 카테고리 인덱스를 찾음
           const originalIdx = Math.floor(els[0].datasetIndex / 2);
           G_evalHighlightIdx = (G_evalHighlightIdx === originalIdx) ? -1 : originalIdx;
           renderEvalTrendChart();
@@ -1036,7 +1175,6 @@ function renderEvalTrendChart(){
   });
 }
 
-/* 역량데이터 레이더 차트 (나의 값 + 평균 비교) */
 function renderEvalRadarAll(){
   destroyChart('evalRadarAll');
   const name = G_evalMember; const color = MC[name];
@@ -1087,23 +1225,12 @@ function renderEvalRadarAll(){
   }
 }
 
-/* 분기별 역량평가 전체 추이 테이블 */
 function renderEvalTrendTable(){
   const wrap = document.getElementById('evalTrendTableWrap');
   const name = G_evalMember; const color = MC[name];
   const qs = [...filteredEvalQs()].reverse();
   
-  let html = `
-    <table class="eval-trend-table">
-      <thead>
-        <tr>
-          <th style="text-align:left;border-radius:8px 0 0 8px;">분기</th>
-          ${RADAR_LABELS.map((l,i) => `<th style="color:${RADAR_COLORS_ARR[i]};">${l}</th>`).join('')}
-          <th style="border-radius:0 8px 8px 0;color:${color};">평균</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+  let html = `<table class="eval-trend-table"><thead><tr><th style="text-align:left;border-radius:8px 0 0 8px;">분기</th>${RADAR_LABELS.map((l,i) => `<th style="color:${RADAR_COLORS_ARR[i]};">${l}</th>`).join('')}<th style="border-radius:0 8px 8px 0;color:${color};">평균</th></tr></thead><tbody>`;
   
   qs.forEach((q, idx) => {
     const ev = EVAL_DATA.find(e => e.q === q && e.name === name);
