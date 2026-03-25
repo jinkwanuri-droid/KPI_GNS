@@ -303,23 +303,28 @@ body { display:flex; min-height:100vh; }
     </div>
   </div>
   
-  <!-- ✨ 모던 필터 영역 -->
+  <!-- ✨ 모던 필터 영역 시작 -->
   <div class="modern-filter-card" id="sidebarFilters">
     <div class="filter-header">기간 선택</div>
     <div class="timeline-container">
-      <div class="year-row" id="yearRow">
-        <div class="year-label" onclick="selectYear(2024)">2024</div>
-        <div class="year-label" onclick="selectYear(2025)">2025</div>
-        <div class="year-label" onclick="selectYear(2026)">2026</div>
-      </div>
+      <!-- 전체 영역을 관통하는 세로 구분선 영역 -->
+      <div class="global-dividers" id="globalDividers"></div>
+      
+      <!-- 연도 영역 (JS에서 절대 위치로 자동 배치) -->
+      <div class="year-row" id="yearRow"></div>
+      
+      <!-- 슬라이더 영역 -->
       <div class="track-row" id="trackRow">
         <div class="track-bg"></div>
         <div class="track-active" id="trackActive"></div>
         <div class="nodes-container" id="nodesContainer"></div>
-        <div class="quarter-dividers" id="quarterDividers"></div>
       </div>
+      
+      <!-- 분기 영역 -->
       <div class="quarter-row" id="quarterRow"></div>
     </div>
+    
+    <!-- 요약 및 초기화 버튼 -->
     <div class="range-summary">
       <span class="summary-text" id="summaryText">-</span>
       <span class="summary-count" id="summaryCount">-</span>
@@ -332,408 +337,217 @@ body { display:flex; min-height:100vh; }
       <span style="color: #374151;">필터 초기화</span>
     </button>
   </div>
-</nav>
 
-<div class="main">
-  <div class="header">
-    <div>
-      <div class="header-title">🏥 경상남도 서부의료원 설립사업 KPI 대시보드</div>
-      <div class="subtitle" id="headerSub">PJ CODE: 24188 | 구글 시트 연동 중...</div>
-    </div>
-    <div class="header-right">
-      <span class="last-updated" id="lastUpdated"></span>
-      <button class="refresh-btn" onclick="loadDataFromSheets()">🔄 새로고침</button>
-      <span style="background:#f0eeff;color:#6c63ff;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;" id="filterBadge">전체 기간</span>
-    </div>
-  </div>
+<style>
+  .modern-filter-card {
+    background: #ffffff; padding: 18px 15px 15px 15px; width: 100%; margin-top: auto; flex-shrink: 0;
+    font-family: 'Pretendard', sans-serif; border-top: 2px solid #f0eeff;
+  }
+  .filter-header { font-size: 13px; font-weight: 700; color: #6c63ff; margin-bottom: 24px; }
   
-  <div id="view-dashboard" class="view-section active">
-    <div class="grid-top" id="topKpiGrid"></div>
-    <div class="grid-mid">
-      <div class="card"><div class="card-section-title">📈 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
-      <div class="card"><div class="card-section-title">📊 단계별 투입비율</div><div style="height:200px;"><canvas id="stageChart"></canvas></div></div>
-      <div class="card"><div class="card-section-title">⚖️ 팀원 설계단계별 비교</div><div style="height:200px;"><canvas id="compareChart"></canvas></div></div>
-    </div>
-    <div class="grid-bot">
-      <div class="card">
-        <div class="card-section-title">📋 분류별 업무 투입시간 (전체)</div>
-        <div class="donut-layout">
-          <div class="donut-legend-left" id="donutLegendLeft"></div>
-          <div class="donut-chart-right"><canvas id="donutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="donutCenter">-</div><div style="font-size:10px;color:#aaa;">총 투입(h)</div></div></div>
-        </div>
-      </div>
-      <div class="card"><div class="card-section-title">🏆 업무분류별 TOP 5</div><ul class="top5-rank-list" id="top5List"></ul></div>
-      <div class="card">
-        <div class="card-section-title">🗓️ 월별 근무 밀도</div>
-        <div class="tab-btns-sm" id="heatYearTabs"></div>
-        <div style="overflow-x:auto;"><table class="heat-table" id="heatTable"></table></div>
-        <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span></div>
-      </div>
-    </div>
-    <div class="card"><div class="card-section-title">📅 월별 투입시간 일정</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
-  </div>
+  /* 타임라인 컨테이너 여백 통일 (모든 요소가 동일한 width를 가짐) */
+  .timeline-container { position: relative; margin-bottom: 24px; padding: 0 12px; }
+  
+  /* 관통하는 세로 구분선 */
+  .global-dividers { position: absolute; top: -5px; bottom: -5px; left: 12px; right: 12px; z-index: 1; pointer-events: none; }
+  .g-divider { position: absolute; width: 1px; height: 100%; background-color: #e5e7eb; transform: translateX(-50%); }
 
-  <div id="view-members" class="view-section">
-    <div style="font-size:17px;font-weight:800;color:#3d3d5c;">👥 팀원별 상세 현황</div>
-    <div class="member-overview-grid" id="memberOverviewGrid"></div>
-    <div class="detail-panel" id="memberDetailPanel">
-      <div class="detail-header" id="dpHeader"></div>
-      <div class="detail-kpi-row" id="dpKpi"></div>
-      <div class="detail-top-row">
-        <div class="detail-chart-card"><div class="detail-chart-title">📐 설계단계별 업무시간</div><div style="height:220px;position:relative;"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div><div id="dpDonutLegend" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center;"></div></div>
-        <div class="detail-chart-card"><div class="detail-chart-title">🏆 소분류 TOP 5</div><ul class="top5-rank-list" id="dpTop5List" style="margin-top:0;"></ul></div>
-      </div>
-      <div class="detail-stacked-card"><div class="detail-chart-title">📊 월별 소분류 누적 투입시간</div><div style="height:260px;"><canvas id="dpStackedBar"></canvas></div></div>
-      <div class="detail-bottom-single"><div class="detail-chart-title" style="margin-bottom:6px;">🗓️ 월별 근무 밀도 <span id="dpHeatTabs"></span></div><div style="overflow-x:auto;"><table class="heat-table" id="dpHeatTable"></table></div></div>
-    </div>
-  </div>
+  /* 연도 행 (수학적 위치 정렬을 위해 position absolute 사용) */
+  .year-row { position: relative; height: 20px; margin-bottom: 12px; z-index: 2; }
+  .year-label { 
+    position: absolute; top: 0; transform: translateX(-50%);
+    font-size: 13px; font-weight: 700; color: #9ca3af; cursor: pointer; transition: all 0.3s ease; 
+  }
+  .year-label:hover { color: #6366f1; transform: translateX(-50%) translateY(-2px); }
+  .year-label.active { color: #6366f1; }
 
-  <div id="view-kpieval" class="view-section">
-    <div class="eval-main-layout" id="evalMainLayout">
-      <div id="evalProfileCard" class="eval-profile-card"></div>
-      <div class="eval-charts-col">
-        <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:18px;" class="eval-top-row-grid">
-          <div class="eval-trend-card" style="margin-bottom:0;">
-            <div class="eval-trend-title">📈 분기별 역량 점수 추이</div>
-            <div class="eval-trend-sub" id="evalTrendSub">X축: 분기 | 범례: 역량항목 | 항목 클릭 시 하이라이트</div>
-            <div style="height:240px;"><canvas id="evalTrendChart"></canvas></div>
-            <div class="legend" style="justify-content:center;margin-top:8px;flex-wrap:wrap;" id="evalTrendLegend"></div>
-          </div>
-          <div class="eval-trend-card" style="margin-bottom:0;">
-            <div class="eval-trend-title">📊 소분류 투입시간</div>
-            <div class="eval-trend-sub">현재 필터 기간 누적</div>
-            <div class="eval-donut-section">
-              <div class="eval-donut-top" style="height: 260px;">
-                <canvas id="evalDonutChart"></canvas>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-                  <div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="evalDonutCenter">-</div>
-                  <div style="font-size:10px;color:#aaa;">총 투입(h)</div>
-                </div>
-              </div>
-              <div class="eval-top3-box-row" id="evalTop2Row"></div>
-            </div>
-          </div>
-        </div>
-        <div class="eval-bottom-row">
-          <div class="eval-radar-card">
-            <div class="card-section-title">📡 역량데이터</div>
-            <div class="eval-dual-radar-row">
-              <div class="eval-radar-sub-card">
-                <div class="eval-radar-sub-title" id="evalRadarYearLabel">연도 평균</div>
-                <div style="height:200px;"><canvas id="evalRadarYear"></canvas></div>
-                <div class="eval-radar-sub-score" id="evalRadarYearScore"></div>
-              </div>
-              <div class="eval-radar-sub-card">
-                <div class="eval-radar-sub-title" id="evalRadarQtrLabel">해당 분기</div>
-                <div style="height:200px;"><canvas id="evalRadarQtr"></canvas></div>
-                <div class="eval-radar-sub-score" id="evalRadarQtrScore"></div>
-              </div>
-            </div>
-          </div>
-          <div class="eval-table-card">
-            <div class="card-section-title">📋 분기별 역량평가 추이</div>
-            <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  /* 트랙 및 슬라이더 */
+  .track-row { position: relative; height: 24px; display: flex; align-items: center; z-index: 2; }
+  .track-bg { position: absolute; width: 100%; height: 4px; background: #f3f4f6; border-radius: 2px; }
+  .track-active { position: absolute; height: 4px; background: #6366f1; border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); left: 0; width: 0; }
+  .nodes-container { position: absolute; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+  
+  .node { width: 8px; height: 8px; background: #ffffff; border: 2px solid #d1d5db; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; }
+  .node:hover { transform: scale(1.5); border-color: #6366f1; }
+  .node.active { background: #6366f1; border-color: #6366f1; }
+  .node.endpoint { width: 16px; height: 16px; background: #6366f1; border: 1.5px solid #ffffff; box-shadow: 0 0 0 3px #e0e7ff; animation: pulse 2s infinite; }
+
+  /* 분기 행 */
+  .quarter-row { display: flex; justify-content: space-between; margin-top: 10px; position: relative; z-index: 2; }
+  .quarter-label { font-size: 11px; font-weight: 600; color: #9ca3af; width: 16px; text-align: center; transition: all 0.3s ease; }
+  .quarter-label.active { color: #6366f1; font-size: 12px; font-weight: 800; }
+
+  .range-summary { background: #e0e7ff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .summary-text { color: #6366f1; font-weight: 700; font-size: 13px; }
+  .summary-count { color: #6366f1; font-size: 11px; opacity: 0.8; }
+  .reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+  .reset-btn:hover { background: #f0eeff; border-color: #6c63ff; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); } 70% { box-shadow: 0 0 0 5px rgba(99, 102, 241, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); } }
+</style>
 
 <script>
-Chart.register(ChartDataLabels);
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
-let MEMBERS = [];
-let MC = {};
-let INITIALS = {};
-const DYNAMIC_COLORS = ['#f97316','#22c55e','#0ea5e9','#ec4899','#8b5cf6','#14b8a6','#f59e0b','#6366f1','#10b981'];
-const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
-const CAT_COLORS = ['#ec4899','#6c63ff','#f97316','#22c55e'];
-const SUB_PAL = ['#6c63ff','#f97316','#22c55e','#ec4899','#0ea5e9','#f59e0b','#8b5cf6','#14b8a6','#ef4444','#84cc16','#f43f5e','#06b6d4','#a855f7','#fb923c'];
-const RANK_C = ['#6c63ff','#f97316','#22c55e','#ec4899','#0ea5e9'];
-const RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력'];
-const RADAR_COLORS_ARR = ['#6c63ff','#f97316','#22c55e','#ec4899','#0ea5e9'];
-const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-let EVAL_DATA = [];
-let RAW = [];
-let G = {heatYear:null,selectedMember:null,dpHeatYear:null};
-let CH = {};
-let H = {dashSub:null,dpSub:null};
-let G_evalMember = '';
+  window.filterStartIndex = 0; 
+  window.filterEndIndex = 11;  
+  const filterYears = [2024, 2025, 2026];
+  const filterQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+  const totalNodes = filterYears.length * filterQuarters.length;
+  let isSelecting = false;
 
-// ✨ 모던 슬라이더를 위한 전역 상태
-window.filterStartIndex = 0; 
-window.filterEndIndex = 11;  
-const filterYears = [2024, 2025, 2026];
-const filterQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-const totalNodes = filterYears.length * filterQuarters.length;
+  function initSlider() {
+    const nodesContainer = document.getElementById('nodesContainer');
+    const quarterRow = document.getElementById('quarterRow');
+    const yearRow = document.getElementById('yearRow');
+    const globalDividers = document.getElementById('globalDividers');
+    
+    nodesContainer.innerHTML = '';
+    quarterRow.innerHTML = '';
+    yearRow.innerHTML = '';
+    globalDividers.innerHTML = '';
 
-const formatNum = val => typeof val==='number' ? val.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}) : val;
-const mToH = m => parseFloat((m/60).toFixed(1));
-const formatHour = m => formatNum(mToH(m));
-const grpMin = (arr,key) => arr.reduce((m,r)=>{m[r[key]]=(m[r[key]]||0)+r.min;return m;},{});
-const getMos = data => [...new Set(data.map(r=>r.date.slice(0,7)))].sort();
-function destroyChart(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
-function hexRgba(hex,a){try{return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;}catch{return hex;}}
-
-// ✨ 데이터 필터링 로직
-function filtered(){
-  let d = RAW;
-  return d.filter(r => {
-    const parts = r.date.split('-');
-    const y = parseInt(parts[0]);
-    const m = parseInt(parts[1]);
-    const q = Math.ceil(m / 3) - 1;
-    const yearOffset = y - 2024;
-    if(yearOffset < 0 || yearOffset > 2) return false;
-    const idx = yearOffset * 4 + q;
-    return idx >= window.filterStartIndex && idx <= window.filterEndIndex;
-  });
-}
-
-function filteredEvalQs(){
-  const all = [...new Set(EVAL_DATA.map(d => d.q))].sort();
-  return all.filter(qStr => {
-    const parts = qStr.split('-');
-    const y = parseInt(parts[0]);
-    const q = parseInt(parts[1].replace('Q', '')) - 1;
-    const yearOffset = y - 2024;
-    if(yearOffset < 0 || yearOffset > 2) return false;
-    const idx = yearOffset * 4 + q;
-    return idx >= window.filterStartIndex && idx <= window.filterEndIndex;
-  });
-}
-
-function setLoadingProgress(pct,msg){
-  const bar=document.getElementById('ovProgress');const msgEl=document.getElementById('ovMsg');
-  if(bar) bar.style.width=pct+'%';if(msgEl) msgEl.textContent=msg;
-}
-function hideLoadingOverlay(){
-  const el=document.getElementById('loadingOverlay');
-  if(el){el.style.opacity='0';el.style.pointerEvents='none';}
-}
-function showOverlayError(msg){
-  const ovEl=document.getElementById('loadingOverlay');
-  if(ovEl){
-    const sp=ovEl.querySelector('.ov-spinner');const retryBtn=document.getElementById('ovRetryBtn');const msgEl=document.getElementById('ovMsg');
-    if(sp) sp.style.display='none';
-    if(msgEl) msgEl.innerHTML = `<span style="color:#ffcdd2;font-weight:700;">❌ ${msg}</span>`;
-    if(retryBtn) retryBtn.style.display='block';
-  }
-}
-
-async function loadDataFromSheets(){
-  const ovEl=document.getElementById('loadingOverlay');
-  if(ovEl){
-    ovEl.style.opacity='1';ovEl.style.pointerEvents='auto';
-    const sp=ovEl.querySelector('.ov-spinner');if(sp) sp.style.display='block';
-    const progressWrap=document.getElementById('ovProgressWrap');if(progressWrap) progressWrap.style.display='block';
-    const retryBtn=document.getElementById('ovRetryBtn');if(retryBtn) retryBtn.style.display='none';
-    const enterBtn=document.getElementById('ovEnterBtn');if(enterBtn) enterBtn.style.display='none';
-    const msgEl=document.getElementById('ovMsg');if(msgEl){msgEl.textContent='데이터 연결 중...';msgEl.style.color='rgba(255,255,255,0.7)';}
-  }
-  try{
-    setLoadingProgress(15,'📡 구글 시트 연결 중...');
-    const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),60000);
-    let response;
-    try{response = await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`,{method:'GET',redirect:'follow',signal:controller.signal});clearTimeout(timeoutId);}
-    catch(fetchErr){clearTimeout(timeoutId);throw new Error('API 연결 실패: '+fetchErr.message);}
-    if(!response.ok) throw new Error(`HTTP 오류: ${response.status}`);
-    setLoadingProgress(45,'📋 데이터 수신 중...');
-    let json;
-    try{const text=await response.text();json=JSON.parse(text);}
-    catch(e){throw new Error('JSON 파싱 실패: '+e.message);}
-    if(!json||json.status!=='ok') throw new Error(json?.message||'데이터 오류');
-    setLoadingProgress(65,'🔄 데이터 변환 중...');
-    EVAL_DATA=(json.eval||[]).map(row=>{
-      const year=String(row['연도']||'').trim();const qtr=String(row['분기']||'').trim();
-      const qtrF=qtr.startsWith('Q')?qtr:'Q'+qtr;
-      return{q:`${year}-${qtrF}`,year,qtr:qtrF,name:String(row['성명']||'').trim(),
-        vals:[parseFloat(row['적극성'])||0,parseFloat(row['생산성'])||0,parseFloat(row['전문성'])||0,parseFloat(row['창의성'])||0,parseFloat(row['협업능력'])||0]};
-    }).filter(d=>d.name&&d.q);
-    RAW=(json.work||[]).filter(row=>row.name&&row.date&&row.min>0).map(row=>({
-      name:String(row.name||'').trim(),pos:String(row.pos||'').trim(),
-      date:String(row.date||'').slice(0,10),cat:String(row.cat||'미분류').trim(),
-      sub:String(row.sub||'기타').trim(),min:parseInt(row.min)||0,
-    }));
-    const memberSet=new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]);
-    MEMBERS=Array.from(memberSet).filter(n=>n);
-    MEMBERS.forEach((name,idx)=>{
-      MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length];
-      let initial=name;
-      if(name.length>=3){initial=name.substring(1,3);}
-      INITIALS[name]=initial;
+    // 1. 연도 라벨을 포인트 중앙에 수학적으로 완벽하게 배치
+    filterYears.forEach((year, index) => {
+      const yLabel = document.createElement('div');
+      yLabel.className = 'year-label';
+      yLabel.innerText = year;
+      yLabel.onclick = () => selectYear(year);
+      
+      // 해당 연도의 시작 노드와 끝 노드의 중간 지점 계산
+      const startIdx = index * 4;
+      const endIdx = startIdx + 3;
+      const centerPercent = (((startIdx + endIdx) / 2) / (totalNodes - 1)) * 100;
+      yLabel.style.left = `${centerPercent}%`;
+      yearRow.appendChild(yLabel);
     });
-    if(!G_evalMember&&MEMBERS.length>0) G_evalMember=MEMBERS[0];
-    const mos=getMos(RAW);
-    document.getElementById('headerSub').textContent = `PJ CODE: 24188 | ${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'} | ${MEMBERS.length}명 | ${RAW.length}건`;
-    const now=new Date();
-    document.getElementById('lastUpdated').textContent = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} 업데이트`;
-    setLoadingProgress(85,'🎨 대시보드 렌더링 중...');
-    
-    // UI 초기화
-    initSlider(); 
-    initDashboard();
-    
-    setLoadingProgress(100,'✅ 데이터 로딩 완료!');
-    if(ovEl){
-      const sp=ovEl.querySelector('.ov-spinner');if(sp) sp.style.display='none';
-      const progressWrap=document.getElementById('ovProgressWrap');if(progressWrap) progressWrap.style.display='none';
-      const enterBtn=document.getElementById('ovEnterBtn');if(enterBtn) enterBtn.style.display='block';
+
+    // 2. 노드, 분기 텍스트, 관통하는 구분선 생성
+    for (let i = 0; i < totalNodes; i++) {
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.onclick = () => handleNodeClick(i);
+      nodesContainer.appendChild(node);
+
+      const qLabel = document.createElement('div');
+      qLabel.className = 'quarter-label';
+      qLabel.innerText = (i % 4) + 1; // 1, 2, 3, 4
+      quarterRow.appendChild(qLabel);
+
+      // Q4와 다음 해 Q1 사이 중앙에 관통하는 구분선 배치
+      if (i % 4 === 3 && i < totalNodes - 1) {
+        const divider = document.createElement('div');
+        divider.className = 'g-divider';
+        const positionPercent = ((i + 0.5) / (totalNodes - 1)) * 100;
+        divider.style.left = `${positionPercent}%`;
+        globalDividers.appendChild(divider);
+      }
     }
-  }catch(err){
-    console.error('데이터 로드 실패:',err);
-    showOverlayError(err.message);
+    updateUI();
   }
-}
 
-function initDashboard(){
-  // 기존 에러를 유발하던 buildYearFilters() 제거됨
-  buildSidebarMembers();
-  renderAll();
-  buildEvalDropdown();
-  renderEvalTab();
-}
-
-// ✨ 모던 슬라이더 관련 함수들 시작
-let isSelecting = false;
-
-function initSlider() {
-  const nodesContainer = document.getElementById('nodesContainer');
-  const quarterRow = document.getElementById('quarterRow');
-  const quarterDividers = document.getElementById('quarterDividers');
-  nodesContainer.innerHTML = '';
-  quarterRow.innerHTML = '';
-  quarterDividers.innerHTML = '';
-
-  for (let i = 0; i < totalNodes; i++) {
-    const node = document.createElement('div');
-    node.className = 'node';
-    node.onclick = () => handleNodeClick(i);
-    nodesContainer.appendChild(node);
-
-    const qLabel = document.createElement('div');
-    qLabel.className = 'quarter-label';
-    qLabel.innerText = (i % 4) + 1; // 1, 2, 3, 4로 텍스트 축약
-    quarterRow.appendChild(qLabel);
-
-    // Q4와 Q1 사이(연도변경선)에만 구분선 추가
-    if (i % 4 === 3 && i < totalNodes - 1) {
-      const divider = document.createElement('div');
-      divider.className = 'q-divider';
-      const positionPercent = ((i + 0.5) / (totalNodes - 1)) * 100;
-      divider.style.left = `${positionPercent}%`;
-      quarterDividers.appendChild(divider);
-    }
-  }
-  updateUI();
-}
-
-function handleNodeClick(index) {
-  if (!isSelecting) {
-    window.filterStartIndex = index;
-    window.filterEndIndex = index;
-    isSelecting = true;
-  } else {
-    if (index < window.filterStartIndex) {
-      window.filterEndIndex = window.filterStartIndex;
+  function handleNodeClick(index) {
+    if (!isSelecting) {
       window.filterStartIndex = index;
-    } else {
       window.filterEndIndex = index;
+      isSelecting = true;
+    } else {
+      if (index < window.filterStartIndex) {
+        window.filterEndIndex = window.filterStartIndex;
+        window.filterStartIndex = index;
+      } else {
+        window.filterEndIndex = index;
+      }
+      isSelecting = false;
     }
-    isSelecting = false;
+    updateUI();
   }
-  updateUI();
-}
 
-function selectYear(year) {
-  const yearIndex = filterYears.indexOf(year);
-  if (yearIndex !== -1) {
-    window.filterStartIndex = yearIndex * 4;
-    window.filterEndIndex = window.filterStartIndex + 3;
+  function selectYear(year) {
+    const yearIndex = filterYears.indexOf(year);
+    if (yearIndex !== -1) {
+      window.filterStartIndex = yearIndex * 4;
+      window.filterEndIndex = window.filterStartIndex + 3;
+      isSelecting = false;
+      updateUI();
+    }
+  }
+
+  function resetFilter() {
+    window.filterStartIndex = 0;
+    window.filterEndIndex = totalNodes - 1;
     isSelecting = false;
     updateUI();
   }
-}
 
-function resetFilter() {
-  window.filterStartIndex = 0;
-  window.filterEndIndex = totalNodes - 1;
-  isSelecting = false;
-  updateUI();
-}
+  function updateUI() {
+    const nodes = document.querySelectorAll('.node');
+    const qLabels = document.querySelectorAll('.quarter-label');
+    const yLabels = document.querySelectorAll('.year-label');
+    const trackActive = document.getElementById('trackActive');
 
-function updateUI() {
-  const nodes = document.querySelectorAll('.node');
-  const qLabels = document.querySelectorAll('.quarter-label');
-  const yLabels = document.querySelectorAll('.year-label');
-  const trackActive = document.getElementById('trackActive');
+    if(nodes.length === 0) return;
 
-  if(nodes.length === 0) return; 
+    nodes.forEach((node, i) => {
+      node.className = 'node'; 
+      qLabels[i].className = 'quarter-label';
+      
+      if (i >= window.filterStartIndex && i <= window.filterEndIndex) {
+        node.classList.add('active'); 
+        qLabels[i].classList.add('active');
+        if (i === window.filterStartIndex || i === window.filterEndIndex) {
+          node.classList.add('endpoint'); 
+        }
+      }
+    });
 
-  nodes.forEach((node, i) => {
-    node.className = 'node'; 
-    qLabels[i].className = 'quarter-label';
+    yLabels.forEach((label, i) => {
+      const yearStart = i * 4;
+      const yearEnd = yearStart + 3;
+      if (window.filterStartIndex <= yearEnd && window.filterEndIndex >= yearStart) {
+        label.classList.add('active');
+      } else {
+        label.classList.remove('active');
+      }
+    });
+
+    const startPercent = (window.filterStartIndex / (totalNodes - 1)) * 100;
+    const endPercent = (window.filterEndIndex / (totalNodes - 1)) * 100;
+    trackActive.style.left = `${startPercent}%`;
+    trackActive.style.width = `${endPercent - startPercent}%`;
+
+    const startYear = filterYears[Math.floor(window.filterStartIndex / 4)];
+    const startQ = filterQuarters[window.filterStartIndex % 4];
+    const endYear = filterYears[Math.floor(window.filterEndIndex / 4)];
+    const endQ = filterQuarters[window.filterEndIndex % 4];
+    const count = window.filterEndIndex - window.filterStartIndex + 1;
     
-    if (i >= window.filterStartIndex && i <= window.filterEndIndex) {
-      node.classList.add('active'); 
-      qLabels[i].classList.add('active'); // CSS를 통해 글자 커지고 보라색/볼드 처리
-      if (i === window.filterStartIndex || i === window.filterEndIndex) {
-        node.classList.add('endpoint'); 
+    let labelText = '';
+    if (count === 1) {
+      labelText = `${startYear} ${startQ}`;
+    } else if (count === totalNodes) {
+      labelText = '전체 기간';
+    } else {
+      labelText = `${startYear} ${startQ} ➔ ${endYear} ${endQ}`;
+    }
+    
+    document.getElementById('summaryText').innerText = labelText;
+    document.getElementById('summaryCount').innerText = `${count}개 분기`;
+
+    updateFilterLabel(labelText);
+
+    if(typeof RAW !== 'undefined' && RAW.length > 0) {
+      renderAll();
+      renderEvalTab();
+      if(document.getElementById('view-members').classList.contains('active')) {
+        renderMembers();
       }
     }
-  });
-
-  yLabels.forEach((label, i) => {
-    const yearStart = i * 4;
-    const yearEnd = yearStart + 3;
-    if (window.filterStartIndex <= yearEnd && window.filterEndIndex >= yearStart) {
-      label.classList.add('active');
-    } else {
-      label.classList.remove('active');
-    }
-  });
-
-  const startPercent = (window.filterStartIndex / (totalNodes - 1)) * 100;
-  const endPercent = (window.filterEndIndex / (totalNodes - 1)) * 100;
-  trackActive.style.left = `${startPercent}%`;
-  trackActive.style.width = `${endPercent - startPercent}%`;
-
-  const startYear = filterYears[Math.floor(window.filterStartIndex / 4)];
-  const startQ = filterQuarters[window.filterStartIndex % 4];
-  const endYear = filterYears[Math.floor(window.filterEndIndex / 4)];
-  const endQ = filterQuarters[window.filterEndIndex % 4];
-  const count = window.filterEndIndex - window.filterStartIndex + 1;
-  
-  // 1개 분기 선택 시 하나만 보이게 처리
-  let labelText = '';
-  if (count === 1) {
-    labelText = `${startYear} ${startQ}`;
-  } else if (count === totalNodes) {
-    labelText = '전체 기간';
-  } else {
-    labelText = `${startYear} ${startQ} ➔ ${endYear} ${endQ}`;
   }
-  
-  document.getElementById('summaryText').innerText = labelText;
-  document.getElementById('summaryCount').innerText = `${count}개 분기`;
 
-  updateFilterLabel(labelText);
-
-  if(typeof RAW !== 'undefined' && RAW.length > 0) {
-    renderAll();
-    renderEvalTab();
-    if(document.getElementById('view-members').classList.contains('active')) {
-      renderMembers();
-    }
+  function updateFilterLabel(text){
+    const badge = document.getElementById('filterBadge');
+    if(badge) badge.textContent = text || document.getElementById('summaryText').innerText;
   }
-}
-
-function updateFilterLabel(text){
-  const badge = document.getElementById('filterBadge');
-  if(badge) badge.textContent = text || document.getElementById('summaryText').innerText;
-}
-// ✨ 모던 슬라이더 관련 함수들 끝
+</script>
+<!-- ✨ 모던 필터 영역 끝 -->
 
 function buildSidebarMembers(){
   const wrap=document.getElementById('sidebarMembers');wrap.innerHTML='';
