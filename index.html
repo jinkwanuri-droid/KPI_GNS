@@ -292,19 +292,26 @@ body { display:flex; min-height:100vh; }
     </div>
   </div>
   
-  <!-- ✨ 모던 필터 영역 -->
+  <!-- ✨ 모던 필터 영역 시작 -->
   <div class="modern-filter-card" id="sidebarFilters">
     <div class="filter-header">기간 선택</div>
     <div class="timeline-container">
-      <div class="global-dividers" id="globalDividers"></div>
+      
+      <!-- 연도 영역 -->
       <div class="year-row" id="yearRow"></div>
+      
+      <!-- 슬라이더 및 노드 영역 -->
       <div class="track-row" id="trackRow">
         <div class="track-bg"></div>
         <div class="track-active" id="trackActive"></div>
         <div class="nodes-container" id="nodesContainer"></div>
       </div>
+      
+      <!-- 분기 (1,2,3,4) 영역 -->
       <div class="quarter-row" id="quarterRow"></div>
     </div>
+    
+    <!-- 요약 및 초기화 버튼 -->
     <div class="range-summary">
       <span class="summary-text" id="summaryText">-</span>
       <span class="summary-count" id="summaryCount">-</span>
