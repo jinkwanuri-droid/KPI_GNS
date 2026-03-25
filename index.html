@@ -365,17 +365,17 @@ body { display:flex; min-height:100vh; }
     <div class="card"><div class="card-section-title">📅 월별 투입시간 일정</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
   </div>
 
-  <!-- ✨ 2. 팀원별 업무시간 탭 (개편) -->
+  <!-- ✨ 2. 팀원별 업무시간 탭 (애니메이션 제거 버전) -->
   <div id="view-members" class="view-section">
     <!-- 목록 뷰 -->
-    <div id="memberListView" class="fade-enter">
+    <div id="memberListView">
       <div style="font-size:17px;font-weight:800;color:#3d3d5c;margin-bottom:18px;">👥 팀원별 대표카드 (클릭 시 상세 조회)</div>
       <!-- 폭 320px 고정 좌측 정렬 그리드 -->
       <div class="member-overview-grid" id="memberOverviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, 320px); align-items: stretch; justify-content: start; gap:20px;"></div>
     </div>
 
     <!-- 상세 대시보드 뷰 -->
-    <div id="memberDetailView" style="display:none;" class="slide-enter">
+    <div id="memberDetailView" style="display:none;">
       <!-- 상단 뒤로가기 & 미니 로고 -->
       <div class="detail-view-header">
         <button class="back-list-btn" onclick="closeDetail()">
@@ -390,7 +390,7 @@ body { display:flex; min-height:100vh; }
         <div class="eval-profile-card" id="newDpProfile" style="position: sticky; top: 20px; align-self: start;"></div>
         
         <!-- 우측 차트 영역 -->
-        <div class="eval-charts-col fade-enter" style="animation-delay: 0.1s;">
+        <div class="eval-charts-col">
           <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:18px;" class="eval-top-row-grid">
             <div class="eval-trend-card" style="margin-bottom:0;">
               <div class="eval-trend-title">📊 월별 소분류 누적 투입시간</div>
@@ -508,17 +508,7 @@ body { display:flex; min-height:100vh; }
   .reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
   .reset-btn:hover { background: #f0eeff; border-color: #6c63ff; }
 
-  /* 팀원 뷰 애니메이션 & 디테일 */
-  .fade-enter { animation: fadeIn 0.4s ease forwards; opacity: 0; }
-  
-  /* 세련된 슬라이드 인 애니메이션 */
-  @keyframes elegantCardSlide {
-    0% { opacity: 0; transform: translateX(50px) scale(0.97); }
-    100% { opacity: 1; transform: translateX(0) scale(1); }
-  }
-  .anim-card-slide { animation: elegantCardSlide 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-  .slide-enter { animation: elegantCardSlide 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; opacity: 0; }
-
+  /* ✨ 애니메이션 삭제됨 */
   .detail-view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eef0f8; padding-bottom: 16px; }
   .back-list-btn { display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 8px 16px; color: #374151; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
   .back-list-btn:hover { background: #f9fafb; border-color: #9ca3af; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
@@ -667,6 +657,7 @@ async function loadDataFromSheets(){
       sub:String(row.sub||'기타').trim(),min:parseInt(row.min)||0,
     }));
     
+    // ✨ 팀원 정렬 순서 고정 (윤진관-이혜인B-정인태-김효언)
     const targetOrder = ['윤진관', '이혜인B', '정인태', '김효언'];
     const memberSet=new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]);
     MEMBERS=Array.from(memberSet).filter(n=>n);
@@ -859,7 +850,7 @@ function updateUI() {
 
   updateFilterLabel(labelText);
 
-  // 필터 작동 시 상세 뷰 갱신 연결
+  // ✨ 필터 조작 시 모든 뷰 데이터 리렌더링
   if(typeof RAW !== 'undefined' && RAW.length > 0) {
     renderAll();
     renderEvalTab();
@@ -1027,12 +1018,13 @@ function showView(view,navEl){
   const sidebarEval=document.getElementById('sidebarEvalContainer');
   if(view==='kpieval'){sidebarEval.style.display='block';renderEvalTab();}
   else{sidebarEval.style.display='none';}
+  
   if(view==='members') {
     if(G.selectedMember) {
       document.getElementById('memberListView').style.display = 'none';
       document.getElementById('memberDetailView').style.display = 'block';
-      // ✨ 탭 이동 시 렌더링 지연시간을 넉넉히 주어 차트 크기 오류 방지
-      setTimeout(() => renderDetailPanel(G.selectedMember), 400);
+      // ✨ 애니메이션 삭제 후 즉시 렌더링
+      renderDetailPanel(G.selectedMember);
     } else {
       document.getElementById('memberDetailView').style.display = 'none';
       document.getElementById('memberListView').style.display = 'block';
@@ -1084,13 +1076,12 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
         <div style="font-size:16px; font-weight:800; color:#3d3d5c; margin-bottom:4px;">${avgMo}h</div>
         <div style="font-size:11px; color:#aaa; font-weight:600;">월 평균 투입</div>
       </div>
-      <!-- ✨ 아이콘 삭제, 텍스트 색상 및 폰트 변경 반영 -->
       <div style="background:#f8f8ff; border-radius:10px; padding:16px 10px; text-align:center;">
-        <div style="font-size:12px; font-weight:500; color:#3d3d5c; margin-bottom:4px; line-height:1.4;">${pkM ? pkM[0] : '-'}<br><span style="font-size:14px; font-weight:800;">(${pkM ? formatHour(pkM[1]) : 0}h)</span></div>
+        <div style="font-size:14px; font-weight:500; color:#3d3d5c; margin-bottom:4px; line-height:1.4;">${pkM ? pkM[0] : '-'}<br><span style="font-size:14px; font-weight:800;">(${pkM ? formatHour(pkM[1]) : 0}h)</span></div>
         <div style="font-size:11px; color:#aaa; font-weight:600;">최다 투입월</div>
       </div>
       <div style="background:#f8f8ff; border-radius:10px; padding:16px 10px; text-align:center;">
-        <div style="font-size:12px; font-weight:500; color:#3d3d5c; margin-bottom:4px; line-height:1.4;">${pkD ? pkD[0] : '-'}<br><span style="font-size:14px; font-weight:800;">(${pkD ? formatHour(pkD[1]) : 0}h)</span></div>
+        <div style="font-size:14px; font-weight:500; color:#3d3d5c; margin-bottom:4px; line-height:1.4;">${pkD ? pkD[0] : '-'}<br><span style="font-size:14px; font-weight:800;">(${pkD ? formatHour(pkD[1]) : 0}h)</span></div>
         <div style="font-size:11px; color:#aaa; font-weight:600;">최다 투입일</div>
       </div>
     </div>
@@ -1109,6 +1100,7 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
       }).join('')}
     </div>
 
+    <!-- ✨ 단계별 투입 비중 -->
     <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;">📐 단계별 투입 비중</div>
     <div class="stage-bars-container">
       ${stageBarsHTML}
@@ -1158,22 +1150,13 @@ function openDetail(name){
   H.dpSub=null;
   G.selectedMember=name;
   
+  // ✨ 애니메이션 없이 즉각 표시
   document.getElementById('memberListView').style.display = 'none';
   const detailView = document.getElementById('memberDetailView');
   detailView.style.display = 'block';
   
-  const profileCard = document.getElementById('newDpProfile');
-  profileCard.classList.remove('anim-card-slide');
-  void profileCard.offsetWidth; 
-  profileCard.classList.add('anim-card-slide');
-
   renderMiniAvatars(name);
-  
-  // ✨ 차트 렌더링 지연시간 400ms 부여 (차트 안보임 에러 완벽 차단)
-  setTimeout(() => {
-    renderDetailPanel(name);
-  }, 400);
-  
+  renderDetailPanel(name);
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -1196,12 +1179,12 @@ function renderDetailPanel(name){
 
   const pct = totalAllMin > 0 ? Math.round(tot / totalAllMin * 100) : 0;
 
-  // 좌측 프로필 랜더링
+  // 1. 좌측 프로필
   const profileEl = document.getElementById('newDpProfile');
   profileEl.style.borderColor = color + '44';
   profileEl.innerHTML = getRepCardHTML(name, d, tot, pct, mos, pos, color);
 
-  // 우측 도넛
+  // 2. 우측 도넛 
   const catMap=grpMin(d,'cat');
   const cats2=CAT_ORDER.filter(c=>catMap[c]>0);
   const catData=cats2.map(c=>mToH(catMap[c]||0));
@@ -1234,7 +1217,7 @@ function renderDetailPanel(name){
   renderNewDpTop3(subMap, tot);
   renderDpStacked(d,mos,subMap,moMap,color);
 
-  // 집중업무 비율 바 렌더링
+  // ✨ 신규: 집중업무/분산업무 100% 누적 가로 막대
   let focusMin = 0;
   let distMin = 0;
   d.forEach(r => {
