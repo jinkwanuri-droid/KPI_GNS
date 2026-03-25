@@ -291,7 +291,7 @@ body { display:flex; min-height:100vh; }
       <div class="eval-dropdown-menu" id="evalDropdownMenu" style="top:calc(100% + 4px);"></div>
     </div>
   </div>
-  
+   
   <!-- ✨ 모던 필터 영역 시작 -->
   <div class="modern-filter-card" id="sidebarFilters">
     <div class="filter-header">기간 선택</div>
@@ -324,6 +324,247 @@ body { display:flex; min-height:100vh; }
       <span style="color: #374151;">필터 초기화</span>
     </button>
   </div>
+
+<style>
+  .modern-filter-card {
+    background: #ffffff; padding: 18px 15px 15px 15px; width: 100%; margin-top: auto; flex-shrink: 0;
+    font-family: 'Pretendard', sans-serif; border-top: 2px solid #f0eeff;
+  }
+  .filter-header { font-size: 13px; font-weight: 700; color: #6c63ff; margin-bottom: 22px; }
+  
+  /* 타임라인 컨테이너 여백 통일 */
+  .timeline-container { position: relative; margin-bottom: 24px; padding: 0 10px; }
+
+  /* 1. 연도 행 (Absolute 배치로 변경) */
+  .year-row { position: relative; height: 18px; margin-bottom: 12px; }
+  .year-label { 
+    position: absolute; top: 0; transform: translateX(-50%);
+    font-size: 13px; font-weight: 800; color: #9ca3af; cursor: pointer; transition: all 0.3s ease; 
+  }
+  .year-label:hover { color: #6366f1; transform: translateX(-50%) translateY(-2px); }
+  .year-label.active { color: #6366f1; }
+
+  /* 2. 트랙 및 슬라이더 (두께 얇게 조절) */
+  .track-row { position: relative; height: 20px; display: flex; align-items: center; }
+  .track-bg { position: absolute; width: 100%; height: 3px; background: #f3f4f6; border-radius: 2px; }
+  .track-active { position: absolute; height: 3px; background: #6366f1; border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); left: 0; width: 0; }
+  
+  .nodes-container { position: absolute; width: 100%; height: 100%; }
+  
+  /* 비활성 점: 테두리 없이 연한 회색 */
+  .node { 
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 6px; height: 6px; background: #d1d5db; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; z-index: 2;
+  }
+  .node:hover { transform: translate(-50%, -50%) scale(1.8); background: #6366f1; }
+  /* 활성 점 (구간 사이) */
+  .node.active { background: #6366f1; }
+  /* 활성 점 (시작점, 끝점) - 연한 그림자 추가 */
+  .node.endpoint { 
+    width: 14px; height: 14px; background: #6366f1; border: 2.5px solid #ffffff; 
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.45); z-index: 3;
+  }
+
+  /* 3. 분기 행 (1,2,3,4) */
+  .quarter-row { position: relative; height: 16px; margin-top: 10px; }
+  .quarter-label { 
+    position: absolute; top: 0; transform: translateX(-50%);
+    font-size: 11px; font-weight: 500; color: #9ca3af; width: 16px; text-align: center; transition: all 0.3s ease; 
+  }
+  .quarter-label.active { color: #6366f1; font-size: 12px; font-weight: 800; }
+
+  .range-summary { background: #e0e7ff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .summary-text { color: #6366f1; font-weight: 700; font-size: 13px; }
+  .summary-count { color: #6366f1; font-size: 11px; opacity: 0.8; }
+  .reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+  .reset-btn:hover { background: #f0eeff; border-color: #6c63ff; }
+</style>
+
+<script>
+  window.filterStartIndex = 0; 
+  window.filterEndIndex = 11;  
+  const filterYears = [2024, 2025, 2026];
+  const filterQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+  const totalNodes = filterYears.length * filterQuarters.length;
+  let isSelecting = false;
+  
+  // 요소들의 가로 배치 퍼센트(%)를 담을 배열
+  let percentPositions = [];
+
+  function initSlider() {
+    const nodesContainer = document.getElementById('nodesContainer');
+    const quarterRow = document.getElementById('quarterRow');
+    const yearRow = document.getElementById('yearRow');
+    
+    nodesContainer.innerHTML = '';
+    quarterRow.innerHTML = '';
+    yearRow.innerHTML = '';
+
+    // ✨ 수학적 간격 계산 (연도 사이를 더 넓게 벌림)
+    const gapNormal = 1;      // 동일 연도 내 분기 사이의 간격
+    const gapYear = 2.5;      // 연도가 바뀔 때의 간격 (더 넓게!)
+    let currentPos = 0;
+    let positions = [];
+    
+    for(let i = 0; i < totalNodes; i++) {
+      positions.push(currentPos);
+      if (i < totalNodes - 1) {
+        if (i % 4 === 3) currentPos += gapYear; // Q4 -> Q1 넘어갈 때 넓은 공백
+        else currentPos += gapNormal;           // 일반 공백
+      }
+    }
+    
+    const maxPos = currentPos;
+    // 0 ~ 100% 사이의 절대 위치 배열 생성
+    percentPositions = positions.map(p => (p / maxPos) * 100);
+
+    // 1. 연도 라벨 자동 배치 (해당 연도 노드들의 정중앙)
+    filterYears.forEach((year, index) => {
+      const yLabel = document.createElement('div');
+      yLabel.className = 'year-label';
+      yLabel.innerText = year;
+      yLabel.onclick = () => selectYear(year);
+      
+      const startIdx = index * 4;
+      const endIdx = startIdx + 3;
+      const centerPercent = (percentPositions[startIdx] + percentPositions[endIdx]) / 2;
+      yLabel.style.left = `${centerPercent}%`;
+      yearRow.appendChild(yLabel);
+    });
+
+    // 2. 점(Node) 및 분기 숫자(1,2,3,4) 배치
+    for (let i = 0; i < totalNodes; i++) {
+      const pct = percentPositions[i];
+
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.style.left = `${pct}%`;
+      node.onclick = () => handleNodeClick(i);
+      nodesContainer.appendChild(node);
+
+      const qLabel = document.createElement('div');
+      qLabel.className = 'quarter-label';
+      qLabel.innerText = (i % 4) + 1; // 1, 2, 3, 4
+      qLabel.style.left = `${pct}%`;
+      qLabel.onclick = () => handleNodeClick(i);
+      qLabel.style.cursor = 'pointer';
+      quarterRow.appendChild(qLabel);
+    }
+    
+    updateUI();
+  }
+
+  function handleNodeClick(index) {
+    if (!isSelecting) {
+      window.filterStartIndex = index;
+      window.filterEndIndex = index;
+      isSelecting = true;
+    } else {
+      if (index < window.filterStartIndex) {
+        window.filterEndIndex = window.filterStartIndex;
+        window.filterStartIndex = index;
+      } else {
+        window.filterEndIndex = index;
+      }
+      isSelecting = false;
+    }
+    updateUI();
+  }
+
+  function selectYear(year) {
+    const yearIndex = filterYears.indexOf(year);
+    if (yearIndex !== -1) {
+      window.filterStartIndex = yearIndex * 4;
+      window.filterEndIndex = window.filterStartIndex + 3;
+      isSelecting = false;
+      updateUI();
+    }
+  }
+
+  function resetFilter() {
+    window.filterStartIndex = 0;
+    window.filterEndIndex = totalNodes - 1;
+    isSelecting = false;
+    updateUI();
+  }
+
+  function updateUI() {
+    const nodes = document.querySelectorAll('.node');
+    const qLabels = document.querySelectorAll('.quarter-label');
+    const yLabels = document.querySelectorAll('.year-label');
+    const trackActive = document.getElementById('trackActive');
+
+    if(nodes.length === 0) return;
+
+    // 점 및 라벨 스타일 활성화 처리
+    nodes.forEach((node, i) => {
+      node.className = 'node'; 
+      qLabels[i].className = 'quarter-label';
+      
+      if (i >= window.filterStartIndex && i <= window.filterEndIndex) {
+        node.classList.add('active'); 
+        qLabels[i].classList.add('active');
+        if (i === window.filterStartIndex || i === window.filterEndIndex) {
+          node.classList.add('endpoint'); 
+        }
+      }
+    });
+
+    // 연도 라벨 활성화 처리
+    yLabels.forEach((label, i) => {
+      const yearStart = i * 4;
+      const yearEnd = yearStart + 3;
+      if (window.filterStartIndex <= yearEnd && window.filterEndIndex >= yearStart) {
+        label.classList.add('active');
+      } else {
+        label.classList.remove('active');
+      }
+    });
+
+    // ✨ 불규칙한 간격에 맞춰 트랙 연결선 너비 완벽 계산
+    const startPercent = percentPositions[window.filterStartIndex];
+    const endPercent = percentPositions[window.filterEndIndex];
+    trackActive.style.left = `${startPercent}%`;
+    trackActive.style.width = `${endPercent - startPercent}%`;
+
+    // 텍스트 요약 업데이트
+    const startYear = filterYears[Math.floor(window.filterStartIndex / 4)];
+    const startQ = filterQuarters[window.filterStartIndex % 4];
+    const endYear = filterYears[Math.floor(window.filterEndIndex / 4)];
+    const endQ = filterQuarters[window.filterEndIndex % 4];
+    const count = window.filterEndIndex - window.filterStartIndex + 1;
+    
+    let labelText = '';
+    if (count === 1) {
+      labelText = `${startYear} ${startQ}`;
+    } else if (count === totalNodes) {
+      labelText = '전체 기간';
+    } else {
+      labelText = `${startYear} ${startQ} ➔ ${endYear} ${endQ}`;
+    }
+    
+    document.getElementById('summaryText').innerText = labelText;
+    document.getElementById('summaryCount').innerText = `${count}개 분기`;
+
+    updateFilterLabel(labelText);
+
+    // 데이터 렌더링 연동
+    if(typeof RAW !== 'undefined' && RAW.length > 0) {
+      renderAll();
+      renderEvalTab();
+      if(document.getElementById('view-members').classList.contains('active')) {
+        renderMembers();
+      }
+    }
+  }
+
+  function updateFilterLabel(text){
+    const badge = document.getElementById('filterBadge');
+    if(badge) badge.textContent = text || document.getElementById('summaryText').innerText;
+  }
+</script>
+<!-- ✨ 모던 필터 영역 끝 -->
+  
 </nav>
 
 <div class="main">
