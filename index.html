@@ -271,8 +271,6 @@ body { display:flex; min-height:100vh; }
   <button class="ov-enter-btn" id="ovEnterBtn" onclick="hideLoadingOverlay()">🚀 대시보드 입장하기</button>
 </div>
 <div class="tooltip-box" id="tooltip"></div>
-
-<!-- 사이드바 -->
 <nav class="sidebar">
   <div class="sidebar-header"><div class="sidebar-logo">KPI</div><div class="sidebar-title">서부의료원<br>설립사업</div></div>
   <div class="sidebar-section-title">메인 메뉴</div>
@@ -283,8 +281,6 @@ body { display:flex; min-height:100vh; }
   <div class="sidebar-section-title">팀원</div>
   <div class="member-list" id="sidebarMembers"></div>
   <div class="sidebar-divider"></div>
-  
-  <!-- KPI 평가용 팀원 선택 드롭다운 -->
   <div id="sidebarEvalContainer" style="display:none; padding:13px 15px;">
     <div class="sidebar-section-title" style="padding:0 0 8px 0; color:#6c63ff;">⭐ 역량평가 대상팀원</div>
     <div class="eval-dropdown-wrap" id="evalDropdownWrap" style="width:100%; display:block;">
@@ -335,7 +331,6 @@ body { display:flex; min-height:100vh; }
     </div>
   </div>
   
-  <!-- 1. 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
     <div class="grid-top" id="topKpiGrid"></div>
     <div class="grid-mid">
@@ -362,60 +357,21 @@ body { display:flex; min-height:100vh; }
     <div class="card"><div class="card-section-title">📅 월별 투입시간 일정</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
   </div>
 
-  <!-- ✨ 2. 팀원별 탭 (신규 2단 레이아웃 개편) -->
   <div id="view-members" class="view-section">
-    <!-- 목록 뷰 -->
-    <div id="memberListView">
-      <div style="font-size:17px;font-weight:800;color:#3d3d5c;margin-bottom:14px;">👥 팀원별 상세 현황 (팀원을 선택하세요)</div>
-      <div class="member-overview-grid" id="memberOverviewGrid"></div>
-    </div>
-
-    <!-- 상세 대시보드 뷰 -->
-    <div id="memberDetailView" style="display:none;">
-      <button onclick="closeDetail()" style="margin-bottom:16px; background:#f0eeff; border:none; border-radius:10px; padding:10px 18px; color:#6c63ff; font-weight:700; cursor:pointer; font-size:13px; transition:all 0.2s;">
-        🔙 목록으로 돌아가기
-      </button>
-      
-      <div class="eval-main-layout">
-        <!-- 좌측 프로필/요약 정보 -->
-        <div class="eval-profile-card" id="newDpProfile"></div>
-        
-        <!-- 우측 차트 영역 -->
-        <div class="eval-charts-col">
-          <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:18px;" class="eval-top-row-grid">
-            <div class="eval-trend-card" style="margin-bottom:0;">
-              <div class="eval-trend-title">📊 월별 소분류 누적 투입시간</div>
-              <div class="eval-trend-sub">X축: 연월 | 범례 클릭 시 해당 항목 필터링</div>
-              <div style="height:260px;"><canvas id="dpStackedBar"></canvas></div>
-            </div>
-            <div class="eval-trend-card" style="margin-bottom:0;">
-              <div class="eval-trend-title">📐 설계단계별 투입</div>
-              <div class="eval-trend-sub">해당 팀원의 단계별 비중</div>
-              <div class="eval-donut-section">
-                <div class="eval-donut-top" style="height: 220px;">
-                  <canvas id="dpDonut"></canvas>
-                  <div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div>
-                </div>
-                <div style="font-size:11px;font-weight:700;color:#9999bb;margin:8px 0 4px 0;text-transform:uppercase;">🏆 주력 소분류 TOP 3</div>
-                <div class="eval-top3-box-row" id="newDpTop3Row"></div>
-              </div>
-            </div>
-          </div>
-          <!-- 하단 히트맵 -->
-          <div class="eval-table-card">
-            <div class="card-section-title" style="margin-bottom:8px;">
-              🗓️ 월별 근무 밀도 
-              <span id="dpHeatTabs" style="margin-left:12px; display:inline-flex; gap:4px;"></span>
-            </div>
-            <div style="overflow-x:auto;"><table class="heat-table" id="dpHeatTable"></table></div>
-            <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span></div>
-          </div>
-        </div>
+    <div style="font-size:17px;font-weight:800;color:#3d3d5c;">👥 팀원별 상세 현황</div>
+    <div class="member-overview-grid" id="memberOverviewGrid"></div>
+    <div class="detail-panel" id="memberDetailPanel">
+      <div class="detail-header" id="dpHeader"></div>
+      <div class="detail-kpi-row" id="dpKpi"></div>
+      <div class="detail-top-row">
+        <div class="detail-chart-card"><div class="detail-chart-title">📐 설계단계별 업무시간</div><div style="height:220px;position:relative;"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div><div id="dpDonutLegend" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center;"></div></div>
+        <div class="detail-chart-card"><div class="detail-chart-title">🏆 소분류 TOP 5</div><ul class="top5-rank-list" id="dpTop5List" style="margin-top:0;"></ul></div>
       </div>
+      <div class="detail-stacked-card"><div class="detail-chart-title">📊 월별 소분류 누적 투입시간</div><div style="height:260px;"><canvas id="dpStackedBar"></canvas></div></div>
+      <div class="detail-bottom-single"><div class="detail-chart-title" style="margin-bottom:6px;">🗓️ 월별 근무 밀도 <span id="dpHeatTabs"></span></div><div style="overflow-x:auto;"><table class="heat-table" id="dpHeatTable"></table></div></div>
     </div>
   </div>
 
-  <!-- 3. KPI 역량평가 탭 -->
   <div id="view-kpieval" class="view-section">
     <div class="eval-main-layout" id="evalMainLayout">
       <div id="evalProfileCard" class="eval-profile-card"></div>
@@ -469,7 +425,7 @@ body { display:flex; min-height:100vh; }
 </div>
 
 <style>
-  /* 추가 CSS 스타일 병합 */
+  /* 필터 디자인용 스타일 */
   .modern-filter-card {
     background: #ffffff; padding: 18px 15px 15px 15px; width: 100%; margin-top: auto; flex-shrink: 0;
     font-family: 'Pretendard', sans-serif; border-top: 2px solid #f0eeff;
@@ -509,6 +465,7 @@ body { display:flex; min-height:100vh; }
   .quarter-label.active { color: #6366f1; font-size: 12px; font-weight: 800; }
   
   .range-summary { background: #e0e7ff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  /* ✨ 13px에서 12px로 축소 */
   .summary-text { color: #6366f1; font-weight: 700; font-size: 12px; }
   .summary-count { color: #6366f1; font-size: 11px; opacity: 0.8; }
   .reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
@@ -677,6 +634,7 @@ function initSlider() {
   quarterRow.innerHTML = '';
   yearRow.innerHTML = '';
 
+  // ✨ 4분기와 1분기 사이의 간격을 기존 2.8에서 1.6으로 축소 (절반 수준)
   const gapNormal = 1;
   const gapYear = 1.6; 
   let currentPos = 0;
@@ -957,156 +915,50 @@ function showView(view,navEl){
   else{sidebarEval.style.display='none';}
   if(view==='members') renderMembers();
 }
-
 function renderMembers(){
   const all=filtered();const totalMin=all.reduce((s,r)=>s+r.min,0);
   const grid=document.getElementById('memberOverviewGrid');grid.innerHTML='';
   MEMBERS.forEach(name=>{
     const color=MC[name];const d=all.filter(r=>r.name===name);const tot=d.reduce((s,r)=>s+r.min,0);
     const pos=RAW.find(r=>r.name===name)?.pos||'';const mos=getMos(d);const catMap=grpMin(d,'cat');const maxCat=Math.max(...Object.values(catMap),1);const pct=totalMin>0?Math.round(tot/totalMin*100):0;
-    
-    const card=document.createElement('div');card.className='member-detail-card';
+    const isSelected=G.selectedMember===name;const card=document.createElement('div');card.className='member-detail-card';
+    card.style.borderColor=isSelected?color:'transparent';card.style.boxShadow=isSelected ? `0 0 0 3px ${color}28` : '';
     card.innerHTML = `<div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color};border-radius:16px 16px 0 0;"></div>
 <div class="member-top" style="margin-top:8px;"><div class="member-avatar-lg" style="background:${color};">${INITIALS[name]}</div><div style="flex:1;"><div style="font-size:16px;font-weight:800;color:#3d3d5c;">${name}</div><div style="font-size:12px;color:#aaa;">${pos}</div></div><div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:${color};">${formatHour(tot)}h</div><div style="font-size:12px;color:#aaa;">기여 ${pct}%</div></div></div>
 <div class="stats-grid"><div class="stat-cell"><div class="stat-val" style="color:${color};">${formatHour(tot)}h</div><div class="stat-lbl">총 투입</div></div><div class="stat-cell"><div class="stat-val">${mos.length}</div><div class="stat-lbl">참여월</div></div><div class="stat-cell"><div class="stat-val">${formatHour(tot/Math.max(mos.length,1)*60)}</div><div class="stat-lbl">월평균h</div></div><div class="stat-cell"><div class="stat-val">${pct}%</div><div class="stat-lbl">기여율</div></div></div>
 <div class="stage-bars">${CAT_ORDER.filter(c=>catMap[c]>0).map(c=>{const ci=CAT_ORDER.indexOf(c);return `<div class="stage-row"><span class="stage-name">${c.replace('설계','')}</span><div class="stage-track"><div class="stage-fill" style="width:${Math.round((catMap[c]||0)/maxCat*100)}%;background:${CAT_COLORS[ci]};"></div></div><span class="stage-val">${formatHour(catMap[c]||0)}h</span></div>`;}).join('')}</div>
-<div style="text-align:center;margin-top:12px;padding-top:10px;border-top:1px solid #f0f1f5;font-size:12px;color:#aaa;font-weight:400;">📊 클릭하여 상세 대시보드 보기</div>`;
-    card.addEventListener('click',()=>openDetail(name));grid.appendChild(card);
+<div style="text-align:center;margin-top:12px;padding-top:10px;border-top:1px solid #f0f1f5;font-size:12px;color:${isSelected?color:'#aaa'};font-weight:${isSelected?'700':'400'};">${isSelected?'▲ 상세 정보 접기':'📊 클릭하여 상세 보기 ▼'}</div>`;
+    card.addEventListener('click',()=>toggleDetail(name));grid.appendChild(card);
   });
 }
-
-function openDetail(name){
-  H.dpSub=null;
-  G.selectedMember=name;
-  document.getElementById('memberListView').style.display = 'none';
-  document.getElementById('memberDetailView').style.display = 'block';
-  renderDetailPanel(name);
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function closeDetail(){
-  G.selectedMember=null;
-  H.dpSub=null;
-  document.getElementById('memberDetailView').style.display = 'none';
-  document.getElementById('memberListView').style.display = 'block';
-  ['dpDonut','dpStackedBar'].forEach(id=>destroyChart(id));
-}
-
+function toggleDetail(name){G.selectedMember===name?closeDetail():openDetail(name);}
+function openDetail(name){H.dpSub=null;G.selectedMember=name;renderMembers();renderDetailPanel(name);setTimeout(()=>document.getElementById('memberDetailPanel').scrollIntoView({behavior:'smooth',block:'start'}),100);}
+function closeDetail(){G.selectedMember=null;H.dpSub=null;document.getElementById('memberDetailPanel').classList.remove('show');renderMembers();['dpDonut','dpStackedBar'].forEach(id=>destroyChart(id));}
 function renderDetailPanel(name){
-  const color=MC[name];const all=filtered();const totalAllMin=all.reduce((s,r)=>s+r.min,0);
-  const d=all.filter(r=>r.name===name);const tot=d.reduce((s,r)=>s+r.min,0);
-  const pos=RAW.find(r=>r.name===name)?.pos||'';
+  const color=MC[name];const all=filtered();const d=all.filter(r=>r.name===name);
+  const tot=d.reduce((s,r)=>s+r.min,0);const pos=RAW.find(r=>r.name===name)?.pos||'';
   const mos=getMos(d);const moMap={};d.forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});
   const catMap=grpMin(d,'cat');const subMap=grpMin(d,'sub');const pkM=Object.entries(moMap).sort((a,b)=>b[1]-a[1])[0];
-  const allYears=[...new Set(mos.map(m=>m.split('-')[0]))].sort();
-  if(!G.dpHeatYear||!allYears.includes(G.dpHeatYear)) G.dpHeatYear=allYears[allYears.length-1]||'2025';
-
-  const pct = totalAllMin > 0 ? Math.round(tot / totalAllMin * 100) : 0;
-  const avgMo = mos.length > 0 ? formatHour(tot / mos.length * 60) : 0;
-
-  const profileEl = document.getElementById('newDpProfile');
-  profileEl.style.borderColor = color + '44';
-  
-  const stageBarsHTML = CAT_ORDER.filter(c=>catMap[c]>0).map(c=>{
-    const ci=CAT_ORDER.indexOf(c);
-    const p=Math.round((catMap[c]||0)/tot*100);
-    return `<div class="eval-score-item" style="margin-bottom:6px;"><span class="eval-score-item-label" style="width:50px;">${c.replace('설계','')}</span><div class="eval-score-item-bar-wrap"><div class="eval-score-item-bar" style="width:${p}%;background:${CAT_COLORS[ci]};"></div></div><span class="eval-score-item-val" style="width:40px;color:${CAT_COLORS[ci]};">${formatHour(catMap[c])}h</span></div>`;
-  }).join('');
-
-  profileEl.innerHTML = `
-    <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${color};border-radius:20px 20px 0 0;"></div>
-    <div class="eval-profile-top" style="margin-top:8px;">
-      <div class="eval-profile-avatar" style="background:${color};"><span style="font-size:22px;font-weight:800;">${INITIALS[name]}</span></div>
-      <div style="flex:1;"><div class="eval-profile-name">${name}</div><div class="eval-profile-pos">${pos}</div><span class="eval-profile-badge" style="background:${color}18;color:${color};">${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'}</span></div>
-    </div>
-    <div class="eval-score-big">
-      <div class="eval-score-big-num" style="color:${color};font-size:42px;">${formatHour(tot)}<span style="font-size:20px;">h</span></div>
-      <div class="eval-score-big-label">선택 기간 총 투입시간</div>
-      <span class="eval-score-grade" style="background:#f0eeff;color:#6c63ff;font-size:12px;">전체 프로젝트 기여도 ${pct}%</span>
-    </div>
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:10px;text-transform:uppercase;">💡 투입 요약</div>
-    <div class="stats-grid" style="grid-template-columns:1fr 1fr; margin-bottom:20px;">
-      <div class="stat-cell" style="padding:12px 6px;"><div class="stat-val">${mos.length}개월</div><div class="stat-lbl">참여월</div></div>
-      <div class="stat-cell" style="padding:12px 6px;"><div class="stat-val">${avgMo}h</div><div class="stat-lbl">월 평균 투입</div></div>
-      <div class="stat-cell" style="padding:12px 6px;"><div class="stat-val" style="color:#ec4899;">${pkM?pkM[0]:'-'}</div><div class="stat-lbl">최다 투입월</div></div>
-      <div class="stat-cell" style="padding:12px 6px;"><div class="stat-val" style="color:#f97316;">${Object.keys(subMap).length}개</div><div class="stat-lbl">수행 소분류</div></div>
-    </div>
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;">📐 단계별 투입 비중</div>
-    <div>${stageBarsHTML}</div>
-  `;
-
-  const cats2=CAT_ORDER.filter(c=>catMap[c]>0);
-  const catData=cats2.map(c=>mToH(catMap[c]||0));
-  const catColors=cats2.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]);
-  const catTotal=catData.reduce((a,b)=>a+b,0);
-  
-  document.getElementById('dpDonutCenter').innerHTML = `<div style="font-size:16px;font-weight:800;color:#3d3d5c;">${formatHour(tot)}h</div><div style="font-size:10px;color:#aaa;">총 투입</div>`;
-  
-  destroyChart('dpDonut');
-  CH.dpDonut=new Chart(document.getElementById('dpDonut').getContext('2d'),{
-    type:'doughnut',
-    data:{labels:cats2,datasets:[{data:catData,backgroundColor:catColors,borderWidth:3,borderColor:'#fff',hoverOffset:8}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,cutout:'55%',layout:{padding:14},
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},
-        datalabels:{
-          display:true, color:'#3d3d5c', font:{size:10,weight:'700'},
-          formatter:(val,ctx)=>{
-            const p = Math.round(val/catTotal*100);
-            return p > 5 ? `${cats2[ctx.dataIndex]}\n${p}%` : '';
-          },
-          anchor:'end', align:'end', offset:2, textAlign:'center'
-        }
-      }
-    }
-  });
-
-  renderNewDpTop3(subMap, tot);
-  renderDpStacked(d,mos,subMap,moMap,color);
-
+  const allYears=[...new Set(mos.map(m=>m.split('-')[0]))].sort();if(!G.dpHeatYear||!allYears.includes(G.dpHeatYear)) G.dpHeatYear=allYears[allYears.length-1]||'2025';
+  const panel=document.getElementById('memberDetailPanel');panel.classList.add('show');
+  document.getElementById('dpHeader').innerHTML = `<div class="detail-avatar" style="background:${color};">${INITIALS[name]}</div><div><div style="font-size:17px;font-weight:800;color:#3d3d5c;">${name}</div><div style="font-size:12px;color:#aaa;margin-top:2px;">${pos}</div><span style="background:${color}18;color:${color};font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px;">${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'}</span></div><button onclick="closeDetail()" style="margin-left:auto;background:#f0eeff;border:none;border-radius:10px;padding:7px 14px;color:#6c63ff;font-weight:700;cursor:pointer;font-size:13px;">✕ 닫기</button>`;
+  document.getElementById('dpKpi').innerHTML=[{v:formatHour(tot)+'h',l:'총 투입시간',c:color},{v:mos.length+'개월',l:'참여기간',c:'#f97316'},{v:formatHour(tot/Math.max(mos.length,1)*60)+'h',l:'월평균',c:'#22c55e'},{v:pkM?pkM[0]:'-',l:'최다 투입월',c:'#ec4899'}].map(k=>`<div class="detail-kpi" style="border-color:${k.c};"><div class="detail-kpi-val" style="color:${k.c};">${k.v}</div><div class="detail-kpi-lbl">${k.l}</div></div>`).join('');
+  const cats2=CAT_ORDER.filter(c=>catMap[c]>0);const catData=cats2.map(c=>mToH(catMap[c]||0));const catColors=cats2.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]);const catTotal=catData.reduce((a,b)=>a+b,0);
+  document.getElementById('dpDonutCenter').innerHTML = `<div style="font-size:14px;font-weight:800;color:#3d3d5c;">${formatHour(tot)}h</div><div style="font-size:10px;color:#aaa;">총 투입</div>`;
+  document.getElementById('dpDonutLegend').innerHTML=cats2.map((c,i)=>{const p=catTotal>0?Math.round(catData[i]/catTotal*100):0;return `<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#555;"><div style="width:8px;height:8px;border-radius:50%;background:${catColors[i]};"></div>${c}(${p}%)</div>`;}).join('');
+  destroyChart('dpDonut');CH.dpDonut=new Chart(document.getElementById('dpDonut').getContext('2d'),{type:'doughnut',data:{labels:cats2,datasets:[{data:catData,backgroundColor:catColors,borderWidth:3,borderColor:'#f8f8ff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',layout:{padding:10},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},datalabels:{display:false}}}});
+  renderDpTop5(subMap,tot,color);renderDpStacked(d,mos,subMap,moMap,color);
   const hytw=document.getElementById('dpHeatTabs');hytw.innerHTML='';
-  allYears.forEach(y=>{
-    const b=document.createElement('button');
-    b.className='tab-btn-sm'+(y===G.dpHeatYear?' active':'');
-    b.textContent=y+'년';
-    b.onclick=()=>{
-      G.dpHeatYear=y;
-      hytw.querySelectorAll('.tab-btn-sm').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      drawHeat(d,y,'dpHeatTable',color);
-    };
-    hytw.appendChild(b);
-  });
+  allYears.forEach(y=>{const b=document.createElement('button');b.className='tab-btn-sm'+(y===G.dpHeatYear?' active':'');b.style.cssText='font-size:11px;padding:4px 10px;';b.textContent=y+'년';b.onclick=()=>{G.dpHeatYear=y;hytw.querySelectorAll('.tab-btn-sm').forEach(x=>x.classList.remove('active'));b.classList.add('active');drawHeat(d,y,'dpHeatTable',color);};hytw.appendChild(b);});
   drawHeat(d,G.dpHeatYear,'dpHeatTable',color);
 }
-
-function renderNewDpTop3(subMap, tot) {
-  const top3wrap = document.getElementById('newDpTop3Row');
-  top3wrap.innerHTML = '';
-  const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  const rankEmoji=['🥇','🥈','🥉'];
-  const rankBg=['linear-gradient(135deg,#fef9ee,#fefce8)','linear-gradient(135deg,#f8fafc,#f1f5f9)','linear-gradient(135deg,#fdf6f0,#fffaf5)'];
-  const rankBorder=['#f59e0b','#94a3b8','#cd7c3b'];
-
-  top.forEach(([sub, min], i) => {
-    const pct = tot > 0 ? Math.round(min/tot*100) : 0;
-    const scoreColor=i===0?'#f59e0b':i===1?'#64748b':'#cd7c3b';
-    const card=document.createElement('div');
-    card.className='eval-top3-box-card';
-    card.style.cssText = `background:${rankBg[i]};border:1.5px solid ${rankBorder[i]}44; cursor:pointer; transition:transform 0.2s;`;
-    card.innerHTML = `<div style="font-size:16px;margin-bottom:2px;">${rankEmoji[i]}</div><div style="font-size:11px;font-weight:700;color:#3d3d5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;">${sub}</div><div style="font-size:14px;font-weight:900;color:${scoreColor};margin-top:2px;">${formatHour(min)}h</div><div style="font-size:10px;color:#aaa;">${pct}% 비중</div>`;
-    
-    card.addEventListener('click', () => {
-      card.style.transform = 'scale(0.95)';
-      setTimeout(()=>card.style.transform = 'none', 150);
-      dpClickSub(sub);
-    });
-    top3wrap.appendChild(card);
-  });
+function renderDpTop5(subMap,tot,color){
+  const top5=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,5);const list=document.getElementById('dpTop5List');list.innerHTML='';
+  top5.forEach(([sub,min],i)=>{const pct=tot>0?Math.round(min/tot*100):0;const rc=RANK_C[i%RANK_C.length];const isHL=H.dpSub===sub;const isDim=H.dpSub&&H.dpSub!==sub;
+    const li=document.createElement('li');li.className='dp-top5-item'+(isHL?' highlighted':'')+(isDim?' dimmed':'');
+    li.innerHTML = `<div class="top5-rank-badge" style="background:${rc};">${i+1}</div><span class="top5-rank-name" style="color:${isHL?rc:'#3d3d5c'};font-weight:${isHL?'800':'700'};">${sub}</span><span class="top5-rank-time">${formatHour(min)}h</span><span class="top5-rank-pct" style="color:${rc};">${pct}%</span>`;
+    li.addEventListener('click',()=>dpClickSub(sub));list.appendChild(li);});
 }
-
 function renderDpStacked(d,mos,subMap,moMap,color){
   const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const moSubMap={};d.forEach(r=>{const mo=r.date.slice(0,7);if(!moSubMap[mo])moSubMap[mo]={};moSubMap[mo][r.sub]=(moSubMap[mo][r.sub]||0)+r.min;});
@@ -1128,7 +980,7 @@ function renderDpStacked(d,mos,subMap,moMap,color){
   });
 }
 function dpClickSub(sub){H.dpSub=H.dpSub===sub?null:sub;H.dashSub=H.dpSub;renderDonut(H.dashSub);renderTop5(H.dashSub);renderDpTop5Highlight();renderDpStackedHighlight();}
-function renderDpTop5Highlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);renderNewDpTop3(grpMin(d,'sub'),d.reduce((s,r)=>s+r.min,0));}
+function renderDpTop5Highlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);renderDpTop5(grpMin(d,'sub'),d.reduce((s,r)=>s+r.min,0),MC[name]);}
 function renderDpStackedHighlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);const mos=getMos(d);const moMap={};d.forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;});renderDpStacked(d,mos,grpMin(d,'sub'),moMap,MC[name]);}
 
 function buildEvalDropdown(){
