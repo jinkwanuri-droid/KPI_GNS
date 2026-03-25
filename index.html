@@ -425,7 +425,7 @@ body { display:flex; min-height:100vh; }
 </div>
 
 <style>
-  /* 필터 디자인용 추가 스타일 (Body 안에 포함) */
+  /* 필터 디자인용 스타일 */
   .modern-filter-card {
     background: #ffffff; padding: 18px 15px 15px 15px; width: 100%; margin-top: auto; flex-shrink: 0;
     font-family: 'Pretendard', sans-serif; border-top: 2px solid #f0eeff;
@@ -465,7 +465,8 @@ body { display:flex; min-height:100vh; }
   .quarter-label.active { color: #6366f1; font-size: 12px; font-weight: 800; }
   
   .range-summary { background: #e0e7ff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .summary-text { color: #6366f1; font-weight: 700; font-size: 13px; }
+  /* ✨ 13px에서 12px로 축소 */
+  .summary-text { color: #6366f1; font-weight: 700; font-size: 12px; }
   .summary-count { color: #6366f1; font-size: 11px; opacity: 0.8; }
   .reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
   .reset-btn:hover { background: #f0eeff; border-color: #6c63ff; }
@@ -633,8 +634,9 @@ function initSlider() {
   quarterRow.innerHTML = '';
   yearRow.innerHTML = '';
 
+  // ✨ 4분기와 1분기 사이의 간격을 기존 2.8에서 1.6으로 축소 (절반 수준)
   const gapNormal = 1;
-  const gapYear = 2.8; 
+  const gapYear = 1.6; 
   let currentPos = 0;
   let positions = [];
   
