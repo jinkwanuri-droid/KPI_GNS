@@ -2056,7 +2056,7 @@ function renderPatternAnalysis(d, mos) {
             callbacks: {
               label: (c) => {
                 const d = c.raw;
-                return [`🗓️ ${d.moStr} (${d.wk.split('-')[1]})`, `다양성 지수(1-HHI): ${(1-d.x).toFixed(2)}`, `Shannon: ${d.y.toFixed(2)}`, `총 투입: ${d.time}h`];
+                return [`${d.moStr} (${d.wk.split('-')[1]})`, `다양성 지수(1-HHI): ${(1-d.x).toFixed(2)}`, `Shannon: ${d.y.toFixed(2)}`, `총 투입: ${d.time}h`];
               }
             }
           },
