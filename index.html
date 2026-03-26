@@ -1396,7 +1396,7 @@ function drawHeat(data,year,tableId,color){
     if(wk>=0 && wk<5) {
       mat[wk][mo] += sum;
       hasMo[mo] = true;
-      if (sum > 480) hasOver[wk][mo] = true; 
+      if (sum > 720) hasOver[wk][mo] = true; 
     }
   }
   
@@ -1437,7 +1437,7 @@ function drawHeat(data,year,tableId,color){
         cell.textContent = formatHour(v); 
         
         if (hasOver[w][mo]) {
-          cell.style.boxShadow = 'inset 0 0 0 1.5px #ef4444';
+          cell.style.boxShadow = 'inset 0 0 0 0.5px #ff8585';
         }
         
         (function(m2,w2,v2){
