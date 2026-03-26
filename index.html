@@ -335,7 +335,7 @@ body { display:flex; min-height:100vh; }
 .main{margin-left:224px;flex:1;padding:20px 22px 22px 22px;display:flex;flex-direction:column;gap:18px;min-width:0;}
 .header{display:none !important;}
 
-/* ✨ 뷰 공통 헤더: 여백 80px 통일 (마진, 보더 포함 정확한 높이 계산) */
+/* 뷰 공통 헤더: 여백 80px 통일 */
 .detail-view-header {
   display: flex; justify-content: space-between; align-items: center;
   height: 38px; 
@@ -436,6 +436,7 @@ body { display:flex; min-height:100vh; }
 .eval-trend-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #f0f1f5;color:#555;font-size:12px;}
 .eval-trend-table td:first-child{text-align:left;font-weight:700;}
 .eval-trend-table tr:hover td{background:#fafaff;}
+/* 테이블 최근 분기 연한 회색 배경 & 평균 열 배경 적용 */
 .eval-trend-table tr.current-q td { background: #f8fafc; font-weight: 700; }
 .eval-trend-table td:last-child { background: #f8f8ff; }
 
@@ -481,15 +482,18 @@ body { display:flex; min-height:100vh; }
 .mini-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; cursor: pointer; transition: all 0.2s; }
 .mini-avatar:hover { opacity: 1 !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 .new-top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; position: relative; z-index: 1;}
+
+/* 툴팁 개선 (다양성 포지셔닝용) */
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; cursor: help; }
-.info-icon { width: 16px; height: 16px; background: #d1d5db; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
-.info-tooltip { position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 320px; background: #374151; color: #fff; font-size: 11px; line-height: 1.5; font-weight: normal; padding: 14px 16px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: all 0.3s ease; z-index: 100; }
+.info-icon { width: 16px; height: 16px; background: #d1d5db; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.info-wrap:hover .info-icon { background: #6c63ff; }
+.info-tooltip { position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 360px; background: #374151; color: #fff; font-size: 12px; line-height: 1.6; font-weight: normal; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); visibility: hidden; opacity: 0; transition: all 0.3s ease; z-index: 100; pointer-events: none; }
 .info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 150%; }
 
-/* ✨ Flex 및 Grid 기반 레이아웃 고정 설정 */
+/* Flex 및 Grid 기반 레이아웃 고정 설정 */
 .eval-top-row-grid { display: flex; gap: 18px; align-items: stretch; width: 100%; }
 .eval-bottom-row   { display: flex; gap: 18px; align-items: stretch; width: 100%; }
-.eval-charts-grid  { display: grid; grid-template-columns: 1fr 450px; gap: 18px; align-items: start; width: 100%; } /* 신규 레이아웃용 그리드 */
+.eval-charts-grid  { display: grid; grid-template-columns: 1fr 450px; gap: 18px; align-items: start; width: 100%; } 
 .flex-1 { flex: 1; min-width: 0; }
 .fixed-450 { width: 450px; flex-shrink: 0; display: flex; flex-direction: column; }
 .eval-donut-card-fixed { height: 450px; }
@@ -587,7 +591,6 @@ body { display:flex; min-height:100vh; }
 
   <!-- 1. 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
-    <!-- 대시보드 헤더 공간은 사용하지 않으므로 숨김 (기본 설정 유지) -->
     <div class="grid-top" id="topKpiGrid"></div>
     <div class="grid-mid">
       <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
@@ -647,16 +650,35 @@ body { display:flex; min-height:100vh; }
               <div style="height:330px; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
               <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; justify-content:center;"></div>
             </div>
+            
             <!-- 2. 업무다양성 포지셔닝 (버블) -->
             <div class="eval-trend-card" style="margin-bottom:0;">
-              <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 업무 다양성 포지셔닝 (월별)</div>
-              <div style="height:180px; margin-top:10px;"><canvas id="dpDiversityBubble"></canvas></div>
+              <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 업무 다양성 포지셔닝 (주별)
+                <div class="info-wrap">
+                  <div class="info-icon">?</div>
+                  <div class="info-tooltip">
+                     <strong>[업무 다양성 해석 가이드]</strong><br>
+                     • <strong>가로축(HHI)</strong>: 오른쪽으로 갈수록 '독점' (한 업무에 집중)<br>
+                     • <strong>세로축(Shannon)</strong>: 위로 갈수록 '다양성' (종류가 많고 복잡)<br>
+                     • <strong>원 크기(Size)</strong>: '덩치' (주차별 총 투입시간)<br><br>
+                     <strong>[차트 위치별 요약]</strong><br>
+                     • <strong>왼쪽 상단 (춘추전국시대)</strong>: 업무 종류가 많고 비중이 골고루 분산됨<br>
+                     • <strong>오른쪽 상단 (대장주 시장)</strong>: 종류는 많지만 특정 업무 1~2개가 사실상 독식 중<br>
+                     • <strong>왼쪽 하단 (시작하는 단계)</strong>: 종류는 적지만 비중이 서로 비슷비슷함<br>
+                     • <strong>오른쪽 하단 (독과점 시대)</strong>: 종류도 적고 한 업무에 극단적으로 몰림
+                  </div>
+                </div>
+              </div>
+              <div style="height:200px; margin-top:10px;"><canvas id="dpDiversityBubble"></canvas></div>
             </div>
+            
             <!-- 3. 업무전환 빈도 (파편화) -->
             <div class="eval-trend-card" style="margin-bottom:0;">
               <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> 업무 전환 빈도 (파편화)</div>
-              <div style="height:180px; margin-top:10px;"><canvas id="dpSwitchBar"></canvas></div>
+              <div style="height:200px; margin-top:10px;"><canvas id="dpSwitchBar"></canvas></div>
             </div>
+            
             <!-- 4. 집중업무 비율 -->
             <div class="eval-trend-card" style="margin-bottom:0;">
               <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;">
@@ -699,7 +721,7 @@ body { display:flex; min-height:100vh; }
               <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888; justify-content:flex-end;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span></div>
             </div>
             <!-- 업무 연속성 (최장 연속 출근일) TOP 5 -->
-            <div class="eval-table-card" style="margin-bottom:0; padding:18px 20px;">
+            <div class="eval-table-card" style="margin-bottom:0; padding:18px 20px; flex: 1;">
               <div class="card-section-title" style="margin-bottom:12px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 업무 연속성 (최장 연속 출근일) TOP 5
               </div>
@@ -713,6 +735,7 @@ body { display:flex; min-height:100vh; }
 
   <!-- 3. KPI 역량평가 탭 -->
   <div id="view-kpieval" class="view-section">
+    <!-- 헤더 간격 80px 통일 -->
     <div class="detail-view-header">
        <div style="font-size:17px;font-weight:800;color:#3d3d5c;display:flex;align-items:center;gap:6px;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 
@@ -731,6 +754,7 @@ body { display:flex; min-height:100vh; }
             <div style="height:330px; margin-top:15px;"><canvas id="evalTrendChart"></canvas></div>
             <div class="legend" style="justify-content:center;margin-top:16px;flex-wrap:wrap;" id="evalTrendLegend"></div>
           </div>
+          <!-- 소분류 투입시간 카드 (가로 450px 세로 450px) -->
           <div class="eval-trend-card fixed-450 eval-donut-card-fixed" style="margin-bottom:0;">
             <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 소분류 투입시간</div>
             <div class="eval-donut-section" style="margin-top: 10px;">
@@ -764,7 +788,7 @@ body { display:flex; min-height:100vh; }
           </div>
           
           <div class="fixed-450" style="gap: 18px;">
-            <div class="eval-table-card" id="evalOvertimeCardWrap"></div>
+            <div class="eval-table-card" id="evalOvertimeCardWrap" style="margin-bottom: 18px;"></div>
             <div class="eval-table-card flex-1">
               <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 분기별 역량평가 추이</div>
               <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
@@ -819,6 +843,16 @@ const grpMin = (arr,key) => arr.reduce((m,r)=>{m[r[key]]=(m[r[key]]||0)+r.min;re
 const getMos = data => [...new Set(data.map(r=>r.date.slice(0,7)))].sort();
 function destroyChart(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 function hexRgba(hex,a){try{return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;}catch{return hex;}}
+
+// 주차 계산 함수 (ISO Week 기반)
+function getWeekStr(dateStr) {
+  const d = new Date(dateStr);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 3 - (d.getDay()||7));
+  const yearStart = new Date(d.getFullYear(),0,1);
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+  return d.getFullYear() + '-W' + weekNo.toString().padStart(2, '0');
+}
 
 function isFocusedWork(cat, sub) {
   const cleanCat = (cat||'').replace(/\s+/g, '');
@@ -918,6 +952,7 @@ async function loadDataFromSheets(){
       name:String(row.name||'').trim(),pos:String(row.pos||'').trim(),
       date:String(row.date||'').slice(0,10),cat:String(row.cat||'미분류').trim(),
       sub:String(row.sub||'기타').trim(),min:parseInt(row.min)||0,
+      week: getWeekStr(String(row.date||'').slice(0,10)) // 주차 데이터 미리 할당
     }));
     const targetOrder = ['윤진관', '이혜인B', '정인태', '김효언'];
     const memberSet=new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]);
@@ -1360,9 +1395,8 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
     return `<div class="stage-row" style="margin-bottom:6px;"><span class="stage-name">${c.replace('설계','')}</span><div class="stage-track"><div class="stage-fill" style="width:${Math.round((catMap[c]||0)/maxCat*100)}%;background:${CAT_COLORS[ci]};"></div></div><span class="stage-val">${formatHour(catMap[c]||0)}h</span></div>`;
   }).join('');
   
-  // ✨ Top 3 이모지 크기 18pt 적용
-  const top3Bg = ['#fef3c7', '#f1f5f9', '#ffedd5']; 
-  const top3Border = ['#fde68a', '#e2e8f0', '#fed7aa'];
+  const top3Bg = ['#fef9c3', '#f1f5f9', '#ffedd5']; 
+  const top3Border = ['#fde047', '#e2e8f0', '#fed7aa'];
   const textCArr = ['#d97706', '#475569', '#c2410c'];
 
   return `
@@ -1458,7 +1492,7 @@ function closeDetail(){
   renderMembers();
 }
 
-// ✨ 팀원 상세 뷰 (새로운 레이아웃)
+// ✨ 팀원별 상세 패널 (새로운 구조 적용)
 function renderDetailPanel(name){
   const color=MC[name];const all=filtered();const totalAllMin=all.reduce((s,r)=>s+r.min,0);
   const d=all.filter(r=>r.name===name);const tot=d.reduce((s,r)=>s+r.min,0);
@@ -1473,7 +1507,7 @@ function renderDetailPanel(name){
   profileEl.style.border = `1.5px solid ${color}44`;
   profileEl.innerHTML = getRepCardHTML(name, d, tot, pct, mos, pos, color);
   
-  // 1. 설계단계별 투입 (도넛 차트 450px 영역)
+  // 1. 설계단계별 투입 비중 (도넛)
   const catMap=grpMin(d,'cat');
   const cats2=CAT_ORDER.filter(c=>catMap[c]>0);
   const catData=cats2.map(c=>mToH(catMap[c]||0));
@@ -1568,7 +1602,6 @@ function renderDetailPanel(name){
   drawOvertimeCard('dpOvertimeCardWrap', d);
 }
 
-// ✨ 분류별 업무 투입시간 (막대 + Dot)
 function renderDpStacked(d, mos, subMap, color) {
   const subList = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const bgColors = subList.map((sub,i) => H.dpSub===null ? SUB_PAL[i%SUB_PAL.length] : (sub===H.dpSub ? SUB_PAL[i%SUB_PAL.length] : SUB_PAL[i%SUB_PAL.length]+'33'));
@@ -1591,6 +1624,7 @@ function renderDpStacked(d, mos, subMap, color) {
     }).join('');
   }
 
+  // 주요일정 데이터를 인덱스 기반 배열로 매핑
   const scheduleDataArray = mos.map(m => {
     const evts = SCHEDULE_DATA.filter(s => s.date.startsWith(m));
     return evts.length > 0 ? 1.05 : null; 
@@ -1672,9 +1706,9 @@ function renderDpStacked(d, mos, subMap, color) {
       },
       scales:{
         x:{stacked:true, grid:{display:false}, ticks:{font:{size:10}}},
-        // ✨ grace를 35%로 주어 막대 위에 충분한 공간 확보
-        y:{stacked:true, grace: '35%', grid:{color:'#f0f1f5'}, ticks:{font:{size:10}, callback:v=>formatNum(v)+'h'}},
-        ySch: {display: false, min: 0, max: 1.1, position: 'right'}
+        // ✨ grace: 45% (더 높게) 적용 및 ySch max 값 조정으로 점의 위치를 훨씬 위로 밀어냄
+        y:{stacked:true, grace: '45%', grid:{color:'#f0f1f5'}, ticks:{font:{size:10}, callback:v=>formatNum(v)+'h'}},
+        ySch: {display: false, min: 0, max: 1.15, position: 'right'}
       },
       onClick:(e,els)=>{
         if(els.length && datasets[els[0].datasetIndex].label !== '주요일정') {
@@ -1688,9 +1722,9 @@ function renderDpStacked(d, mos, subMap, color) {
 function dpClickSub(sub){H.dpSub=H.dpSub===sub?null:sub;H.dashSub=H.dpSub;renderDonut(H.dashSub);renderDpStackedHighlight();}
 function renderDpStackedHighlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);const mos=getMos(d);renderDpStacked(d,mos,grpMin(d,'sub'),MC[name]);}
 
-// ✨ 업무 패턴 심층 분석 모듈 (파편화, 다양성, 연속성)
+// ✨ 신규: 패턴 심층 분석 (파편화, 다양성, 연속성)
 function renderPatternAnalysis(d, mos) {
-  // 1. 파편화 (Bar Chart) - 일별 전환 횟수 합산
+  // --- 1. 파편화 (Bar Chart) ---
   let switchByMonth = {};
   let prevSub = null;
   d.forEach(r => {
@@ -1703,7 +1737,7 @@ function renderPatternAnalysis(d, mos) {
   });
   const switchData = mos.map(m => switchByMonth[m] || 0);
 
-  // 파편화 전체 평균(점선) 구하기
+  // 파편화 평균선 구하기
   let allSwitches = [];
   MEMBERS.forEach(mName => {
     const md = filtered().filter(r => r.name === mName);
@@ -1752,12 +1786,15 @@ function renderPatternAnalysis(d, mos) {
         legend: { display: false },
         datalabels: {
           display: (ctx) => ctx.dataset.type === 'bar',
-          color: '#3d3d5c', anchor: 'end', align: 'top', font: { size: 9, weight: 'bold' }
+          // ✨ 막대차트 상단에 "00회" 표시 (normal 폰트)
+          formatter: (v) => v + '회',
+          color: '#555', anchor: 'end', align: 'top', font: { size: 9, weight: 'normal' }
         },
         tooltip: {
           backgroundColor:'rgba(61,61,92,.95)',
           callbacks:{
-            label: c => c.dataset.type === 'bar' ? `전환: ${c.raw}회` : `평균: ${c.raw.toFixed(1)}회`
+            // ✨ 점선 롤오버 시 설명과 값 표시
+            label: c => c.dataset.type === 'bar' ? `전환: ${c.raw}회` : [`평균 전환: ${c.raw.toFixed(1)}회`, `(전체 팀원 기준 참고선)`]
           }
         }
       },
@@ -1768,12 +1805,14 @@ function renderPatternAnalysis(d, mos) {
     }
   });
 
-  // 2. 업무 다양성 (Bubble Chart) - HHI 역산 방식 적용
-  const bubbleData = mos.map(m => {
-    const rMo = d.filter(r => r.date.startsWith(m));
-    if(rMo.length === 0) return null;
-    const totMin = rMo.reduce((s,x)=>s+x.min, 0);
-    const sMap = grpMin(rMo, 'sub');
+  // --- 2. 다양성 (Bubble Chart) ---
+  // 주별 데이터 추출
+  const weeks = [...new Set(d.map(r=>r.week))].sort();
+  const bubbleData = weeks.map(w => {
+    const rWk = d.filter(r => r.week === w);
+    if(rWk.length === 0) return null;
+    const totMin = rWk.reduce((s,x)=>s+x.min, 0);
+    const sMap = grpMin(rWk, 'sub');
     let hhiSum = 0;
     let shannon = 0;
     Object.values(sMap).forEach(v => {
@@ -1782,10 +1821,11 @@ function renderPatternAnalysis(d, mos) {
       if(p > 0) shannon -= p * Math.log(p);
     });
     return {
-      x: 1 - hhiSum, // 업무 다양성 지수 (0 ~ 1)
+      x: hhiSum, // HHI 0~1 스케일 (오른쪽일수록 1에 가까움 = 독점)
       y: shannon,
-      r: Math.max(Math.sqrt(mToH(totMin)) * 0.8, 3), // ✨ 버블 크기 대폭 축소
-      mo: m.replace(/(\d{4})-(\d{2})/,'$1/$2'),
+      // ✨ 버블 크기 차이 극대화 (pow 1.2 적용 및 축소)
+      r: Math.max(Math.pow(mToH(totMin), 1.2) * 0.1, 3), 
+      wk: w,
       time: formatHour(totMin)
     };
   }).filter(x => x !== null);
@@ -1795,7 +1835,7 @@ function renderPatternAnalysis(d, mos) {
     type: 'bubble',
     data: {
       datasets: [{
-        label: '월별 다양성',
+        label: '주별 다양성',
         data: bubbleData,
         backgroundColor: 'rgba(249, 115, 22, 0.6)', 
         borderColor: '#f97316'
@@ -1810,20 +1850,21 @@ function renderPatternAnalysis(d, mos) {
           callbacks: {
             label: (c) => {
               const d = c.raw;
-              return [`🗓️ ${d.mo}`, `다양성 지수: ${d.x.toFixed(2)}`, `Shannon: ${d.y.toFixed(2)}`, `총 투입: ${d.time}h`];
+              // 다양성 지수(1-HHI)를 툴팁에 표시
+              return [`🗓️ ${d.wk}`, `다양성 지수(1-HHI): ${(1-d.x).toFixed(2)}`, `Shannon: ${d.y.toFixed(2)}`, `총 투입: ${d.time}h`];
             }
           }
         },
         datalabels: { display: false }
       },
       scales: {
-        x: { title: { display: true, text: '업무 다양성 지수 (1 - HHI)', font: { size: 9 } }, ticks: { font: { size: 9 } } },
-        y: { title: { display: true, text: '다양성 (Shannon)', font: { size: 9 } }, ticks: { font: { size: 9 } } }
+        x: { title: { display: true, text: '집중도(HHI) → 독점', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+        y: { title: { display: true, text: '다양성(Shannon)', font: { size: 9 } }, ticks: { font: { size: 9 } } }
       }
     }
   });
 
-  // 3. 업무 연속성 (최장 연속 출근일) TOP 5
+  // --- 3. 업무 연속성 TOP 5 ---
   const workDates = Array.from(new Set(d.map(r=>r.date))).sort();
   const subMapFull = grpMin(d, 'sub');
   const subs = Object.keys(subMapFull);
@@ -1856,7 +1897,7 @@ function renderPatternAnalysis(d, mos) {
   });
   
   continuityResults.sort((a,b) => b.streak - a.streak);
-  const top5Cont = continuityResults.slice(0, 5); // ✨ TOP 5
+  const top5Cont = continuityResults.slice(0, 5); 
   
   let contHTML = `<div style="display:flex; flex-direction:column; gap:8px; height:100%; justify-content:center;">`;
   top5Cont.forEach((c, i) => {
@@ -1891,7 +1932,7 @@ function renderEvalTab(){
   drawOvertimeCard('evalOvertimeCardWrap', filtered().filter(r => r.name === G_evalMember));
 }
 
-// ✨ 초과 근무일 수 카드 공통 렌더링 함수 (세부 구간 표시 추가)
+// ✨ 초과 근무일 수 공통 렌더링 함수
 function drawOvertimeCard(wrapId, d) {
   const wrap = document.getElementById(wrapId);
   if(!wrap) return;
@@ -1909,35 +1950,39 @@ function drawOvertimeCard(wrapId, d) {
 
   for(let date in dateMap) {
     const min = dateMap[date];
-    if(min > 480) over8hCount++;
-    if(min >= 600) over10hCount++; // 10시간 이상
+    
+    // ✨ 8시간 초과는 8~10시간 구간만 카운트되도록 분리
+    if(min > 480 && min < 600) over8hCount++;
+    if(min >= 600) over10hCount++; 
 
-    if(min > 480 && min <= 540) over8_9++;
-    else if(min > 540 && min < 600) over9_10++;
-    else if(min >= 600 && min < 660) over10_11++;
-    else if(min >= 660) over11_plus++;
+    // 세부 구간 카운트
+    if(min > 480 && min < 540) over8_9++;
+    if(min >= 540 && min < 600) over9_10++;
+    if(min >= 600 && min < 660) over10_11++;
+    if(min >= 660) over11_plus++;
   }
 
   wrap.innerHTML = `
     <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 초과 근무일 수</div>
     <div style="display:flex; height: 100%; min-height: 120px; align-items:center; justify-content:space-around;">
-      <!-- 8시간 초과 -->
+      
       <div style="text-align:center; flex:1; padding: 0 10px;">
          <div style="font-size:11px; color:#666; margin-bottom:8px; font-weight:700;">8시간 초과</div>
          <div style="font-size:38px; font-weight:900; color:#f97316; line-height:1;">${over8hCount}<span style="font-size:14px; color:#aaa; margin-left:4px;">일</span></div>
-         <div style="font-size:10px; color:#888; margin-top:8px; line-height:1.4;">
-            8~9h ${over8_9}일<br>
-            9~10h ${over9_10}일
+         <div style="font-size:11px; color:#888; margin-top:12px; line-height:1.6; display:inline-block; text-align:left; background:#fef9c3; padding:4px 10px; border-radius:6px;">
+            <span style="font-weight:700;">8~9h:</span> <span style="color:#3d3d5c">${over8_9}일</span><br>
+            <span style="font-weight:700;">9~10h:</span> <span style="color:#3d3d5c">${over9_10}일</span>
          </div>
       </div>
-      <div style="width:1.5px; height:60%; background:#f0f1f5;"></div>
-      <!-- 10시간 이상 -->
+      
+      <div style="width:1.5px; height:70%; background:#d1d5db;"></div>
+      
       <div style="text-align:center; flex:1; padding: 0 10px;">
          <div style="font-size:11px; color:#666; margin-bottom:8px; font-weight:700;">10시간 이상</div>
          <div style="font-size:38px; font-weight:900; color:#ef4444; line-height:1;">${over10hCount}<span style="font-size:14px; color:#aaa; margin-left:4px;">일</span></div>
-         <div style="font-size:10px; color:#888; margin-top:8px; line-height:1.4;">
-            10~11h ${over10_11}일<br>
-            11h 이상 ${over11_plus}일
+         <div style="font-size:11px; color:#888; margin-top:12px; line-height:1.6; display:inline-block; text-align:left; background:#fee2e2; padding:4px 10px; border-radius:6px;">
+            <span style="font-weight:700;">10~11h:</span> <span style="color:#3d3d5c">${over10_11}일</span><br>
+            <span style="font-weight:700;">11h 이상:</span> <span style="color:#3d3d5c">${over11_plus}일</span>
          </div>
       </div>
     </div>
