@@ -1398,7 +1398,7 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
         const textC = textCArr[i];
         const emoji = ['🥇','🥈','🥉'][i];
         return `<div style="background:${top3Bg[i]}; border:1.5px solid ${top3Border[i]}44; border-radius:8px; padding:12px 4px; text-align:center; display:flex; flex-direction:column; justify-content:center; height:90px;">
-          <div style="font-size:32px; margin-bottom:8px; line-height:1;">${emoji}</div>
+          <div style="font-size:15px; margin-bottom:8px; line-height:1;">${emoji}</div>
           <div style="font-size:11px; font-weight:700; color:#3d3d5c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; margin-bottom:4px;">${s[0]}</div>
           <div style="font-size:13px; font-weight:900; color:${textC};">${formatHour(s[1])}h</div>
         </div>`;
