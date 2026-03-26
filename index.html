@@ -997,18 +997,18 @@ async function loadDataFromSheets(){
     const msgEl=document.getElementById('ovMsg');if(msgEl){msgEl.textContent='데이터 연결 중...';msgEl.style.color='rgba(255,255,255,0.7)';}
   }
   try{
-    setLoadingProgress(15,'📡 구글 시트 연결 중...');
+    setLoadingProgress(15,'구글 시트 연결 중...');
     const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),60000);
     let response;
     try{response = await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`,{method:'GET',redirect:'follow',signal:controller.signal});clearTimeout(timeoutId);}
     catch(fetchErr){clearTimeout(timeoutId);throw new Error('API 연결 실패: '+fetchErr.message);}
     if(!response.ok) throw new Error(`HTTP 오류: ${response.status}`);
-    setLoadingProgress(45,'📋 데이터 수신 중...');
+    setLoadingProgress(45,'데이터 수신 중...');
     let json;
     try{const text=await response.text();json=JSON.parse(text);}
     catch(e){throw new Error('JSON 파싱 실패: '+e.message);}
     if(!json||json.status!=='ok') throw new Error(json?.message||'데이터 오류');
-    setLoadingProgress(65,'🔄 데이터 변환 중...');
+    setLoadingProgress(65,'데이터 변환 중...');
     
     SCHEDULE_DATA = json.schedule || [];
 
@@ -1046,7 +1046,7 @@ async function loadDataFromSheets(){
     setLoadingProgress(85,'🎨 대시보드 렌더링 중...');
     initSlider();
     initDashboard();
-    setLoadingProgress(100,'✅ 데이터 로딩 완료!');
+    setLoadingProgress(100,'데이터 로딩 완료!');
     if(ovEl){
       const sp=ovEl.querySelector('.ov-spinner');if(sp) sp.style.display='none';
       const progressWrap=document.getElementById('ovProgressWrap');if(progressWrap) progressWrap.style.display='none';
