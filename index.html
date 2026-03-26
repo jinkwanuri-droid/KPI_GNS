@@ -261,9 +261,12 @@ body { display:flex; min-height:100vh; }
 </head>  
 <body>
 <style>
-/* 폰트 및 기본 설정 */
+/* 기본 리셋 및 폰트 */
 *{margin:0;padding:0;box-sizing:border-box;}
-body, button, input, select, textarea { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; background:#eef0f8; }
+body, button, input, select, textarea {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  background:#eef0f8;
+}
 body { display:flex; min-height:100vh; }
 
 /* 로딩 오버레이 */
@@ -328,9 +331,21 @@ body { display:flex; min-height:100vh; }
 .reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
 .reset-btn:hover { background: #f0eeff; border-color: #6c63ff; }
 
-/* 메인 대시보드 영역 스타일 */
+/* 메인 영역 스타일 */
 .main{margin-left:224px;flex:1;padding:20px 22px 22px 22px;display:flex;flex-direction:column;gap:18px;min-width:0;}
 .header{display:none !important;}
+
+/* ✨ 모든 뷰(1, 2, 3 탭) 상단 간격 80px 완벽 통일 설정 */
+/* .main의 상단 패딩이 20px이므로, .detail-view-header가 60px 공간을 차지하도록 설정 (20 + 38 + 22 = 80) */
+.detail-view-header {
+  display: flex; justify-content: space-between; align-items: center;
+  height: 38px; 
+  margin-bottom: 22px; 
+  border-bottom: 2px solid #eef0f8;
+  padding-bottom: 12px;
+  box-sizing: content-box;
+}
+
 .grid-top{display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px;}
 .grid-mid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
 .grid-bot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
@@ -351,6 +366,7 @@ body { display:flex; min-height:100vh; }
 .compare-bar-wrap{flex:1;background:#f0eeff;border-radius:6px;height:9px;overflow:hidden;}
 .compare-bar-fill{height:100%;border-radius:6px;}
 .compare-val{font-size:12px;font-weight:700;color:#3d3d5c;width:56px;text-align:right;flex-shrink:0;}
+
 .donut-layout{display:flex;align-items:center;gap:10px;width:100%;}
 .donut-legend-left{display:flex;flex-direction:column;gap:4px;flex-shrink:0;width:122px;}
 .donut-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#555;cursor:pointer;padding:2px 4px;border-radius:5px;transition:all .2s;white-space:nowrap;}
@@ -369,16 +385,18 @@ body { display:flex; min-height:100vh; }
 .top5-rank-name{flex:1;font-size:13px;font-weight:700;color:#3d3d5c;}
 .top5-rank-time{font-size:12px;font-weight:700;color:#3d3d5c;white-space:nowrap;margin-right:2px;}
 .top5-rank-pct{font-size:11px;font-weight:600;white-space:nowrap;}
+
 .heat-table{border-collapse:separate;border-spacing:3px;width:100%;}
 .heat-table th{font-size:9px;color:#aaa;font-weight:700;text-align:center;padding:2px;}
 .heat-table .week-label{font-size:9px;color:#aaa;font-weight:700;text-align:right;padding-right:4px;}
 .hm-cell{width:100%;height:16px;border-radius:3px;cursor:pointer;transition:transform .15s;display:block;}
 .hm-cell:hover{transform:scale(1.3);}
+
 .view-section{display:none;}
-.view-section.active{display:flex;flex-direction:column;gap:18px;}
+.view-section.active{display:flex;flex-direction:column;}
 .member-overview-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:14px;}
 
-/* ✨ 프로필 카드 높이 800px 고정 및 상단 엇나감 해결 */
+/* ✨ 프로필 카드 높이 800px 고정 및 상단 포인트바 둥근 모서리 해결 */
 .eval-profile-card{
   background:#fff;
   border-radius:20px;
@@ -413,12 +431,13 @@ body { display:flex; min-height:100vh; }
 .eval-top3-label{font-size:10px;font-weight:700;color:#555;margin-bottom:4px;}
 .eval-top3-score{font-size:18px;font-weight:900;}
 .eval-top3-trend{font-size:10px;font-weight:700;margin-top:3px;}
+
 .eval-charts-col{display:flex;flex-direction:column;gap:18px;}
 .eval-trend-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .eval-trend-title{font-size:13px;font-weight:700;color:#3d3d5c;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
-.eval-bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
 .eval-radar-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .eval-table-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+
 .eval-trend-table{width:100%;border-collapse:collapse;font-size:12px;}
 .eval-trend-table th{padding:8px 10px;background:#f0eeff;color:#6c63ff;font-weight:700;text-align:center;font-size:11px;}
 .eval-trend-table th:first-child{text-align:left;border-radius:8px 0 0 8px;}
@@ -426,8 +445,7 @@ body { display:flex; min-height:100vh; }
 .eval-trend-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #f0f1f5;color:#555;font-size:12px;}
 .eval-trend-table td:first-child{text-align:left;font-weight:700;}
 .eval-trend-table tr:hover td{background:#fafaff;}
-
-/* ✨ 테이블 최신 분기 연한 회색 및 평균값 배경 */
+/* ✨ 테이블 최근 분기 연한 회색 배경 & 평균 열 배경 적용 */
 .eval-trend-table tr.current-q td { background: #f8fafc; font-weight: 700; }
 .eval-trend-table td:last-child { background: #f8f8ff; }
 
@@ -435,8 +453,10 @@ body { display:flex; min-height:100vh; }
 .eval-radar-sub-card{background:#f8f8ff;border-radius:12px;padding:14px;text-align:center; display: flex; flex-direction: column;}
 .eval-radar-sub-title{font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;}
 .eval-radar-sub-score{font-size:13px;font-weight:800;margin-top:6px;}
+
 .eval-donut-section{display:flex;flex-direction:column;gap:10px; flex: 1; min-height: 0;}
 .eval-donut-top{position:relative;width:100%; flex: 1; min-height: 0;}
+
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
 .legend-item{display:flex;align-items:center;gap:4px;font-size:12px;color:#666;cursor:pointer;transition:all 0.2s;}
 .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:all 0.2s;}
@@ -445,13 +465,17 @@ body { display:flex; min-height:100vh; }
 .tab-btn-sm{padding:4px 10px;border-radius:20px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:#f0eeff;color:#6c63ff;transition:all .2s;}
 .tab-btn-sm.active{background:#6c63ff;color:#fff;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* KPI 역량평가 탭 레이아웃 */
 .eval-main-layout{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start;animation:fadeIn .3s ease;}
 .grade-info-wrap { position: relative; display: inline-block; cursor: help; margin-left: 4px; }
 .grade-info-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: #bbb; color: #fff; font-size: 10px; font-weight: bold; }
 .grade-tooltip { visibility: hidden; width: 140px; background-color: #3d3d5c; color: #fff; text-align: left; border-radius: 8px; padding: 8px; position: absolute; z-index: 100; bottom: 130%; left: 50%; transform: translateX(-50%); font-size: 11px; line-height: 1.6; opacity: 0; transition: opacity 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,.2); font-weight: normal; }
 .grade-info-wrap:hover .grade-tooltip { visibility: visible; opacity: 1; }
+
 .eval-top3-box-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
 .eval-top3-box-card { border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px; position: relative; z-index: 1;}
 .stage-bars{display:flex;flex-direction:column;gap:5px;}
 .stage-row{display:flex;align-items:center;gap:8px; position: relative; z-index: 1;}
@@ -460,15 +484,7 @@ body { display:flex; min-height:100vh; }
 .stage-fill{height:100%;border-radius:4px;}
 .stage-val{font-size:12px;font-weight:700;color:#555;width:50px;text-align:right;flex-shrink:0;}
 
-/* ✨ 뷰 공통 헤더: 여백 80px 완벽 통일 (margin-bottom 0으로 세팅하고 flex gap에 의존) */
-.detail-view-header {
-  display: flex; justify-content: space-between; align-items: center;
-  height: 38px; 
-  margin-bottom: 0px; 
-  border-bottom: 2px solid #eef0f8;
-  padding-bottom: 12px;
-  box-sizing: content-box;
-}
+/* ✨ 뷰 공통 헤더의 미니 아바타 */
 .back-list-btn { display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 8px 16px; color: #374151; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 .back-list-btn:hover { background: #f9fafb; border-color: #9ca3af; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 .mini-avatars-wrap { display: flex; gap: 8px; }
@@ -480,10 +496,13 @@ body { display:flex; min-height:100vh; }
 .info-tooltip { position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 320px; background: #374151; color: #fff; font-size: 11px; line-height: 1.5; font-weight: normal; padding: 14px 16px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: all 0.3s ease; z-index: 100; }
 .info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 150%; }
 
-/* ✨ 사이즈 고정 관련 스타일 */
-.eval-top-row-grid { display: grid; grid-template-columns: 1fr 450px; gap: 18px; }
-.eval-donut-card-fixed { width: 450px; height: 450px; display: flex; flex-direction: column; flex-shrink: 0; box-sizing: border-box; }
-.eval-radar-card-fixed { height: 350px; display: flex; flex-direction: column; }
+/* ✨ Flex 기반 레이아웃 고정 설정 (가로폭 및 높이) */
+.eval-top-row-grid { display: flex; gap: 18px; align-items: stretch; width: 100%; }
+.eval-bottom-row   { display: flex; gap: 18px; align-items: stretch; width: 100%; }
+.flex-1 { flex: 1; min-width: 0; }
+.fixed-450 { width: 450px; flex-shrink: 0; display: flex; flex-direction: column; }
+.eval-donut-card-fixed { height: 450px; }
+.eval-radar-card-fixed { height: 350px; }
 
 @keyframes smoothFadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
 .fade-in-slow { animation: smoothFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
@@ -494,17 +513,15 @@ body { display:flex; min-height:100vh; }
   .grid-mid,.grid-bot{grid-template-columns:1fr 1fr;}
   .eval-main-layout{grid-template-columns:1fr;}
   .eval-top3-row{grid-template-columns:repeat(3,1fr);}
-  .eval-bottom-row{grid-template-columns:1fr;}
-  .eval-top-row-grid{grid-template-columns:1fr !important;}
-  .eval-donut-card-fixed { width: 100% !important; height: auto !important; min-height: 450px; }
-  #evalOvertimeCardWrap { width: 100% !important; }
+  .eval-top-row-grid, .eval-bottom-row { flex-direction: column; }
+  .fixed-450 { width: 100% !important; height: auto !important; min-height: 450px; }
+  .eval-radar-card-fixed { height: auto !important; }
   .eval-dual-radar-row{grid-template-columns:1fr !important;}
 }
 @media(max-width:768px){
   .sidebar{display:none;}
   .main{margin-left:0;}
   .grid-top,.grid-mid,.grid-bot,.member-overview-grid{grid-template-columns:1fr;}
-  .eval-bottom-row{grid-template-columns:1fr;}
   .eval-top3-box-row{grid-template-columns:1fr;}
 }
 </style>
@@ -578,6 +595,7 @@ body { display:flex; min-height:100vh; }
 
   <!-- 1. 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
+    <!-- 대시보드 헤더 공간은 사용하지 않으므로 숨김 (기본 설정 유지) -->
     <div class="grid-top" id="topKpiGrid"></div>
     <div class="grid-mid">
       <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
@@ -607,13 +625,14 @@ body { display:flex; min-height:100vh; }
   <div id="view-members" class="view-section">
     <!-- 목록 뷰 -->
     <div id="memberListView" class="fade-enter">
-      <!-- ✨ 헤더 80px 간격 통일 -->
+      <!-- ✨ 헤더 80px 간격 통일 (margin-bottom 0, flex gap 의존) -->
       <div class="detail-view-header">
         <div style="font-size:17px;font-weight:800;color:#3d3d5c;display:flex;align-items:center;gap:6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 팀원별 대표카드 (클릭 시 상세 조회)</div>
         <div class="mini-avatars-wrap" id="listMiniAvatarsWrap"></div>
       </div>
       <div class="member-overview-grid" id="memberOverviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, 320px); align-items: stretch; justify-content: start; gap:20px;"></div>
     </div>
+    
     <!-- 상세 대시보드 뷰 -->
     <div id="memberDetailView" style="display:none;">
       <div class="detail-view-header">
@@ -626,18 +645,18 @@ body { display:flex; min-height:100vh; }
       <div class="eval-main-layout">
         <!-- 좌측 프로필 카드 -->
         <div class="eval-profile-card" id="newDpProfile" style="position: sticky; top: 20px; align-self: start;"></div>
+        
         <!-- 우측 차트 영역 -->
         <div class="eval-charts-col fade-in-slow" id="newDpChartsCol">
           <div class="eval-top-row-grid">
-            <div class="eval-trend-card" style="margin-bottom:0;">
-              <!-- ✨ 분류별 업무 투입시간 으로 텍스트 수정 -->
+            <div class="eval-trend-card flex-1" style="margin-bottom:0;">
+              <!-- ✨ 분류별 업무 투입시간 으로 제목 수정 -->
               <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 분류별 업무 투입시간</div>
               <div style="height:330px; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
-              <!-- 커스텀 범례 -->
               <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; justify-content:center;"></div>
             </div>
-            <!-- ✨ 소분류 투입 비중 카드 (450x450 고정) -->
-            <div class="eval-trend-card eval-donut-card-fixed" style="margin-bottom:0;">
+            <!-- ✨ 소분류 투입 비중 카드 (가로세로 450px 고정) -->
+            <div class="eval-trend-card fixed-450 eval-donut-card-fixed" style="margin-bottom:0;">
               <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3l-5.6 5.6a2 2 0 0 1-2.8 0L2.7 10.7a2 2 0 0 1 0-2.8l5.6-5.6a2 2 0 0 1 2.8 0l10.2 10.2a2 2 0 0 1 0 2.8z"/><path d="M14.5 9.5L12 7"/><path d="M10.5 13.5L8 11"/><path d="M6.5 17.5L4 15"/></svg> 설계단계별 투입 비중</div>
               <div class="eval-donut-section" style="margin-top: 20px;">
                 <div class="eval-donut-top">
@@ -648,9 +667,9 @@ body { display:flex; min-height:100vh; }
             </div>
           </div>
           <!-- 하단 2분할 레이아웃 -->
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
+          <div class="eval-bottom-row">
             <!-- 좌측: 집중업무 비율 -->
-            <div class="eval-trend-card" style="margin-bottom:0; padding:18px 20px;">
+            <div class="eval-trend-card flex-1" style="margin-bottom:0; padding:18px 20px;">
               <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> 집중업무 비율
                 <div class="info-wrap">
@@ -665,8 +684,8 @@ body { display:flex; min-height:100vh; }
               </div>
               <div style="height:80px; margin-top:20px;"><canvas id="dpFocusBar"></canvas></div>
             </div>
-            <!-- 우측: 월별 근무 밀도 -->
-            <div class="eval-table-card" style="margin-bottom:0; padding:18px 20px;">
+            <!-- 우측: 월별 근무 밀도 (450px) -->
+            <div class="eval-table-card fixed-450" style="margin-bottom:0; padding:18px 20px;">
               <div class="card-section-title" style="margin-bottom:8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 월별 근무 밀도
                 <span id="dpHeatTabs" style="margin-left:12px; display:inline-flex; gap:4px;"></span>
@@ -682,7 +701,7 @@ body { display:flex; min-height:100vh; }
 
   <!-- 3. KPI 역량평가 탭 -->
   <div id="view-kpieval" class="view-section">
-    <!-- ✨ 헤더 간격 통일 및 아바타 추가 -->
+    <!-- ✨ 헤더 간격 80px 통일 및 아바타 표시 -->
     <div class="detail-view-header">
        <div style="font-size:17px;font-weight:800;color:#3d3d5c;display:flex;align-items:center;gap:6px;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 
@@ -693,15 +712,16 @@ body { display:flex; min-height:100vh; }
     
     <div class="eval-main-layout" id="evalMainLayout">
       <div id="evalProfileCard" class="eval-profile-card" style="position: sticky; top: 20px; align-self: start;"></div>
+      
       <div class="eval-charts-col fade-in-slow">
         <div class="eval-top-row-grid">
-          <div class="eval-trend-card" style="margin-bottom:0;">
+          <div class="eval-trend-card flex-1" style="margin-bottom:0;">
             <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 분기별 역량 점수 추이</div>
             <div style="height:330px; margin-top:15px;"><canvas id="evalTrendChart"></canvas></div>
             <div class="legend" style="justify-content:center;margin-top:16px;flex-wrap:wrap;" id="evalTrendLegend"></div>
           </div>
-          <!-- ✨ 소분류 투입시간 카드 (450x450 고정) -->
-          <div class="eval-trend-card eval-donut-card-fixed" style="margin-bottom:0;">
+          <!-- ✨ 소분류 투입시간 카드 (가로 450px 세로 450px) -->
+          <div class="eval-trend-card fixed-450 eval-donut-card-fixed" style="margin-bottom:0;">
             <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 소분류 투입시간</div>
             <div class="eval-donut-section" style="margin-top: 10px;">
               <div class="eval-donut-top">
@@ -718,7 +738,7 @@ body { display:flex; min-height:100vh; }
         
         <div class="eval-bottom-row">
           <!-- ✨ 레이더 차트 카드 높이 350px 고정 -->
-          <div class="eval-radar-card eval-radar-card-fixed" style="flex:1;">
+          <div class="eval-radar-card eval-radar-card-fixed flex-1">
             <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12v.01"/><path d="M15 12a3 3 0 0 0-6 0"/><path d="M19.07 19.07a10 10 0 1 0-14.14 0"/><path d="M12 2v10"/><path d="m19.07 4.93-7.07 7.07"/></svg> 역량데이터 (PJ 전체 평균)</div>
             <div class="eval-dual-radar-row" style="margin-top:10px;">
               <div class="eval-radar-sub-card">
@@ -734,11 +754,11 @@ body { display:flex; min-height:100vh; }
             </div>
           </div>
           
-          <div style="display: flex; flex-direction: column; gap: 18px;">
-            <!-- ✨ 초과 근무일 수 카드 450px -->
-            <div class="eval-table-card" id="evalOvertimeCardWrap" style="width: 450px; flex-shrink: 0; box-sizing: border-box;"></div>
+          <div class="fixed-450" style="gap: 18px;">
+            <!-- ✨ 초과 근무일 수 카드 450px 고정 (flex-direction: column 으로 쌓임) -->
+            <div class="eval-table-card" id="evalOvertimeCardWrap"></div>
             
-            <div class="eval-table-card">
+            <div class="eval-table-card flex-1">
               <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 분기별 역량평가 추이</div>
               <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
             </div>
@@ -763,7 +783,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmD
 let MEMBERS = [];
 let MC = {};
 let INITIALS = {};
-// ✨ 주요일정 데이터 변수
+// 주요일정 데이터 변수
 let SCHEDULE_DATA = [];
 const DYNAMIC_COLORS = ['#f97316','#22c55e','#0ea5e9','#ec4899','#8b5cf6','#14b8a6','#f59e0b','#6366f1','#10b981'];
 const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
@@ -880,7 +900,7 @@ async function loadDataFromSheets(){
     if(!json||json.status!=='ok') throw new Error(json?.message||'데이터 오류');
     setLoadingProgress(65,'🔄 데이터 변환 중...');
     
-    // ✨ 주요일정 데이터 매핑
+    // 주요일정 데이터 매핑
     SCHEDULE_DATA = json.schedule || [];
 
     EVAL_DATA=(json.eval||[]).map(row=>{
@@ -1284,6 +1304,7 @@ function showView(view,navEl){
   }
 }
 
+// 미니 아바타 렌더링
 function renderMiniAvatars(type) {
   let activeName = null;
   let wrapId = '';
@@ -1334,9 +1355,10 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
     return `<div class="stage-row" style="margin-bottom:6px;"><span class="stage-name">${c.replace('설계','')}</span><div class="stage-track"><div class="stage-fill" style="width:${Math.round((catMap[c]||0)/maxCat*100)}%;background:${CAT_COLORS[ci]};"></div></div><span class="stage-val">${formatHour(catMap[c]||0)}h</span></div>`;
   }).join('');
   
-  // ✨ 분류별 업무시간 Top 3 연한 배경색 및 크기 조정
-  const top3Bg = ['#fef9ee', '#f8fafc', '#fdf6f0']; 
+  // ✨ 분류별 업무시간 Top 3 연한 배경색 및 크기 조정 반영
+  const top3Bg = ['#fef3c7', '#f1f5f9', '#ffedd5']; 
   const top3Border = ['#fde68a', '#e2e8f0', '#fed7aa'];
+  const textCArr = ['#d97706', '#475569', '#c2410c'];
 
   return `
     <div style="position:absolute;top:0;left:0;right:0;height:8px;background:${color};border-radius:18px 18px 0 0;"></div>
@@ -1371,7 +1393,7 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
     <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;display:flex;align-items:center;gap:4px;">${I_TROP} 분류별 업무시간 TOP 3</div>
     <div class="new-top3-grid" style="margin-bottom:20px;">
       ${top3Subs.map((s, i) => {
-        const textC = ['#f59e0b','#94a3b8','#cd7c3b'][i];
+        const textC = textCArr[i];
         const emoji = ['🥇','🥈','🥉'][i];
         return `<div style="background:${top3Bg[i]}; border:1.5px solid ${top3Border[i]}44; border-radius:8px; padding:16px 4px; text-align:center; display:flex; flex-direction:column; justify-content:center; height:90px;">
           <div style="font-size:24px; margin-bottom:6px;">${emoji}</div>
@@ -1531,6 +1553,7 @@ function renderDetailPanel(name){
   drawHeat(d,G.dpHeatYear,'dpHeatTable',color);
 }
 
+// ✨ 분류별 업무 투입시간 차트 (합계 및 하이라이트 로직, 일정 Dot 통합)
 function renderDpStacked(d,mos,subMap,color){
   const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const bgColors=subList.map((sub,i)=>H.dpSub===null?SUB_PAL[i%SUB_PAL.length]:(sub===H.dpSub?SUB_PAL[i%SUB_PAL.length]:SUB_PAL[i%SUB_PAL.length]+'33'));
@@ -1551,12 +1574,14 @@ function renderDpStacked(d,mos,subMap,color){
       </div>`;
     }).join('');
   }
-  destroyChart('dpStackedBar');
-
-  // ✨ 주요일정 데이터를 scatter 형식으로 매핑
+  
+  // 주요일정 데이터를 차트용 좌표로 변환
   const schedulePts = mos.map(m => {
     const evts = SCHEDULE_DATA.filter(s => s.date.startsWith(m));
-    return evts.length > 0 ? { x: m.replace(/(\d{4})-(\d{2})/,'$1/$2'), y: 1.05, evts } : null;
+    if (evts.length > 0) {
+      return { x: m.replace(/(\d{4})-(\d{2})/,'$1/$2'), y: 1.05, evts: evts };
+    }
+    return null;
   });
 
   const datasets = subList.map((sub,i)=>({
@@ -1568,7 +1593,7 @@ function renderDpStacked(d,mos,subMap,color){
     stack:'s'
   }));
 
-  // 주요일정 데이터셋 추가
+  // 주요일정 점 데이터셋 추가
   datasets.push({
     type: 'line',
     label: '주요일정',
@@ -1583,6 +1608,7 @@ function renderDpStacked(d,mos,subMap,color){
     pointHoverRadius: 9
   });
 
+  destroyChart('dpStackedBar');
   CH.dpStackedBar=new Chart(document.getElementById('dpStackedBar').getContext('2d'),{
     data:{
       labels:mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2')),
@@ -1595,7 +1621,7 @@ function renderDpStacked(d,mos,subMap,color){
         tooltip:{
           backgroundColor:'rgba(61,61,92,.95)',
           callbacks:{
-            label: (c) => {
+            label:(c) => {
               if (c.dataset.label === '주요일정') {
                 return c.raw.evts.map(e => `🗓️ ${e.date}: ${e.title}`);
               }
@@ -1603,7 +1629,6 @@ function renderDpStacked(d,mos,subMap,color){
             }
           }
         },
-        // ✨ 하이라이트 토글 및 합계 레이블 로직
         datalabels:{
           display: function(ctx) {
             if(ctx.dataset.label === '주요일정') return false; 
@@ -1611,9 +1636,7 @@ function renderDpStacked(d,mos,subMap,color){
           },
           formatter: (val, ctx) => {
             if (H.dpSub === null) {
-              const dsTotals = ctx.chart.data.datasets
-                .filter(ds => ds.label !== '주요일정')
-                .map(ds => ds.data[ctx.dataIndex]);
+              const dsTotals = ctx.chart.data.datasets.filter(ds => ds.label !== '주요일정').map(ds => ds.data[ctx.dataIndex]);
               let lastValIndex = -1;
               for(let i=dsTotals.length-1; i>=0; i--) { if(dsTotals[i] > 0) { lastValIndex = i; break; } }
               if (ctx.datasetIndex === lastValIndex) {
@@ -1636,7 +1659,11 @@ function renderDpStacked(d,mos,subMap,color){
         y:{stacked:true,grid:{color:'#f0f1f5'},ticks:{font:{size:10},callback:v=>formatNum(v)+'h'}},
         ySch: {display: false, min: 0, max: 1.1, position: 'right'}
       },
-      onClick:(e,els)=>{if(els.length && datasets[els[0].datasetIndex].label !== '주요일정') dpClickSub(datasets[els[0].datasetIndex].label);}
+      onClick:(e,els)=>{
+        if(els.length && datasets[els[0].datasetIndex].label !== '주요일정') {
+          dpClickSub(datasets[els[0].datasetIndex].label);
+        }
+      }
     }
   });
 }
@@ -1654,7 +1681,7 @@ function renderEvalTab(){
   renderOvertimeCard();
 }
 
-// ✨ 초과 근무일 수 계산 및 렌더링 (8시간 / 10시간 구분)
+// ✨ 초과 근무일 수 카드 
 function renderOvertimeCard() {
   const wrap = document.getElementById('evalOvertimeCardWrap');
   if(!wrap) return;
@@ -1813,7 +1840,7 @@ function renderEvalRadarDual(){
   const name=G_evalMember;const color=MC[name];
   const qs=filteredEvalQs();
   
-  // ✨ PJ 전체 평균은 전체 기간 데이터 기준으로 유지
+  // PJ 전체 평균
   const allQs = [...new Set(EVAL_DATA.map(d=>d.q))];
   const yearAvgs=RADAR_LABELS.map((_,i)=>{
     const vals=allQs.map(q=>{const ev=EVAL_DATA.find(e=>e.q===q&&e.name===name);return ev?ev.vals[i]:null;}).filter(v=>v!==null);
@@ -2009,7 +2036,6 @@ function renderEvalProfile(){
     <div id="evalAvgCompareProfile" style="margin-top:12px;padding:10px;background:#f8f8ff;border-radius:10px;"></div>
   `;
   
-  // 항목별 비교 데이터 채우기 (최신 분기 vs 연도 평균)
   const latestQ = qs[qs.length-1] || '';
   const latestEv = latestQ ? EVAL_DATA.find(e => e.q === latestQ && e.name === name) : null;
   const qtrVals = latestEv ? latestEv.vals : [0,0,0,0,0];
@@ -2019,7 +2045,7 @@ function renderEvalProfile(){
     avgEl.innerHTML= '<div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:6px;">항목별 비교 (최신분기 vs 연도평균)</div>' +
       RADAR_LABELS.map((lbl,i)=>{
       const qv = qtrVals[i] || 0;
-      const yv = totalItemAvgs[i].avg || 0; // PJ 전체기간 평균 사용
+      const yv = totalItemAvgs[i].avg || 0;
       const diff = qv - yv;
       const diffColor = diff > 0 ? '#22c55e' : diff < 0 ? '#ef4444' : '#aaa';
       const diffStr = diff > 0 ? `▲+${diff.toFixed(1)}` : diff < 0 ? `▼${Math.abs(diff).toFixed(1)}` : '–';
