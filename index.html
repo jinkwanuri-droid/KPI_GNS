@@ -260,8 +260,254 @@ body { display:flex; min-height:100vh; }
 </style>
 </head>  
 <body>
+<style>
+/* 기존 스타일 유지 및 새로운 수정사항 추가 */
+*{margin:0;padding:0;box-sizing:border-box;}
+body, button, input, select, textarea {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  background:#eef0f8;
+}
+body { display:flex; min-height:100vh; }
+#loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
+.ov-icon{font-size:52px;margin-bottom:16px;}
+.ov-title{font-size:20px;font-weight:800;margin-bottom:8px;}
+.ov-sub{font-size:13px;opacity:.8;margin-bottom:28px;text-align:center;line-height:1.7;}
+.ov-spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;}
+.ov-msg{font-size:12px;opacity:.7;margin-top:6px;}
+.ov-progress{width:260px;height:5px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden;margin-top:12px;}
+.ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
+.ov-retry-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:12px 32px;font-size:14px;font-weight:800;cursor:pointer;margin-top:16px;display:none;}
+.ov-enter-btn{background:#fff;color:#6c63ff;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:800;cursor:pointer;margin-top:20px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:all 0.2s;}
+.ov-enter-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.2);}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* 사이드바 기본 스타일 */
+.sidebar{width:224px;background:#fff;display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(0,0,0,.08);position:fixed;height:100vh;z-index:100;overflow-y:auto;}
+.sidebar-header{display:flex;align-items:center;gap:10px;padding:18px;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;min-height:68px;flex-shrink:0;}
+.sidebar-logo{width:38px;height:38px;background:rgba(255,255,255,.25);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+.sidebar-title{font-size:13px;font-weight:700;line-height:1.4;}
+.sidebar-section-title{font-size:11px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:1px;padding:13px 18px 7px;flex-shrink:0;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;color:#666;transition:all .2s;border-left:3px solid transparent;}
+.nav-item:hover{background:#f5f3ff;color:#6c63ff;}
+.nav-item.active{background:#f0eeff;color:#6c63ff;border-left-color:#6c63ff;font-weight:700;}
+.nav-icon-wrap{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:#f5f5ff;}
+.nav-item.active .nav-icon-wrap{background:#e0dbff;}
+.nav-label{font-size:13px;white-space:nowrap;}
+.member-list{padding:0 10px;}
+.member-card-side{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:4px;border:1.5px solid transparent;}
+.member-card-side:hover{background:#f5f3ff;}
+.member-card-side.active{border-color:#6c63ff;background:#f0eeff;}
+.member-avatar-sm{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+.member-name-sm{font-size:12px;font-weight:700;color:#3d3d5c;}
+.member-pos-sm{font-size:10px;color:#aaa;}
+.member-hours-sm{font-size:11px;font-weight:700;color:#6c63ff;margin-left:auto;white-space:nowrap;}
+.sidebar-divider{height:1px;background:#f0eeff;margin:7px 18px;flex-shrink:0;}
+
+/* 모던 슬라이더 필터 CSS */
+.modern-filter-card { background: #ffffff; padding: 18px 15px 15px 15px; width: 100%; margin-top: auto; flex-shrink: 0; font-family: 'Pretendard', sans-serif; border-top: 2px solid #f0eeff; }
+.filter-header { font-size: 13px; font-weight: 700; color: #6c63ff; margin-bottom: 22px; }
+.timeline-container { position: relative; margin-bottom: 24px; padding: 0 8px; }
+.year-row { position: relative; height: 18px; margin-bottom: 14px; }
+.year-label { position: absolute; top: 0; transform: translateX(-50%); font-size: 13px; font-weight: 800; color: #9ca3af; cursor: pointer; transition: all 0.3s ease; }
+.year-label:hover { color: #6366f1; transform: translateX(-50%) translateY(-2px); }
+.year-label.active { color: #6366f1; }
+.track-row { position: relative; height: 20px; display: flex; align-items: center; }
+.track-bg { position: absolute; width: 100%; height: 3px; background: #f3f4f6; border-radius: 2px; }
+.track-active { position: absolute; height: 3px; background: #6366f1; border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); left: 0; width: 0; }
+.nodes-container { position: absolute; width: 100%; height: 100%; }
+.node { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; background: #e5e7eb; border: none; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; z-index: 2; }
+.node:hover { transform: translate(-50%, -50%) scale(1.5); background: #6366f1; }
+.node.active { background: #6366f1; }
+.node.endpoint { width: 14px; height: 14px; background: #6366f1; border: 2.5px solid #ffffff; box-shadow: 0 2px 6px rgba(99, 102, 241, 0.45); z-index: 3; }
+.quarter-row { position: relative; height: 16px; margin-top: 10px; }
+.quarter-label { position: absolute; top: 0; transform: translateX(-50%); font-size: 11px; font-weight: 400; color: #9ca3af; width: 16px; text-align: center; transition: all 0.3s ease; cursor: pointer; }
+.quarter-label:hover { color: #6366f1; }
+.quarter-label.active { color: #6366f1; font-size: 12px; font-weight: 800; }
+/* ✨ 선택된 분기 표시 박스 크기 고정 */
+.range-summary { background: #e0e7ff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; min-height: 40px; box-sizing: border-box; }
+.summary-text { color: #6366f1; font-weight: 700; font-size: 13px; min-width: 110px; }
+.summary-count { color: #6366f1; font-size: 11px; opacity: 0.8; white-space: nowrap; }
+.reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+.reset-btn:hover { background: #f0eeff; border-color: #6c63ff; }
+
+/* 메인 대시보드 영역 스타일 */
+.main{margin-left:224px;flex:1;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0;}
+.header{display:none !important;}
+.grid-top{display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px;}
+.grid-mid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.grid-bot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);position:relative;overflow:hidden;}
+.card-section-title{font-size:13px;font-weight:700;color:#3d3d5c;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.card-value{font-size:26px;font-weight:800;color:#3d3d5c;}
+.card-sub{font-size:12px;color:#aaa;margin-top:4px;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#6c63ff,#a78bfa);border-radius:16px 16px 0 0;}
+.member-kpi-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.member-kpi-label{font-size:13px;font-weight:700;color:#9999bb;}
+.member-kpi-photo{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;}
+.progress-wrap{margin-top:9px;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#666;margin-bottom:4px;}
+.progress-bar{height:8px;background:#f0eeff;border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:10px;transition:width 1s ease;}
+.compare-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.compare-name{font-size:12px;font-weight:700;color:#555;width:54px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.compare-bar-wrap{flex:1;background:#f0eeff;border-radius:6px;height:9px;overflow:hidden;}
+.compare-bar-fill{height:100%;border-radius:6px;}
+.compare-val{font-size:12px;font-weight:700;color:#3d3d5c;width:56px;text-align:right;flex-shrink:0;}
+.donut-layout{display:flex;align-items:center;gap:10px;width:100%;}
+.donut-legend-left{display:flex;flex-direction:column;gap:4px;flex-shrink:0;width:122px;}
+.donut-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#555;cursor:pointer;padding:2px 4px;border-radius:5px;transition:all .2s;white-space:nowrap;}
+.donut-legend-item:hover{background:#f5f3ff;}
+.donut-legend-item.highlighted{background:#f0eeff;font-weight:700;}
+.donut-legend-item.dimmed{opacity:0.35;}
+.donut-legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.donut-chart-right{flex:1;height:240px;position:relative;}
+.top5-rank-list{list-style:none;margin-top:6px;}
+.top5-rank-item{display:flex;align-items:center;gap:8px;padding:7px 6px;border-bottom:1px solid #f0f1f5;transition:all .2s;cursor:pointer;}
+.top5-rank-item:last-child{border-bottom:none;}
+.top5-rank-item:hover{background:#f9f9ff;border-radius:8px;}
+.top5-rank-item.highlighted{background:#f0eeff;border-radius:8px;transform:translateX(3px);}
+.top5-rank-item.dimmed{opacity:0.35;}
+.top5-rank-badge{width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.top5-rank-name{flex:1;font-size:13px;font-weight:700;color:#3d3d5c;}
+.top5-rank-time{font-size:12px;font-weight:700;color:#3d3d5c;white-space:nowrap;margin-right:2px;}
+.top5-rank-pct{font-size:11px;font-weight:600;white-space:nowrap;}
+.heat-table{border-collapse:separate;border-spacing:3px;width:100%;}
+.heat-table th{font-size:9px;color:#aaa;font-weight:700;text-align:center;padding:2px;}
+.heat-table .week-label{font-size:9px;color:#aaa;font-weight:700;text-align:right;padding-right:4px;}
+.hm-cell{width:100%;height:16px;border-radius:3px;cursor:pointer;transition:transform .15s;display:block;}
+.hm-cell:hover{transform:scale(1.3);}
+.view-section{display:none;}
+.view-section.active{display:flex;flex-direction:column;gap:18px;}
+.member-overview-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:14px;}
+.member-detail-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;transition:all .25s;border:2px solid transparent;position:relative;overflow:hidden;}
+.member-detail-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.member-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.member-avatar-lg{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.stat-cell{background:#f8f8ff;border-radius:10px;padding:9px 6px;text-align:center;}
+.stat-val{font-size:14px;font-weight:800;color:#3d3d5c;}
+.stat-lbl{font-size:10px;color:#aaa;margin-top:2px;}
+.stage-bars{display:flex;flex-direction:column;gap:5px;}
+.stage-row{display:flex;align-items:center;gap:8px;}
+.stage-name{font-size:12px;color:#666;width:42px;flex-shrink:0;}
+.stage-track{flex:1;height:6px;background:#f0eeff;border-radius:4px;overflow:hidden;}
+.stage-fill{height:100%;border-radius:4px;}
+.stage-val{font-size:12px;font-weight:700;color:#555;width:50px;text-align:right;flex-shrink:0;}
+.detail-panel{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 20px rgba(0,0,0,.08);display:none;animation:slideDown .3s ease;}
+.detail-panel.show{display:block;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.detail-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid #f0f1f5;}
+.detail-avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0;}
+
+/* KPI 역량평가 탭 관련 */
+.eval-dropdown-wrap{position:relative;display:inline-block;}
+.eval-dropdown-btn{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:12px;border:2px solid #e8e8ff;background:#f8f8ff;cursor:pointer;font-size:14px;font-weight:700;color:#3d3d5c;transition:all .2s;}
+.eval-dropdown-btn:hover{border-color:#6c63ff;background:#f0eeff;}
+.eval-dropdown-btn .arrow{font-size:10px;color:#aaa;transition:transform .2s;}
+.eval-dropdown-btn.open .arrow{transform:rotate(180deg);}
+.eval-dropdown-menu{position:absolute;left:0;right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1.5px solid #e8e8ff;overflow:hidden;z-index:200;display:none;}
+.eval-dropdown-menu.open{display:block;animation:dropDown .15s ease;}
+@keyframes dropDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.eval-dropdown-item{display:block;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;color:#3d3d5c;transition:all .15s;border-left:3px solid transparent;}
+.eval-dropdown-item:hover{background:#f5f3ff;color:#6c63ff;}
+.eval-dropdown-item.active{background:#f0eeff;font-weight:800;border-left-color:#6c63ff;}
+.eval-main-layout{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start;}
+.eval-profile-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:2px solid transparent;transition:all .3s;}
+.eval-profile-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:2px solid #f0f1f5;}
+.eval-profile-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;}
+.eval-profile-name{font-size:18px;font-weight:800;color:#3d3d5c;}
+.eval-profile-pos{font-size:12px;color:#aaa;margin-top:3px;}
+.eval-profile-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-top:6px;}
+.eval-score-big{text-align:center;padding:16px 0;margin-bottom:16px;}
+.eval-score-big-num{font-size:48px;font-weight:900;line-height:1;}
+.eval-score-big-label{font-size:12px;color:#aaa;margin-top:4px;}
+.eval-score-grade{display:inline-flex;align-items:center;padding:4px 16px;border-radius:20px;font-size:13px;font-weight:800;margin-top:8px;}
+.eval-scores-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.eval-score-item{display:flex;align-items:center;gap:10px;}
+.eval-score-item-label{font-size:12px;font-weight:600;color:#555;width:60px;flex-shrink:0;}
+.eval-score-item-bar-wrap{flex:1;height:8px;background:#f0eeff;border-radius:6px;overflow:hidden;}
+.eval-score-item-bar{height:100%;border-radius:6px;transition:width .8s ease;}
+.eval-score-item-val{font-size:12px;font-weight:800;width:28px;text-align:right;flex-shrink:0;}
+.eval-top3-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
+.eval-top3-card{border-radius:14px;padding:12px 8px;text-align:center;}
+.eval-top3-medal{font-size:20px;margin-bottom:4px;}
+.eval-top3-label{font-size:10px;font-weight:700;color:#555;margin-bottom:4px;}
+.eval-top3-score{font-size:18px;font-weight:900;}
+.eval-top3-trend{font-size:10px;font-weight:700;margin-top:3px;}
+.eval-radar-wrap{height:200px;margin-bottom:4px;}
+.eval-charts-col{display:flex;flex-direction:column;gap:18px;}
+.eval-trend-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.eval-trend-title{font-size:13px;font-weight:700;color:#3d3d5c;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.eval-bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
+.eval-radar-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.eval-table-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.eval-trend-table{width:100%;border-collapse:collapse;font-size:12px;}
+.eval-trend-table th{padding:8px 10px;background:#f0eeff;color:#6c63ff;font-weight:700;text-align:center;font-size:11px;}
+.eval-trend-table th:first-child{text-align:left;border-radius:8px 0 0 8px;}
+.eval-trend-table th:last-child{border-radius:0 8px 8px 0;}
+.eval-trend-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #f0f1f5;color:#555;font-size:12px;}
+.eval-trend-table td:first-child{text-align:left;font-weight:700;}
+.eval-trend-table tr:hover td{background:#fafaff;}
+.eval-trend-table tr.current-q td{background:#f0eeff;font-weight:700;}
+.eval-dual-radar-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.eval-radar-sub-card{background:#f8f8ff;border-radius:12px;padding:14px;text-align:center;}
+.eval-radar-sub-title{font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;}
+.eval-radar-sub-score{font-size:13px;font-weight:800;margin-top:6px;}
+.eval-donut-section{display:flex;flex-direction:column;gap:10px;}
+.eval-donut-top{position:relative;width:100%;}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:12px;color:#666;cursor:pointer;transition:all 0.2s;}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:all 0.2s;}
+.tooltip-box{position:fixed;background:#3d3d5c;color:#fff;padding:7px 11px;border-radius:9px;font-size:12px;pointer-events:none;z-index:9998;display:none;box-shadow:0 4px 12px rgba(0,0,0,.2);line-height:1.6;}
+.tab-btns-sm{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.tab-btn-sm{padding:4px 10px;border-radius:20px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:#f0eeff;color:#6c63ff;transition:all .2s;}
+.tab-btn-sm.active{background:#6c63ff;color:#fff;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.eval-main-layout{animation:fadeIn .3s ease;}
+.grade-info-wrap { position: relative; display: inline-block; cursor: help; margin-left: 4px; }
+.grade-info-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: #bbb; color: #fff; font-size: 10px; font-weight: bold; }
+.grade-tooltip { visibility: hidden; width: 140px; background-color: #3d3d5c; color: #fff; text-align: left; border-radius: 8px; padding: 8px; position: absolute; z-index: 100; bottom: 130%; left: 50%; transform: translateX(-50%); font-size: 11px; line-height: 1.6; opacity: 0; transition: opacity 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,.2); font-weight: normal; }
+.grade-info-wrap:hover .grade-tooltip { visibility: visible; opacity: 1; }
+.eval-top3-box-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.eval-top3-box-card { border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+@media(max-width:1200px){
+  .grid-top{grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));}
+  .grid-mid,.grid-bot{grid-template-columns:1fr 1fr;}
+  .eval-main-layout{grid-template-columns:1fr;}
+  .eval-top3-row{grid-template-columns:repeat(3,1fr);}
+  .detail-top-row{grid-template-columns:1fr;}
+  .detail-kpi-row{grid-template-columns:1fr 1fr;}
+  .eval-bottom-row{grid-template-columns:1fr;}
+  .eval-top-row-grid{grid-template-columns:1fr !important;}
+  .eval-dual-radar-row{grid-template-columns:1fr !important;}
+}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .grid-top,.grid-mid,.grid-bot,.member-overview-grid{grid-template-columns:1fr;}
+  .eval-bottom-row{grid-template-columns:1fr;}
+  .eval-top3-box-row{grid-template-columns:1fr;}
+}
+
+@keyframes smoothFadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+.fade-in-slow { animation: smoothFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+.fade-enter { animation: smoothFadeIn 0.4s ease forwards; opacity: 0; }
+.detail-view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eef0f8; padding-bottom: 16px; }
+.back-list-btn { display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 8px 16px; color: #374151; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.back-list-btn:hover { background: #f9fafb; border-color: #9ca3af; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.mini-avatars-wrap { display: flex; gap: 8px; }
+.mini-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; cursor: pointer; transition: all 0.2s; }
+.mini-avatar:hover { opacity: 1 !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.eval-profile-card { transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+.new-top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; cursor: help; }
+.info-icon { width: 16px; height: 16px; background: #d1d5db; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+.info-tooltip { position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 320px; background: #374151; color: #fff; font-size: 11px; line-height: 1.5; font-weight: normal; padding: 14px 16px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: all 0.3s ease; z-index: 100; }
+.info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 150%; }
+</style>
+
 <div id="loadingOverlay">
-  <div class="ov-icon">🏥</div>
+  <div class="ov-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 11h8"/><path d="M12 11v6"/></svg></div>
   <div class="ov-title">경상남도 서부의료원 KPI</div>
   <div class="ov-sub">구글 시트에서 데이터를 불러오는 중입니다...<br>잠시만 기다려 주세요</div>
   <div class="ov-spinner"></div>
@@ -286,7 +532,6 @@ body { display:flex; min-height:100vh; }
   <div class="sidebar-section-title">팀원</div>
   <div class="member-list" id="sidebarMembers"></div>
   <div class="sidebar-divider"></div>
-  
   <div id="sidebarEvalContainer" style="display:none; padding:13px 15px;">
     <div class="sidebar-section-title" style="padding:0 0 8px 0; color:#6c63ff;">⭐ 역량평가 대상팀원</div>
     <div class="eval-dropdown-wrap" id="evalDropdownWrap" style="width:100%; display:block;">
@@ -297,7 +542,6 @@ body { display:flex; min-height:100vh; }
       <div class="eval-dropdown-menu" id="evalDropdownMenu" style="top:calc(100% + 4px);"></div>
     </div>
   </div>
-  
   <!-- 모던 필터 영역 -->
   <div class="modern-filter-card" id="sidebarFilters">
     <div class="filter-header">기간 선택</div>
@@ -328,7 +572,7 @@ body { display:flex; min-height:100vh; }
 <div class="main">
   <div class="header">
     <div>
-      <div class="header-title">🏥 경상남도 서부의료원 설립사업 KPI 대시보드</div>
+      <div class="header-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6c63ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M12 3v18"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 11h8"/><path d="M12 11v6"/></svg> 경상남도 서부의료원 설립사업 KPI 대시보드</div>
       <div class="subtitle" id="headerSub">PJ CODE: 24188 | 구글 시트 연동 중...</div>
     </div>
     <div class="header-right">
@@ -337,42 +581,41 @@ body { display:flex; min-height:100vh; }
       <span style="background:#f0eeff;color:#6c63ff;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;" id="filterBadge">전체 기간</span>
     </div>
   </div>
-  
+
   <!-- 1. 대시보드 탭 -->
   <div id="view-dashboard" class="view-section active">
     <div class="grid-top" id="topKpiGrid"></div>
     <div class="grid-mid">
-      <div class="card"><div class="card-section-title">📈 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
-      <div class="card"><div class="card-section-title">📊 단계별 투입비율</div><div style="height:200px;"><canvas id="stageChart"></canvas></div></div>
-      <div class="card"><div class="card-section-title">⚖️ 설계단계별 투입시간</div><div style="height:200px;"><canvas id="compareChart"></canvas></div></div>
+      <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
+      <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 단계별 투입비율</div><div style="height:200px;"><canvas id="stageChart"></canvas></div></div>
+      <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> 설계단계별 투입시간</div><div style="height:200px;"><canvas id="compareChart"></canvas></div></div>
     </div>
     <div class="grid-bot">
       <div class="card">
-        <div class="card-section-title">📋 분류별 업무 투입시간 (전체)</div>
+        <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 분류별 업무 투입시간 (전체)</div>
         <div class="donut-layout">
           <div class="donut-legend-left" id="donutLegendLeft"></div>
           <div class="donut-chart-right"><canvas id="donutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="donutCenter">-</div><div style="font-size:10px;color:#aaa;">총 투입(h)</div></div></div>
         </div>
       </div>
-      <div class="card"><div class="card-section-title">🏆 업무분류별 TOP 5</div><ul class="top5-rank-list" id="top5List"></ul></div>
+      <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> 업무분류별 TOP 5</div><ul class="top5-rank-list" id="top5List"></ul></div>
       <div class="card">
-        <div class="card-section-title">🗓️ 월별 근무 밀도</div>
+        <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 월별 근무 밀도</div>
         <div class="tab-btns-sm" id="heatYearTabs"></div>
         <div style="overflow-x:auto;"><table class="heat-table" id="heatTable"></table></div>
         <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#f0eeff;border:1px solid #e0e0ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#c4b5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#8b5cf6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#6c63ff;"></div><div style="width:9px;height:9px;border-radius:2px;background:#4c1d95;"></div><span>많음</span></div>
       </div>
     </div>
-    <div class="card"><div class="card-section-title">📅 월별 투입시간</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
+    <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 월별 투입시간</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
   </div>
 
   <!-- 2. 팀원별 업무시간 탭 -->
   <div id="view-members" class="view-section">
     <!-- 목록 뷰 -->
     <div id="memberListView" class="fade-enter">
-      <div style="font-size:17px;font-weight:800;color:#3d3d5c;margin-bottom:18px;">👥 팀원별 대표카드 (클릭 시 상세 조회)</div>
+      <div style="font-size:17px;font-weight:800;color:#3d3d5c;margin-bottom:18px;display:flex;align-items:center;gap:6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 팀원별 대표카드 (클릭 시 상세 조회)</div>
       <div class="member-overview-grid" id="memberOverviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, 320px); align-items: stretch; justify-content: start; gap:20px;"></div>
     </div>
-
     <!-- 상세 대시보드 뷰 -->
     <div id="memberDetailView" style="display:none;">
       <div class="detail-view-header">
@@ -382,22 +625,20 @@ body { display:flex; min-height:100vh; }
         </button>
         <div class="mini-avatars-wrap" id="miniAvatarsWrap"></div>
       </div>
-      
       <div class="eval-main-layout">
         <!-- 좌측 프로필 카드 -->
         <div class="eval-profile-card" id="newDpProfile" style="position: sticky; top: 20px; align-self: start;"></div>
-        
         <!-- 우측 차트 영역 -->
         <div class="eval-charts-col fade-in-slow" id="newDpChartsCol">
           <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:18px;" class="eval-top-row-grid">
             <div class="eval-trend-card" style="margin-bottom:0;">
-              <div class="eval-trend-title">📊 월별 소분류 누적 투입시간</div>
+              <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 월별 소분류 누적 투입시간</div>
               <div style="height:330px; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
               <!-- 커스텀 범례 -->
               <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; justify-content:center;"></div>
             </div>
             <div class="eval-trend-card" style="margin-bottom:0;">
-              <div class="eval-trend-title">📐 설계단계별 투입 비중</div>
+              <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3l-5.6 5.6a2 2 0 0 1-2.8 0L2.7 10.7a2 2 0 0 1 0-2.8l5.6-5.6a2 2 0 0 1 2.8 0l10.2 10.2a2 2 0 0 1 0 2.8z"/><path d="M14.5 9.5L12 7"/><path d="M10.5 13.5L8 11"/><path d="M6.5 17.5L4 15"/></svg> 설계단계별 투입 비중</div>
               <div class="eval-donut-section">
                 <div class="eval-donut-top" style="height: 280px; margin-top: 30px;">
                   <canvas id="dpDonut"></canvas>
@@ -406,13 +647,12 @@ body { display:flex; min-height:100vh; }
               </div>
             </div>
           </div>
-          
           <!-- 하단 2분할 레이아웃 -->
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
             <!-- 좌측: 집중업무 비율 -->
             <div class="eval-trend-card" style="margin-bottom:0; padding:18px 20px;">
               <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;">
-                🎯 집중업무 비율 
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> 집중업무 비율
                 <div class="info-wrap">
                   <div class="info-icon">?</div>
                   <div class="info-tooltip">
@@ -425,11 +665,10 @@ body { display:flex; min-height:100vh; }
               </div>
               <div style="height:80px; margin-top:20px;"><canvas id="dpFocusBar"></canvas></div>
             </div>
-
             <!-- 우측: 월별 근무 밀도 -->
             <div class="eval-table-card" style="margin-bottom:0; padding:18px 20px;">
               <div class="card-section-title" style="margin-bottom:8px;">
-                🗓️ 월별 근무 밀도 
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 월별 근무 밀도
                 <span id="dpHeatTabs" style="margin-left:12px; display:inline-flex; gap:4px;"></span>
               </div>
               <div style="overflow-x:auto;"><table class="heat-table" id="dpHeatTable"></table></div>
@@ -448,12 +687,12 @@ body { display:flex; min-height:100vh; }
       <div class="eval-charts-col">
         <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:18px;" class="eval-top-row-grid">
           <div class="eval-trend-card" style="margin-bottom:0;">
-            <div class="eval-trend-title">📈 분기별 역량 점수 추이</div>
+            <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 분기별 역량 점수 추이</div>
             <div style="height:240px; margin-top:15px;"><canvas id="evalTrendChart"></canvas></div>
             <div class="legend" style="justify-content:center;margin-top:8px;flex-wrap:wrap;" id="evalTrendLegend"></div>
           </div>
           <div class="eval-trend-card" style="margin-bottom:0;">
-            <div class="eval-trend-title">📊 소분류 투입시간</div>
+            <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 소분류 투입시간</div>
             <div class="eval-donut-section">
               <div class="eval-donut-top" style="height: 260px; margin-top:15px;">
                 <canvas id="evalDonutChart"></canvas>
@@ -468,7 +707,7 @@ body { display:flex; min-height:100vh; }
         </div>
         <div class="eval-bottom-row">
           <div class="eval-radar-card">
-            <div class="card-section-title">📡 역량데이터 (PJ 전체 평균)</div>
+            <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12v.01"/><path d="M15 12a3 3 0 0 0-6 0"/><path d="M19.07 19.07a10 10 0 1 0-14.14 0"/><path d="M12 2v10"/><path d="m19.07 4.93-7.07 7.07"/></svg> 역량데이터 (PJ 전체 평균)</div>
             <div class="eval-dual-radar-row">
               <div class="eval-radar-sub-card">
                 <div class="eval-radar-sub-title" id="evalRadarYearLabel">PJ 전체 평균</div>
@@ -483,7 +722,7 @@ body { display:flex; min-height:100vh; }
             </div>
           </div>
           <div class="eval-table-card">
-            <div class="card-section-title">📋 분기별 역량평가 추이</div>
+            <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 분기별 역량평가 추이</div>
             <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
           </div>
         </div>
@@ -492,62 +731,16 @@ body { display:flex; min-height:100vh; }
   </div>
 </div>
 
-<style>
-  /* 필터 디자인용 추가 스타일 */
-  .modern-filter-card { background: #ffffff; padding: 18px 15px 15px 15px; width: 100%; margin-top: auto; flex-shrink: 0; font-family: 'Pretendard', sans-serif; border-top: 2px solid #f0eeff; }
-  .filter-header { font-size: 13px; font-weight: 700; color: #6c63ff; margin-bottom: 22px; }
-  .timeline-container { position: relative; margin-bottom: 24px; padding: 0 8px; }
-  .year-row { position: relative; height: 18px; margin-bottom: 14px; }
-  .year-label { position: absolute; top: 0; transform: translateX(-50%); font-size: 13px; font-weight: 800; color: #9ca3af; cursor: pointer; transition: all 0.3s ease; }
-  .year-label:hover { color: #6366f1; transform: translateX(-50%) translateY(-2px); }
-  .year-label.active { color: #6366f1; }
-  .track-row { position: relative; height: 20px; display: flex; align-items: center; }
-  .track-bg { position: absolute; width: 100%; height: 3px; background: #f3f4f6; border-radius: 2px; }
-  .track-active { position: absolute; height: 3px; background: #6366f1; border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); left: 0; width: 0; }
-  .nodes-container { position: absolute; width: 100%; height: 100%; }
-  .node { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; background: #e5e7eb; border: none; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; z-index: 2; }
-  .node:hover { transform: translate(-50%, -50%) scale(1.5); background: #6366f1; }
-  .node.active { background: #6366f1; }
-  .node.endpoint { width: 14px; height: 14px; background: #6366f1; border: 2.5px solid #ffffff; box-shadow: 0 2px 6px rgba(99, 102, 241, 0.45); z-index: 3; }
-  .quarter-row { position: relative; height: 16px; margin-top: 10px; }
-  .quarter-label { position: absolute; top: 0; transform: translateX(-50%); font-size: 11px; font-weight: 400; color: #9ca3af; width: 16px; text-align: center; transition: all 0.3s ease; cursor: pointer; }
-  .quarter-label:hover { color: #6366f1; }
-  .quarter-label.active { color: #6366f1; font-size: 12px; font-weight: 800; }
-  .range-summary { background: #e0e7ff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .summary-text { color: #6366f1; font-weight: 700; font-size: 12px; }
-  .summary-count { color: #6366f1; font-size: 11px; opacity: 0.8; }
-  .reset-btn { width: 100%; padding: 10px; background: #ffffff; border: 1.5px solid #f0eeff; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
-  .reset-btn:hover { background: #f0eeff; border-color: #6c63ff; }
-
-  /* ✨ 부드럽고 투명도를 이용한 모던 페이드 애니메이션 (차트 에러 방지용) */
-  @keyframes smoothFadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
-  .fade-in-slow { animation: smoothFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-  .fade-enter { animation: smoothFadeIn 0.4s ease forwards; opacity: 0; }
-
-  /* 헤더 툴바 및 미니 로고 */
-  .detail-view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eef0f8; padding-bottom: 16px; }
-  .back-list-btn { display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 8px 16px; color: #374151; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-  .back-list-btn:hover { background: #f9fafb; border-color: #9ca3af; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-  .mini-avatars-wrap { display: flex; gap: 8px; }
-  .mini-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; cursor: pointer; transition: all 0.2s; }
-  .mini-avatar:hover { opacity: 1 !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-  
-  .eval-profile-card { transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
-  .new-top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-
-  /* 툴팁 디자인 */
-  .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; cursor: help; }
-  .info-icon { width: 16px; height: 16px; background: #d1d5db; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
-  .info-tooltip { 
-    position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); 
-    width: 320px; background: #374151; color: #fff; font-size: 11px; line-height: 1.5; font-weight: normal; 
-    padding: 14px 16px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); 
-    visibility: hidden; opacity: 0; transition: all 0.3s ease; z-index: 100;
-  }
-  .info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 150%; }
-</style>
-
 <script>
+// ✨ 이모지 -> 모던 SVG 아이콘 문자열 상수 정의
+const I_CLOC = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+const I_UP   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`;
+const I_DOWN = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+const I_BULB = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
+const I_TROP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
+const I_RULE = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3l-5.6 5.6a2 2 0 0 1-2.8 0L2.7 10.7a2 2 0 0 1 0-2.8l5.6-5.6a2 2 0 0 1 2.8 0l10.2 10.2a2 2 0 0 1 0 2.8z"/><path d="M14.5 9.5L12 7"/><path d="M10.5 13.5L8 11"/><path d="M6.5 17.5L4 15"/></svg>`;
+const I_RADR = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12v.01"/><path d="M15 12a3 3 0 0 0-6 0"/><path d="M19.07 19.07a10 10 0 1 0-14.14 0"/><path d="M12 2v10"/><path d="m19.07 4.93-7.07 7.07"/></svg>`;
+
 Chart.register(ChartDataLabels);
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 let MEMBERS = [];
@@ -567,15 +760,13 @@ let G = {heatYear:null,selectedMember:null,dpHeatYear:null};
 let CH = {};
 let H = {dashSub:null,dpSub:null};
 let G_evalMember = '';
-
-window.filterStartIndex = 0; 
-window.filterEndIndex = 11;  
+window.filterStartIndex = 0;
+window.filterEndIndex = 11;
+window.lastClickedIndex = 0; // ✨ 슬라이더 Shift 클릭용 앵커 저장 변수
 const filterYears = [2024, 2025, 2026];
 const filterQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
 const totalNodes = filterYears.length * filterQuarters.length;
-let isSelecting = false;
 let percentPositions = [];
-
 const formatNum = val => typeof val==='number' ? val.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}) : val;
 const mToH = m => parseFloat((m/60).toFixed(1));
 const formatHour = m => formatNum(mToH(m));
@@ -584,11 +775,9 @@ const getMos = data => [...new Set(data.map(r=>r.date.slice(0,7)))].sort();
 function destroyChart(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 function hexRgba(hex,a){try{return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;}catch{return hex;}}
 
-// ✨ 집중업무/분산업무 판별 로직 (띄어쓰기 오타 방지 방어코드 적용)
 function isFocusedWork(cat, sub) {
   const cleanCat = (cat||'').replace(/\s+/g, '');
   const cleanSub = (sub||'').replace(/\s+/g, '');
-
   const rules = {
     '기획설계': ['컨셉디자인', '배치계획', '평면계획', '입면계획', '단면계획', '모형/3D모델링', '사업성검토', '사전조사/분석/검토'],
     '계획설계': ['컨셉디자인', '배치계획', '평면계획', '입면계획', '단면계획', '모형/3D모델링', '사전조사/분석/검토'],
@@ -596,7 +785,6 @@ function isFocusedWork(cat, sub) {
     '실시설계': ['개요/실시도면', '공통도면', '마감도/상세도', '구조도면', '시방서/내역서', '사전조사/분석/검토'],
     '사후관리': ['준공도서', '현장지원']
   };
-
   if (rules[cleanCat]) {
     const cleanRules = rules[cleanCat].map(r => r.replace(/\s+/g, ''));
     if (cleanRules.includes(cleanSub)) return true;
@@ -604,6 +792,7 @@ function isFocusedWork(cat, sub) {
   return false;
 }
 
+// ✨ 전체 필터 적용 함수 (전체 페이지에 유지되도록 기준점 제공)
 function filtered(){
   let d = RAW;
   return d.filter(r => {
@@ -683,8 +872,6 @@ async function loadDataFromSheets(){
       date:String(row.date||'').slice(0,10),cat:String(row.cat||'미분류').trim(),
       sub:String(row.sub||'기타').trim(),min:parseInt(row.min)||0,
     }));
-    
-    // ✨ 지정된 순서대로 정렬 
     const targetOrder = ['윤진관', '이혜인B', '정인태', '김효언'];
     const memberSet=new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]);
     MEMBERS=Array.from(memberSet).filter(n=>n);
@@ -693,7 +880,6 @@ async function loadDataFromSheets(){
       const idxB = targetOrder.indexOf(b);
       return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
     });
-
     MEMBERS.forEach((name,idx)=>{
       MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length];
       let initial=name;
@@ -706,10 +892,8 @@ async function loadDataFromSheets(){
     const now=new Date();
     document.getElementById('lastUpdated').textContent = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} 업데이트`;
     setLoadingProgress(85,'🎨 대시보드 렌더링 중...');
-    
-    initSlider(); 
+    initSlider();
     initDashboard();
-    
     setLoadingProgress(100,'✅ 데이터 로딩 완료!');
     if(ovEl){
       const sp=ovEl.querySelector('.ov-spinner');if(sp) sp.style.display='none';
@@ -729,77 +913,64 @@ function initDashboard(){
   renderEvalTab();
 }
 
+// ✨ 슬라이더 Shift 클릭 지원
 function initSlider() {
   const nodesContainer = document.getElementById('nodesContainer');
   const quarterRow = document.getElementById('quarterRow');
   const yearRow = document.getElementById('yearRow');
-  
   nodesContainer.innerHTML = '';
   quarterRow.innerHTML = '';
   yearRow.innerHTML = '';
-
   const gapNormal = 1;
-  const gapYear = 1.6; 
+  const gapYear = 1.6;
   let currentPos = 0;
   let positions = [];
-  
   for(let i = 0; i < totalNodes; i++) {
     positions.push(currentPos);
     if (i < totalNodes - 1) {
-      if (i % 4 === 3) currentPos += gapYear; 
+      if (i % 4 === 3) currentPos += gapYear;
       else currentPos += gapNormal;          
     }
   }
-  
   const maxPos = currentPos;
   percentPositions = positions.map(p => (p / maxPos) * 100);
-
   filterYears.forEach((year, index) => {
     const yLabel = document.createElement('div');
     yLabel.className = 'year-label';
     yLabel.innerText = year;
     yLabel.onclick = () => selectYear(year);
-    
     const startIdx = index * 4;
     const endIdx = startIdx + 3;
     const centerPercent = (percentPositions[startIdx] + percentPositions[endIdx]) / 2;
     yLabel.style.left = `${centerPercent}%`;
     yearRow.appendChild(yLabel);
   });
-
   for (let i = 0; i < totalNodes; i++) {
     const pct = percentPositions[i];
-
     const node = document.createElement('div');
     node.className = 'node';
     node.style.left = `${pct}%`;
-    node.onclick = () => handleNodeClick(i);
+    node.onclick = (e) => handleNodeClick(i, e);
     nodesContainer.appendChild(node);
-
     const qLabel = document.createElement('div');
     qLabel.className = 'quarter-label';
-    qLabel.innerText = (i % 4) + 1; 
+    qLabel.innerText = (i % 4) + 1;
     qLabel.style.left = `${pct}%`;
-    qLabel.onclick = () => handleNodeClick(i);
+    qLabel.onclick = (e) => handleNodeClick(i, e);
     quarterRow.appendChild(qLabel);
   }
-  
   updateUI();
 }
 
-function handleNodeClick(index) {
-  if (!isSelecting) {
+// ✨ 단일 선택 및 Shift + 클릭 연속 선택 처리
+function handleNodeClick(index, event) {
+  if (event && event.shiftKey && window.lastClickedIndex !== undefined) {
+    window.filterStartIndex = Math.min(window.lastClickedIndex, index);
+    window.filterEndIndex = Math.max(window.lastClickedIndex, index);
+  } else {
     window.filterStartIndex = index;
     window.filterEndIndex = index;
-    isSelecting = true;
-  } else {
-    if (index < window.filterStartIndex) {
-      window.filterEndIndex = window.filterStartIndex;
-      window.filterStartIndex = index;
-    } else {
-      window.filterEndIndex = index;
-    }
-    isSelecting = false;
+    window.lastClickedIndex = index;
   }
   updateUI();
 }
@@ -809,7 +980,7 @@ function selectYear(year) {
   if (yearIndex !== -1) {
     window.filterStartIndex = yearIndex * 4;
     window.filterEndIndex = window.filterStartIndex + 3;
-    isSelecting = false;
+    window.lastClickedIndex = window.filterStartIndex;
     updateUI();
   }
 }
@@ -817,7 +988,7 @@ function selectYear(year) {
 function resetFilter() {
   window.filterStartIndex = 0;
   window.filterEndIndex = totalNodes - 1;
-  isSelecting = false;
+  window.lastClickedIndex = 0;
   updateUI();
 }
 
@@ -826,22 +997,18 @@ function updateUI() {
   const qLabels = document.querySelectorAll('.quarter-label');
   const yLabels = document.querySelectorAll('.year-label');
   const trackActive = document.getElementById('trackActive');
-
   if(nodes.length === 0) return;
-
   nodes.forEach((node, i) => {
-    node.className = 'node'; 
+    node.className = 'node';
     qLabels[i].className = 'quarter-label';
-    
     if (i >= window.filterStartIndex && i <= window.filterEndIndex) {
-      node.classList.add('active'); 
+      node.classList.add('active');
       qLabels[i].classList.add('active');
       if (i === window.filterStartIndex || i === window.filterEndIndex) {
-        node.classList.add('endpoint'); 
+        node.classList.add('endpoint');
       }
     }
   });
-
   yLabels.forEach((label, i) => {
     const yearStart = i * 4;
     const yearEnd = yearStart + 3;
@@ -851,18 +1018,15 @@ function updateUI() {
       label.classList.remove('active');
     }
   });
-
   const startPercent = percentPositions[window.filterStartIndex];
   const endPercent = percentPositions[window.filterEndIndex];
   trackActive.style.left = `${startPercent}%`;
   trackActive.style.width = `${endPercent - startPercent}%`;
-
   const startYear = filterYears[Math.floor(window.filterStartIndex / 4)];
   const startQ = filterQuarters[window.filterStartIndex % 4];
   const endYear = filterYears[Math.floor(window.filterEndIndex / 4)];
   const endQ = filterQuarters[window.filterEndIndex % 4];
   const count = window.filterEndIndex - window.filterStartIndex + 1;
-  
   let labelText = '';
   if (count === 1) {
     labelText = `${startYear} ${startQ}`;
@@ -871,13 +1035,11 @@ function updateUI() {
   } else {
     labelText = `${startYear} ${startQ} ➔ ${endYear} ${endQ}`;
   }
-  
   document.getElementById('summaryText').innerText = labelText;
   document.getElementById('summaryCount').innerText = `${count}개 분기`;
-
   updateFilterLabel(labelText);
-
-  // 필터 작동 시 상세 뷰 갱신 연결
+  
+  // 필터 적용 유지하여 데이터 갱신
   if(typeof RAW !== 'undefined' && RAW.length > 0) {
     renderAll();
     renderEvalTab();
@@ -919,20 +1081,18 @@ function renderKPI(){
   let barsHTML='';
   mTots.forEach(m=>{barsHTML += `<div class="compare-row"><span class="compare-name" title="${m.n}">${m.n}</span><div class="compare-bar-wrap"><div class="compare-bar-fill" style="width:${Math.round(m.v/maxV*100)}%;background:${MC[m.n]};"></div></div><span class="compare-val">${formatHour(m.v)}h</span></div>`;});
   const totalCard=document.createElement('div');totalCard.className='card kpi-card';
-  totalCard.innerHTML = `<div class="card-section-title">🕐 총 투입시간</div><div class="card-value">${formatHour(totalMin)}h</div><div class="card-sub">선택기간 중 ${mos.length}개월 | ${MEMBERS.length}명 참여</div><div style="margin-top:12px;">${barsHTML}</div>`;
+  // ✨ SVG 모던 아이콘 교체
+  totalCard.innerHTML = `<div class="card-section-title">${I_CLOC} 총 투입시간</div><div class="card-value">${formatHour(totalMin)}h</div><div class="card-sub">선택기간 중 ${mos.length}개월 | ${MEMBERS.length}명 참여</div><div style="margin-top:12px;">${barsHTML}</div>`;
   grid.appendChild(totalCard);
   
-  // ✨ 대시보드 탭 상단 카드 이름/직급 폰트 조절 및 최소/최대 업무 추가
   MEMBERS.forEach(name=>{
     const d=all.filter(r=>r.name===name);const tot=d.reduce((s,r)=>s+r.min,0);const pct=totalMin>0?Math.round(tot/totalMin*100):0;
     const pos = RAW.find(r => r.name === name)?.pos || '';
     const color=MC[name];
-    
     const subMap = grpMin(d, 'sub');
     const subList = Object.entries(subMap).sort((a,b)=>b[1]-a[1]);
     const maxSub = subList.length > 0 ? subList[0][0] : '-';
     const minSub = subList.length > 0 ? subList[subList.length-1][0] : '-';
-
     const memberCard=document.createElement('div');memberCard.className='card kpi-card';
     memberCard.innerHTML = `<style>.kpi-card-${name}::before{background:linear-gradient(90deg,${color},${color}99)!important;}</style>
       <div class="member-kpi-header">
@@ -943,8 +1103,8 @@ function renderKPI(){
       <div class="card-sub">기여율 ${pct}%</div>
       <div class="progress-wrap"><div class="progress-label"><span>기여율</span><span>${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="background:linear-gradient(90deg,${color},${color}99);width:${pct}%"></div></div></div>
       <div style="margin-top:14px; padding-top:10px; border-top:1px solid #f0f1f5; font-size:11px; color:#666;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>🔥 최다 수행</span><strong style="color:#3d3d5c;">${maxSub}</strong></div>
-        <div style="display:flex; justify-content:space-between;"><span>🧊 최소 수행</span><strong style="color:#3d3d5c;">${minSub}</strong></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;"><span>${I_UP} 최다 수행</span><strong style="color:#3d3d5c;">${maxSub}</strong></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>${I_DOWN} 최소 수행</span><strong style="color:#3d3d5c;">${minSub}</strong></div>
       </div>
       `;
     memberCard.classList.add(`kpi-card-${name}`);
@@ -972,7 +1132,6 @@ function renderStage(){
 }
 
 function renderCompare(){
-  // ✨ 대시보드 탭 - 설계단계별 투입시간
   const all=filtered();const cats=CAT_ORDER.filter(c=>all.some(r=>r.cat===c));
   const dss=MEMBERS.map(name=>{const cm=grpMin(all.filter(r=>r.name===name),'cat');const c=MC[name];return{label:name,data:cats.map(c2=>mToH(cm[c2]||0)),backgroundColor:c+'bb',borderRadius:5};});
   destroyChart('compare');CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{
@@ -990,7 +1149,6 @@ function renderCompare(){
 }
 
 function renderDonut(hl){
-  // ✨ 대시보드 도넛 퍼센트 계산 버그 수정 (top10 합이 아닌 전체 시간 기준 계산)
   const all=filtered();const subMap=grpMin(all,'sub');const totalMin=all.reduce((s,r)=>s+r.min,0);
   const top=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,10);const labels=top.map(x=>x[0]);const data=top.map(x=>mToH(x[1]));const colors=labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
   document.getElementById('donutCenter').textContent=formatHour(totalMin)+'h';
@@ -1001,17 +1159,17 @@ function renderDonut(hl){
     type:'doughnut',
     data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},
     options:{
-      responsive:true,maintainAspectRatio:false,cutout:'52%',layout:{padding:35}, // ✨ 패딩 추가
+      responsive:true,maintainAspectRatio:false,cutout:'52%',layout:{padding:35},
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},
         datalabels:{
           display:ctx=>ctx.dataIndex<5,
           color:(ctx)=>hl&&labels[ctx.dataIndex]!==hl?'rgba(120,120,120,0.3)':'#3d3d5c',
-          font:{size:10,weight:'700'}, // ✨ 폰트 1pt 증가
+          font:{size:10,weight:'700'},
           formatter:(val,ctx)=>{
-            const pct = mToH(totalMin) > 0 ? Math.round(val / mToH(totalMin) * 100) : 0; // ✨ 전체 기준 계산
-            return `${labels[ctx.dataIndex]}\n${formatNum(val)}h (${pct}%)`; // ✨ 두 줄 포맷 적용
+            const pct = mToH(totalMin) > 0 ? Math.round(val / mToH(totalMin) * 100) : 0;
+            return `${labels[ctx.dataIndex]}\n${formatNum(val)}h (${pct}%)`;
           },
           anchor:'end',align:'end',offset:4,textAlign:'center'
         }
@@ -1064,7 +1222,6 @@ function drawHeat(data,year,tableId,color){
 }
 
 function renderTimeline(){
-  // ✨ 대시보드 하단 월별 투입시간 차트를 그라데이션 선 차트로 변경
   const all=filtered();const mos=getMos(all);const labels=mos.map(m=>m.replace(/(\d{4})-(\d{2})/,'$1/$2'));
   destroyChart('timeline');const ctx=document.getElementById('timelineChart').getContext('2d');
   const dss=MEMBERS.map(name=>{
@@ -1094,14 +1251,11 @@ function showView(view,navEl){
   const sidebarEval=document.getElementById('sidebarEvalContainer');
   if(view==='kpieval'){sidebarEval.style.display='block';renderEvalTab();}
   else{sidebarEval.style.display='none';}
-  
   if(view==='members') {
     if(G.selectedMember) {
       document.getElementById('memberListView').style.display = 'none';
       const detailView = document.getElementById('memberDetailView');
       detailView.style.display = 'block';
-      
-      // ✨ 애니메이션 없이 지연시간 없이 즉각 렌더링 (차트 폭 0px 버그 완벽 차단)
       renderDetailPanel(G.selectedMember);
     } else {
       document.getElementById('memberDetailView').style.display = 'none';
@@ -1111,26 +1265,21 @@ function showView(view,navEl){
   }
 }
 
-// ✨ 대표 프로필 카드 HTML 공통화 (세로 고정 레이아웃)
+// ✨ 대표 프로필 카드 공통화
 function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
   const catMap = grpMin(d, 'cat');
   const maxCat = Math.max(...Object.values(catMap), 1);
   const avgMo = mos.length > 0 ? formatNum(mToH(tot) / mos.length) : 0;
-  
   const moMap = {}; d.forEach(r => { const mo = r.date.slice(0,7); moMap[mo] = (moMap[mo]||0) + r.min; });
   const pkM = Object.entries(moMap).sort((a,b)=>b[1]-a[1])[0];
-  
   const dateMap = grpMin(d, 'date');
   const pkD = Object.entries(dateMap).sort((a,b)=>b[1]-a[1])[0];
-  
   const subMap = grpMin(d, 'sub');
   const top3Subs = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
-
   const stageBarsHTML = CAT_ORDER.filter(c=>catMap[c]>0).map(c=>{
     const ci=CAT_ORDER.indexOf(c);
     return `<div class="stage-row" style="margin-bottom:6px;"><span class="stage-name">${c.replace('설계','')}</span><div class="stage-track"><div class="stage-fill" style="width:${Math.round((catMap[c]||0)/maxCat*100)}%;background:${CAT_COLORS[ci]};"></div></div><span class="stage-val">${formatHour(catMap[c]||0)}h</span></div>`;
   }).join('');
-
   return `
     <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${color};border-radius:20px 20px 0 0;"></div>
     <div class="eval-profile-top" style="margin-top:8px;">
@@ -1142,10 +1291,7 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
       <div class="eval-score-big-label">선택 기간 총 투입시간</div>
       <span class="eval-score-grade" style="background:#f0eeff;color:#6c63ff;font-size:12px;">전체 프로젝트 기여도 ${pct}%</span>
     </div>
-    
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:10px;text-transform:uppercase;">💡 투입 요약</div>
-    
-    <!-- ✨ 2x2 요약 그리드 -->
+    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:4px;">${I_BULB} 투입 요약</div>
     <div class="stats-grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
       <div style="background:#f8f8ff; border-radius:10px; padding:16px 10px; text-align:center;">
         <div style="font-size:16px; font-weight:800; color:#3d3d5c; margin-bottom:4px;">${mos.length}개월</div>
@@ -1155,7 +1301,6 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
         <div style="font-size:16px; font-weight:800; color:#3d3d5c; margin-bottom:4px;">${avgMo}h</div>
         <div style="font-size:11px; color:#aaa; font-weight:600;">월 평균 투입</div>
       </div>
-      <!-- ✨ 아이콘 삭제, 텍스트 색상 및 폰트 변경 반영 -->
       <div style="background:#f8f8ff; border-radius:10px; padding:16px 10px; text-align:center;">
         <div style="font-size:10px; font-weight:normal; color:#3d3d5c; margin-bottom:4px; line-height:1.4;">${pkM ? pkM[0] : '-'}<br><span style="font-size:18px; font-weight:800;">(${pkM ? formatHour(pkM[1]) : 0}h)</span></div>
         <div style="font-size:11px; color:#aaa; font-weight:600;">최다 투입월</div>
@@ -1165,14 +1310,11 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
         <div style="font-size:11px; color:#aaa; font-weight:600;">최다 투입일</div>
       </div>
     </div>
-    
-    <!-- ✨ 분류별 업무시간 TOP 3 -->
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;">🏆 분류별 업무시간 TOP 3</div>
+    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;display:flex;align-items:center;gap:4px;">${I_TROP} 분류별 업무시간 TOP 3</div>
     <div class="new-top3-grid" style="margin-bottom:20px;">
       ${top3Subs.map((s, i) => {
         const bc = ['#f59e0b','#94a3b8','#cd7c3b'][i];
         const emoji = ['🥇','🥈','🥉'][i];
-        // ✨ 박스 세로 길이 2배를 위해 padding 높임
         return `<div style="border:1px solid ${bc}44; border-radius:8px; padding:16px 4px; text-align:center; display:flex; flex-direction:column; justify-content:center; height:90px;">
           <div style="font-size:14px; margin-bottom:4px;">${emoji}</div>
           <div style="font-size:11px; font-weight:700; color:#3d3d5c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; margin-bottom:4px;">${s[0]}</div>
@@ -1180,9 +1322,7 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
         </div>`;
       }).join('')}
     </div>
-
-    <!-- ✨ 단계별 투입 비중 (복구) -->
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;">📐 단계별 투입 비중</div>
+    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;display:flex;align-items:center;gap:4px;">${I_RULE} 단계별 투입 비중</div>
     <div class="stage-bars-container">
       ${stageBarsHTML}
     </div>
@@ -1194,7 +1334,6 @@ function renderMembers(){
   const totalMin = all.reduce((s,r) => s + r.min, 0);
   const grid = document.getElementById('memberOverviewGrid');
   grid.innerHTML = '';
-  
   MEMBERS.forEach(name => {
     const color = MC[name];
     const d = all.filter(r => r.name === name);
@@ -1202,19 +1341,15 @@ function renderMembers(){
     const pos = RAW.find(r => r.name === name)?.pos || '';
     const mos = getMos(d);
     const pct = totalMin > 0 ? Math.round(tot / totalMin * 100) : 0;
-    
     const card = document.createElement('div');
-    card.className = 'eval-profile-card'; 
+    card.className = 'eval-profile-card';
     card.style.cursor = 'pointer';
     card.style.position = 'relative';
-    card.style.height = '100%'; // ✨ 세로 길이 일정하게 고정
+    card.style.height = '100%';
     card.innerHTML = getRepCardHTML(name, d, tot, pct, mos, pos, color);
-    
-    // 애니메이션 복구
     card.onmouseover = () => { card.style.transform = 'translateY(-6px)'; card.style.boxShadow = '0 12px 24px rgba(0,0,0,0.1)'; };
     card.onmouseout = () => { card.style.transform = 'none'; card.style.boxShadow = '0 2px 10px rgba(0,0,0,.05)'; };
     card.onclick = () => openDetail(name);
-    
     grid.appendChild(card);
   });
 }
@@ -1224,23 +1359,18 @@ function renderMiniAvatars(activeName) {
   wrap.innerHTML = MEMBERS.map(name => {
     const color = MC[name];
     const isActive = name === activeName;
-    return `<div class="mini-avatar" style="background:${color}; ${isActive ? `box-shadow: 0 0 0 2px #fff, 0 0 0 4px ${color}; transform:scale(1.1); z-index:2;` : 'opacity:0.4;'}" title="${name}" onclick="openDetail('${name}')">${INITIALS[name]}</div>`;
+    return `<div class="mini-avatar" style="background:${color}; ${isActive ?` box-shadow: 0 0 0 2px #fff, 0 0 0 4px ${color}; transform:scale(1.1); z-index:2 `: 'opacity:0.4;'}" title="${name}" onclick="openDetail('${name}')">${INITIALS[name]}</div>`;
   }).join('');
 }
 
 function openDetail(name){
   H.dpSub=null;
   G.selectedMember=name;
-  
   document.getElementById('memberListView').style.display = 'none';
   const detailView = document.getElementById('memberDetailView');
   detailView.style.display = 'block';
-  
   renderMiniAvatars(name);
-  
-  // 애니메이션을 제거했으므로 화면이 나타나면 즉각 렌더링
   renderDetailPanel(name);
-  
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -1260,23 +1390,18 @@ function renderDetailPanel(name){
   const subMap=grpMin(d,'sub');
   const allYears=[...new Set(mos.map(m=>m.split('-')[0]))].sort();
   if(!G.dpHeatYear||!allYears.includes(G.dpHeatYear)) G.dpHeatYear=allYears[allYears.length-1]||'2025';
-
   const pct = totalAllMin > 0 ? Math.round(tot / totalAllMin * 100) : 0;
-
-  // 1. 좌측 프로필 랜더링
+  
   const profileEl = document.getElementById('newDpProfile');
   profileEl.style.borderColor = color + '44';
   profileEl.innerHTML = getRepCardHTML(name, d, tot, pct, mos, pos, color);
-
-  // 2. 우측 도넛 
+  
   const catMap=grpMin(d,'cat');
   const cats2=CAT_ORDER.filter(c=>catMap[c]>0);
   const catData=cats2.map(c=>mToH(catMap[c]||0));
   const catColors=cats2.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]);
   const catTotal=catData.reduce((a,b)=>a+b,0);
-  
   document.getElementById('dpDonutCenter').innerHTML = `<div style="font-size:16px;font-weight:800;color:#3d3d5c;">${formatHour(tot)}h</div><div style="font-size:10px;color:#aaa;">총 투입</div>`;
-  
   destroyChart('dpDonut');
   CH.dpDonut=new Chart(document.getElementById('dpDonut').getContext('2d'),{
     type:'doughnut',
@@ -1297,11 +1422,9 @@ function renderDetailPanel(name){
       }
     }
   });
-
-  // ✨ 누적 막대 차트 (moSubMap 버그 완벽 수정)
+  
   renderDpStacked(d,mos,subMap,color);
-
-  // ✨ 집중업무 비율 바 렌더링
+  
   let focusMin = 0;
   let distMin = 0;
   d.forEach(r => {
@@ -1311,7 +1434,6 @@ function renderDetailPanel(name){
   const totalFocusDist = focusMin + distMin;
   const focusPct = totalFocusDist > 0 ? (focusMin / totalFocusDist * 100) : 0;
   const distPct = totalFocusDist > 0 ? (distMin / totalFocusDist * 100) : 0;
-
   destroyChart('dpFocusBar');
   CH.dpFocusBar = new Chart(document.getElementById('dpFocusBar').getContext('2d'), {
     type: 'bar',
@@ -1342,8 +1464,7 @@ function renderDetailPanel(name){
       }
     }
   });
-
-  // 하단 히트맵
+  
   const hytw=document.getElementById('dpHeatTabs');hytw.innerHTML='';
   allYears.forEach(y=>{
     const b=document.createElement('button');
@@ -1360,31 +1481,26 @@ function renderDetailPanel(name){
   drawHeat(d,G.dpHeatYear,'dpHeatTable',color);
 }
 
-// ✨ 누적 막대 차트 (오류 해결 버전)
 function renderDpStacked(d,mos,subMap,color){
   const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const bgColors=subList.map((sub,i)=>H.dpSub===null?SUB_PAL[i%SUB_PAL.length]:(sub===H.dpSub?SUB_PAL[i%SUB_PAL.length]:SUB_PAL[i%SUB_PAL.length]+'33'));
-  
-  // ✨ 정확한 이차원 객체 생성으로 Undefined 에러 차단
   const moSubMap={};
   d.forEach(r => {
     const mo = r.date.slice(0,7);
     if(!moSubMap[mo]) moSubMap[mo] = {};
     moSubMap[mo][r.sub] = (moSubMap[mo][r.sub] || 0) + r.min;
   });
-
   const legendWrap = document.getElementById('dpStackedLegend');
   if(legendWrap) {
     legendWrap.innerHTML = subList.map((sub, i) => {
       const isHL = H.dpSub === sub;
       const isDim = H.dpSub && H.dpSub !== sub;
       const c = SUB_PAL[i%SUB_PAL.length];
-      return `<div style="display:flex; align-items:center; gap:4px; font-size:11px; cursor:pointer; transition:all 0.2s; ${isHL ? `font-weight:800; color:${c};` : isDim ? 'opacity:0.4;' : 'color:#555;'}" onclick="dpClickSub('${sub}')">
+      return `<div style="display:flex; align-items:center; gap:4px; font-size:11px; cursor:pointer; transition:all 0.2s; ${isHL ?` font-weight:800; color:${c};` : isDim ? 'opacity:0.4;' : 'color:#555;'}" onclick="dpClickSub('${sub}')">
         <div style="width:10px; height:10px; border-radius:3px; background:${c};"></div>${sub}
       </div>`;
     }).join('');
   }
-
   destroyChart('dpStackedBar');
   CH.dpStackedBar=new Chart(document.getElementById('dpStackedBar').getContext('2d'),{
     data:{
@@ -1401,7 +1517,7 @@ function renderDpStacked(d,mos,subMap,color){
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{
-        legend:{display:false}, 
+        legend:{display:false},
         tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.dataset.label}: ${formatNum(c.parsed.y)}h`}},
         datalabels:{display:false}
       },
@@ -1435,10 +1551,12 @@ function buildEvalDropdown(){
     menu.appendChild(item);
   });
 }
+
 function toggleEvalDropdown(){
   document.getElementById('evalDropdownBtn').classList.toggle('open');
   document.getElementById('evalDropdownMenu').classList.toggle('open');
 }
+
 document.addEventListener('click',e=>{
   const wrap=document.getElementById('evalDropdownWrap');
   if(wrap&&!wrap.contains(e.target)){
@@ -1446,6 +1564,7 @@ document.addEventListener('click',e=>{
     document.getElementById('evalDropdownMenu')?.classList.remove('open');
   }
 });
+
 function renderEvalTab(){
   buildEvalDropdown();
   renderEvalProfile();
@@ -1466,7 +1585,6 @@ function renderEvalDonut(hl){
   const colors=labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
   const centerEl = document.getElementById('evalDonutCenter');
   if(centerEl) centerEl.textContent=formatHour(totalMin)+'h';
-  
   const top3wrap=document.getElementById('evalTop2Row');
   top3wrap.innerHTML='';
   const rankEmoji=['🥇','🥈','🥉'];
@@ -1487,17 +1605,17 @@ function renderEvalDonut(hl){
     type:'doughnut',
     data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},
     options:{
-      responsive:true,maintainAspectRatio:false,cutout:'48%',layout:{padding:40}, // ✨ 글자 잘림 방지 패딩 확장
+      responsive:true,maintainAspectRatio:false,cutout:'48%',layout:{padding:40},
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:'rgba(61,61,92,.95)',callbacks:{label:c=>`${c.label}: ${formatNum(c.parsed)}h`}},
         datalabels:{
           display:ctx=>ctx.dataIndex<5,
           color:(ctx)=>hl&&labels[ctx.dataIndex]!==hl?'rgba(120,120,120,0.3)':'#3d3d5c',
-          font:{size:10,weight:'700'}, // ✨ 폰트 1pt 크게 
+          font:{size:10,weight:'700'},
           formatter:(val,ctx)=>{
             const pct = mToH(totalMin) > 0 ? Math.round(val / mToH(totalMin) * 100) : 0;
-            return `${labels[ctx.dataIndex]}\n${formatNum(val)}h (${pct}%)`; // ✨ 2줄 처리
+            return `${labels[ctx.dataIndex]}\n${formatNum(val)}h (${pct}%)`;
           },
           anchor:'end',align:'end',offset:4,textAlign:'center'
         }
@@ -1580,14 +1698,11 @@ function renderEvalRadarDual(){
   destroyChart('evalRadarYear');destroyChart('evalRadarQtr');
   const name=G_evalMember;const color=MC[name];
   const qs=filteredEvalQs();
-  
-  // ✨ 역량데이터 (PJ 전체 평균)으로 수정 적용
   const allQs = [...new Set(EVAL_DATA.map(d=>d.q))];
   const yearAvgs=RADAR_LABELS.map((_,i)=>{
     const vals=allQs.map(q=>{const ev=EVAL_DATA.find(e=>e.q===q&&e.name===name);return ev?ev.vals[i]:null;}).filter(v=>v!==null);
     return vals.length>0?parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)):0;
   });
-  
   const latestQ=qs[qs.length-1]||'';
   const latestEv=latestQ?EVAL_DATA.find(e=>e.q===latestQ&&e.name===name):null;
   const qtrVals=latestEv?latestEv.vals:[0,0,0,0,0];
@@ -1598,9 +1713,11 @@ function renderEvalRadarDual(){
   document.getElementById('evalRadarYearLabel').textContent=yLabel;
   function scoreColor(s){return s>=4?'#22c55e':s>=3?'#6c63ff':'#f97316';}
   document.getElementById('evalRadarYearScore').innerHTML = `<span style="color:${scoreColor(yearAvgScore)};font-size:16px;font-weight:900;">${yearAvgScore.toFixed(1)}</span><span style="color:#aaa;font-size:11px;"> / 5.0점</span>`;
+  
   const qLabel=latestQ||'분기 없음';
   document.getElementById('evalRadarQtrLabel').textContent=qLabel;
   document.getElementById('evalRadarQtrScore').innerHTML = `<span style="color:${scoreColor(qtrAvgScore)};font-size:16px;font-weight:900;">${qtrAvgScore.toFixed(1)}</span><span style="color:#aaa;font-size:11px;"> / 5.0점</span>`;
+  
   const radarOpts=(label,data,bc)=>({
     type:'radar',
     data:{labels:RADAR_LABELS,datasets:[{label,data,backgroundColor:bc+'33',borderColor:bc,borderWidth:2.5,pointBackgroundColor:bc,pointRadius:4,pointHoverRadius:6}]},
@@ -1631,6 +1748,7 @@ function renderEvalRadarDual(){
       }
     }
   });
+  
   CH.evalRadarYear=new Chart(document.getElementById('evalRadarYear').getContext('2d'),radarOpts(yLabel,yearAvgs,'#9999bb'));
   CH.evalRadarQtr=new Chart(document.getElementById('evalRadarQtr').getContext('2d'),radarOpts(qLabel,qtrVals,color));
   
@@ -1701,17 +1819,34 @@ function renderEvalTrendTable(){
   wrap.innerHTML=html;
 }
 
+// ✨ 역량 레이더는 전체 기간 평균 유지, 상단 점수는 필터 적용 반영
 function renderEvalProfile(){
-  const name=G_evalMember;const color=MC[name];const qs=filteredEvalQs();const pos=RAW.find(r=>r.name===name)?.pos||'';
+  const name=G_evalMember;const color=MC[name];
+  const qs=filteredEvalQs();
+  const pos=RAW.find(r=>r.name===name)?.pos||'';
   
-  // ✨ 최신 분기가 아닌 전체 기간 평균으로 레이더 표시
+  // 전체 기간 분기 목록 (레이더 차트용)
   const allQs = [...new Set(EVAL_DATA.map(d=>d.q))];
-  const itemAvgs=RADAR_LABELS.map((lbl,i)=>{
-    const vals=allQs.map(q=>{const ev=EVAL_DATA.find(e=>e.q===q&&e.name===name);return ev?ev.vals[i]:null;}).filter(v=>v!==null);
-    return{lbl,avg:vals.length>0?parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)):0,idx:i};
+  const totalItemAvgs = RADAR_LABELS.map((lbl, i) => {
+    const vals = allQs.map(q => {
+      const ev = EVAL_DATA.find(e => e.q === q && e.name === name);
+      return ev ? ev.vals[i] : null;
+    }).filter(v => v !== null);
+    return { lbl, avg: vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i };
   });
-  const overallAvg=itemAvgs.length?parseFloat((itemAvgs.reduce((s,x)=>s+x.avg,0)/itemAvgs.length).toFixed(1)):0;
-  const sorted=[...itemAvgs].sort((a,b)=>b.avg-a.avg);
+
+  // 선택된 기간 분기 목록 (상단 점수용)
+  const filteredItemAvgs = RADAR_LABELS.map((lbl, i) => {
+    const vals = qs.map(q => {
+      const ev = EVAL_DATA.find(e => e.q === q && e.name === name);
+      return ev ? ev.vals[i] : null;
+    }).filter(v => v !== null);
+    return { lbl, avg: vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i };
+  });
+
+  const overallAvg = filteredItemAvgs.length ? parseFloat((filteredItemAvgs.reduce((s,x)=>s+x.avg,0)/filteredItemAvgs.length).toFixed(1)) : 0;
+  const sorted = [...filteredItemAvgs].sort((a,b)=>b.avg-a.avg);
+
   function getGrade(score){
     if(score>3.5) return {grade:'S',color:'#f59e0b',bg:'#fef9ee'};
     if(score>3.2) return {grade:'A+',color:'#22c55e',bg:'#f0fdf4'};
@@ -1719,7 +1854,8 @@ function renderEvalProfile(){
     if(score>=2.5) return {grade:'B',color:'#0ea5e9',bg:'#eff6ff'};
     return {grade:'C',color:'#f97316',bg:'#fff7ed'};
   }
-  const gd=getGrade(overallAvg);
+  const gd = getGrade(overallAvg);
+
   function getTrend(idx){
     if(qs.length<2) return '';
     const curEv=EVAL_DATA.find(e=>e.q===qs[qs.length-1]&&e.name===name);
@@ -1730,11 +1866,10 @@ function renderEvalProfile(){
     if(diff<0) return `<div class="eval-top3-trend" style="color:#ef4444;">▼ ${Math.abs(diff).toFixed(1)}</div>`;
     return `<div class="eval-top3-trend" style="color:#aaa;">→ 유지</div>`;
   }
+
   const rankColors=['#f59e0b','#94a3b8','#cd7c3b'];const rankBg=['#fef9ee','#f8fafc','#fdf6f0'];const rankEmoji=['🥇','🥈','🥉'];
   const card=document.getElementById('evalProfileCard');
   card.style.borderColor=color+'44';
-  
-  // 퍼스널 컬러바 유지
   card.innerHTML=`
     <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${color};border-radius:20px 20px 0 0;"></div>
     <div class="eval-profile-top" style="margin-top:8px;">
@@ -1758,13 +1893,13 @@ function renderEvalProfile(){
       </span>
     </div>
     <div class="eval-scores-list">
-    ${itemAvgs.map((item,i)=>{
+    ${filteredItemAvgs.map((item,i)=>{
       const barColor=RADAR_COLORS_ARR[i];const pct=Math.round(item.avg/5*100);
       const scoreColor=item.avg>=4.5?'#22c55e':item.avg>=3.5?'#6c63ff':item.avg>=2.5?'#f97316':'#ef4444';
       return `<div class="eval-score-item"><span class="eval-score-item-label">${item.lbl}</span><div class="eval-score-item-bar-wrap"><div class="eval-score-item-bar" style="width:${pct}%;background:${barColor};"></div></div><span class="eval-score-item-val" style="color:${scoreColor};">${item.avg.toFixed(1)}</span></div>`;
     }).join('')}
     </div>
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">🏆 기간 평균 TOP 3 강점</div>
+    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:4px;">${I_TROP} 기간 평균 TOP 3 강점</div>
     <div class="eval-top3-row">
     ${sorted.slice(0,3).map((item,rank)=>`
     <div class="eval-top3-card" style="background:${rankBg[rank]};border:1.5px solid ${rankColors[rank]}33;">
@@ -1775,16 +1910,17 @@ function renderEvalProfile(){
     </div>`).join('')}
     </div>
     <div id="evalAvgCompareProfile" style="margin-top:12px;padding:10px;background:#f8f8ff;border-radius:10px;"></div>
-    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;margin-top:14px;text-transform:uppercase;letter-spacing:.5px;">📡 역량 레이더 (PJ 전체 평균)</div>
+    <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;margin-top:14px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:4px;">${I_RADR} 역량 레이더 (PJ 전체 평균)</div>
     <div class="eval-radar-wrap"><canvas id="evalRadarSingle"></canvas></div>
   `;
   setTimeout(()=>{
     destroyChart('evalRadarSingle');
     CH.evalRadarSingle=new Chart(document.getElementById('evalRadarSingle').getContext('2d'),{
       type:'radar',
-      data:{labels:RADAR_LABELS,datasets:[{label:name,data:itemAvgs.map(a=>a.avg),backgroundColor:color+'33',borderColor:color,borderWidth:2.5,pointBackgroundColor:color,pointRadius:4,pointHoverRadius:6}]},
+      // ✨ 레이더 차트는 totalItemAvgs (전체 기간 평균) 사용
+      data:{labels:RADAR_LABELS,datasets:[{label:name,data:totalItemAvgs.map(a=>a.avg),backgroundColor:color+'33',borderColor:color,borderWidth:2.5,pointBackgroundColor:color,pointRadius:4,pointHoverRadius:6}]},
       options:{
-        layout: { padding: 16 }, 
+        layout: { padding: 16 },
         responsive:true,maintainAspectRatio:false,
         scales:{
           r:{
@@ -1794,7 +1930,7 @@ function renderEvalProfile(){
             pointLabels:{
               font:{size:11,weight:'700'},
               color:'#3d3d5c',
-              padding: 12 
+              padding: 12
             }
           }
         },
@@ -1804,7 +1940,7 @@ function renderEvalProfile(){
             display:true, color:color, font:{size:10, weight:'800'},
             formatter:v=>v>0?v.toFixed(1):'',
             align:'end', anchor:'end', offset: 3,
-            textStrokeColor: '#fff', textStrokeWidth: 3 
+            textStrokeColor: '#fff', textStrokeWidth: 3
           },
           tooltip:{backgroundColor:'#3d3d5c',callbacks:{label:c=>`${c.label}: ${c.raw}점`}}
         }
