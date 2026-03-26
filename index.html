@@ -323,7 +323,6 @@ body { display:flex; min-height:100vh; }
 .quarter-label { position: absolute; top: 0; transform: translateX(-50%); font-size: 11px; font-weight: 400; color: #9ca3af; width: 16px; text-align: center; transition: all 0.3s ease; cursor: pointer; }
 .quarter-label:hover { color: #6366f1; }
 .quarter-label.active { color: #6366f1; font-size: 12px; font-weight: 800; }
-/* ✨ 선택된 분기 표시 박스 크기 고정 */
 .range-summary { background: #e0e7ff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; min-height: 40px; box-sizing: border-box; }
 .summary-text { color: #6366f1; font-weight: 700; font-size: 13px; min-width: 110px; }
 .summary-count { color: #6366f1; font-size: 11px; opacity: 0.8; white-space: nowrap; }
@@ -412,7 +411,21 @@ body { display:flex; min-height:100vh; }
 .eval-dropdown-item:hover{background:#f5f3ff;color:#6c63ff;}
 .eval-dropdown-item.active{background:#f0eeff;font-weight:800;border-left-color:#6c63ff;}
 .eval-main-layout{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start;}
-.eval-profile-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:2px solid transparent;transition:all .3s;}
+
+/* ✨ 프로필 카드 높이 고정 및 디자인 개선 */
+.eval-profile-card{
+  background:#fff;
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+  border:2px solid transparent; /* JS에서 색상 및 상단 두께 제어됨 */
+  transition:all .3s;
+  height: 800px; /* 고정 높이 적용 */
+  overflow: hidden; /* 내부 요소 넘침 방지 */
+  display: flex;
+  flex-direction: column;
+}
+
 .eval-profile-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:2px solid #f0f1f5;}
 .eval-profile-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;}
 .eval-profile-name{font-size:18px;font-weight:800;color:#3d3d5c;}
@@ -498,7 +511,6 @@ body { display:flex; min-height:100vh; }
 .mini-avatars-wrap { display: flex; gap: 8px; }
 .mini-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; cursor: pointer; transition: all 0.2s; }
 .mini-avatar:hover { opacity: 1 !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-.eval-profile-card { transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
 .new-top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; cursor: help; }
 .info-icon { width: 16px; height: 16px; background: #d1d5db; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
@@ -687,7 +699,7 @@ body { display:flex; min-height:100vh; }
       <div class="eval-charts-col">
         <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:18px;" class="eval-top-row-grid">
           <div class="eval-trend-card" style="margin-bottom:0;">
-            <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 분기별 역량 점수 추이</div>
+            <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 분기별 역량 점 추이</div>
             <div style="height:240px; margin-top:15px;"><canvas id="evalTrendChart"></canvas></div>
             <div class="legend" style="justify-content:center;margin-top:8px;flex-wrap:wrap;" id="evalTrendLegend"></div>
           </div>
@@ -732,7 +744,6 @@ body { display:flex; min-height:100vh; }
 </div>
 
 <script>
-// ✨ 이모지 -> 모던 SVG 아이콘 문자열 상수 정의
 const I_CLOC = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
 const I_UP   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`;
 const I_DOWN = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
@@ -762,7 +773,7 @@ let H = {dashSub:null,dpSub:null};
 let G_evalMember = '';
 window.filterStartIndex = 0;
 window.filterEndIndex = 11;
-window.lastClickedIndex = 0; // ✨ 슬라이더 Shift 클릭용 앵커 저장 변수
+window.lastClickedIndex = 0; 
 const filterYears = [2024, 2025, 2026];
 const filterQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
 const totalNodes = filterYears.length * filterQuarters.length;
@@ -792,7 +803,6 @@ function isFocusedWork(cat, sub) {
   return false;
 }
 
-// ✨ 전체 필터 적용 함수 (전체 페이지에 유지되도록 기준점 제공)
 function filtered(){
   let d = RAW;
   return d.filter(r => {
@@ -913,7 +923,6 @@ function initDashboard(){
   renderEvalTab();
 }
 
-// ✨ 슬라이더 Shift 클릭 지원
 function initSlider() {
   const nodesContainer = document.getElementById('nodesContainer');
   const quarterRow = document.getElementById('quarterRow');
@@ -962,7 +971,6 @@ function initSlider() {
   updateUI();
 }
 
-// ✨ 단일 선택 및 Shift + 클릭 연속 선택 처리
 function handleNodeClick(index, event) {
   if (event && event.shiftKey && window.lastClickedIndex !== undefined) {
     window.filterStartIndex = Math.min(window.lastClickedIndex, index);
@@ -1039,7 +1047,6 @@ function updateUI() {
   document.getElementById('summaryCount').innerText = `${count}개 분기`;
   updateFilterLabel(labelText);
   
-  // 필터 적용 유지하여 데이터 갱신
   if(typeof RAW !== 'undefined' && RAW.length > 0) {
     renderAll();
     renderEvalTab();
@@ -1081,7 +1088,6 @@ function renderKPI(){
   let barsHTML='';
   mTots.forEach(m=>{barsHTML += `<div class="compare-row"><span class="compare-name" title="${m.n}">${m.n}</span><div class="compare-bar-wrap"><div class="compare-bar-fill" style="width:${Math.round(m.v/maxV*100)}%;background:${MC[m.n]};"></div></div><span class="compare-val">${formatHour(m.v)}h</span></div>`;});
   const totalCard=document.createElement('div');totalCard.className='card kpi-card';
-  // ✨ SVG 모던 아이콘 교체
   totalCard.innerHTML = `<div class="card-section-title">${I_CLOC} 총 투입시간</div><div class="card-value">${formatHour(totalMin)}h</div><div class="card-sub">선택기간 중 ${mos.length}개월 | ${MEMBERS.length}명 참여</div><div style="margin-top:12px;">${barsHTML}</div>`;
   grid.appendChild(totalCard);
   
@@ -1265,7 +1271,6 @@ function showView(view,navEl){
   }
 }
 
-// ✨ 대표 프로필 카드 공통화
 function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
   const catMap = grpMin(d, 'cat');
   const maxCat = Math.max(...Object.values(catMap), 1);
@@ -1281,7 +1286,6 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
     return `<div class="stage-row" style="margin-bottom:6px;"><span class="stage-name">${c.replace('설계','')}</span><div class="stage-track"><div class="stage-fill" style="width:${Math.round((catMap[c]||0)/maxCat*100)}%;background:${CAT_COLORS[ci]};"></div></div><span class="stage-val">${formatHour(catMap[c]||0)}h</span></div>`;
   }).join('');
   return `
-    <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${color};border-radius:20px 20px 0 0;"></div>
     <div class="eval-profile-top" style="margin-top:8px;">
       <div class="eval-profile-avatar" style="background:${color};"><span style="font-size:22px;font-weight:800;">${INITIALS[name]}</span></div>
       <div style="flex:1;"><div class="eval-profile-name">${name}</div><div class="eval-profile-pos">${pos}</div><span class="eval-profile-badge" style="background:${color}18;color:${color};">${mos[0]||'-'} ~ ${mos[mos.length-1]||'-'}</span></div>
@@ -1345,7 +1349,8 @@ function renderMembers(){
     card.className = 'eval-profile-card';
     card.style.cursor = 'pointer';
     card.style.position = 'relative';
-    card.style.height = '100%';
+    card.style.border = `2px solid ${color}44`;
+    card.style.borderTop = `8px solid ${color}`;
     card.innerHTML = getRepCardHTML(name, d, tot, pct, mos, pos, color);
     card.onmouseover = () => { card.style.transform = 'translateY(-6px)'; card.style.boxShadow = '0 12px 24px rgba(0,0,0,0.1)'; };
     card.onmouseout = () => { card.style.transform = 'none'; card.style.boxShadow = '0 2px 10px rgba(0,0,0,.05)'; };
@@ -1393,7 +1398,8 @@ function renderDetailPanel(name){
   const pct = totalAllMin > 0 ? Math.round(tot / totalAllMin * 100) : 0;
   
   const profileEl = document.getElementById('newDpProfile');
-  profileEl.style.borderColor = color + '44';
+  profileEl.style.border = `2px solid ${color}44`;
+  profileEl.style.borderTop = `8px solid ${color}`;
   profileEl.innerHTML = getRepCardHTML(name, d, tot, pct, mos, pos, color);
   
   const catMap=grpMin(d,'cat');
@@ -1533,7 +1539,6 @@ function renderDpStacked(d,mos,subMap,color){
 function dpClickSub(sub){H.dpSub=H.dpSub===sub?null:sub;H.dashSub=H.dpSub;renderDonut(H.dashSub);renderDpStackedHighlight();}
 function renderDpStackedHighlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);const mos=getMos(d);renderDpStacked(d,mos,grpMin(d,'sub'),MC[name]);}
 
-// KPI 탭
 function buildEvalDropdown(){
   const menu=document.getElementById('evalDropdownMenu');menu.innerHTML='';
   const labelEl=document.getElementById('evalDropdownLabel');
@@ -1819,13 +1824,11 @@ function renderEvalTrendTable(){
   wrap.innerHTML=html;
 }
 
-// ✨ 역량 레이더는 전체 기간 평균 유지, 상단 점수는 필터 적용 반영
 function renderEvalProfile(){
   const name=G_evalMember;const color=MC[name];
   const qs=filteredEvalQs();
   const pos=RAW.find(r=>r.name===name)?.pos||'';
   
-  // 전체 기간 분기 목록 (레이더 차트용)
   const allQs = [...new Set(EVAL_DATA.map(d=>d.q))];
   const totalItemAvgs = RADAR_LABELS.map((lbl, i) => {
     const vals = allQs.map(q => {
@@ -1835,7 +1838,6 @@ function renderEvalProfile(){
     return { lbl, avg: vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i };
   });
 
-  // 선택된 기간 분기 목록 (상단 점수용)
   const filteredItemAvgs = RADAR_LABELS.map((lbl, i) => {
     const vals = qs.map(q => {
       const ev = EVAL_DATA.find(e => e.q === q && e.name === name);
@@ -1869,9 +1871,9 @@ function renderEvalProfile(){
 
   const rankColors=['#f59e0b','#94a3b8','#cd7c3b'];const rankBg=['#fef9ee','#f8fafc','#fdf6f0'];const rankEmoji=['🥇','🥈','🥉'];
   const card=document.getElementById('evalProfileCard');
-  card.style.borderColor=color+'44';
+  card.style.border = `2px solid ${color}44`;
+  card.style.borderTop = `8px solid ${color}`;
   card.innerHTML=`
-    <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${color};border-radius:20px 20px 0 0;"></div>
     <div class="eval-profile-top" style="margin-top:8px;">
       <div class="eval-profile-avatar" style="background:${color};"><span style="font-size:22px;font-weight:800;">${INITIALS[name]}</span></div>
       <div style="flex:1;"><div class="eval-profile-name">${name}</div><div class="eval-profile-pos">${pos}</div><span class="eval-profile-badge" style="background:${color}18;color:${color};">${qs[0]||'-'} ~ ${qs[qs.length-1]||'-'}</span></div>
@@ -1917,7 +1919,6 @@ function renderEvalProfile(){
     destroyChart('evalRadarSingle');
     CH.evalRadarSingle=new Chart(document.getElementById('evalRadarSingle').getContext('2d'),{
       type:'radar',
-      // ✨ 레이더 차트는 totalItemAvgs (전체 기간 평균) 사용
       data:{labels:RADAR_LABELS,datasets:[{label:name,data:totalItemAvgs.map(a=>a.avg),backgroundColor:color+'33',borderColor:color,borderWidth:2.5,pointBackgroundColor:color,pointRadius:4,pointHoverRadius:6}]},
       options:{
         layout: { padding: 16 },
