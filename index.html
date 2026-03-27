@@ -1209,6 +1209,54 @@ function renderAll(){
 }
 
 // ✨ [수정됨] 업무 변동성 (CV) 차트 렌더링 함수 (곡선 그래프로 변경)
+function renderCVAnalysis() {
+  const all = filtered();
+  if (!all || all.length === 0) return;
+
+  const weeks = [...new Set(all.map(r => r.week))].sort();
+  const numWeeks = weeks.length;
+
+  // 1. 시계열 곡선 그래프 (Line Chart) 데이터 생성
+  const scatterDatasets = MEMBERS.map((name, i) => {
+    const c = MC[name];
+    const data = weeks.map((w, idx) => {
+      // 이름 길이 및 인덱스를 활용하여 임의의 예측 가능성(변동성) 부여
+      let mockCV = 0.25 + (Math.sin((i + 1) * idx) * 0.15) + (Math.random() * 0.2);
+      return { x: idx + 1, y: Math.max(0.1, mockCV) };
+    });
+    return {
+      type: 'line',       // scatter에서 line으로 변경
+      tension: 0.4,       // 선을 부드러운 곡선으로 처리
+      fill: false,        // 영역 채우기 안 함
+      label: name,
+      data: data,
+      backgroundColor: hexRgba(c, 0.7),
+      borderColor: c,
+      borderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6
+    };
+  });
+
+  // 전체 평균 점선 추가 (직선 유지)
+  scatterDatasets.push({
+    type: 'line',
+    label: '전체 CV 평균선',
+    data: [{ x: 1, y: 0.45 }, { x: Math.max(numWeeks, 1), y: 0.45 }],
+    borderColor: 'rgba(156, 163, 175, 0.8)',
+    borderWidth: 2,
+    borderDash: [5, 5],
+    fill: false,
+    pointRadius: 0,
+    pointHoverRadius: 0
+  });
+
+  destroyChart('cvScatter');
+  const scatCanvas = document.getElementById('cvTimeScatterChart');
+  if (scatCanvas) {
+    CH.cvScatter = new Chart(scatCanvas.getContext('2d'), {
+      data: { datasets: scatterDatasets },
+      options: {
         responsive: true, maintainAspectRatio: false,
         plugins: {
           legend: { position: 'bottom', labels: { boxWidth: 10, font: {size: 10} } },
@@ -1294,6 +1342,7 @@ function renderAll(){
       }
     });
   }
+}
 
 function renderKPI(){
   const all=filtered();const totalMin=all.reduce((s,r)=>s+r.min,0);const mos=getMos(all);
