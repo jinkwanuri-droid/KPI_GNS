@@ -385,10 +385,10 @@ body { display:flex; min-height:100vh; }
 .view-section{display:none;}
 .view-section.active{display:flex;flex-direction:column;}
 .member-overview-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:14px;}
-/* 프로필 카드 높이 고정 */
+/* 프로필 카드 동적 높이 조절 */
 .eval-profile-card{
   background:#fff; border-radius:20px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.05);
-  border: 1.5px solid transparent; transition:all .3s; height: 800px; overflow: hidden;
+  border: 1.5px solid transparent; transition:all .3s; min-height: 800px; height: auto; overflow: visible;
   position: relative; display: flex; flex-direction: column;
 }
 .eval-profile-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:2px solid #f0f1f5; z-index: 1; position: relative; margin-top: 8px;}
@@ -606,13 +606,11 @@ body { display:flex; min-height:100vh; }
               <strong style="color:#6c63ff;">CV 1이상:</strong> 해당 주에 평소보다 수 배 이상의 업무가 몰림<br>
               <strong style="color:#6c63ff;">CV 평균 이하:</strong> 안정적인 흐름을 유지<br>
               <strong style="color:#6c63ff;">급격한 경사도:</strong> 급격한 업무 집중<br><br>
-              범례를 클릭하면 해당 팀원 데이터가 강조됩니다.
+              해당 팀원의 일자별(Day) 변동성 추이를 보여줍니다.
             </div>
           </div>
         </div>
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="cvTimeScatterChart"></canvas></div>
-        <!-- 커스텀 범례 영역 -->
-        <div id="cvCustomLegend" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:10px;"></div>
       </div>
 
       <!-- 2. 섀넌-HHI 버블차트 (오버플로우 visible 추가, 높이 고정) -->
@@ -628,13 +626,11 @@ body { display:flex; min-height:100vh; }
               <strong style="color:#6c63ff;">X축:</strong> 다양성 (1-HHI)<br>
               <strong style="color:#6c63ff;">Y축:</strong> Shannon(다양성)<br>
               <strong style="color:#6c63ff;">버블 크기:</strong> CV(변동성)<br><br>
-              버블이 크고 중앙/하단에 위치할수록 업무의 기복이 심함을 의미합니다. 범례를 클릭하면 해당 팀원 데이터가 강조됩니다.
+              버블이 크고 중앙/하단에 위치할수록 업무의 기복이 심함을 의미합니다.
             </div>
           </div>
         </div>
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="shannonHhiBubbleChart"></canvas></div>
-        <!-- 커스텀 범례 영역 (CV차트와 동일) -->
-        <div id="hhiCustomLegend" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:10px;"></div>
       </div>
       
     </div>
@@ -1241,13 +1237,6 @@ function renderAll(){
   renderCVAnalysis(); 
 }
 
-// ✨ [수정됨] 토글 헬퍼 함수 (HTML 범례 클릭용)
-window.toggleCvHl = function(name) {
-  G.cvHlMember = G.cvHlMember === name ? null : name;
-  renderCVAnalysis();
-};
-
-// ✨ [수정됨] 업무 변동성 (CV) 차트 렌더링 (이동 CV 연산 추가, X축 Day 변경, 커스텀 범례 추가)
 function renderCVAnalysis() {
   const all = filtered();
   if (!all || all.length === 0) return;
@@ -1256,7 +1245,6 @@ function renderCVAnalysis() {
   const numDays = dates.length;
   const hl = G.cvHlMember;
 
-  // --- CV 계산 헬퍼 (Rolling 7-day) ---
   const calcCV = (values) => {
     if (!values || values.length === 0) return null;
     const mean = values.reduce((a,b)=>a+b, 0) / values.length;
@@ -1279,7 +1267,6 @@ function renderCVAnalysis() {
     memberData.forEach(r => { dailyMins[r.date] = (dailyMins[r.date]||0) + r.min; });
 
     const data = dates.map((d, idx) => {
-      // 최근 7일(현재일 포함)
       let windowVals = [];
       for(let i = 0; i < 7; i++) {
         if(idx - i >= 0) {
@@ -1287,12 +1274,7 @@ function renderCVAnalysis() {
           windowVals.push(dailyMins[pastDate] || 0);
         }
       }
-      
-      // 만약 7일 동안 한번도 일하지 않았다면 null 반환 (선 끊어짐)
-      if(windowVals.every(v => v === 0)) {
-        return { x: d, y: null };
-      }
-      
+      if(windowVals.every(v => v === 0)) return { x: d, y: null };
       const cv = calcCV(windowVals);
       return { x: d, y: cv };
     });
@@ -1301,7 +1283,7 @@ function renderCVAnalysis() {
       type: 'line',
       tension: 0.4,
       fill: false,
-      spanGaps: false,    // null일 때 선을 끊어서 표현
+      spanGaps: false,
       label: name,
       data: data,
       backgroundColor: bgColor,
@@ -1313,29 +1295,43 @@ function renderCVAnalysis() {
     };
   });
 
-  // 전체 평균 CV 계산
   let validCVs = [];
   scatterDatasets.forEach(ds => {
     ds.data.forEach(pt => { if (pt.y !== null) validCVs.push(pt.y); });
   });
   const avgOverallCV = validCVs.length > 0 ? (validCVs.reduce((a,b)=>a+b,0)/validCVs.length) : 0;
 
-  // 주요일정 포인트 데이터 (날짜 매핑)
+  // 전체 평균 점선 (연한 회색, 범례에서 숨김)
+  scatterDatasets.push({
+    type: 'line',
+    label: '전체 CV 평균선',
+    data: [{ x: dates[0], y: avgOverallCV }, { x: dates[dates.length-1], y: avgOverallCV }],
+    borderColor: 'rgba(200, 200, 200, 0.8)', // 연한 회색 1px
+    borderWidth: 1,
+    borderDash: [5, 5],
+    fill: false,
+    pointRadius: 0,
+    pointHoverRadius: 0,
+    order: 3
+  });
+
   const scheduleDataArray = [];
   const scheduleEvtsArray = [];
   dates.forEach((dStr) => {
       const evts = SCHEDULE_DATA.filter(s => s.date === dStr);
       if (evts.length > 0) {
-          scheduleDataArray.push({ x: dStr, y: Math.max(avgOverallCV * 2.5, 0.8) });
+          scheduleDataArray.push({ x: dStr, y: 1.0 }); // 상단 고정을 위해 1.0에 배치
           scheduleEvtsArray.push(evts);
       }
   });
 
+  // 주요일정 (범례에서 숨김)
   scatterDatasets.push({
     type: 'line',
     label: '주요일정',
     data: scheduleDataArray,
     customEvts: scheduleEvtsArray,
+    yAxisID: 'ySch',
     showLine: false,
     pointStyle: 'circle',
     pointBackgroundColor: '#ef4444',
@@ -1354,7 +1350,7 @@ function renderCVAnalysis() {
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }, // 기본 범례 끄기
+          legend: { display: false },
           tooltip: {
             backgroundColor: 'rgba(61,61,92,.95)',
             callbacks: { 
@@ -1363,6 +1359,7 @@ function renderCVAnalysis() {
                   const evts = c.dataset.customEvts[c.dataIndex];
                   return evts.map(e => `${e.title}`);
                 }
+                if (c.dataset.label === '전체 CV 평균선') return null; // 평균선 툴팁 숨김
                 return `${c.dataset.label}: ${c.parsed.y.toFixed(2)}`;
               } 
             }
@@ -1372,38 +1369,29 @@ function renderCVAnalysis() {
         scales: {
           x: { 
             type: 'category', 
-            title: { display: true, text: '일 (Day)', font: {size: 10} }, 
-            ticks: { maxTicksLimit: 15, font: {size: 10} }, // 날짜가 너무 많아 겹치지 않게 조절
+            title: { display: false }, // X축 제목 삭제
+            ticks: { maxTicksLimit: 15, font: {size: 10} },
             grid: { display: false } 
           },
           y: { 
-            title: { display: true, text: 'CV 값', font: {size: 10} }, 
+            title: { display: true, text: 'CV값(변동성)', font: {size: 10} }, // Y축 제목 변경
             min: 0, 
             suggestedMax: Math.max(avgOverallCV * 3, 0.8),
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
+          },
+          ySch: { 
+            display: false, 
+            min: 0, 
+            max: 1.02, // 1.0에 찍힌 빨간 포인트를 최상단에 딱 맞게 정렬 [1]
+            position: 'right' 
           }
         }
       }
     });
   }
 
-  // ✨ 커스텀 범례 HTML 렌더링
-  const customLegendWrap = document.getElementById('cvCustomLegend');
-  if(customLegendWrap) {
-    customLegendWrap.innerHTML = MEMBERS.map(name => {
-      const c = MC[name];
-      const isHL = hl === name;
-      const isDim = hl && hl !== name;
-      const weight = isHL ? '800' : 'normal';
-      const color = isHL ? c : (isDim ? '#aaa' : '#555');
-      return `<div onclick="toggleCvHl('${name}')" style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer; color:${color}; font-weight:${weight}; transition:all 0.2s;">
-                <div style="width:10px; height:10px; border-radius:3px; background:${isDim ? hexRgba(c, 0.3) : c};"></div>${name}
-              </div>`;
-    }).join('');
-  }
-
-  // 2. 섀넌-HHI 버블차트 (X축을 1-HHI 로 변경)
+  // 2. 섀넌-HHI 버블차트
   const bubbleDatasets = MEMBERS.map((name) => {
     const c = MC[name];
     const isDim = hl && hl !== name;
@@ -1416,7 +1404,6 @@ function renderCVAnalysis() {
     const memberData = all.filter(r => r.name === name);
     if (memberData.length === 0) return null;
 
-    // 주 단위로 버블 생성 (Weekly)
     const memWeeks = [...new Set(memberData.map(r => r.week))].sort();
     const weekData = memWeeks.map(w => {
         const dWk = memberData.filter(r => r.week === w);
@@ -1429,12 +1416,11 @@ function renderCVAnalysis() {
             hhiSum += p * p;
             if (p > 0) shannon -= p * Math.log(p);
         });
-        const oneMinusHHI = 1 - hhiSum; // ✨ 다양성 지표 (최대 1.0)
+        const oneMinusHHI = 1 - hhiSum;
         
-        // 주간 변동성(일간 편차)
         const dailyT = {};
         dWk.forEach(r => { dailyT[r.date] = (dailyT[r.date]||0) + r.min; });
-        const vals = [0,0,0,0,0]; // 5일 기준
+        const vals = [0,0,0,0,0];
         Object.values(dailyT).forEach((m, idx) => { if(idx<5) vals[idx]=m; });
         const wkCV = calcCV(vals) || 0.1;
 
@@ -1464,7 +1450,7 @@ function renderCVAnalysis() {
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }, // 커스텀 범례 연동을 위해 끔
+          legend: { display: false },
           tooltip: {
             backgroundColor: 'rgba(61,61,92,.95)',
             callbacks: {
@@ -1479,13 +1465,13 @@ function renderCVAnalysis() {
         },
         scales: {
           x: { 
-            title: { display: true, text: '다양성 (1-HHI) → 다양함', font: {size: 10} }, 
+            title: { display: true, text: '집중도(HHI) (독점→)', font: {size: 10} }, // 변경
             min: 0, max: 1.0, 
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
           },
           y: { 
-            title: { display: true, text: 'SHANNON INDEX (다양성 ↑)', font: {size: 10} }, 
+            title: { display: true, text: '다양성(SHANNON INDEX) (복잡→)', font: {size: 10} }, // 변경
             min: 0, suggestedMax: 4.5, 
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
@@ -1493,21 +1479,6 @@ function renderCVAnalysis() {
         }
       }
     });
-  }
-
-  // 버블차트 커스텀 범례 (CV와 동기화)
-  const hhiLegendWrap = document.getElementById('hhiCustomLegend');
-  if(hhiLegendWrap) {
-    hhiLegendWrap.innerHTML = MEMBERS.map(name => {
-      const c = MC[name];
-      const isHL = hl === name;
-      const isDim = hl && hl !== name;
-      const weight = isHL ? '800' : 'normal';
-      const color = isHL ? c : (isDim ? '#aaa' : '#555');
-      return `<div onclick="toggleCvHl('${name}')" style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer; color:${color}; font-weight:${weight}; transition:all 0.2s;">
-                <div style="width:10px; height:10px; border-radius:3px; background:${isDim ? hexRgba(c, 0.3) : c};"></div>${name}
-              </div>`;
-    }).join('');
   }
 }
 
@@ -1627,7 +1598,7 @@ function renderDonut(hl){
     }
   });
 }
-function dashClickSub(sub){H.dashSub=H.dashSub===sub?null:sub;renderDonut(H.dashSub);renderTop5(H.dashSub);if(G.selectedMember){H.dpSub=H.dashSub;renderDpStackedHighlight();}}
+function dashClickSub(sub){H.dashSub=H.dashSub===sub?null:sub;renderDonut(H.dashSub);renderTop5(H.dashSub);if(G.selectedMember){H.dpSub=H.dashSub;renderNewDpTop3Highlight();renderDpStackedHighlight();}}
 function renderTop5(hl){
   const all=filtered();const subMap=grpMin(all,'sub');const totalMin=all.reduce((s,r)=>s+r.min,0);const top5=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const list=document.getElementById('top5List');
@@ -1814,9 +1785,65 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
   const top3Border = ['#fde047', '#e2e8f0', '#fed7aa'];
   const textCArr = ['#d97706', '#475569', '#c2410c'];
 
-  // ✨ 신규: 참여일수, 일 평균 업무시간 계산
   const daysPart = Object.keys(dateMap).length;
   const avgDay = daysPart > 0 ? formatNum(mToH(tot) / daysPart) : 0;
+
+  // ✨ 신규 추가: 전분기 대비 증가/감소 TOP 3 업무 연산 로직 [1]
+  const getQ = (dateStr) => {
+      const y = dateStr.slice(0,4);
+      const m = parseInt(dateStr.slice(5,7));
+      const q = Math.ceil(m/3);
+      return `${y}-Q${q}`;
+  };
+  const allMemberData = RAW.filter(r => r.name === name);
+  const filteredQs = [...new Set(d.map(r => getQ(r.date)))].sort();
+  const currentQ = filteredQs[filteredQs.length - 1]; 
+  
+  let incHTML = '';
+  let decHTML = '';
+  
+  if (currentQ) {
+      const [cY, cQ] = currentQ.split('-Q');
+      let pY = parseInt(cY);
+      let pQ = parseInt(cQ) - 1;
+      if (pQ === 0) { pY -= 1; pQ = 4; }
+      const prevQ = `${pY}-Q${pQ}`;
+      
+      const curMins = {};
+      const prevMins = {};
+      allMemberData.forEach(r => {
+          const q = getQ(r.date);
+          if (q === currentQ) curMins[r.sub] = (curMins[r.sub] || 0) + r.min;
+          if (q === prevQ) prevMins[r.sub] = (prevMins[r.sub] || 0) + r.min;
+      });
+      
+      const diffs = [];
+      const allSubs = new Set([...Object.keys(curMins), ...Object.keys(prevMins)]);
+      allSubs.forEach(s => {
+          const curH = mToH(curMins[s] || 0);
+          const prevH = mToH(prevMins[s] || 0);
+          diffs.push({ sub: s, cur: curH, prev: prevH, diff: curH - prevH });
+      });
+      
+      const inc = diffs.filter(x => x.diff > 0).sort((a,b) => b.diff - a.diff).slice(0,3);
+      const dec = diffs.filter(x => x.diff < 0).sort((a,b) => a.diff - b.diff).slice(0,3);
+      
+      const buildMiniList = (arr, isInc) => {
+          if(arr.length === 0) return `<div style="font-size:11px;color:#aaa;text-align:center;padding:10px;">데이터 없음</div>`;
+          return arr.map(x => `
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f0f1f5;">
+                  <span style="font-size:11px; font-weight:700; color:#3d3d5c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${x.sub}</span>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                      <span style="font-size:10px; color:#aaa;">${x.prev.toFixed(1)}h → ${x.cur.toFixed(1)}h</span>
+                      <span style="font-size:11px; font-weight:800; color:${isInc?'#ef4444':'#3b82f6'};">${isInc?'▲':'▼'} ${Math.abs(x.diff).toFixed(1)}h</span>
+                  </div>
+              </div>
+          `).join('');
+      };
+      
+      incHTML = buildMiniList(inc, true);
+      decHTML = buildMiniList(dec, false);
+  }
 
   return `
     <div style="position:absolute;top:0;left:0;right:0;height:8px;background:${color};border-radius:18px 18px 0 0;"></div>
@@ -1831,7 +1858,6 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
     </div>
     <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:4px;">${I_BULB} 투입 요약</div>
     
-    <!-- ✨ 그리드 3x2 (6개 항목) 으로 수정 -->
     <div class="stats-grid" style="grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:16px;">
       <div style="background:#f8f8ff; border-radius:10px; padding:12px 6px; text-align:center;">
         <div style="font-size:15px; font-weight:800; color:#3d3d5c; margin-bottom:4px;">${mos.length}개월</div>
@@ -1871,9 +1897,22 @@ function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
         </div>`;
       }).join('')}
     </div>
+    
     <div style="font-size:11px;font-weight:700;color:#9999bb;margin-bottom:8px;text-transform:uppercase;display:flex;align-items:center;gap:4px;">${I_RULE} 단계별 투입 비중</div>
-    <div class="stage-bars-container">
+    <div class="stage-bars-container" style="margin-bottom:20px;">
       ${stageBarsHTML}
+    </div>
+
+    <!-- ✨ 전분기 대비 증감 TOP 3 추가 섹션 [1] -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:auto;">
+        <div style="background:#fffaf8; border:1px solid #fecaca; border-radius:10px; padding:12px;">
+            <div style="font-size:11px;font-weight:800;color:#ef4444;margin-bottom:8px;">📈 전분기 대비 증가 TOP3</div>
+            ${incHTML}
+        </div>
+        <div style="background:#f0f9ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px;">
+            <div style="font-size:11px;font-weight:800;color:#3b82f6;margin-bottom:8px;">📉 전분기 대비 감소 TOP3</div>
+            ${decHTML}
+        </div>
     </div>
   `;
 }
@@ -2032,7 +2071,7 @@ function renderDetailPanel(name){
   drawOvertimeChart('dpOvertimeCardWrap', d);
 }
 
-// ✨ [신규] 개인 상세페이지 CV 차트 렌더링 함수
+// ✨ 개인 상세페이지 CV 차트 렌더링 함수
 function renderDpCvChart(name, d) {
   if (!d || d.length === 0) return;
   const dates = [...new Set(d.map(r => r.date))].sort();
@@ -2121,7 +2160,7 @@ function renderDpStacked(d, mos, subMap, color) {
   });
   const scheduleEvtsArray = mos.map(m => SCHEDULE_DATA.filter(s => s.date.startsWith(m)));
   const datasets = subList.map((sub,i)=> {
-    // ✨ 크로스 하이라이팅: 선택된 버블 달(Month)이 있을 때, 다른 달은 흐리게 처리
+    // 크로스 하이라이팅: 선택된 버블 달(Month)이 있을 때, 다른 달은 흐리게 처리
     const bgColors = mos.map(m => {
       const baseC = H.dpSub===null ? SUB_PAL[i%SUB_PAL.length] : (sub===H.dpSub ? SUB_PAL[i%SUB_PAL.length] : SUB_PAL[i%SUB_PAL.length]+'33');
       if (G.dpActiveMonth && m !== G.dpActiveMonth) return hexRgba(baseC, 0.15); // 흐림 처리
@@ -2250,7 +2289,7 @@ function renderPatternAnalysis(d, mos) {
   const avgSwitch = allSwitches.length ? allSwitches.reduce((a,b)=>a+b,0)/allSwitches.length : 0;
   const avgData = mos.map(() => avgSwitch);
   
-  // ✨ 크로스 하이라이팅 연동
+  // 크로스 하이라이팅 연동
   const bgColors = mos.map(m => (G.dpActiveMonth && m !== G.dpActiveMonth) ? hexRgba('#6c63ff', 0.15) : '#6c63ff');
 
   destroyChart('dpSwitchBar');
@@ -2382,7 +2421,7 @@ function renderPatternAnalysis(d, mos) {
           x: { title: { display: true, text: '다양성(1-HHI) → 다양함', font: { size: 9 } }, max: 1.0, ticks: { font: { size: 9 } } },
           y: { title: { display: true, text: '다양성(Shannon) → 복잡', font: { size: 9 } }, ticks: { font: { size: 9 } } }
         },
-        // ✨ 버블 클릭 시 크로스 하이라이팅 연동 로직
+        // ✨ 버블 클릭 시 크로스 하이라이팅 연동 로직 [1]
         onClick: (e, els) => {
           if(els.length) {
             const idx = els[0].index;
