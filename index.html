@@ -851,8 +851,7 @@ body { display:flex; min-height:100vh; }
     </div>
   </div>
 </div>
-<script>
-// ✨ [신규] 전역 애니메이션 모던화 (빠르고 부드러운 Fade-in 위주)
+// ✨ 전역 애니메이션 모던화 (빠르고 부드러운 Fade-in 위주)
 Chart.defaults.animation.duration = 350;
 Chart.defaults.animation.easing = 'easeOutQuad';
 Chart.defaults.transitions.active.animation.duration = 200;
@@ -920,7 +919,7 @@ const RADAR_COLORS_ARR = ['#6c63ff','#f97316','#22c55e','#ec4899','#0ea5e9'];
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 let EVAL_DATA = [];
 let RAW = [];
-// ✨ 전역 상태에 하이라이트 연동 및 활성화된 월 저장 변수 추가
+// 전역 상태에 하이라이트 연동 및 활성화된 월 저장 변수 추가
 let G = {heatYear:null, selectedMember:null, dpHeatYear:null, cvHlMember:null, dpActiveMonth:null};
 let CH = {};
 let H = {dashSub:null,dpSub:null};
@@ -1156,7 +1155,7 @@ function resetFilter() {
   window.filterEndIndex = totalNodes - 1;
   window.lastClickedIndex = 0;
   
-  // ✨ [수정] 전역 하이라이트 상태 초기화 연동 [1]
+  // 필터 초기화 시 하이라이트 상태도 모두 초기화
   H.dashSub = null;
   H.dpSub = null;
   G.cvHlMember = null;
@@ -1246,7 +1245,7 @@ function renderAll(){
   renderCVAnalysis(); 
 }
 
-// ✨ [수정됨] 업무 변동성 (CV) 전체 통계 차트로 변경 (팀원 분리 X) [1]
+// ✨ 업무 변동성 (CV) 전체 통계 차트 (팀원 분리 X) [1]
 function renderCVAnalysis() {
   const all = filtered();
   if (!all || all.length === 0) return;
@@ -1297,6 +1296,7 @@ function renderCVAnalysis() {
   cvData.forEach(pt => { if (pt.y !== null) validCVs.push(pt.y); });
   const avgOverallCV = validCVs.length > 0 ? (validCVs.reduce((a,b)=>a+b,0)/validCVs.length) : 0;
 
+  // 전체 평균 점선 (연한 회색)
   scatterDatasets.push({
     type: 'line',
     label: '전체 CV 평균선',
@@ -1315,7 +1315,7 @@ function renderCVAnalysis() {
   dates.forEach((dStr) => {
       const evts = SCHEDULE_DATA.filter(s => s.date === dStr);
       if (evts.length > 0) {
-          scheduleDataArray.push({ x: dStr, y: 1.0 }); // 1.0 보조축에 맞춤
+          scheduleDataArray.push({ x: dStr, y: 1.0 }); // 상단 보조축 1.0 매핑
           scheduleEvtsArray.push(evts);
       }
   });
@@ -1370,7 +1370,7 @@ function renderCVAnalysis() {
           y: { 
             title: { display: true, text: 'CV값(변동성)', font: {size: 10} }, 
             min: 0, 
-            suggestedMax: Math.max(avgOverallCV * 3, 0.8),
+            max: 1.0, // ✨ CV Y축 최대값 1.0 고정 [1]
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
           },
@@ -1385,7 +1385,7 @@ function renderCVAnalysis() {
     });
   }
 
-  // 2. 전체 데이터 기준 섀넌-HHI 버블차트 [1]
+  // 2. 전체 데이터 기준 섀넌-HHI 버블차트
   const weeks = [...new Set(all.map(r => r.week))].sort();
   const weekBubbleData = weeks.map(w => {
       const dWk = all.filter(r => r.week === w);
@@ -1453,7 +1453,7 @@ function renderCVAnalysis() {
           },
           y: { 
             title: { display: true, text: '다양성(SHANNON INDEX) (복잡→)', font: {size: 10} },
-            min: 0, suggestedMax: 4.5, 
+            min: 0, max: 2.0, // ✨ 섀넌 지수 Y축 최대값 2.0 고정 [1]
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
           }
@@ -1749,7 +1749,7 @@ function selectKpiMember(name) {
     renderEvalTab();
 }
 
-// ✨ [원복됨] 팀원별 대표카드 (2x2 구조) [1]
+// ✨ [원복] 팀원별 대표카드 (2x2 구조 유지)
 function getRepCardHTML(name, d, tot, pct, mos, pos, color) {
   const catMap = grpMin(d, 'cat');
   const maxCat = Math.max(...Object.values(catMap), 1);
@@ -1878,7 +1878,7 @@ function renderDetailPanel(name){
     profileEl.innerHTML = getRepCardHTML(name, d, tot, pct, mos, pos, color);
   }
 
-  // ✨ 신규: 전분기 대비 증감 TOP 3 업무 연산 로직 (상세페이지 우측 본문 하단에 삽입하기 위함)
+  // ✨ 신규: 전분기 대비 증감 TOP 3 업무 연산 로직 [1]
   const getQ = (dateStr) => {
       const y = dateStr.slice(0,4);
       const m = parseInt(dateStr.slice(5,7));
@@ -1919,13 +1919,13 @@ function renderDetailPanel(name){
       const dec = diffs.filter(x => x.diff < 0).sort((a,b) => a.diff - b.diff).slice(0,3);
       
       const buildMiniList = (arr, isInc) => {
-          if(arr.length === 0) return `<div style="font-size:11px;color:#aaa;text-align:center;padding:10px;">데이터 없음</div>`;
+          if(arr.length === 0) return `<div style="font-size:12px;color:#aaa;text-align:center;padding:15px;">데이터 없음</div>`;
           return arr.map(x => `
-              <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f0f1f5;">
-                  <span style="font-size:11px; font-weight:700; color:#3d3d5c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${x.sub}</span>
-                  <div style="display:flex; align-items:center; gap:6px;">
-                      <span style="font-size:10px; color:#aaa;">${x.prev.toFixed(1)}h → ${x.cur.toFixed(1)}h</span>
-                      <span style="font-size:11px; font-weight:800; color:${isInc?'#ef4444':'#3b82f6'};">${isInc?'▲':'▼'} ${Math.abs(x.diff).toFixed(1)}h</span>
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;">
+                  <span style="font-size:12px; font-weight:700; color:#3d3d5c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; padding-right:10px;">${x.sub}</span>
+                  <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                      <span style="font-size:11px; color:#64748b;">${x.prev.toFixed(1)}h → ${x.cur.toFixed(1)}h</span>
+                      <span style="font-size:12px; font-weight:800; color:${isInc?'#ef4444':'#3b82f6'}; min-width:45px; text-align:right;">${isInc?'▲':'▼'} ${Math.abs(x.diff).toFixed(1)}h</span>
                   </div>
               </div>
           `).join('');
@@ -1935,17 +1935,23 @@ function renderDetailPanel(name){
       decHTML = buildMiniList(dec, false);
   }
 
-  // 생성한 증감 HTML을 상세 뷰 우측 패널의 특정 영역에 주입 [1]
+  // 생성한 증감 HTML을 상세 뷰 우측 패널의 특정 영역에 주입 (UI 통일화) [1]
   const dpIncDecWrap = document.getElementById('dpIncDecWrap');
   if(dpIncDecWrap) {
+    dpIncDecWrap.className = "eval-table-card";
+    dpIncDecWrap.style.marginBottom = "0";
+    dpIncDecWrap.style.padding = "18px 20px";
     dpIncDecWrap.innerHTML = `
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:0;">
-          <div style="background:#fffaf8; border:1px solid #fecaca; border-radius:10px; padding:12px;">
-              <div style="font-size:11px;font-weight:800;color:#ef4444;margin-bottom:8px;">📈 전분기 대비 증가 TOP3</div>
+      <div class="card-section-title" style="margin-bottom:12px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 전분기 대비 업무시간 증감 TOP 3
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:0;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px;">
+              <div style="font-size:12px;font-weight:800;color:#ef4444;margin-bottom:8px;">📈 시간 증가 (TOP 3)</div>
               ${incHTML}
           </div>
-          <div style="background:#f0f9ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px;">
-              <div style="font-size:11px;font-weight:800;color:#3b82f6;margin-bottom:8px;">📉 전분기 대비 감소 TOP3</div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px;">
+              <div style="font-size:12px;font-weight:800;color:#3b82f6;margin-bottom:8px;">📉 시간 감소 (TOP 3)</div>
               ${decHTML}
           </div>
       </div>
@@ -2106,7 +2112,7 @@ function renderDpCvChart(name, d) {
         },
         scales: {
           x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: {size: 9} } },
-          y: { grid: { color: '#f0eeff' }, ticks: { font: {size: 9} }, min: 0 }
+          y: { grid: { color: '#f0eeff' }, ticks: { font: {size: 9} }, min: 0, max: 1.0 } // ✨ Max 1.0 고정
         }
       }
     });
@@ -2138,7 +2144,7 @@ function renderDpStacked(d, mos, subMap, color) {
   });
   const scheduleEvtsArray = mos.map(m => SCHEDULE_DATA.filter(s => s.date.startsWith(m)));
   const datasets = subList.map((sub,i)=> {
-    // 크로스 하이라이팅: 선택된 버블 달(Month)이 있을 때, 다른 달은 흐리게 처리
+    // 크로스 하이라이팅
     const bgColors = mos.map(m => {
       const baseC = H.dpSub===null ? SUB_PAL[i%SUB_PAL.length] : (sub===H.dpSub ? SUB_PAL[i%SUB_PAL.length] : SUB_PAL[i%SUB_PAL.length]+'33');
       if (G.dpActiveMonth && m !== G.dpActiveMonth) return hexRgba(baseC, 0.15); // 흐림 처리
@@ -2396,10 +2402,10 @@ function renderPatternAnalysis(d, mos) {
           datalabels: { display: false }
         },
         scales: {
-          x: { title: { display: true, text: '다양성(1-HHI) → 다양함', font: { size: 9 } }, max: 1.0, ticks: { font: { size: 9 } } },
-          y: { title: { display: true, text: '다양성(Shannon) → 복잡', font: { size: 9 } }, ticks: { font: { size: 9 } } }
+          x: { title: { display: true, text: '집중도(HHI) (독점→)', font: { size: 10 } }, max: 1.0, ticks: { font: { size: 10 } } },
+          y: { title: { display: true, text: '다양성(SHANNON INDEX) (복잡→)', font: { size: 10 } }, min: 0, max: 2.0, ticks: { font: { size: 10 } } } // ✨ Max 2.0 고정
         },
-        // ✨ 버블 클릭 시 크로스 하이라이팅 연동 로직
+        // 버블 클릭 시 크로스 하이라이팅 연동 로직
         onClick: (e, els) => {
           if(els.length) {
             const idx = els[0].index;
