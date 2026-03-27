@@ -1208,77 +1208,18 @@ function renderAll(){
   renderCVAnalysis(); // CV 차트 추가
 }
 
-// ✨ [수정됨] 업무 변동성 (CV) 차트 렌더링 함수 (곡선 그래프로 변경)
-function renderCVAnalysis() {
-  const all = filtered();
-  if (!all || all.length === 0) return;
-
-  const weeks = [...new Set(all.map(r => r.week))].sort();
-  const numWeeks = weeks.length;
-
-  // 1. 시계열 곡선 그래프 (Line Chart) 데이터 생성
-  const scatterDatasets = MEMBERS.map((name, i) => {
-    const c = MC[name];
-    const data = weeks.map((w, idx) => {
-      // 이름 길이 및 인덱스를 활용하여 임의의 예측 가능성(변동성) 부여
-      let mockCV = 0.25 + (Math.sin((i + 1) * idx) * 0.15) + (Math.random() * 0.2);
-      return { x: idx + 1, y: Math.max(0.1, mockCV) };
-    });
-    return {
-      type: 'line',       // scatter에서 line으로 변경
-      tension: 0.4,       // 선을 부드러운 곡선으로 처리
-      fill: false,        // 영역 채우기 안 함
-      label: name,
-      data: data,
-      backgroundColor: hexRgba(c, 0.7),
-      borderColor: c,
-      borderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6
-    };
-  });
-
-  // 전체 평균 점선 추가 (직선 유지)
-  scatterDatasets.push({
-    type: 'line',
-    label: '전체 CV 평균선',
-    data: [{ x: 1, y: 0.45 }, { x: Math.max(numWeeks, 1), y: 0.45 }],
-    borderColor: 'rgba(156, 163, 175, 0.8)',
-    borderWidth: 2,
-    borderDash: [5, 5],
-    fill: false,
-    pointRadius: 0,
-    pointHoverRadius: 0
-  });
-
-  destroyChart('cvScatter');
-  const scatCanvas = document.getElementById('cvTimeScatterChart');
-  if (scatCanvas) {
-    CH.cvScatter = new Chart(scatCanvas.getContext('2d'), {
-      data: { datasets: scatterDatasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 10, font: {size: 10} } },
-          tooltip: {
-            backgroundColor: 'rgba(61,61,92,.95)',
-            callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y.toFixed(2)}` }
-          },
-          datalabels: { display: false }
-        },
-        scales: {
-          x: { 
-            type: 'linear', 
-            title: { display: true, text: '시간 (주 단위)', font: {size: 10} }, 
-            ticks: { stepSize: 1, font: {size: 10} }, 
-            grid: { display: false } 
-          },
-          y: { 
-            title: { display: true, text: 'CV 값', font: {size: 10} }, 
+// ✨ [수정됨] 업무 변동성 (CV) 차트 렌더링 함수 (포인트 숨김, 주요일정 상단 추가)
             min: 0, 
             suggestedMax: 0.8, 
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
+          },
+          // ✨ 최상단 주요일정 배치를 위한 투명한 보조 Y축
+          ySch: { 
+            display: false, 
+            min: 0, 
+            max: 1.15, // 1.05 위치에 점을 찍으므로 차트 맨 위에 고정됨
+            position: 'right' 
           }
         }
       }
@@ -1288,14 +1229,13 @@ function renderCVAnalysis() {
   // 2. 섀넌-HHI 버블차트 (Bubble Chart) 데이터 생성
   const bubbleDatasets = MEMBERS.map((name, i) => {
     const c = MC[name];
-    // 각 멤버별 특성을 가정하여 HHI, Shannon, CV 값 임의 생성
     const mockHHI = 2500 + (i * 1200) + (Math.random() * 800);
     const mockShannon = 3.2 - (i * 0.4) + (Math.random() * 0.4);
     const mockCV = 0.2 + (i * 0.1) + (Math.random() * 0.2); 
 
     return {
       label: name,
-      data: [{ x: mockHHI, y: mockShannon, r: mockCV * 45 }], // 크기 조정을 위해 곱셈 적용
+      data: [{ x: mockHHI, y: mockShannon, r: mockCV * 45 }],
       backgroundColor: hexRgba(c, 0.6),
       borderColor: c,
       borderWidth: 1.5,
@@ -1317,13 +1257,13 @@ function renderCVAnalysis() {
             backgroundColor: 'rgba(61,61,92,.95)',
             callbacks: {
               label: c => {
-                const originalCV = c.raw.r / 45; // 곱해진 크기를 다시 역산
+                const originalCV = c.raw.r / 45;
                 return `${c.dataset.label} | HHI: ${c.raw.x.toFixed(0)}, Shannon: ${c.raw.y.toFixed(2)}, CV: ${originalCV.toFixed(2)}`;
               }
             }
           },
           datalabels: { display: false },
-          quadPlugin: { active: true } // 십자선 플러그인 재활용
+          quadPlugin: { active: true } 
         },
         scales: {
           x: { 
