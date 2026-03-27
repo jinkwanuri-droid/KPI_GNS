@@ -593,11 +593,11 @@ body { display:flex; min-height:100vh; }
     <!-- ========================================================== -->
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:14px; margin-bottom:14px;">
       
-      <!-- 1. CV 시계열 선 그래프 (오버플로우 visible 추가) -->
-      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; overflow:visible;">
+      <!-- 1. CV 시계열 산점도 -->
+      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column;">
         <div class="card-section-title" style="display:flex; align-items:center; gap:6px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+            <path d="M3 3v18h18"/><circle cx="7" cy="14" r="1.5"/><circle cx="12" cy="10" r="1.5"/><circle cx="17" cy="13" r="1.5"/>
           </svg>
           업무 변동성(Coefficient of Variation, CV)
           <div class="info-wrap">
@@ -608,8 +608,8 @@ body { display:flex; min-height:100vh; }
         <div style="flex:1; min-height:280px; margin-top:10px;"><canvas id="cvTimeScatterChart"></canvas></div>
       </div>
 
-      <!-- 2. 섀넌-HHI 버블차트 (오버플로우 visible 추가) -->
-      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; overflow:visible;">
+      <!-- 2. 섀넌-HHI 버블차트 -->
+      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column;">
         <div class="card-section-title" style="display:flex; align-items:center; gap:6px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="8" cy="16" r="4"/><circle cx="16" cy="8" r="5"/><circle cx="14" cy="19" r="2"/>
@@ -1208,7 +1208,7 @@ function renderAll(){
   renderCVAnalysis(); // CV 차트 추가
 }
 
-// ✨ [수정됨] 업무 변동성 (CV) 차트 렌더링 함수 (곡선 그래프로 변경)
+// ✨ [신규 추가] 업무 변동성 (CV) 차트 렌더링 함수
 function renderCVAnalysis() {
   const all = filtered();
   if (!all || all.length === 0) return;
@@ -1216,7 +1216,7 @@ function renderCVAnalysis() {
   const weeks = [...new Set(all.map(r => r.week))].sort();
   const numWeeks = weeks.length;
 
-  // 1. 시계열 곡선 그래프 (Line Chart) 데이터 생성
+  // 1. 산점도 (Scatter Chart) 데이터 생성 (팀원별 시뮬레이션 데이터 매핑)
   const scatterDatasets = MEMBERS.map((name, i) => {
     const c = MC[name];
     const data = weeks.map((w, idx) => {
@@ -1225,20 +1225,17 @@ function renderCVAnalysis() {
       return { x: idx + 1, y: Math.max(0.1, mockCV) };
     });
     return {
-      type: 'line',       // scatter에서 line으로 변경
-      tension: 0.4,       // 선을 부드러운 곡선으로 처리
-      fill: false,        // 영역 채우기 안 함
+      type: 'scatter',
       label: name,
       data: data,
       backgroundColor: hexRgba(c, 0.7),
       borderColor: c,
-      borderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6
+      pointRadius: 5,
+      pointHoverRadius: 7
     };
   });
 
-  // 전체 평균 점선 추가 (직선 유지)
+  // 전체 평균 점선 추가
   scatterDatasets.push({
     type: 'line',
     label: '전체 CV 평균선',
