@@ -261,7 +261,7 @@ body { display:flex; min-height:100vh; }
 </head>  
 <body>
 <style>
-/* 기존 CSS 스타일 유지 */
+/* 기본 리셋 및 폰트 */
 *{margin:0;padding:0;box-sizing:border-box;}
 body, button, input, select, textarea {
   font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
@@ -593,7 +593,7 @@ body { display:flex; min-height:100vh; }
     <!-- ========================================================== -->
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:14px; margin-bottom:14px;">
       
-      <!-- 1. CV 시계열 선 그래프 (오버플로우 visible 추가) -->
+      <!-- 1. CV 시계열 선 그래프 -->
       <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; overflow:visible;">
         <div class="card-section-title" style="display:flex; align-items:center; gap:6px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -602,13 +602,20 @@ body { display:flex; min-height:100vh; }
           업무 변동성(Coefficient of Variation, CV)
           <div class="info-wrap">
             <div class="info-icon">?</div>
-            <div class="info-tooltip" style="min-width:280px; text-align:left;">시간(주 단위) 흐름에 따른 팀원별 업무 변동성(CV) 수치를 보여주며, 평균선 대비 이탈 정도를 파악할 수 있습니다. 범례를 클릭하면 해당 팀원 데이터가 강조됩니다.</div>
+            <div class="info-tooltip" style="min-width:280px; text-align:left;">
+              <strong style="color:#6c63ff;">CV 1이상:</strong> 해당 주에 평소보다 수 배 이상의 업무가 몰림<br>
+              <strong style="color:#6c63ff;">CV 평균 이하:</strong> 안정적인 흐름을 유지<br>
+              <strong style="color:#6c63ff;">급격한 경사도:</strong> 급격한 업무 집중<br><br>
+              범례를 클릭하면 해당 팀원 데이터가 강조됩니다.
+            </div>
           </div>
         </div>
         <div style="flex:1; min-height:280px; margin-top:10px;"><canvas id="cvTimeScatterChart"></canvas></div>
+        <!-- 커스텀 범례 영역 -->
+        <div id="cvCustomLegend" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:10px;"></div>
       </div>
 
-      <!-- 2. 섀넌-HHI 버블차트 (오버플로우 visible 추가) -->
+      <!-- 2. 섀넌-HHI 버블차트 -->
       <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; overflow:visible;">
         <div class="card-section-title" style="display:flex; align-items:center; gap:6px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -618,7 +625,7 @@ body { display:flex; min-height:100vh; }
           <div class="info-wrap">
             <div class="info-icon">?</div>
             <div class="info-tooltip" style="min-width:320px; text-align:left;">
-              <strong style="color:#6c63ff;">X축:</strong> HHI(독점도)<br>
+              <strong style="color:#6c63ff;">X축:</strong> 다양성 (1-HHI)<br>
               <strong style="color:#6c63ff;">Y축:</strong> Shannon(다양성)<br>
               <strong style="color:#6c63ff;">버블 크기:</strong> CV(변동성)<br><br>
               버블이 크고 중앙/하단에 위치할수록 업무의 기복이 심함을 의미합니다. 범례를 클릭하면 해당 팀원 데이터가 강조됩니다.
@@ -654,7 +661,7 @@ body { display:flex; min-height:100vh; }
       </div>
       <div class="eval-main-layout">
         <!-- 좌측 프로필 카드 -->
-        <div class="eval-profile-card" id="newDpProfile" style="position: sticky; top: 20px; align-self: start;"></div>
+        <div class="eval-profile-card" id="newDpProfile" style="position: sticky; top: 80px; align-self: start;"></div>
         <!-- 우측 차트 영역 (신규 레이아웃 적용) -->
         <div class="eval-charts-grid fade-in-slow" id="detailChartsGrid">
           <!-- Left Column (가변폭) -->
@@ -666,7 +673,7 @@ body { display:flex; min-height:100vh; }
               <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; justify-content:center;"></div>
             </div>
             <!-- 2. 업무다양성 포지셔닝 (버블) -->
-            <div class="eval-trend-card" style="margin-bottom:0; height: 300px; display:flex; flex-direction:column;">
+            <div class="eval-trend-card" style="margin-bottom:0; height: 300px; display:flex; flex-direction:column; overflow:visible;">
               <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 업무 다양성 분석(Week) [Shannon-HHI]
                 <div class="info-wrap">
@@ -713,6 +720,19 @@ body { display:flex; min-height:100vh; }
               </div>
               <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpDiversityBubble"></canvas></div>
             </div>
+            <!-- [신규] 개인별 업무 변동성(CV) 분석 카드 -->
+            <div class="eval-trend-card" style="margin-bottom:0; height: 300px; display:flex; flex-direction:column; overflow:visible;">
+              <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 업무 변동성(CV) 분석
+                <div class="info-wrap">
+                  <div class="info-icon">?</div>
+                  <div class="info-tooltip" style="min-width:280px; text-align:left;">
+                    해당 팀원의 일자별(Day) 변동성 추이를 보여줍니다. 최근 7일간의 투입시간을 바탕으로 변동 계수를 산출합니다.
+                  </div>
+                </div>
+              </div>
+              <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpCvChart"></canvas></div>
+            </div>
             <!-- 3. 업무전환 빈도 (파편화) -->
             <div class="eval-trend-card" style="margin-bottom:0; height: 300px; display:flex; flex-direction:column;">
               <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> 업무 파편화 분석(업무 전환 빈도)</div>
@@ -737,7 +757,7 @@ body { display:flex; min-height:100vh; }
           </div>
           <!-- Right Column (고정 450px) -->
           <div class="fixed-450" style="gap: 18px;">
-            <!-- 설계단계별 투 비중 (도넛) -->
+            <!-- 설계단계별 투입 비중 (도넛) -->
             <div class="eval-trend-card eval-donut-card-fixed" style="margin-bottom:0;">
               <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3l-5.6 5.6a2 2 0 0 1-2.8 0L2.7 10.7a2 2 0 0 1 0-2.8l5.6-5.6a2 2 0 0 1 2.8 0l10.2 10.2a2 2 0 0 1 0 2.8z"/><path d="M14.5 9.5L12 7"/><path d="M10.5 13.5L8 11"/><path d="M6.5 17.5L4 15"/></svg> 설계단계별 투입 비중</div>
               <div class="eval-donut-section" style="margin-top: 20px;">
@@ -780,7 +800,7 @@ body { display:flex; min-height:100vh; }
        <div class="mini-avatars-wrap" id="kpiMiniAvatarsWrap"></div>
     </div>
     <div class="eval-main-layout" id="evalMainLayout">
-      <div id="evalProfileCard" class="eval-profile-card" style="position: sticky; top: 20px; align-self: start;"></div>
+      <div id="evalProfileCard" class="eval-profile-card" style="position: sticky; top: 80px; align-self: start;"></div>
       <div class="eval-charts-col fade-in-slow">
         <div class="eval-top-row-grid">
           <div class="eval-trend-card flex-1" style="margin-bottom:0;">
@@ -895,8 +915,8 @@ const RADAR_COLORS_ARR = ['#6c63ff','#f97316','#22c55e','#ec4899','#0ea5e9'];
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 let EVAL_DATA = [];
 let RAW = [];
-// ✨ G 객체에 cvHlMember 상태값 추가
-let G = {heatYear:null,selectedMember:null,dpHeatYear:null,cvHlMember:null};
+// ✨ 전역 상태에 하이라이트 연동 및 활성화된 월 저장 변수 추가
+let G = {heatYear:null, selectedMember:null, dpHeatYear:null, cvHlMember:null, dpActiveMonth:null};
 let CH = {};
 let H = {dashSub:null,dpSub:null};
 let G_evalMember = '';
@@ -1211,20 +1231,25 @@ function buildSidebarMembers(){
 
 function renderAll(){
   renderKPI();renderLine();renderStage();renderCompare();renderDonut();renderTop5();renderHeat();renderTimeline();
-  renderCVAnalysis();
+  renderCVAnalysis(); 
 }
 
-// ✨ 업무 변동성 (CV) 차트 렌더링 함수
+// ✨ [수정됨] 토글 헬퍼 함수 (HTML 범례 클릭용)
+window.toggleCvHl = function(name) {
+  G.cvHlMember = G.cvHlMember === name ? null : name;
+  renderCVAnalysis();
+};
+
+// ✨ [수정됨] 업무 변동성 (CV) 차트 렌더링 (이동 CV 연산 추가, X축 Day 변경, 커스텀 범례 추가)
 function renderCVAnalysis() {
   const all = filtered();
   if (!all || all.length === 0) return;
 
-  const weeks = [...new Set(all.map(r => r.week))].sort();
-  const numWeeks = weeks.length;
-  
-  const hl = G.cvHlMember; // 범례 클릭 하이라이트 상태 연동
+  const dates = [...new Set(all.map(r => r.date))].sort();
+  const numDays = dates.length;
+  const hl = G.cvHlMember;
 
-  // --- CV 계산 헬퍼 함수 ---
+  // --- CV 계산 헬퍼 (Rolling 7-day) ---
   const calcCV = (values) => {
     if (!values || values.length === 0) return null;
     const mean = values.reduce((a,b)=>a+b, 0) / values.length;
@@ -1233,47 +1258,51 @@ function renderCVAnalysis() {
     return Math.sqrt(variance) / mean;
   };
 
-  // 1. 시계열 곡선 그래프 (Line Chart) 데이터 생성
+  // 1. 일간(Day) 시계열 곡선 그래프 (7일 이동 변동성)
   const scatterDatasets = MEMBERS.map((name) => {
     const c = MC[name];
     const isDim = hl && hl !== name;
     const isHL = hl === name;
-    
-    // 투명도 및 두께 조절
     const bgColor = isDim ? hexRgba(c, 0.1) : hexRgba(c, 0.7);
     const bdColor = isDim ? hexRgba(c, 0.2) : c;
-    const bdWidth = isHL ? 2.5 : (isDim ? 1 : 1.5); // 평소 1.5, 하이라이트 시 2.5
+    const bdWidth = isHL ? 2.5 : (isDim ? 1 : 1.5);
     
-    const data = weeks.map((w, idx) => {
-      // 해당 팀원의 특정 주차 데이터 필터링
-      const weekData = all.filter(r => r.name === name && r.week === w);
-      if (weekData.length === 0) return { x: idx + 1, y: null }; // 업무 기록이 없으면 null 반환
+    const memberData = all.filter(r => r.name === name);
+    const dailyMins = {};
+    memberData.forEach(r => { dailyMins[r.date] = (dailyMins[r.date]||0) + r.min; });
 
-      // 주차 내 일별 투입시간 집계
-      const dailyMins = {};
-      weekData.forEach(r => { dailyMins[r.date] = (dailyMins[r.date]||0) + r.min; });
-
-      // 주 5일 기준 배열 생성 (작업한 날짜만 계산하면 변동성이 낮게 나오므로 5일 고정)
-      const vals = [0,0,0,0,0];
-      Object.values(dailyMins).forEach((min, i) => { if(i < 5) vals[i] = min; });
-
-      const cv = calcCV(vals);
-      return { x: idx + 1, y: cv };
+    const data = dates.map((d, idx) => {
+      // 최근 7일(현재일 포함)
+      let windowVals = [];
+      for(let i = 0; i < 7; i++) {
+        if(idx - i >= 0) {
+          const pastDate = dates[idx - i];
+          windowVals.push(dailyMins[pastDate] || 0);
+        }
+      }
+      
+      // 만약 7일 동안 한번도 일하지 않았다면 null 반환 (선 끊어짐)
+      if(windowVals.every(v => v === 0)) {
+        return { x: d, y: null };
+      }
+      
+      const cv = calcCV(windowVals);
+      return { x: d, y: cv };
     });
 
     return {
       type: 'line',
-      tension: 0.4,       // 선을 부드러운 곡선으로 처리
+      tension: 0.4,
       fill: false,
-      spanGaps: false,    // ✨ null 값이 있을 때 선을 끊어서 표현 (투입 안된 기간 선 안그림)
+      spanGaps: false,    // null일 때 선을 끊어서 표현
       label: name,
       data: data,
       backgroundColor: bgColor,
       borderColor: bdColor,
       borderWidth: bdWidth,
-      pointRadius: 0,       // ✨ 차트의 곡선만 보이고 점은 보이지 않게 처리
-      pointHoverRadius: 0,  // ✨ 마우스 롤오버 시에도 점 숨김
-      order: isHL ? 0 : 2   // 하이라이트된 선을 위로 올림
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      order: isHL ? 0 : 2
     };
   });
 
@@ -1284,27 +1313,13 @@ function renderCVAnalysis() {
   });
   const avgOverallCV = validCVs.length > 0 ? (validCVs.reduce((a,b)=>a+b,0)/validCVs.length) : 0;
 
-  // 전체 평균 점선 추가
-  scatterDatasets.push({
-    type: 'line',
-    label: '전체 CV 평균선',
-    data: [{ x: 1, y: avgOverallCV }, { x: Math.max(numWeeks, 1), y: avgOverallCV }],
-    borderColor: 'rgba(156, 163, 175, 0.8)',
-    borderWidth: 2,
-    borderDash: [5, 5],
-    fill: false,
-    pointRadius: 0,
-    pointHoverRadius: 0,
-    order: 3
-  });
-
-  // ✨ 주요일정 데이터 매핑 (안전하게 배열을 채워 필터 시 사라지는 오류 방지)
+  // 주요일정 포인트 데이터 (날짜 매핑)
   const scheduleDataArray = [];
   const scheduleEvtsArray = [];
-  weeks.forEach((w, idx) => {
-      const evts = SCHEDULE_DATA.filter(s => getWeekStr(s.date) === w);
+  dates.forEach((dStr) => {
+      const evts = SCHEDULE_DATA.filter(s => s.date === dStr);
       if (evts.length > 0) {
-          scheduleDataArray.push({ x: idx + 1, y: 1.05 });
+          scheduleDataArray.push({ x: dStr, y: Math.max(avgOverallCV * 2.5, 0.8) });
           scheduleEvtsArray.push(evts);
       }
   });
@@ -1314,15 +1329,14 @@ function renderCVAnalysis() {
     label: '주요일정',
     data: scheduleDataArray,
     customEvts: scheduleEvtsArray,
-    yAxisID: 'ySch',     // 별도의 보이지 않는 Y축 사용
-    showLine: false,     // 선 없이 점만 표시
+    showLine: false,
     pointStyle: 'circle',
-    pointBackgroundColor: '#ef4444', // 빨간 포인트
+    pointBackgroundColor: '#ef4444',
     pointBorderColor: '#fff',
     pointBorderWidth: 2,
-    pointRadius: 6,      // 롤오버 전 기본 점 크기
-    pointHoverRadius: 9, // 롤오버 시 커지는 크기
-    order: -1            // 무조건 최상단 노출
+    pointRadius: 6,
+    pointHoverRadius: 9,
+    order: -1
   });
 
   destroyChart('cvScatter');
@@ -1333,28 +1347,14 @@ function renderCVAnalysis() {
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: {
-          legend: { 
-            position: 'bottom', 
-            labels: { 
-              boxWidth: 10, font: {size: 10},
-              color: '#3d3d5c'
-            },
-            filter: (item) => item.text !== '주요일정',
-            // ✨ 범례 클릭 시 하이라이트 기능 추가
-            onClick: (e, legendItem, legend) => {
-              const clickedLabel = legendItem.text;
-              G.cvHlMember = G.cvHlMember === clickedLabel ? null : clickedLabel;
-              renderCVAnalysis(); // 차트 다시 그리기 (하이라이트 적용)
-            }
-          },
+          legend: { display: false }, // 기본 범례 끄기
           tooltip: {
             backgroundColor: 'rgba(61,61,92,.95)',
             callbacks: { 
               label: (c) => {
-                // ✨ 주요일정 포인트에 롤오버 했을 때 내용 노출
                 if (c.dataset.label === '주요일정') {
                   const evts = c.dataset.customEvts[c.dataIndex];
-                  return evts.map(e => `${e.date}: ${e.title}`);
+                  return evts.map(e => `${e.title}`);
                 }
                 return `${c.dataset.label}: ${c.parsed.y.toFixed(2)}`;
               } 
@@ -1364,31 +1364,39 @@ function renderCVAnalysis() {
         },
         scales: {
           x: { 
-            type: 'linear', 
-            title: { display: true, text: '시간 (주 단위)', font: {size: 10} }, 
-            ticks: { stepSize: 1, font: {size: 10} }, 
+            type: 'category', 
+            title: { display: true, text: '일 (Day)', font: {size: 10} }, 
+            ticks: { maxTicksLimit: 15, font: {size: 10} }, // 날짜가 너무 많아 겹치지 않게 조절
             grid: { display: false } 
           },
           y: { 
             title: { display: true, text: 'CV 값', font: {size: 10} }, 
             min: 0, 
-            suggestedMax: Math.max(avgOverallCV * 2, 0.8), // 실제 데이터에 맞게 축 유동적 조정
+            suggestedMax: Math.max(avgOverallCV * 3, 0.8),
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
-          },
-          // ✨ 최상단 주요일정 배치를 위한 투명한 보조 Y축
-          ySch: { 
-            display: false, 
-            min: 0, 
-            max: 1.15, // 1.05 위치에 점을 찍으므로 차트 맨 위에 고정됨
-            position: 'right' 
           }
         }
       }
     });
   }
 
-  // 2. 섀넌-HHI 버블차트 (Bubble Chart) 데이터 생성
+  // ✨ 커스텀 범례 HTML 렌더링
+  const customLegendWrap = document.getElementById('cvCustomLegend');
+  if(customLegendWrap) {
+    customLegendWrap.innerHTML = MEMBERS.map(name => {
+      const c = MC[name];
+      const isHL = hl === name;
+      const isDim = hl && hl !== name;
+      const weight = isHL ? '800' : 'normal';
+      const color = isHL ? c : (isDim ? '#aaa' : '#555');
+      return `<div onclick="toggleCvHl('${name}')" style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer; color:${color}; font-weight:${weight}; transition:all 0.2s;">
+                <div style="width:10px; height:10px; border-radius:3px; background:${isDim ? hexRgba(c, 0.3) : c};"></div>${name}
+              </div>`;
+    }).join('');
+  }
+
+  // 2. 섀넌-HHI 버블차트 (X축을 1-HHI 로 변경)
   const bubbleDatasets = MEMBERS.map((name) => {
     const c = MC[name];
     const isDim = hl && hl !== name;
@@ -1398,9 +1406,8 @@ function renderCVAnalysis() {
     const bdColor = isDim ? hexRgba(c, 0.2) : c;
     const bdWidth = isHL ? 2.5 : 1.5;
     
-    // 실제 데이터 집계
     const memberData = all.filter(r => r.name === name);
-    if (memberData.length === 0) return null; // 데이터가 없으면 버블 생성 안함
+    if (memberData.length === 0) return null;
 
     const totMin = memberData.reduce((s, r) => s + r.min, 0);
     const subMap = grpMin(memberData, 'sub');
@@ -1413,24 +1420,23 @@ function renderCVAnalysis() {
       if (p > 0) shannon -= p * Math.log(p);
     });
 
-    const realHHI = hhiSum * 10000; // 0 ~ 10000 스케일
+    const oneMinusHHI = 1 - hhiSum; // ✨ 다양성 지표 (최대 1.0)
 
-    // 버블 크기용 전체 CV (주차별 투입시간의 변동성)
-    const weeklyTotals = {};
-    memberData.forEach(r => { weeklyTotals[r.week] = (weeklyTotals[r.week] || 0) + r.min; });
-    const realCV = calcCV(Object.values(weeklyTotals)) || 0.1;
+    const dailyTotals = {};
+    memberData.forEach(r => { dailyTotals[r.date] = (dailyTotals[r.date] || 0) + r.min; });
+    const realCV = calcCV(Object.values(dailyTotals)) || 0.1;
 
     return {
       label: name,
-      data: [{ x: realHHI, y: shannon, r: Math.max(realCV * 30, 5) }], // r값 시각적 보정
-      cvRaw: realCV, // 원본 저장용
+      data: [{ x: oneMinusHHI, y: shannon, r: Math.max(realCV * 15, 5) }], 
+      cvRaw: realCV, 
       backgroundColor: bgColor,
       borderColor: bdColor,
       borderWidth: bdWidth,
       hoverRadius: 2,
       order: isHL ? 0 : 2
     };
-  }).filter(ds => ds !== null); // 데이터가 없는 인원 배열에서 제외
+  }).filter(ds => ds !== null);
 
   destroyChart('cvBubble');
   const bubCanvas = document.getElementById('shannonHhiBubbleChart');
@@ -1441,22 +1447,13 @@ function renderCVAnalysis() {
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: {
-          legend: { 
-            position: 'bottom', 
-            labels: { boxWidth: 10, font: {size: 10} },
-            // 버블 차트 범례 클릭 시에도 하이라이트 동기화
-            onClick: (e, legendItem, legend) => {
-              const clickedLabel = legendItem.text;
-              G.cvHlMember = G.cvHlMember === clickedLabel ? null : clickedLabel;
-              renderCVAnalysis();
-            }
-          },
+          legend: { display: false }, // 커스텀 범례 연동을 위해 끔
           tooltip: {
             backgroundColor: 'rgba(61,61,92,.95)',
             callbacks: {
               label: c => {
                 const originalCV = c.dataset.cvRaw;
-                return `${c.dataset.label} | HHI: ${c.raw.x.toFixed(0)}, Shannon: ${c.raw.y.toFixed(2)}, CV: ${originalCV.toFixed(2)}`;
+                return `${c.dataset.label} | 1-HHI: ${c.raw.x.toFixed(2)}, Shannon: ${c.raw.y.toFixed(2)}, CV: ${originalCV.toFixed(2)}`;
               }
             }
           },
@@ -1465,8 +1462,8 @@ function renderCVAnalysis() {
         },
         scales: {
           x: { 
-            title: { display: true, text: 'HHI INDEX (독점 →)', font: {size: 10} }, 
-            min: 0, max: 10000, 
+            title: { display: true, text: '다양성 (1-HHI) → 다양함', font: {size: 10} }, 
+            min: 0, max: 1.0, 
             ticks: { font: {size: 10} }, 
             grid: { color: '#f0eeff' } 
           },
@@ -1598,7 +1595,7 @@ function renderDonut(hl){
     }
   });
 }
-function dashClickSub(sub){H.dashSub=H.dashSub===sub?null:sub;renderDonut(H.dashSub);renderTop5(H.dashSub);if(G.selectedMember){H.dpSub=H.dashSub;renderNewDpTop3Highlight();renderDpStackedHighlight();}}
+function dashClickSub(sub){H.dashSub=H.dashSub===sub?null:sub;renderDonut(H.dashSub);renderTop5(H.dashSub);if(G.selectedMember){H.dpSub=H.dashSub;renderDpStackedHighlight();}}
 function renderTop5(hl){
   const all=filtered();const subMap=grpMin(all,'sub');const totalMin=all.reduce((s,r)=>s+r.min,0);const top5=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const list=document.getElementById('top5List');
@@ -1873,6 +1870,7 @@ function closeDetail(){
   const lv = document.getElementById('memberListView'); if(lv) lv.style.display = 'block';
   renderMembers();
 }
+
 function renderDetailPanel(name){
   const color=MC[name];const all=filtered();const totalAllMin=all.reduce((s,r)=>s+r.min,0);
   const d=all.filter(r=>r.name===name);const tot=d.reduce((s,r)=>s+r.min,0);
@@ -1917,8 +1915,13 @@ function renderDetailPanel(name){
       }
     });
   }
+  
+  // ✨ 팀원별 상세페이지 CV 차트 그리기 함수 분리 호출
+  renderDpCvChart(name, d);
+
   renderDpStacked(d,mos,subMap,color);
   renderPatternAnalysis(d, mos);
+  
   let focusMin = 0;
   let distMin = 0;
   d.forEach(r => {
@@ -1980,9 +1983,73 @@ function renderDetailPanel(name){
   drawHeat(d,G.dpHeatYear,'dpHeatTable',color);
   drawOvertimeChart('dpOvertimeCardWrap', d);
 }
+
+// ✨ [신규] 개인 상세페이지 CV 차트 렌더링 함수
+function renderDpCvChart(name, d) {
+  if (!d || d.length === 0) return;
+  const dates = [...new Set(d.map(r => r.date))].sort();
+  
+  const calcCV = (values) => {
+    if (!values || values.length === 0) return null;
+    const mean = values.reduce((a,b)=>a+b, 0) / values.length;
+    if (mean === 0) return 0;
+    const variance = values.reduce((a,b)=>a + Math.pow(b - mean, 2), 0) / values.length;
+    return Math.sqrt(variance) / mean;
+  };
+
+  const dailyMins = {};
+  d.forEach(r => { dailyMins[r.date] = (dailyMins[r.date]||0) + r.min; });
+
+  const data = dates.map((dt, idx) => {
+    let windowVals = [];
+    for(let i = 0; i < 7; i++) {
+      if(idx - i >= 0) {
+        const pastDate = dates[idx - i];
+        windowVals.push(dailyMins[pastDate] || 0);
+      }
+    }
+    return { x: dt, y: calcCV(windowVals) };
+  });
+
+  destroyChart('dpCv');
+  const cvCanvas = document.getElementById('dpCvChart');
+  if(cvCanvas) {
+    CH.dpCv = new Chart(cvCanvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: 'CV (변동성)',
+          data: data,
+          borderColor: MC[name],
+          backgroundColor: hexRgba(MC[name], 0.2),
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 0,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(61,61,92,.95)',
+            callbacks: { label: c => `CV: ${c.parsed.y.toFixed(2)}` }
+          },
+          datalabels: { display: false }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: {size: 9} } },
+          y: { grid: { color: '#f0eeff' }, ticks: { font: {size: 9} }, min: 0 }
+        }
+      }
+    });
+  }
+}
+
 function renderDpStacked(d, mos, subMap, color) {
   const subList = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
-  const bgColors = subList.map((sub,i) => H.dpSub===null ? SUB_PAL[i%SUB_PAL.length] : (sub===H.dpSub ? SUB_PAL[i%SUB_PAL.length] : SUB_PAL[i%SUB_PAL.length]+'33'));
   const moSubMap = {};
   d.forEach(r => {
     const mo = r.date.slice(0,7);
@@ -2005,14 +2072,23 @@ function renderDpStacked(d, mos, subMap, color) {
     return evts.length > 0 ? 1.05 : null;
   });
   const scheduleEvtsArray = mos.map(m => SCHEDULE_DATA.filter(s => s.date.startsWith(m)));
-  const datasets = subList.map((sub,i)=>({
-    type: 'bar',
-    label: sub,
-    data: mos.map(m=>mToH((moSubMap[m] && moSubMap[m][sub]) || 0)),
-    backgroundColor: bgColors[i],
-    borderRadius: 2,
-    stack: 's'
-  }));
+  const datasets = subList.map((sub,i)=> {
+    // ✨ 크로스 하이라이팅: 선택된 버블 달(Month)이 있을 때, 다른 달은 흐리게 처리
+    const bgColors = mos.map(m => {
+      const baseC = H.dpSub===null ? SUB_PAL[i%SUB_PAL.length] : (sub===H.dpSub ? SUB_PAL[i%SUB_PAL.length] : SUB_PAL[i%SUB_PAL.length]+'33');
+      if (G.dpActiveMonth && m !== G.dpActiveMonth) return hexRgba(baseC, 0.15); // 흐림 처리
+      return baseC;
+    });
+    
+    return {
+      type: 'bar',
+      label: sub,
+      data: mos.map(m=>mToH((moSubMap[m] && moSubMap[m][sub]) || 0)),
+      backgroundColor: bgColors,
+      borderRadius: 2,
+      stack: 's'
+    };
+  });
   datasets.push({
     type: 'line',
     label: '주요일정',
@@ -2057,6 +2133,10 @@ function renderDpStacked(d, mos, subMap, color) {
             return true;
           },
           formatter: (val, ctx) => {
+            // 하이라이팅 중인 월이 있으면 해당 월만 표시
+            const m = mos[ctx.dataIndex];
+            if(G.dpActiveMonth && m !== G.dpActiveMonth) return '';
+            
             if (H.dpSub === null) {
               const dsTotals = ctx.chart.data.datasets.filter(ds => ds.label !== '주요일정').map(ds => ds.data[ctx.dataIndex]);
               let lastValIndex = -1;
@@ -2093,7 +2173,7 @@ function renderDpStacked(d, mos, subMap, color) {
 }
 function dpClickSub(sub){H.dpSub=H.dpSub===sub?null:sub;H.dashSub=H.dpSub;renderDonut(H.dashSub);renderDpStackedHighlight();}
 function renderDpStackedHighlight(){const name=G.selectedMember;if(!name)return;const d=filtered().filter(r=>r.name===name);const mos=getMos(d);renderDpStacked(d,mos,grpMin(d,'sub'),MC[name]);}
-let activeBubbleMonth = null;
+
 function renderPatternAnalysis(d, mos) {
   let switchByMonth = {};
   let prevSub = null;
@@ -2121,6 +2201,10 @@ function renderPatternAnalysis(d, mos) {
   });
   const avgSwitch = allSwitches.length ? allSwitches.reduce((a,b)=>a+b,0)/allSwitches.length : 0;
   const avgData = mos.map(() => avgSwitch);
+  
+  // ✨ 크로스 하이라이팅 연동
+  const bgColors = mos.map(m => (G.dpActiveMonth && m !== G.dpActiveMonth) ? hexRgba('#6c63ff', 0.15) : '#6c63ff');
+
   destroyChart('dpSwitchBar');
   const swCanvas = document.getElementById('dpSwitchBar');
   if(swCanvas) {
@@ -2132,7 +2216,7 @@ function renderPatternAnalysis(d, mos) {
           {
             label: '업무 전환 횟수',
             data: switchData,
-            backgroundColor: '#6c63ff',
+            backgroundColor: bgColors,
             borderRadius: 4,
             order: 2
           },
@@ -2152,7 +2236,12 @@ function renderPatternAnalysis(d, mos) {
           legend: { display: false },
           avgLinePlugin: { active: true },
           datalabels: {
-            display: (ctx) => ctx.dataset.label === '업무 전환 횟수',
+            display: (ctx) => {
+              if (ctx.dataset.label !== '업무 전환 횟수') return false;
+              const m = mos[ctx.dataIndex];
+              if (G.dpActiveMonth && m !== G.dpActiveMonth) return false;
+              return true;
+            },
             formatter: (v) => v + '회',
             color: '#555', anchor: 'end', align: 'top', font: { size: 10, weight: 'normal' }
           },
@@ -2173,7 +2262,7 @@ function renderPatternAnalysis(d, mos) {
       }
     });
   }
-  activeBubbleMonth = null;
+
   const weeks = [...new Set(d.map(r=>r.week))].sort();
   const bubbleData = weeks.map(w => {
     const rWk = d.filter(r => r.week === w);
@@ -2192,7 +2281,7 @@ function renderPatternAnalysis(d, mos) {
     const monthNum = parseInt(moStr.split('-')[1], 10);
     const mColor = DYNAMIC_COLORS[(monthNum-1) % DYNAMIC_COLORS.length];
     return {
-      x: 1 - hhiSum, 
+      x: 1 - hhiSum, // 1 - HHI
       y: shannon,
       r: Math.max(Math.pow(mToH(totMin), 1.2) * 0.1, 3), 
       wk: w,
@@ -2201,9 +2290,7 @@ function renderPatternAnalysis(d, mos) {
       baseColor: mColor
     };
   }).filter(x => x !== null);
-  bubbleData.forEach(b => {
-    b.x = 1 - b.x;
-  });
+
   destroyChart('dpDiversityBubble');
   const dbCanvas = document.getElementById('dpDiversityBubble');
   if(dbCanvas) {
@@ -2216,13 +2303,13 @@ function renderPatternAnalysis(d, mos) {
           backgroundColor: (ctx) => {
             const bd = ctx.raw;
             if(!bd) return;
-            if (activeBubbleMonth && bd.moStr !== activeBubbleMonth) return hexRgba(bd.baseColor, 0.1);
+            if (G.dpActiveMonth && bd.moStr !== G.dpActiveMonth) return hexRgba(bd.baseColor, 0.1);
             return hexRgba(bd.baseColor, 0.7);
           },
           borderColor: (ctx) => {
             const bd = ctx.raw;
             if(!bd) return;
-            if (activeBubbleMonth && bd.moStr !== activeBubbleMonth) return hexRgba(bd.baseColor, 0.2);
+            if (G.dpActiveMonth && bd.moStr !== G.dpActiveMonth) return hexRgba(bd.baseColor, 0.2);
             return bd.baseColor;
           }
         }]
@@ -2236,31 +2323,35 @@ function renderPatternAnalysis(d, mos) {
             backgroundColor:'rgba(61,61,92,.95)',
             callbacks: {
               label: (c) => {
-                const d = c.raw;
-                return [`${d.moStr} (${d.wk.split('-')[1]})`, `다양성 지수(1-HHI): ${(1-d.x).toFixed(2)}`, `Shannon: ${d.y.toFixed(2)}`, `총 투입: ${d.time}h`];
+                const dt = c.raw;
+                return [`${dt.moStr} (${dt.wk.split('-')[1]})`, `다양성 지수(1-HHI): ${dt.x.toFixed(2)}`, `Shannon: ${dt.y.toFixed(2)}`, `총 투입: ${dt.time}h`];
               }
             }
           },
           datalabels: { display: false }
         },
         scales: {
-          x: { title: { display: true, text: '집중도(HHI) → 독점', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+          x: { title: { display: true, text: '다양성(1-HHI) → 다양함', font: { size: 9 } }, max: 1.0, ticks: { font: { size: 9 } } },
           y: { title: { display: true, text: '다양성(Shannon) → 복잡', font: { size: 9 } }, ticks: { font: { size: 9 } } }
         },
+        // ✨ 버블 클릭 시 크로스 하이라이팅 연동 로직
         onClick: (e, els) => {
           if(els.length) {
             const idx = els[0].index;
             const clickedMo = bubbleData[idx].moStr;
-            activeBubbleMonth = (activeBubbleMonth === clickedMo) ? null : clickedMo;
-            CH.dpDiversityBubble.update();
+            G.dpActiveMonth = (G.dpActiveMonth === clickedMo) ? null : clickedMo;
           } else {
-            activeBubbleMonth = null;
-            CH.dpDiversityBubble.update();
+            G.dpActiveMonth = null;
           }
+          // 전체 다시 렌더링해서 연동 반영
+          renderDpStackedHighlight();
+          CH.dpDiversityBubble.update();
+          renderPatternAnalysis(d, mos);
         }
       }
     });
   }
+
   const workDates = Array.from(new Set(d.map(r=>r.date))).sort();
   const subMapFull = grpMin(d, 'sub');
   const subs = Object.keys(subMapFull);
@@ -2312,6 +2403,7 @@ function renderPatternAnalysis(d, mos) {
   const wrap = document.getElementById('dpContinuityWrap');
   if(wrap) wrap.innerHTML = contHTML;
 }
+
 function renderEvalTab(){
   renderMiniAvatars('kpi');
   renderEvalProfile();
