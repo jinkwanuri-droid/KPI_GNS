@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>해안건축 팀원 KPI 대시보드</title>
   
-  <!-- 외부 라이브러리 (폰트, Chart.js) -->
+  <!-- 외부 라이브러리 -->
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   
-  <!-- 분리된 CSS, JS 파일 연결 -->
+  <!-- 분리된 CSS, JS 연결 -->
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>  
@@ -29,7 +29,7 @@
   
   <div class="tooltip-box" id="tooltip"></div>
 
-  <!-- 🚀 상단 바 (에칭 글라스 효과) -->
+  <!-- 상단 바 (에칭 글라스 효과) -->
   <header class="top-bar">
     <div class="top-bar-left">
       <div class="top-logo">HA</div>
@@ -63,7 +63,6 @@
     
     <!-- 상단 컨트롤 영역 (필터 슬라이더 & 우측 정보) -->
     <div class="main-top-section">
-      <!-- 좌측 이동된 슬라이더 필터 -->
       <div class="modern-filter-card" id="sidebarFilters">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
           <div class="filter-header" style="margin-bottom:0;">기간 필터 <span style="font-weight:normal; color:#888; font-size:11px; margin-left:6px;">원하는 분기를 선택하거나 드래그하세요</span></div>
@@ -88,7 +87,6 @@
         </button>
       </div>
 
-      <!-- 우측 새로고침 및 뱃지 -->
       <div class="header-right" style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
         <div class="subtitle" id="headerSub" style="font-size:11px; color:#888; font-weight:bold;">PJ CODE: 24188</div>
         <div style="display:flex; align-items:center; gap:8px;">
@@ -123,7 +121,6 @@
           <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#eef5fb;border:1px solid #dbeafe;"></div><div style="width:9px;height:9px;border-radius:2px;background:#93c5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#3b82f6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#007dc5;"></div><div style="width:9px;height:9px;border-radius:2px;background:#00458c;"></div><span>많음</span></div>
         </div>
       </div>
-      <!-- 변동성 차트 -->
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:15px; margin-bottom:15px;">
         <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; overflow:visible; height:400px;">
           <div class="card-section-title" style="display:flex; align-items:center; gap:6px;">
@@ -143,14 +140,12 @@
 
     <!-- 2. Working (팀원별 업무시간) 탭 -->
     <div id="view-members" class="view-section">
-      <!-- 목록 뷰 -->
       <div id="memberListView" class="fade-enter">
         <div class="detail-view-header" style="border:none; margin-bottom:0;">
           <div style="font-size:16px;font-weight:800;color:#3d3d5c;display:flex;align-items:center;gap:6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 팀원별 업무시간 현황 (상세조회는 우측 상단 필터 클릭)</div>
         </div>
         <div class="member-overview-grid" id="memberOverviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, 320px); align-items: stretch; justify-content: start; gap:15px; margin-top:10px;"></div>
       </div>
-      <!-- 상세 뷰 -->
       <div id="memberDetailView" style="display:none;">
         <div class="eval-main-layout">
           <div class="eval-profile-card" id="newDpProfile" style="position: sticky; top: 90px; align-self: start;"></div>
