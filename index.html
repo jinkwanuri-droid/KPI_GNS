@@ -31,47 +31,27 @@
   <!-- 🚀 글래스모피즘 통합 상단 헤더 -->
   <header class="glass-header">
     <div class="header-inner">
-      <!-- 1열: 로고, 중앙 메뉴, 우측 멤버 필터 -->
-      <div class="header-top-row">
-        <div class="top-bar-left">
-          <div class="top-logo">HA</div>
-          <div class="top-title">HAEAHN KPI</div>
-        </div>
-        
-        <nav class="top-nav">
-          <div class="top-nav-item active" onclick="showView('dashboard', this)">Project</div>
-          <div class="top-nav-item" onclick="showView('members', this)">Working</div>
-          <div class="top-nav-item" onclick="showView('kpieval', this)">Personal KPI</div>
-        </nav>
-        
-        <div class="top-bar-right">
-          <div class="member-dropdown-wrap" id="topMemberDropdownWrap" onclick="toggleMemberDropdown()">
-            <div class="member-dropdown-current" id="topMemberCurrent">
-              <div class="member-avatar-xs" id="topMemberAvatar" style="background:#888;">ALL</div>
-              <span id="topMemberName" style="font-weight:700; font-size:13px; color:#333;">전체 팀원</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
-            <div class="member-dropdown-menu" id="topMemberMenu">
-              <!-- JS 동적 렌더링 -->
-            </div>
-          </div>
-        </div>
+      
+      <!-- 좌측: 로고 -->
+      <div class="top-bar-left">
+        <div class="top-logo">HA</div>
+        <div class="top-title">HAEAHN KPI</div>
       </div>
-
-      <!-- 2열: 기간 슬라이더 및 정보 -->
-      <div class="header-bottom-row">
-        <!-- 슬라이더 영역 -->
-        <div class="filter-wrapper" id="sidebarFilters">
-          <div class="filter-controls">
-            <span class="filter-header">기간 필터</span>
-            <div class="range-summary">
-              <span class="summary-text" id="summaryText">-</span>
-              <span class="summary-count" id="summaryCount">-</span>
-            </div>
-            <button class="reset-btn" onclick="resetFilter()">초기화</button>
-          </div>
+      
+      <!-- 🚀 중앙: 애플 스타일 글래스 네비게이션 -->
+      <nav class="top-nav" id="topNav">
+        <div class="nav-active-indicator" id="navIndicator"></div>
+        <div class="top-nav-item active" onclick="showView('dashboard', this)">Project</div>
+        <div class="top-nav-item" onclick="showView('members', this)">Working</div>
+        <div class="top-nav-item" onclick="showView('kpieval', this)">Personal KPI</div>
+      </nav>
+      
+      <!-- 우측: 콤팩트 슬라이더 + 멤버 필터 -->
+      <div class="top-bar-right">
+        
+        <!-- 🚀 우측으로 이동 & 축소된 콤팩트 슬라이더 -->
+        <div class="compact-filter-wrap" id="sidebarFilters">
           <div class="timeline-container">
-            <div class="global-dividers" id="globalDividers"></div>
             <div class="year-row" id="yearRow"></div>
             <div class="track-row" id="trackRow">
               <div class="track-bg"></div>
@@ -80,22 +60,31 @@
             </div>
             <div class="quarter-row" id="quarterRow"></div>
           </div>
+          <div class="range-summary">
+            <span class="summary-text" id="summaryText">-</span>
+          </div>
+          <button class="reset-btn-icon" onclick="resetFilter()" title="필터 초기화">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+          </button>
         </div>
 
-        <!-- 우측 정보 및 리프레시 -->
-        <div class="header-info">
-          <div class="subtitle" id="headerSub">PJ CODE: 24188</div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="last-updated" id="lastUpdated"></span>
-            <button class="refresh-btn" onclick="loadDataFromSheets()">🔄 새로고침</button>
-            <span id="filterBadge" class="filter-badge">전체 기간</span>
+        <!-- 우측 상단 멤버 필터 드롭다운 -->
+        <div class="member-dropdown-wrap" id="topMemberDropdownWrap" onclick="toggleMemberDropdown()">
+          <div class="member-dropdown-current" id="topMemberCurrent">
+            <div class="member-avatar-xs" id="topMemberAvatar" style="background:#888;">ALL</div>
+            <span id="topMemberName">전체 팀원</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="member-dropdown-menu" id="topMemberMenu">
+            <!-- JS 동적 렌더링 -->
           </div>
         </div>
       </div>
+      
     </div>
   </header>
 
-  <!-- 🚀 메인 콘텐츠 영역 (폭 1600px 제한, 가운데 정렬) -->
+  <!-- 메인 콘텐츠 영역 -->
   <div class="main-container">
     
     <!-- 1. Project (대시보드) 탭 -->
