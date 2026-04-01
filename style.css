@@ -2904,7 +2904,7 @@ body { display:flex; min-height:100vh; }
       renderCorrelationChartInit(); 
     }
     
-    function renderCorrelationChart() {
+        function renderCorrelationChart() {
       destroyChart('correlation'); 
       const name = G_evalMember; 
       const d = filtered().filter(function(r){ return r.name === name; }); 
@@ -2921,4 +2921,85 @@ body { display:flex; min-height:100vh; }
         const q = getQFromDate(r.date); 
         if(qMap[q]) { 
           if (topSubs.indexOf(r.sub) > -1) { 
-            qMap[
+            qMap[q][r.sub] = (qMap[q][r.sub] || 0) + r.min; 
+          } else { 
+            qMap[q]['기타 업무'] = (qMap[q]['기타 업무'] || 0) + r.min; 
+          } 
+        } 
+      });
+      
+      const displaySubs = topSubs.concat(['기타 업무']);
+      
+      const datasets = displaySubs.map(function(sub, i) { 
+        return { 
+          type: 'bar', 
+          label: sub, 
+          data: qs.map(function(q){ return mToH(qMap[q][sub] || 0); }), 
+          backgroundColor: sub === '기타 업무' ? '#d1d5db' : SUB_PAL[i % SUB_PAL.length], 
+          yAxisID: 'yBar', 
+          stack: 'stackedBar', 
+          order: 2 
+        }; 
+      });
+      
+      const mIdx = RADAR_LABELS.indexOf(activeCorrelationMetric);
+      const scoreData = qs.map(function(q) { 
+        const ev = EVAL_DATA.find(function(e) { return e.q === q && e.name === name; }); 
+        return ev ? ev.vals[mIdx] : null; 
+      });
+      
+      datasets.push({ 
+        type: 'line', 
+        label: activeCorrelationMetric + ' 점수', 
+        data: scoreData, 
+        borderColor: '#00458c', 
+        backgroundColor: '#00458c', 
+        borderWidth: 3, 
+        pointRadius: 5, 
+        pointBackgroundColor: '#fff', 
+        pointBorderWidth: 2, 
+        pointHoverRadius: 8, 
+        yAxisID: 'yLine', 
+        tension: 0.3, 
+        order: 1 
+      });
+      
+      const canvas = document.getElementById('correlationChart'); 
+      if(!canvas) return;
+      
+      CH.correlation = new Chart(canvas.getContext('2d'), {
+          data: { labels: qs, datasets: datasets }, 
+          options: {
+              responsive: true, 
+              maintainAspectRatio: false, 
+              interaction: { mode: 'index', intersect: false }, 
+              plugins: {
+                  legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, usePointStyle: true } }, 
+                  tooltip: { 
+                    backgroundColor: 'rgba(61,61,92,.95)', 
+                    callbacks: { 
+                      label: function(c) { return c.dataset.type === 'line' ? '⭐ ' + c.dataset.label + ': ' + c.parsed.y.toFixed(1) + '점' : c.dataset.label + ': ' + formatNum(c.parsed.y) + 'h'; } 
+                    } 
+                  }, 
+                  datalabels: { 
+                    display: function(ctx) { return ctx.dataset.type === 'line'; }, 
+                    color: '#00458c', anchor: 'bottom', align: 'bottom', offset: 8, font: { weight: 'bold', size: 12 }, 
+                    formatter: function(v) { return v ? v.toFixed(1) : ''; } 
+                  }
+              }, 
+              scales: {
+                  x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } }, 
+                  yBar: { type: 'linear', display: true, position: 'left', stacked: true, title: { display: true, text: '투입 시간 (h)', font: { size: 10 } }, grid: { color: '#eef5fb' }, ticks: { font: { size: 10 } } }, 
+                  yLine: { type: 'linear', display: true, position: 'right', title: { display: true, text: '평가 점수 (0~5)', font: { size: 10 } }, min: 0, max: 5.5, grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#00458c' } }
+              }
+          }
+      });
+    }
+
+    // 초기 실행
+    window.addEventListener('DOMContentLoaded', function() { 
+      loadDataFromSheets(); 
+    });
+  </script>
+</body>
+</html>
