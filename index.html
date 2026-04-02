@@ -36,6 +36,8 @@
     .ov-progress{width:260px;height:5px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden;margin-top:12px;}
     .ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
     .ov-retry-btn{background:#fff;color:#00458c;border:none;border-radius:12px;padding:12px 32px;font-size:14px;font-weight:800;cursor:pointer;margin-top:16px;display:none;}
+    .ov-enter-btn{background:#fff;color:#00458c;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:800;cursor:pointer;margin-top:20px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:all 0.2s;}
+    .ov-enter-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.2);}
     @keyframes spin{to{transform:rotate(360deg);}}
 
     /* =========================================================
@@ -125,6 +127,7 @@
     .reset-btn-icon { background: #f1f5f9; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: 0.2s; }
     .reset-btn-icon:hover { background: #e2e8f0; color: #00458c; transform: rotate(180deg); }
 
+    /* 슬라이더 트랙 */
     .timeline-container { position: relative; width: 260px; height: 32px; padding: 0 8px; margin-top: 4px;}
     .year-row { display:none; } 
     .quarter-row { display:none; } 
@@ -137,6 +140,7 @@
     .node.active { background: #007dc5; border-color: #007dc5; }
     .node.endpoint { width: 12px; height: 12px; background: #00458c; border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(0,69,140,0.2); z-index: 3; }
 
+    /* 우측 정보 패널 */
     .header-info { display: flex; align-items: center; gap: 16px; }
     .subtitle { font-size: 11px; color: #888; font-weight: bold; }
     .last-updated { font-size: 11px; color: #aaa; }
@@ -144,10 +148,15 @@
     .refresh-btn:hover { background: #f4f8fc; border-color: #00458c; color: #00458c; }
 
     /* =========================================================
-       4. 중앙 정렬 및 공통 레이아웃 (1600px, 간격 15px)
+       4. 메인 컨테이너 최대 폭 설정 및 카드 간격(15px) 통일
     ========================================================= */
-    .main-container { width: 100%; max-width: 1600px; margin: 0 auto; padding: 135px 24px 30px 24px; }
-    
+    .main-container {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 135px 24px 30px 24px; 
+    }
+
     .view-section { display: none; }
     .view-section.active { display: flex; flex-direction: column; gap: 15px; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
@@ -161,7 +170,7 @@
     .eval-main-layout  { display:grid; grid-template-columns:320px 1fr; gap:15px; align-items:start; }
     .member-overview-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:15px; }
 
-    /* 카드 스타일 */
+    /* 카드 공통 디자인 */
     .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,.05); position:relative; overflow:hidden; }
     .card-section-title { font-size:13px; font-weight:700; color:#3d3d5c; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
     .card-value { font-size:26px; font-weight:800; color:#3d3d5c; }
@@ -311,11 +320,266 @@
       .eval-dual-radar-row{grid-template-columns:1fr !important;}
     }
   </style>
+</head>
+<body>
 
-  <!-- =========================================================
-       자바스크립트 로직
-  ========================================================= -->
+  <!-- 로딩 오버레이 -->
+  <div id="loadingOverlay">
+    <div class="ov-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 11h8"/><path d="M12 11v6"/></svg></div>
+    <div class="ov-title">HAEAHN KPI</div>
+    <div class="ov-sub">해안건축 팀원 역량평가 대시보드<br>구글 시트에서 데이터를 불러오는 중입니다...</div>
+    <div class="ov-spinner"></div>
+    <div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
+    <div class="ov-progress" id="ovProgressWrap"><div class="ov-progress-fill" id="ovProgress"></div></div>
+    <button class="ov-retry-btn" id="ovRetryBtn" onclick="loadDataFromSheets()">🔄 다시 시도</button>
+    <button class="ov-enter-btn" id="ovEnterBtn" onclick="hideLoadingOverlay()">🚀 대시보드 입장하기</button>
+  </div>
+  
+  <div class="tooltip-box" id="tooltip"></div>
+
+  <!-- 🚀 글래스모피즘 통합 상단 헤더 -->
+  <header class="glass-header">
+    <div class="header-inner">
+      <!-- 1열: 로고, 중앙 메뉴, 우측 멤버 필터 -->
+      <div class="header-top-row">
+        <div class="top-bar-left">
+          <div class="top-logo">HA</div>
+          <div class="top-title">HAEAHN KPI</div>
+        </div>
+        
+        <nav class="top-nav" id="topNav">
+          <div class="nav-active-indicator" id="navIndicator"></div>
+          <div class="top-nav-item active" onclick="showView('dashboard', this)">Project</div>
+          <div class="top-nav-item" onclick="showView('members', this)">Working</div>
+          <div class="top-nav-item" onclick="showView('kpieval', this)">Personal KPI</div>
+        </nav>
+        
+        <div class="top-bar-right">
+          <div class="member-dropdown-wrap" id="topMemberDropdownWrap" onclick="toggleMemberDropdown()">
+            <div class="member-dropdown-current" id="topMemberCurrent">
+              <div class="member-avatar-xs" id="topMemberAvatar" style="background:#888;">ALL</div>
+              <span id="topMemberName">전체 팀원</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+            <div class="member-dropdown-menu" id="topMemberMenu">
+              <!-- JS 동적 렌더링 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2열: 기간 슬라이더 및 업데이트 정보 -->
+      <div class="header-bottom-row">
+        <div class="filter-wrapper" id="sidebarFilters">
+          <div class="filter-controls">
+            <span class="filter-header">기간 필터</span>
+            <div class="range-summary">
+              <span class="summary-text" id="summaryText">-</span>
+            </div>
+            <button class="reset-btn-icon" onclick="resetFilter()" title="필터 초기화">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            </button>
+          </div>
+          <div class="timeline-container">
+            <div class="global-dividers" id="globalDividers"></div>
+            <div class="year-row" id="yearRow"></div>
+            <div class="track-row" id="trackRow">
+              <div class="track-bg"></div>
+              <div class="track-active" id="trackActive"></div>
+              <div class="nodes-container" id="nodesContainer"></div>
+            </div>
+            <div class="quarter-row" id="quarterRow"></div>
+          </div>
+        </div>
+
+        <div class="header-info">
+          <div class="subtitle" id="headerSub">PJ CODE: 24188</div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="last-updated" id="lastUpdated"></span>
+            <button class="refresh-btn" onclick="loadDataFromSheets()">🔄 새로고침</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 🚀 메인 콘텐츠 영역 (폭 1600px 제한, 가운데 정렬) -->
+  <div class="main-container">
+    
+    <!-- 1. Project (대시보드) 탭 -->
+    <div id="view-dashboard" class="view-section active">
+      <div class="grid-top" id="topKpiGrid"></div>
+      <div class="grid-mid">
+        <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 월별 투입시간 추이 (h)</div><div style="height:200px;"><canvas id="lineChart"></canvas></div><div class="legend" id="lineLegend"></div></div>
+        <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 단계별 투입비율</div><div style="height:200px;"><canvas id="stageChart"></canvas></div></div>
+        <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> 설계단계별 투입시간</div><div style="height:200px;"><canvas id="compareChart"></canvas></div></div>
+      </div>
+      <div class="grid-bot">
+        <div class="card">
+          <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 분류별 업무 투입시간 (전체)</div>
+          <div class="donut-layout">
+            <div class="donut-legend-left" id="donutLegendLeft"></div>
+            <div class="donut-chart-right"><canvas id="donutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="donutCenter">-</div><div style="font-size:10px;color:#aaa;">총 투입(h)</div></div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> 업무분류별 TOP 5</div><ul class="top5-rank-list" id="top5List"></ul></div>
+        <div class="card">
+          <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 월별 근무 밀도</div>
+          <div class="tab-btns-sm" id="heatYearTabs"></div>
+          <div style="overflow-x:auto;"><table class="heat-table" id="heatTable"></table></div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#eef5fb;border:1px solid #dbeafe;"></div><div style="width:9px;height:9px;border-radius:2px;background:#93c5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#3b82f6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#007dc5;"></div><div style="width:9px;height:9px;border-radius:2px;background:#00458c;"></div><span>많음</span></div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:15px;">
+        <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; overflow:visible; height:400px;">
+          <div class="card-section-title" style="display:flex; align-items:center; gap:6px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 업무 변동성(CV)
+          </div>
+          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="cvTimeScatterChart"></canvas></div>
+        </div>
+        <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; overflow:visible; height:400px;">
+          <div class="card-section-title" style="display:flex; align-items:center; gap:6px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="16" r="4"/><circle cx="16" cy="8" r="5"/><circle cx="14" cy="19" r="2"/></svg> 섀넌-HHI 업무 다양성 및 변동성 분석
+          </div>
+          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="shannonHhiBubbleChart"></canvas></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 월별 투입시간</div><div style="height:300px;"><canvas id="timelineChart"></canvas></div><div class="legend" style="justify-content:center;" id="timelineLegend"></div></div>
+    </div>
+
+    <!-- 2. Working (팀원별 업무시간) 탭 -->
+    <div id="view-members" class="view-section">
+      <div id="memberListView" class="fade-enter">
+        <div class="detail-view-header" style="border:none; margin-bottom:0;">
+          <div style="font-size:16px;font-weight:800;color:#3d3d5c;display:flex;align-items:center;gap:6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 팀원별 업무시간 현황 (상세조회는 우측 상단 필터 선택)</div>
+        </div>
+        <div class="member-overview-grid" id="memberOverviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); align-items: stretch; justify-content: start; gap:15px; margin-top:10px;"></div>
+      </div>
+      
+      <div id="memberDetailView" style="display:none;">
+        <div class="eval-main-layout">
+          <div class="eval-profile-card" id="newDpProfile" style="position: sticky; top: 130px; align-self: start;"></div>
+          <div class="eval-charts-grid fade-in-slow" id="detailChartsGrid">
+            <div style="display: flex; flex-direction: column; gap: 15px; min-width: 0;">
+              <div class="eval-trend-card" style="margin-bottom:0; height: 450px; display:flex; flex-direction:column;">
+                <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 분류별 업무 투입시간</div>
+                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
+                <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; justify-content:center;"></div>
+              </div>
+              <div class="eval-trend-card" style="margin-bottom:0; height: 300px; display:flex; flex-direction:column; overflow:visible;">
+                <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 업무 다양성 분석(Week)
+                </div>
+                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpDiversityBubble"></canvas></div>
+              </div>
+              <div class="eval-trend-card" style="margin-bottom:0; height: 300px; display:flex; flex-direction:column; overflow:visible;">
+                <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 업무 변동성(CV) 분석</div>
+                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpCvChart"></canvas></div>
+              </div>
+              <div class="eval-trend-card" style="margin-bottom:0; height: 300px; display:flex; flex-direction:column;">
+                <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> 업무 파편화 분석(업무 전환 빈도)</div>
+                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpSwitchBar"></canvas></div>
+              </div>
+              <div class="eval-trend-card" style="margin-bottom:0;">
+                <div class="eval-trend-title" style="display:flex; align-items:center; gap:6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> 집중업무 비율</div>
+                <div style="height:80px; margin-top:20px;"><canvas id="dpFocusBar"></canvas></div>
+              </div>
+            </div>
+            <div class="fixed-450" style="gap: 15px;" id="detailRightCol">
+              <div class="eval-trend-card eval-donut-card-fixed" style="margin-bottom:0;">
+                <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3l-5.6 5.6a2 2 0 0 1-2.8 0L2.7 10.7a2 2 0 0 1 0-2.8l5.6-5.6a2 2 0 0 1 2.8 0l10.2 10.2a2 2 0 0 1 0 2.8z"/><path d="M14.5 9.5L12 7"/><path d="M10.5 13.5L8 11"/><path d="M6.5 17.5L4 15"/></svg> 설계단계별 투입 비중</div>
+                <div class="eval-donut-section" style="margin-top: 20px;">
+                  <div class="eval-donut-top"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div>
+                </div>
+              </div>
+              <div class="eval-table-card" id="dpOvertimeCardWrap" style="min-height: 300px; display:flex; flex-direction:column; padding:20px;"></div>
+              <div class="eval-table-card" style="margin-bottom:0; padding:18px 20px;">
+                <div class="card-section-title" style="margin-bottom:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 월별 근무 밀도<span id="dpHeatTabs" style="margin-left:12px; display:inline-flex; gap:4px;"></span></div>
+                <div style="overflow-x:auto;"><table class="heat-table" id="dpHeatTable"></table></div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#888; justify-content:flex-end;"><span>적음</span><div style="width:9px;height:9px;border-radius:2px;background:#eef5fb;border:1px solid #dbeafe;"></div><div style="width:9px;height:9px;border-radius:2px;background:#93c5fd;"></div><div style="width:9px;height:9px;border-radius:2px;background:#3b82f6;"></div><div style="width:9px;height:9px;border-radius:2px;background:#007dc5;"></div><div style="width:9px;height:9px;border-radius:2px;background:#00458c;"></div><span>많음</span></div>
+              </div>
+              <div class="eval-table-card" style="margin-bottom:0; padding:18px 20px; flex: 1;">
+                <div class="card-section-title" style="margin-bottom:12px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 업무 연속성 (최장 연속 출근일) TOP 5</div>
+                <div id="dpContinuityWrap"></div>
+              </div>
+              <div id="dpIncDecWrap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Personal KPI (역량평가) 탭 -->
+    <div id="view-kpieval" class="view-section">
+      <div class="eval-main-layout" id="evalMainLayout">
+        <div id="evalProfileCard" class="eval-profile-card" style="position: sticky; top: 130px; align-self: start;"></div>
+        <div class="eval-charts-col fade-in-slow">
+          <div class="eval-top-row-grid">
+            <div class="eval-trend-card flex-1" style="margin-bottom:0;">
+              <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> 분기별 역량 점수 추이 <span style="font-size:11px; color:#aaa; font-weight:normal; margin-left:6px;">(최상단 Red Dot = 주요일정)</span></div>
+              <div style="height:330px; margin-top:15px;"><canvas id="evalTrendChart"></canvas></div>
+              <div class="legend" style="justify-content:center;margin-top:16px;flex-wrap:wrap;" id="evalTrendLegend"></div>
+            </div>
+            <div class="eval-trend-card fixed-450 eval-donut-card-fixed" style="margin-bottom:0;">
+              <div class="eval-trend-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 소분류 투입시간</div>
+              <div class="eval-donut-section" style="margin-top: 10px;">
+                <div class="eval-donut-top">
+                  <canvas id="evalDonutChart"></canvas>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+                    <div style="font-size:14px;font-weight:800;color:#3d3d5c;" id="evalDonutCenter">-</div>
+                    <div style="font-size:10px;color:#aaa;">총 투입(h)</div>
+                  </div>
+                </div>
+                <div class="eval-top3-box-row" id="evalTop2Row" style="margin-top:14px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="eval-bottom-row">
+            <div class="eval-radar-card eval-radar-card-fixed flex-1">
+              <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12v.01"/><path d="M15 12a3 3 0 0 0-6 0"/><path d="M19.07 19.07a10 10 0 1 0-14.14 0"/><path d="M12 2v10"/><path d="m19.07 4.93-7.07 7.07"/></svg> 역량데이터 (PJ 전체 평균)</div>
+              <div class="eval-dual-radar-row" style="margin-top:10px;">
+                <div class="eval-radar-sub-card">
+                  <div class="eval-radar-sub-title" id="evalRadarYearLabel">PJ 전체 평균</div>
+                  <div style="height:200px;"><canvas id="evalRadarYear"></canvas></div>
+                  <div class="eval-radar-sub-score" id="evalRadarYearScore"></div>
+                </div>
+                <div class="eval-radar-sub-card">
+                  <div class="eval-radar-sub-title" id="evalRadarQtrLabel">해당 분기</div>
+                  <div style="height:200px;"><canvas id="evalRadarQtr"></canvas></div>
+                  <div class="eval-radar-sub-score" id="evalRadarQtrScore"></div>
+                </div>
+              </div>
+            </div>
+            <div class="fixed-450" style="gap: 15px;">
+              <div class="eval-table-card" id="evalOvertimeCardWrap" style="min-height: 300px; display:flex; flex-direction:column; padding:20px; margin-bottom: 15px;"></div>
+              <div class="eval-table-card flex-1">
+                <div class="card-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 분기별 역량평가 추이</div>
+                <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 상관관계 분석 섹션 -->
+          <div class="eval-trend-card" style="margin-top:0;">
+            <div class="card-section-title" style="margin-bottom:12px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg> 
+              역량 점수 견인 요인 분석 (평가 점수 vs 주요 업무 투입 비중)
+            </div>
+            <div id="correlationTabs" class="tab-btns-sm" style="margin-bottom:16px; justify-content:center;"></div>
+            <div style="height: 380px; position:relative;"><canvas id="correlationChart"></canvas></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // 전역 에러 핸들러
+    window.onerror = function(msg, url, line) {
+      showOverlayError("스크립트 에러: " + msg + " (Line: " + line + ")");
+    };
+
     Chart.defaults.animation.duration = 350;
     Chart.defaults.animation.easing = 'easeOutQuad';
     Chart.defaults.transitions.active.animation.duration = 200;
@@ -453,6 +717,16 @@
     }
     
     function hideLoadingOverlay(){ const el = document.getElementById('loadingOverlay'); if(el){ el.style.opacity = '0'; setTimeout(function(){ el.style.display = 'none'; }, 500); } }
+    
+    function showOverlayError(msg){
+      const ovEl = document.getElementById('loadingOverlay');
+      if(ovEl){
+        const sp = ovEl.querySelector('.ov-spinner'); const retryBtn = document.getElementById('ovRetryBtn'); const msgEl = document.getElementById('ovMsg');
+        if(sp) sp.style.display = 'none';
+        if(msgEl) msgEl.innerHTML = '<span style="color:#ffcdd2;font-weight:700;">❌ ' + msg + '</span>';
+        if(retryBtn) retryBtn.style.display = 'block';
+      }
+    }
 
     async function loadDataFromSheets(){
       const ovEl = document.getElementById('loadingOverlay');
@@ -487,7 +761,7 @@
         
         EVAL_DATA = (json.eval || []).map(function(row) {
           const year = String(row['연도'] || '').trim(); const qtr = String(row['분기'] || '').trim(); const qtrF = qtr.startsWith('Q') ? qtr : 'Q' + qtr;
-          return { q: year + '-' + qtrF, year: year, qtr: qtrF, name: String(row['성명'] || '').trim(), vals: [ parseFloat(row['적극성']) || 0, parseFloat(row['생산성']) || 0, parseFloat(row['전문성']) || 0, parseFloat(row['창의성']) || 0, parseFloat(row['협업능력']) || 0 ] };
+          return { q: year + '-' + qtrF, year: year, qtr: qtrF, name: String(row['성명'] || '').trim(), vals: [parseFloat(row['적극성']) || 0, parseFloat(row['생산성']) || 0, parseFloat(row['전문성']) || 0, parseFloat(row['창의성']) || 0, parseFloat(row['협업능력']) || 0] };
         }).filter(function(d) { return d.name && d.q; });
         
         RAW = (json.work || []).filter(function(row) { return row.name && row.date && row.min > 0; }).map(function(row) {
@@ -530,7 +804,7 @@
           const enterBtn = document.getElementById('ovEnterBtn'); if(enterBtn) enterBtn.style.display = 'block';
         }
       } catch(err) {
-        showOverlayError(err.message);
+        console.error('데이터 로드 실패:', err); showOverlayError(err.message);
       }
     }
 
@@ -1178,7 +1452,6 @@
       CH.correlation = new Chart(canvas.getContext('2d'), { data: { labels: qs, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, usePointStyle: true } }, tooltip: { backgroundColor: 'rgba(61,61,92,.95)', callbacks: { label: function(c) { return c.dataset.type === 'line' ? '⭐ ' + c.dataset.label + ': ' + c.parsed.y.toFixed(1) + '점' : c.dataset.label + ': ' + formatNum(c.parsed.y) + 'h'; } } }, datalabels: { display: function(ctx) { return ctx.dataset.type === 'line'; }, color: '#00458c', anchor: 'bottom', align: 'bottom', offset: 8, font: { weight: 'bold', size: 12 }, formatter: function(v) { return v ? v.toFixed(1) : ''; } } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } }, yBar: { type: 'linear', display: true, position: 'left', stacked: true, title: { display: true, text: '투입 시간 (h)', font: { size: 10 } }, grid: { color: '#eef5fb' }, ticks: { font: { size: 10 } } }, yLine: { type: 'linear', display: true, position: 'right', title: { display: true, text: '평가 점수 (0~5)', font: { size: 10 } }, min: 0, max: 5.5, grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#00458c' } } } } });
     }
 
-    // 초기 실행
     window.addEventListener('DOMContentLoaded', function() { 
       loadDataFromSheets(); 
     });
