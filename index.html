@@ -26,7 +26,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 .ov-enter-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.2);}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ✨ 탑 바 네비게이션 (Flex 3분할) */
+/* ✨ 탑 바 네비게이션 */
 .topbar { position: fixed; top: 0; left: 0; right: 0; height: 68px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
 .topbar-logo { flex: 1 1 0; font-size: 22px; font-weight: 900; color: #00428E; letter-spacing: 1.5px; }
 .topbar-center { flex: none; display: flex; align-items: center; position: relative; height: 100%; }
@@ -45,7 +45,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 .custom-option { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; font-size: 13px; font-weight: 800; color: #334155; transition: background 0.2s; }
 .custom-option:hover { background: #F0F5FA; color: #00428E; }
 @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
-.avatar-base { border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; box-sizing: border-box; flex-shrink: 0; }
 
 /* ✨ 슬라이더 필터 */
 .top-filter-wrap { display: flex; align-items: center; gap: 10px; background: #fff; padding: 6px 12px; border-radius: 20px; border: 1.5px solid #E1EDF7; height: 38px;}
@@ -75,11 +74,11 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 .dash-row-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
 
-/* 카드 공통 */
-.card, .eval-trend-card, .eval-table-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,.03); position: relative; display: flex; flex-direction: column; overflow: visible; }
+/* 카드 공통 (패딩 25px 적용) */
+.card, .eval-trend-card, .eval-table-card { background: #fff; border-radius: 16px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,.03); position: relative; display: flex; flex-direction: column; overflow: visible; }
 .eval-trend-card, .eval-table-card { height: 350px; }
 .eval-table-card { height: auto; min-height: 350px; }
-.card-section-title, .eval-trend-title { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
+.card-section-title, .eval-trend-title { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
 .card-title-left { display: flex; align-items: center; gap: 6px; }
 .card-value { font-size: 26px; font-weight: 900; color: #0f172a; }
 .card-sub { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
@@ -103,15 +102,18 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 6px; font-weight: 700; }
 .progress-bar { height: 8px; background: #F0F5FA; border-radius: 10px; overflow: hidden; }
 .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
-.top5-rank-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 8px; margin-left: 20px; }
-.top5-rank-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 8px; transition: all .2s; }
-.top5-rank-badge { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
-.top5-rank-name { flex: 1; font-size: 13px; font-weight: 800; color: #1e293b; }
+/* TOP 5 폰트 축소 */
+.top5-rank-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 6px; margin-left: 0; }
+.top5-rank-item { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; transition: all .2s; }
+.top5-rank-badge { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: #fff; flex-shrink: 0;}
+.top5-rank-name { flex: 1; font-size: 11px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.top5-rank-val { font-size: 12px; font-weight: 900; color: #00428E; }
+
 .heat-table { border-collapse: separate; border-spacing: 2px; width: 100%; height: 100%; table-layout: fixed; }
-.heat-table th { font-size: 10px; color: #94a3b8; font-weight: 800; text-align: center; padding: 4px 2px; }
-.hm-cell { width: 100%; height: 30px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; cursor:pointer; transition:transform .15s;}
+.heat-table th { font-size: 10px; color: #94a3b8; font-weight: 800; text-align: center; padding: 2px; }
+.hm-cell { width: 100%; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; cursor:pointer; transition:transform .15s;} 
 .hm-cell:hover { transform: scale(1.4); z-index: 10; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-.tab-btn-sm { padding: 6px 12px; border-radius: 20px; border: none; font-size: 11px; font-weight: 800; background: #00428E; color: #fff; }
+.tab-btn-sm { padding: 4px 10px; border-radius: 20px; border: none; font-size: 11px; font-weight: 800; background: #00428E; color: #fff; }
 
 .view-section { display: none; animation: fadeIn 0.4s ease forwards; }
 .view-section.active { display: flex; flex-direction: column; gap: 15px; }
@@ -119,11 +121,11 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 
 /* ✨ Working 탭 레이아웃 */
 .working-content { display: flex; flex-direction: column; gap: 15px; width: 100%; }
-.eval-profile-card { background: #fff; border-radius: 20px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,.04); height: auto; display: flex; flex-direction: column; position: relative; overflow:hidden; }
+.eval-profile-card { background: #fff; border-radius: 20px; padding: 25px; box-shadow: 0 4px 16px rgba(0,0,0,.04); height: auto; display: flex; flex-direction: column; position: relative; overflow:hidden; }
 .ai-coach-box { background: linear-gradient(135deg, #f0f5fa 0%, #e1edf7 100%); border-left: 4px solid #00428E; padding: 16px 20px; border-radius: 12px; font-size: 13px; color: #1e293b; font-weight: 600; line-height: 1.6; display: flex; align-items: center; gap: 12px; margin-top: 15px; }
 
 /* 범례 아이템 공통 (클릭 필터용) */
-.legend-item { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#475569; cursor:pointer; transition:opacity 0.2s; padding:4px 8px; border-radius:6px; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#475569; cursor:pointer; transition:opacity 0.2s; padding:4px 6px; border-radius:6px; }
 .legend-item:hover { background:#F0F5FA; }
 .legend-item.dimmed { opacity:0.3; }
 .legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
@@ -194,33 +196,33 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
       <div class="card" style="height:300px;">
           <div class="card-section-title">
               <span class="card-title-left">단계별 투입비율</span>
-              <div id="dashStageLegendWrap" style="display:flex; gap:10px;"></div>
+              <div id="dashStageLegendWrap" style="display:flex; gap:6px;"></div>
           </div>
-          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="stageChart"></canvas></div>
+          <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="stageChart"></canvas></div>
       </div>
       <div class="card" style="height:300px;">
           <div class="card-section-title">
-              <span class="card-title-left">설계단계별 투입시간</span>
-              <div id="dashCompareLegendWrap" style="display:flex; gap:10px;"></div>
+              <span class="card-title-left">설계단계별 투입시간 <span style="font-size:10px; color:#94a3b8; font-weight:500;">(클릭 하이라이트)</span></span>
+              <div id="dashCompareLegendWrap" style="display:flex; gap:6px;"></div>
           </div>
-          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="compareChart"></canvas></div>
+          <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="compareChart"></canvas></div>
       </div>
     </div>
     
     <!-- 2행 (높이 400px) -->
     <div class="dash-row-2">
-      <!-- 도넛 차트 레이블 잘림 방지를 위해 padding 넓게, margin-left 늘림 -->
+      <!-- 도넛 차트 레이블 잘림 방지를 위해 차트영역 1.4배 부여 -->
       <div class="card" style="height:400px;">
         <div class="card-section-title">분류별 업무 투입시간 및 TOP 5</div>
-        <div style="display:flex; height:100%; gap:10px; align-items:center;">
-           <div style="flex:1.2; position:relative; height:100%; min-width:0; padding-right:15px;">
+        <div style="display:flex; height:100%; align-items:center;">
+           <div style="flex:1.4; position:relative; height:100%; min-width:0; margin-left:10px;">
               <canvas id="donutChart"></canvas>
-              <div style="position:absolute;top:50%;left:45%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
                 <div style="font-size:16px;font-weight:900;color:#1e293b;" id="donutCenter">-</div>
                 <div style="font-size:11px;color:#94a3b8;font-weight:700;">총 투입</div>
               </div>
            </div>
-           <div style="flex:1; display:flex; flex-direction:column; justify-content:center; overflow:hidden; border-left:1px solid #f1f5f9; padding-left:15px;">
+           <div style="flex:0.8; display:flex; flex-direction:column; justify-content:center; overflow:hidden; border-left:1px solid #f1f5f9; padding-left:10px;">
               <ul class="top5-rank-list" id="top5List"></ul>
            </div>
         </div>
@@ -229,20 +231,20 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
       <div class="card" style="height:400px;">
           <div class="card-section-title">
               <span class="card-title-left">월별 투입시간 통합 추이</span>
-              <div id="timelineLegendWrap" style="display:flex; gap:10px;"></div>
+              <div id="timelineLegendWrap" style="display:flex; gap:6px;"></div>
           </div>
-          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="timelineChart"></canvas></div>
+          <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="timelineChart"></canvas></div>
       </div>
     </div>
     
     <!-- 3행 (3분할 1:1:1, 높이 300px 통일) -->
     <div class="dash-row-3">
       <div class="card" style="height:300px;">
-        <div class="card-section-title" style="margin-bottom:4px;">
+        <div class="card-section-title" style="margin-bottom:0;">
             <span class="card-title-left">월별 근무 밀도</span>
             <span id="heatYearTabs" style="margin-left:auto;"></span>
         </div>
-        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; justify-content:center;"><table class="heat-table" id="heatTable"></table></div>
+        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; justify-content:center; margin-top:5px;"><table class="heat-table" id="heatTable"></table></div>
       </div>
       <div class="card" style="height:300px;">
         <div class="card-section-title">일별 초과근무 일수</div>
@@ -251,9 +253,9 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
       <div class="card" style="height:300px;">
         <div class="card-section-title" style="margin-bottom:0;">
             <span class="card-title-left">팀원별 9h 이상 근무 비율</span>
-            <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;"></div>
+            <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;"></div>
         </div>
-        <div style="flex:1; min-height:0; position:relative; margin-top:10px;">
+        <div style="flex:1; min-height:0; position:relative; margin-top:5px;">
             <canvas id="dashOvertimeDonutChart"></canvas>
             <div id="dashDonutCenterTxt" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div>
         </div>
@@ -264,10 +266,10 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
     <div class="dash-row-4">
       <div class="card" style="height:300px;">
           <div class="card-section-title">
-              <span class="card-title-left">월별 9h 이상 초과근무 발생 건수 (팀 합산)</span>
-              <div id="dashMonthlyOtLegendWrap" style="display:flex; gap:10px;"></div>
+              <span class="card-title-left">월별 9h 이상 초과근무 발생 건수</span>
+              <div id="dashMonthlyOtLegendWrap" style="display:flex; gap:6px;"></div>
           </div>
-          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
+          <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
       </div>
       <div class="card" style="height:300px;">
           <div class="card-section-title">프로젝트 투입 비율</div>
@@ -279,22 +281,22 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
     </div>
     
     <!-- 5행 (고급 분석지표 3개 신규 추가, 높이 350px 통일) -->
-    <div class="grid-3" style="margin-top:15px;">
+    <div class="grid-3">
         <div class="eval-trend-card">
             <div class="eval-trend-title">업무 균등 분산 (섀넌 엔트로피)
                 <div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다.</div></div>
             </div>
-            <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="pjShannonChart"></canvas></div>
+            <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="pjShannonChart"></canvas></div>
         </div>
         <div class="eval-trend-card">
             <div class="eval-trend-title">업무 쏠림도 (HHI 지수)
                 <div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (독점/위험)</div></div>
             </div>
-            <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="pjHhiChart"></canvas></div>
+            <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="pjHhiChart"></canvas></div>
         </div>
         <div class="eval-trend-card">
             <div class="eval-trend-title">전체 업무 변동성 (CV 추이)</div>
-            <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="pjCvChart"></canvas></div>
+            <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="pjCvChart"></canvas></div>
         </div>
     </div>
   </div>
@@ -308,21 +310,21 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
             <div class="eval-profile-card" id="workingProfileCard" style="margin-bottom:0; height:100%;"></div>
             <div class="eval-trend-card" style="height:100%;">
                 <div class="eval-trend-title">분류별 업무 투입시간 추이</div>
-                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
-                <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; justify-content:center;"></div>
+                <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="dpStackedBar"></canvas></div>
+                <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; justify-content:center;"></div>
             </div>
         </div>
 
         <!-- 하단 3열 그리드 -->
         <div class="grid-3" id="workingChartsGrid">
             <!-- 고급 분석 지표 -->
-            <div class="eval-trend-card"><div class="eval-trend-title">업무 균등 분산 (섀넌 엔트로피)</div><div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpShannonChart"></canvas></div></div>
-            <div class="eval-trend-card"><div class="eval-trend-title">업무 쏠림도 (HHI 지수)</div><div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpHhiChart"></canvas></div></div>
-            <div class="eval-trend-card"><div class="eval-trend-title">개인 업무 변동성 (CV 추이)</div><div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpCvChart"></canvas></div></div>
+            <div class="eval-trend-card"><div class="eval-trend-title">업무 균등 분산 (섀넌 엔트로피)</div><div style="flex:1; min-height:0; margin-top:5px;"><canvas id="dpShannonChart"></canvas></div></div>
+            <div class="eval-trend-card"><div class="eval-trend-title">업무 쏠림도 (HHI 지수)</div><div style="flex:1; min-height:0; margin-top:5px;"><canvas id="dpHhiChart"></canvas></div></div>
+            <div class="eval-trend-card"><div class="eval-trend-title">개인 업무 변동성 (CV 추이)</div><div style="flex:1; min-height:0; margin-top:5px;"><canvas id="dpCvChart"></canvas></div></div>
             
-            <div class="eval-trend-card"><div class="eval-trend-title">업무시간 배분도 (로렌츠 곡선 & 지니계수)</div><div style="flex:1; min-height:0; position:relative; margin-top:10px;"><canvas id="dpGiniChart"></canvas><div id="dpGiniTxt" style="position:absolute; top:10%; left:10%; background:rgba(255,255,255,0.8); padding:4px 8px; border-radius:6px; font-weight:800; font-size:12px; color:#1e293b;"></div></div></div>
-            <div class="eval-trend-card"><div class="eval-trend-title">업무량 지속성 (허스트 지수)</div><div style="flex:1; position:relative; margin-top:10px;"><canvas id="dpHurstChart"></canvas><div id="dpHurstTxt" style="position:absolute;top:70%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none; width:100%;"></div></div></div>
-            <div class="eval-table-card" style="height:350px;"><div class="card-section-title" style="margin-bottom:8px;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div><div style="overflow-x:auto; height:100%; display:flex; flex-direction:column; justify-content:center;"><table class="heat-table" id="dpHeatTable" style="height:100%;"></table></div></div>
+            <div class="eval-trend-card"><div class="eval-trend-title">업무시간 배분도 (로렌츠 곡선 & 지니계수)</div><div style="flex:1; min-height:0; position:relative; margin-top:5px;"><canvas id="dpGiniChart"></canvas><div id="dpGiniTxt" style="position:absolute; top:5%; left:5%; background:rgba(255,255,255,0.8); padding:4px 8px; border-radius:6px; font-weight:800; font-size:12px; color:#1e293b;"></div></div></div>
+            <div class="eval-trend-card"><div class="eval-trend-title">업무량 지속성 (허스트 지수)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="dpHurstChart"></canvas><div id="dpHurstTxt" style="position:absolute;top:65%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none; width:100%;"></div></div></div>
+            <div class="eval-table-card" style="height:350px;"><div class="card-section-title" style="margin-bottom:0;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div><div style="overflow-x:auto; height:100%; display:flex; flex-direction:column; justify-content:center; margin-top:5px;"><table class="heat-table" id="dpHeatTable" style="height:100%;"></table></div></div>
             
             <div class="eval-trend-card split-card-wrap" style="height:450px;"><div class="split-card-item"><div class="eval-trend-title">설계단계별 비중 / 파편화</div><div style="flex:1; display:flex; gap:10px;"><div style="flex:1; position:relative;"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div><div style="flex:1; display:flex; flex-direction:column; gap:10px;"><div style="flex:1;"><canvas id="dpFocusBar"></canvas></div><div style="flex:1;"><canvas id="dpSwitchBar"></canvas></div></div></div></div></div>
             <div class="eval-table-card split-card-wrap" style="height:450px; background:transparent; padding:0; border:none; box-shadow:none;"><div class="card" style="flex:1; min-height:0; margin-bottom:0;" id="dpOvertimeCardWrap"></div><div class="card" style="flex:1; min-height:0; margin-bottom:0;"><div class="card-section-title">연속 최장 출근일 TOP 3</div><div id="dpContinuityWrap" style="flex:1; overflow-y:auto; margin-top:5px;"></div></div></div>
@@ -336,9 +338,9 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
   <div id="view-kpieval" class="view-section">
       <div class="eval-profile-card" id="kpiProfileCard" style="margin-bottom:0;"></div>
       <div class="grid-3">
-          <div class="eval-trend-card"><div class="eval-trend-title">분기별 역량 점수 추이 <span style="font-size:11px;color:#ef4444;margin-left:8px;font-weight:600;">(🔴 주요일정)</span></div><div style="flex:1; min-height:0; margin-top:10px;"><canvas id="evalTrendChart"></canvas></div><div class="legend" style="justify-content:center;margin-top:15px;display:flex;gap:12px;flex-wrap:wrap;" id="evalTrendLegend"></div></div>
-          <div class="eval-trend-card"><div class="eval-trend-title">주력 업무 투입시간 (소분류)</div><div style="flex:1; position:relative; margin-top: 10px;"><canvas id="evalDonutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:16px;font-weight:900;color:#1e293b;" id="evalDonutCenter">-</div></div></div><div class="eval-top3-box-row" id="evalTop2Row" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:15px;"></div></div>
-          <div class="eval-trend-card" style="display:flex; flex-direction:column;"><div class="eval-trend-title">고득점 분기 vs 평균 분기</div><div style="display:flex; gap:15px; flex:1; margin-top:10px;" id="highVsAvgChartsWrap"><div style="flex:1; position:relative; background:#f8fafc; border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div><div style="flex:1; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:#f1f5f9; border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 평균 분기</div><div style="flex:1; position:relative;"><canvas id="chartAvgQ"></canvas></div></div></div><div id="highVsAvgLegend" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:15px;"></div></div>
+          <div class="eval-trend-card"><div class="eval-trend-title">분기별 역량 점수 추이 <span style="font-size:11px;color:#ef4444;margin-left:8px;font-weight:600;">(🔴 주요일정)</span></div><div style="flex:1; min-height:0; margin-top:5px;"><canvas id="evalTrendChart"></canvas></div><div class="legend" style="justify-content:center;margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;" id="evalTrendLegend"></div></div>
+          <div class="eval-trend-card"><div class="eval-trend-title">주력 업무 투입시간 (소분류)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="evalDonutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:16px;font-weight:900;color:#1e293b;" id="evalDonutCenter">-</div></div></div><div class="eval-top3-box-row" id="evalTop2Row" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px;"></div></div>
+          <div class="eval-trend-card" style="display:flex; flex-direction:column;"><div class="eval-trend-title">고득점 분기 vs 평균 분기</div><div style="display:flex; gap:10px; flex:1; margin-top:5px;" id="highVsAvgChartsWrap"><div style="flex:1; position:relative; background:#f8fafc; border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div><div style="flex:1; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:#f1f5f9; border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 평균 분기</div><div style="flex:1; position:relative;"><canvas id="chartAvgQ"></canvas></div></div></div><div id="highVsAvgLegend" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div></div>
           <div class="eval-table-card" style="text-align:center;"><div id="evalRadarYearLabel" style="font-size:14px; font-weight:900; color:#64748b; margin-bottom:10px;">PJ 전체 평균 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarYear"></canvas></div><div id="evalRadarYearScore" style="margin-top:10px;"></div></div>
           <div class="eval-table-card" style="text-align:center;"><div id="evalRadarQtrLabel" style="font-size:14px; font-weight:900; color:#00428E; margin-bottom:10px;">해당 분기 개인 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarQtr"></canvas></div><div id="evalRadarQtrScore" style="margin-top:10px;"></div></div>
           <div class="eval-table-card" id="kpiOvertimeCardWrap"></div>
@@ -393,20 +395,14 @@ function filteredEvalQs(){ return [...new Set(EVAL_DATA.map(d => d.q))].sort().f
 function getAvatar(name, size = 46, fontSize = 14) {
     const c = MC[name] || '#00428E'; 
     const init = INITIALS[name] || 'ALL';
-    
-    if(name === 'ALL') {
-        return `<div class="avatar-base" style="width:${size}px; height:${size}px; font-size:${fontSize}px; background:${c}; border:2px solid ${c};">A</div>`;
-    }
-    
+    if(name === 'ALL') return `<div class="avatar-base" style="width:${size}px; height:${size}px; font-size:${fontSize}px; background:${c}; border:2px solid ${c};">A</div>`;
     if(PROFILE_IMG[name]) {
-        // 이미지가 정상 로드되면 맨 위에 표시, 실패 시(onerror) display:none 되어 아래에 깔린 이니셜이 보임
         return `
         <div style="position:relative; width:${size}px; height:${size}px; flex-shrink:0; border-radius:50%; border:2px solid ${c}; background-color:${c}; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:${fontSize}px; box-sizing:border-box; overflow:hidden;">
-            ${init}
-            <img src="${PROFILE_IMG[name]}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:2; background-color:#fff;" onerror="this.style.display='none'" alt="${name}">
+            <span>${init}</span>
+            <img src="${PROFILE_IMG[name]}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:2; transition: opacity 0.2s;" onerror="this.style.opacity='0'" alt="${name}">
         </div>`;
     }
-    
     return `<div class="avatar-base" style="width:${size}px; height:${size}px; font-size:${fontSize}px; background:${c}; border:2px solid ${c};">${init}</div>`;
 }
 
@@ -496,7 +492,7 @@ function renderDashboardTab() {
   renderShannonHhiCv(all, weeks, '#00428E', 'pj');
 }
 
-// 1. 단계별 투입비율 (가로 막대 - 텍스트 레이블 포함)
+// 1. 단계별 투입비율 (가로 막대 - 텍스트 레이블 포함, 두께 꽉채움)
 function renderDashStage(all) { 
     destroyChart('stage'); 
     const catMap=grpMin(all,'cat'); const tot=Object.values(catMap).reduce((a,b)=>a+b,0);
@@ -508,7 +504,10 @@ function renderDashStage(all) {
 
     const datasets = CAT_ORDER.map((c, i) => {
         const isDim = hlStage !== null && hlStage !== c;
-        return { label: c, data: [catMap[c] || 0], backgroundColor: isDim ? '#e2e8f0' : CAT_COLORS[i] };
+        return { 
+            label: c, data: [catMap[c] || 0], backgroundColor: isDim ? '#e2e8f0' : CAT_COLORS[i],
+            barPercentage: 1.0, categoryPercentage: 1.0 // 막대 꽉 채우기
+        };
     });
 
     CH.stage = new Chart(document.getElementById('stageChart').getContext('2d'),{ 
@@ -518,11 +517,10 @@ function renderDashStage(all) {
             plugins:{ 
                 legend:{display:false}, 
                 datalabels:{
-                    color:'#fff', font:{weight:'bold', size:11}, 
+                    color:'#fff', font:{weight:'bold', size:11}, anchor: 'center', align: 'center',
                     formatter:(v, ctx) => { 
                         if(v===0) return ''; 
                         const pct = (v/tot*100).toFixed(1); 
-                        // 막대 안에 '항목명 값h (비율%)' 표시
                         return `${ctx.dataset.label} ${formatHour(v)}h (${pct}%)`; 
                     }
                 } 
@@ -552,7 +550,6 @@ function renderDashCompare(all) {
         responsive:true, maintainAspectRatio:false, 
         plugins:{
             legend:{display:false}, 
-            // 막대 상단에 값 표시
             datalabels:{ display:true, color:'#64748b', font:{size:10, weight:'bold'}, anchor:'end', align:'end', formatter:v=>v>0?v.toFixed(1):'' }
         }, 
         scales:{x:{grid:{display:false}}, y:{grid:{color:'#f1f5f9'}, grace:'10%'}} 
@@ -561,17 +558,17 @@ function renderDashCompare(all) {
 }
 function dashToggleCompare(name) { hlCompare = hlCompare === name ? null : name; renderDashCompare(filtered()); }
 
-// 3. 분류별 업무 투입시간 (도넛 패딩 확보)
+// 3. 분류별 업무 투입시간 (도넛 패딩 확보, 리스트 폰트 축소)
 function renderDashDonutAndTop5(all) {
    const subMap = grpMin(all, 'sub'); const tot = Object.values(subMap).reduce((a,b)=>a+b,0); const topArr = Object.entries(subMap).sort((a,b)=>b[1]-a[1]);
    document.getElementById('donutCenter').innerText = formatHour(tot) + 'h';
-   document.getElementById('top5List').innerHTML = topArr.slice(0, 5).map(([k,v], i) => `<li class="top5-rank-item"><div class="top5-rank-badge" style="background:${SUB_PAL[i]};">${i+1}</div><span class="top5-rank-name">${k}</span><strong style="color:#00428E;">${formatHour(v)}h</strong></li>`).join('');
+   document.getElementById('top5List').innerHTML = topArr.slice(0, 5).map(([k,v], i) => `<li class="top5-rank-item"><div class="top5-rank-badge" style="background:${SUB_PAL[i]};">${i+1}</div><span class="top5-rank-name">${k}</span><strong class="top5-rank-val">${formatHour(v)}h</strong></li>`).join('');
    destroyChart('donut'); 
    CH.donut = new Chart(document.getElementById('donutChart').getContext('2d'), { 
        type: 'doughnut', data: { labels: topArr.slice(0,8).map(x=>x[0]), datasets: [{ data: topArr.slice(0,8).map(x=>mToH(x[1])), backgroundColor: SUB_PAL, borderWidth:2, borderColor:'#fff' }] }, 
        options: { 
-           responsive: true, maintainAspectRatio: false, cutout: '65%', 
-           layout:{padding:45}, // 10% 축소 체감을 위한 여백 확보
+           responsive: true, maintainAspectRatio: false, cutout: '60%', 
+           layout:{padding:30}, // 패딩 넓혀 글자 안 잘리게
            plugins: { 
                legend: { display: false }, 
                datalabels: { 
@@ -606,8 +603,11 @@ function renderDashTimeline(all, mos) {
               datalabels:{
                   display: function(ctx) {
                       if(hlTimeline !== null && ctx.dataset.label !== hlTimeline) return false;
-                      const d = ctx.dataset.data; const min=Math.min(...d); const max=Math.max(...d);
-                      return ctx.raw === min || ctx.raw === max; // 최소, 최대값만 표시
+                      const d = ctx.dataset.data; 
+                      const nonZeroD = d.filter(v => v > 0);
+                      if(nonZeroD.length === 0) return false;
+                      const min = Math.min(...nonZeroD); const max = Math.max(...nonZeroD);
+                      return ctx.raw === min || ctx.raw === max; 
                   },
                   color: ctx => ctx.dataset.borderColor,
                   font: {size:10, weight:'bold'},
@@ -621,7 +621,7 @@ function renderDashTimeline(all, mos) {
 }
 function dashToggleTimeline(name) { hlTimeline = hlTimeline === name ? null : name; renderDashTimeline(filtered(), getMos(filtered())); }
 
-// 5. 월별 근무밀도 (히트맵 행 높이 30px로 확대 적용됨. CSS 확인)
+// 5. 월별 근무밀도 (히트맵 행 높이 30px로 확대 적용)
 function renderDashHeat(all) {
   const targetYear = [...new Set(all.map(r=>r.date.slice(0,4)))].sort().pop() || '2024'; document.getElementById('heatYearTabs').innerHTML = `<button class="tab-btn-sm active">${targetYear}년</button>`;
   const dailyMap = {}; all.filter(r=>r.date.startsWith(targetYear+'-')).forEach(r => dailyMap[r.date] = (dailyMap[r.date] || 0) + r.min);
@@ -661,7 +661,7 @@ function renderDashOvertimeDonut(all) {
         type: 'doughnut', 
         data: { labels: data.map(d=>d.name), datasets: [{ data: data.map(d=>d.days), backgroundColor: bgColors, borderWidth: 2, borderColor:'#fff' }] }, 
         options: { 
-            responsive: true, maintainAspectRatio: false, cutout: '65%', layout: { padding: 10 }, // 패딩 축소로 크기 확대
+            responsive: true, maintainAspectRatio: false, cutout: '60%', layout: { padding: 15 }, 
             plugins: { 
                 legend: { display: false }, 
                 datalabels: { 
@@ -675,11 +675,10 @@ function renderDashOvertimeDonut(all) {
 }
 function dashToggleOvertimeDonut(name) { hlOvertimeDonut = hlOvertimeDonut === name ? null : name; renderDashOvertimeDonut(filtered()); }
 
-// 8. 월별 9h 이상 발생 건수 막대 (누적형 막대, 총합 레이블 표시)
+// 8. 월별 9h 이상 발생 건수 막대 (누적형 막대, 총합 레이블 색상 다크그레이 변경)
 function renderDashMonthlyOvertime(all, mos) {
     destroyChart('dashMonthlyOvertimeChart');
     
-    // 데이터 구조 생성: 4가지 시간대별 배열
     const bands = ['9~10h', '10~11h', '11~12h', '12h 이상'];
     let bandData = [[], [], [], []];
     
@@ -709,18 +708,16 @@ function renderDashMonthlyOvertime(all, mos) {
             plugins: { 
                 legend: { display: false }, 
                 datalabels: { 
-                    display: function(ctx) {
-                        // 제일 위 스택 데이터에만 총합 표시
-                        return ctx.datasetIndex === 3 && ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) > 0;
-                    },
-                    color: '#ef4444', font: { weight: 'bold' }, anchor: 'end', align: 'end', 
-                    formatter: (v, ctx) => {
-                        const sum = ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0);
-                        return sum + '건';
-                    } 
+                    display: function(ctx) { return ctx.datasetIndex === 3 && ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) > 0; },
+                    color: '#475569', font: { weight: 'bold' }, anchor: 'end', align: 'end', 
+                    formatter: (v, ctx) => { const sum = ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0); return sum + '건'; } 
                 } 
             }, 
-            scales: { x: { stacked:true, grid: { display: false } }, y: { stacked:true, grid: { color: '#f1f5f9' }, grace: '15%' } } 
+            scales: { x: { stacked:true, grid: { display: false } }, y: { stacked:true, grid: { color: '#f1f5f9' }, grace: '15%' } },
+            onClick: (e, els) => {
+                if(els.length) dashToggleMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label);
+                else { hlMonthlyOt = null; renderDashMonthlyOvertime(filtered(), getMos(filtered())); }
+            }
         }
     });
 }
