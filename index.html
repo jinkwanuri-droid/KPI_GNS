@@ -355,7 +355,33 @@ const I_BULB = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stro
 const I_TROP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
 const I_AI   = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00428E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 
-const PROFILE_IMG = { '윤진관':'jk.yoon.jpg', '김효언':'he.kim.jpg', '정인태':'intae.jeoung.jpg', '이혜인B':'hi.lee2.jpg' };
+// 프로필 이미지 매핑 (안전하게 경로 앞에 ./ 추가)
+const PROFILE_IMG = { 
+    '윤진관':'./img_p/jk.yoon.jpg', 
+    '김효언':'./img_p/he.kim.jpg', 
+    '정인태':'./img_p/intae.jeoung.jpg', 
+    '이혜인B':'./img_p/hi.lee2.jpg' 
+};
+  // ✨ 프로필 아바타 생성 함수 (안전한 이미지 Fallback 방식으로 교체)
+function getAvatar(name, size = 46, fontSize = 14) {
+    const c = MC[name] || '#00428E'; 
+    const init = INITIALS[name] || 'ALL';
+    
+    if(name === 'ALL') {
+        return `<div class="avatar-base" style="width:${size}px; height:${size}px; font-size:${fontSize}px; background:${c};">A</div>`;
+    }
+    
+    if(PROFILE_IMG[name]) {
+        // 이미지가 정상 로드되면 맨 위에 표시되고, 실패 시(onerror) 이미지를 숨겨서 아래 깔린 이니셜이 보이게 합니다.
+        return `
+        <div style="position:relative; width:${size}px; height:${size}px; flex-shrink:0;">
+            <div class="avatar-base" style="position:absolute; inset:0; font-size:${fontSize}px; background:${c}; width:100%; height:100%;">${init}</div>
+            <img src="${PROFILE_IMG[name]}" style="position:absolute; inset:0; width:100%; height:100%; border-radius:50%; border:2px solid ${c}; z-index:2; object-fit:cover; background-color:#fff;" onerror="this.style.display='none'" alt="${name}">
+        </div>`;
+    }
+    
+    return `<div class="avatar-base" style="width:${size}px; height:${size}px; font-size:${fontSize}px; background:${c};">${init}</div>`;
+}
 const DYNAMIC_COLORS = ['#00428E', '#7545fb', '#14b8a6', '#eb5f8c', '#f59e0b', '#f97316', '#ec4899', '#8b5cf6'];
 const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계']; const CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
 const SUB_PAL = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f7','#f43f5e','#f97316','#facc15','#4ade80','#14b8a6'];
