@@ -16,44 +16,40 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 /* 로딩 오버레이 */
 #loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#00428E,#4A90E2);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
 .ov-icon{font-size:52px;margin-bottom:16px;}
-.ov-title{font-size:22px;font-weight:900;margin-bottom:8px;letter-spacing:1px;}
+.ov-title{font-size:22px;font-weight:900;margin-bottom:8px;}
 .ov-sub{font-size:13px;opacity:.8;margin-bottom:28px;text-align:center;line-height:1.7;}
 .ov-spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;}
 .ov-msg{font-size:12px;opacity:.7;margin-top:6px;}
-.ov-progress{width:260px;height:5px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden;margin-top:12px;}
+.ov-progress{width:260px;height:5px;background:rgba(255,255,255,.2);border-radius:10px;margin-top:12px;}
 .ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
 .ov-enter-btn{background:#fff;color:#00428E;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:800;cursor:pointer;margin-top:20px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:all 0.2s;}
 .ov-enter-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.2);}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ✨ 탑 바 네비게이션 */
-.topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: 68px;
-  background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-}
+/* ✨ 탑 바 네비게이션 & Sliding Animation */
+.topbar { position: fixed; top: 0; left: 0; right: 0; height: 68px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
 .topbar-logo { font-size: 22px; font-weight: 900; color: #00428E; letter-spacing: 1.5px; width: 280px; }
-.topbar-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.topbar-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; height: 100%; position: relative; }
+.nav-slider { position: absolute; height: 40px; background: #00428E; border-radius: 20px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 0; top: 50%; transform: translateY(-50%); }
+.nav-item { position: relative; z-index: 1; padding: 10px 24px; border-radius: 20px; cursor: pointer; color: #64748b; font-size: 15px; font-weight: 800; transition: color 0.3s; margin: 0 4px; }
+.nav-item:hover { color: #00428E; }
+.nav-item.active { color: #fff; }
+.nav-item.active:hover { color: #fff; }
 
-/* ✨ 버튼 모핑 애니메이션 */
-.nav-item {
-  position: relative; padding: 10px 24px; border-radius: 24px; cursor: pointer; color: #64748b;
-  font-size: 15px; font-weight: 800; letter-spacing: 0.5px; z-index: 1;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.nav-item::before {
-  content: ''; position: absolute; inset: 0; background: #00428E; border-radius: 24px;
-  opacity: 0; transform: scale(0.9); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: -1;
-}
-.nav-item:hover { color: #00428E; background: #F0F5FA; box-shadow: inset 0 0 10px rgba(0,66,142,0.05); }
-.nav-item.active { color: #fff; background: transparent; box-shadow: 0 4px 12px rgba(0, 66, 142, 0.2); }
-.nav-item.active::before { opacity: 1; transform: scale(1); }
-.nav-item:active { transform: scale(0.95); } /* 클릭 시 부드러운 축소 효과 */
-
+/* ✨ Custom Dropdown (아바타 포함) */
 .topbar-right { display: flex; align-items: center; justify-content: flex-end; gap: 15px; width: 320px; }
+.custom-select-wrap { position: relative; width: 140px; }
+.custom-select-trigger { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #E1EDF7; border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 800; color: #1e293b; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s; }
+.custom-select-trigger:hover { border-color: #00428E; }
+.custom-select-trigger::after { content: ''; margin-left: auto; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid #475569; }
+.custom-select-options { position: absolute; top: 115%; left: 0; right: 0; background: #fff; border: 1px solid #E1EDF7; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); display: none; flex-direction: column; overflow: hidden; z-index: 3000; }
+.custom-select-options.open { display: flex; animation: slideDown 0.2s ease forwards; }
+.custom-option { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; font-size: 13px; font-weight: 800; color: #334155; transition: background 0.2s; }
+.custom-option:hover { background: #F0F5FA; color: #00428E; }
+.avatar-sm { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; flex-shrink: 0; }
+@keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
 
-/* ✨ 슬라이더 필터 고정 레이아웃 */
+/* ✨ 슬라이더 필터 */
 .top-filter-wrap { display: flex; align-items: center; gap: 10px; background: #fff; padding: 6px 12px; border-radius: 20px; border: 1.5px solid #E1EDF7; }
 .timeline-container { position: relative; width: 160px; height: 34px; padding: 0 8px; flex-shrink: 0; }
 .year-row { position: relative; height: 12px; margin-bottom: 6px; }
@@ -67,157 +63,105 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 .node:hover { transform: translate(-50%, -50%) scale(1.5); border-color: #00428E; }
 .node.active { background: #00428E; border-color: #00428E; }
 .node.endpoint { width: 12px; height: 12px; background: #00428E; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0, 66, 142, 0.4); z-index: 3; }
-.quarter-row { display: none; } 
 .range-summary { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-
-/* 선택된 분기 텍스트 2px 작게 & 연한 배경 */
-.summary-text { color: #00428E; font-weight: 800; font-size: 10px; background: #F0F5FA; padding: 4px 8px; border-radius: 6px; width: 100px; text-align: center; white-space: nowrap; }
-
-/* 초기화 버튼 텍스트 삭제 및 SVG 아이콘만 */
-.reset-btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: transparent; border: none; color: #94a3b8; cursor: pointer; transition: all 0.2s; border-radius: 50%; }
+.summary-text { color: #00428E; font-weight: 800; font-size: 10px; background: #F0F5FA; padding: 4px 8px; border-radius: 6px; width: 100px; text-align: center; }
+.reset-btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: transparent; border: none; color: #94a3b8; cursor: pointer; border-radius: 50%; transition: all 0.2s;}
 .reset-btn:hover { background: #F0F5FA; color: #00428E; transform: rotate(15deg); }
 
-/* 멤버 셀렉트(글자 MEMBER 삭제) */
-.member-select { appearance: none; background: #fff url('data:image/svg+xml;utf8,<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/><polyline points="16 11 18 13 22 9" opacity="0.5"/></svg>') no-repeat left 12px center; background-size: 14px; border: 1.5px solid #E1EDF7; border-radius: 20px; padding: 8px 16px 8px 34px; font-size: 13px; font-weight: 800; color: #1e293b; cursor: pointer; outline: none; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.03); width: 110px; }
-.member-select:hover { border-color: #00428E; box-shadow: 0 4px 12px rgba(0,66,142,0.1); }
-
-/* ✨ 메인 레이아웃 (1500px 제한, 15px 간격 중앙정렬) */
+/* ✨ 메인 레이아웃 */
 .main { flex: 1; padding: 25px 30px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 1500px; margin: 0 auto; }
-
-/* Grid 구조들 */
 .grid-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
 .dash-row-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .dash-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.dash-row-3 { display: grid; grid-template-columns: 1fr; gap: 15px; }
-
+.dash-row-3 { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 15px; } /* 3분할: 히트맵, 막대, 도넛 */
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-.eval-top-row-grid, .eval-bottom-row { display: flex; gap: 15px; align-items: stretch; width: 100%; }
-.eval-charts-grid { display: grid; grid-template-columns: 1fr 450px; gap: 15px; align-items: start; width: 100%; }
-.fixed-450 { width: 450px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; }
-.flex-1 { flex: 1; min-width: 0; }
 
-/* 카드 공통 */
-.card, .eval-trend-card, .eval-table-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,.03); position: relative; overflow: hidden; display: flex; flex-direction: column; margin-bottom: 0; }
+/* 카드 공통 (overflow visible 허용) */
+.card, .eval-trend-card, .eval-table-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,.03); position: relative; display: flex; flex-direction: column; overflow: visible; }
 .eval-trend-card, .eval-table-card { height: 350px; }
 .eval-table-card { height: auto; min-height: 350px; }
-.card-section-title, .eval-trend-title { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; }
+.card-section-title, .eval-trend-title { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; position: relative; z-index: 10; }
 .card-value { font-size: 26px; font-weight: 900; color: #0f172a; }
 .card-sub { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
+.kpi-card { overflow: hidden; } /* 요약카드만 hidden */
 .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00428E, #4A90E2); }
 
-/* 툴팁 및 스크롤바 */
-.info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; }
+/* 툴팁 */
+.info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; z-index: 9999; }
 .info-icon { width: 16px; height: 16px; background: #cbd5e1; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .info-wrap:hover .info-icon { background: #00428E; }
-.info-tooltip { position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: auto; min-width: 320px; background: #fff; color: #334155; font-size: 12px; line-height: 1.6; padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 100; pointer-events: none; font-weight: normal; text-align: left; }
-.info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 150%; }
+.info-tooltip { position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%); width: auto; min-width: 320px; background: rgba(30,41,59,0.98); color: #f8fafc; font-size: 12px; line-height: 1.6; padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 9999; pointer-events: none; font-weight: 500; text-align: left; }
+.info-tooltip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border-width:6px; border-style:solid; border-color: rgba(30,41,59,0.98) transparent transparent transparent; }
+.info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 160%; }
+
+/* 리스트, 테이블 */
 .scroll-list::-webkit-scrollbar { width: 6px; }
 .scroll-list::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
 .scroll-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-.scroll-list::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-/* 공통 UI 요소 */
 .member-kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
 .member-kpi-photo { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .progress-wrap { margin-top: 12px; }
 .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 6px; font-weight: 700; }
 .progress-bar { height: 8px; background: #F0F5FA; border-radius: 10px; overflow: hidden; }
 .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
-.compare-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.compare-name { font-size: 12px; font-weight: 800; color: #475569; width: 54px; flex-shrink: 0; }
-.compare-bar-wrap { flex: 1; background: #F0F5FA; border-radius: 6px; height: 9px; overflow: hidden; }
-.compare-bar-fill { height: 100%; border-radius: 6px; }
-.compare-val { font-size: 12px; font-weight: 800; color: #1e293b; width: 56px; text-align: right; }
-
 .top5-rank-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 8px; }
-.top5-rank-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 8px; transition: all .2s; cursor: pointer; }
-.top5-rank-item:hover { background: #F0F5FA; }
-.top5-rank-item.highlighted { background: #E1EDF7; transform: translateX(3px); }
-.top5-rank-item.dimmed { opacity: 0.35; }
+.top5-rank-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 8px; transition: all .2s; }
 .top5-rank-badge { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
 .top5-rank-name { flex: 1; font-size: 13px; font-weight: 800; color: #1e293b; }
-
 .heat-table { border-collapse: separate; border-spacing: 3px; width: 100%; table-layout: fixed; }
 .heat-table th { font-size: 10px; color: #94a3b8; font-weight: 800; text-align: center; padding: 4px 2px; }
-.hm-cell { width: 100%; height: 18px; border-radius: 4px; cursor: pointer; transition: transform .15s; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; }
+.hm-cell { width: 100%; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; cursor:pointer; transition:transform .15s;}
 .hm-cell:hover { transform: scale(1.4); z-index: 10; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-.tab-btns-sm { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
-.tab-btn-sm { padding: 6px 12px; border-radius: 20px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; background: #F0F5FA; color: #64748b; transition: all .2s; }
-.tab-btn-sm.active { background: #00428E; color: #fff; }
+.tab-btn-sm { padding: 6px 12px; border-radius: 20px; border: none; font-size: 11px; font-weight: 800; background: #00428E; color: #fff; }
 
 .view-section { display: none; animation: fadeIn 0.4s ease forwards; }
 .view-section.active { display: flex; flex-direction: column; gap: 15px; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ✨ Working 탭 신규 레이아웃 (Split View) */
-.working-layout { display: grid; grid-template-columns: 320px 1fr; gap: 15px; align-items: start; }
-.working-sidebar { display: flex; flex-direction: column; gap: 15px; position: sticky; top: 90px; max-height: calc(100vh - 110px); overflow-y: auto; padding-right: 5px; }
-.working-sidebar::-webkit-scrollbar { width: 4px; }
-.working-sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-.working-sidebar-card { background: #fff; border-radius: 16px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 2px solid transparent; cursor: pointer; transition: all 0.2s; }
-.working-sidebar-card.active { border-color: #00428E; background: #F8FAFC; transform: translateX(4px); box-shadow: 0 6px 16px rgba(0,66,142,0.1); }
-.working-content { display: flex; flex-direction: column; gap: 15px; min-width: 0; }
+/* ✨ Working 탭 레이아웃 (사이드바 삭제, Full width) */
+.working-content { display: flex; flex-direction: column; gap: 15px; width: 100%; }
 
 /* KPI 탭 및 프로필 요소 레이아웃 */
-.eval-main-layout { display: grid; grid-template-columns: 320px 1fr; gap: 15px; align-items: start; }
-.eval-profile-card { background: #fff; border-radius: 20px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,.04); height: auto; display: flex; flex-direction: column; position: relative; }
+.eval-profile-card { background: #fff; border-radius: 20px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,.04); height: auto; display: flex; flex-direction: column; position: relative; overflow:hidden; }
 .eval-profile-avatar { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto; }
-.eval-score-big { text-align: center; padding: 16px 0; margin-bottom: 16px; }
-.eval-score-big-num { font-size: 48px; font-weight: 900; line-height: 1; }
-.eval-score-grade { display: inline-flex; align-items: center; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; margin-top: 10px; }
-.eval-scores-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
-.eval-score-item { display: flex; align-items: center; gap: 10px; }
-.eval-score-item-label { font-size: 12px; font-weight: 700; color: #475569; width: 60px; flex-shrink: 0; }
-.eval-score-item-bar-wrap { flex: 1; height: 8px; background: #F0F5FA; border-radius: 6px; overflow: hidden; }
-.eval-score-item-bar { height: 100%; border-radius: 6px; transition: width .8s ease; }
-.eval-top3-row { grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; display: grid; }
-.eval-top3-card { border-radius: 12px; padding: 12px 8px; text-align: center; }
 
-/* 내부 디테일 요소들 */
-.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-.stage-bars-container { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-.stage-row { display: flex; align-items: center; gap: 8px; }
-.stage-name { font-size: 12px; font-weight: 700; color: #475569; width: 42px; flex-shrink: 0; }
-.stage-track { flex: 1; height: 6px; background: #F0F5FA; border-radius: 4px; overflow: hidden; }
-.stage-fill { height: 100%; border-radius: 4px; }
-.stage-val { font-size: 12px; font-weight: 800; color: #334155; width: 50px; text-align: right; flex-shrink: 0; }
-.new-top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+/* AI 코칭 박스 */
+.ai-coach-box { background: linear-gradient(135deg, #f0f5fa 0%, #e1edf7 100%); border-left: 4px solid #00428E; padding: 16px 20px; border-radius: 12px; font-size: 13px; color: #1e293b; font-weight: 600; line-height: 1.6; display: flex; align-items: center; gap: 12px; margin-top: 15px; }
+
+/* 범례 아이템 공통 */
+.legend-item { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#475569; cursor:pointer; transition:opacity 0.2s; padding:4px 8px; border-radius:6px; }
+.legend-item:hover { background:#F0F5FA; }
+.legend-item.dimmed { opacity:0.3; }
+.legend-dot { width:12px; height:12px; border-radius:3px; }
 
 @media(max-width:1200px){
   .grid-top{grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));}
-  .dash-row-1, .dash-row-2 { grid-template-columns: 1fr; }
+  .dash-row-1, .dash-row-2, .dash-row-3 { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
-  .eval-main-layout, .working-layout { grid-template-columns:1fr; }
-  .working-sidebar { position: relative; top: 0; max-height: none; overflow: visible; display: grid; grid-template-columns: 1fr 1fr; }
-  .eval-top-row-grid, .eval-bottom-row { flex-direction: column; }
-  .eval-charts-grid { grid-template-columns: 1fr !important; }
-  .fixed-450 { width: 100% !important; height: auto !important; }
 }
 </style>
 </head>  
 <body>
-
 <div id="loadingOverlay">
   <div class="ov-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 11h8"/><path d="M12 11v6"/></svg></div>
   <div class="ov-title">HAEAHN ARCHITECTURE</div>
-  <div class="ov-sub">구글 시트에서 데이터를 수집하고 분석하는 중입니다...<br>잠시만 기다려 주세요</div>
+  <div class="ov-sub">구글 시트에서 데이터를 수집하고 분석하는 중입니다...</div>
   <div class="ov-spinner" id="ovSpinner"></div>
   <div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
   <div class="ov-progress" id="ovProgressWrap"><div class="ov-progress-fill" id="ovProgress"></div></div>
   <button class="ov-enter-btn" id="ovEnterBtn" onclick="hideLoadingOverlay()">🚀 대시보드 입장하기</button>
 </div>
-<div class="tooltip-box" id="tooltip"></div>
 
 <!-- ✨ 탑 바 네비게이션 -->
 <nav class="topbar">
   <div class="topbar-logo">HAEAHN</div>
-  <div class="topbar-center">
+  <div class="topbar-center" id="navContainer">
+    <div class="nav-slider" id="navSlider"></div>
     <div class="nav-item active" onclick="showView('dashboard',this)">Project</div>
     <div class="nav-item" onclick="showView('members',this)">Working</div>
     <div class="nav-item" onclick="showView('kpieval',this)">Personal KPI</div>
   </div>
   <div class="topbar-right">
-    <!-- 모던 슬라이더 필터 -->
     <div class="top-filter-wrap">
       <div class="timeline-container">
         <div class="year-row" id="yearRow"></div>
@@ -226,7 +170,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
           <div class="track-active" id="trackActive"></div>
           <div class="nodes-container" id="nodesContainer"></div>
         </div>
-        <div class="quarter-row" id="quarterRow"></div>
       </div>
       <div class="range-summary">
         <span class="summary-text" id="summaryText">-</span>
@@ -235,26 +178,32 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
         </button>
       </div>
     </div>
-    <!-- 글로벌 멤버 드롭다운 필터 -->
-    <select id="globalMemberSelect" class="member-select" onchange="selectGlobalMember(this.value)"></select>
+    <!-- ✨ 커스텀 글로벌 멤버 드롭다운 -->
+    <div class="custom-select-wrap" id="globalMemberSelectWrap">
+        <div class="custom-select-trigger" id="customSelectTrigger" onclick="toggleDropdown()">
+            <div class="avatar-sm" style="background:#00428E;">A</div> 전체 보기
+        </div>
+        <div class="custom-select-options" id="customSelectOptions"></div>
+    </div>
   </div>
 </nav>
 
 <div class="main">
   <!-- 1. [Project] 탭 -->
   <div id="view-dashboard" class="view-section active">
-    <!-- 탑 그리드 (팀원 카드) -->
     <div class="grid-top" id="topKpiGrid"></div>
-    
-    <!-- 첫 번째 줄 (높이 180px 고정) -->
+    <!-- 첫 번째 줄 (높이 250px 확장) -->
     <div class="dash-row-1">
-      <div class="card" style="height:180px;"><div class="card-section-title">단계별 투입비율</div><div style="flex:1; min-height:0;"><canvas id="stageChart"></canvas></div></div>
-      <div class="card" style="height:180px;"><div class="card-section-title">설계단계별 투입시간</div><div style="flex:1; min-height:0;"><canvas id="compareChart"></canvas></div></div>
+      <div class="card" style="height:250px;"><div class="card-section-title">단계별 투입비율</div><div style="flex:1; min-height:0;"><canvas id="stageChart"></canvas></div></div>
+      <div class="card" style="height:250px;">
+          <div class="card-section-title">설계단계별 투입시간 <span style="font-size:11px; color:#64748b; font-weight:500; margin-left:8px;">(클릭 시 하이라이트)</span></div>
+          <div style="flex:1; min-height:0;"><canvas id="compareChart"></canvas></div>
+      </div>
     </div>
     
-    <!-- 두 번째 줄 (도넛+TOP5 합침, 통합추이 나란히) -->
+    <!-- 두 번째 줄 -->
     <div class="dash-row-2">
-      <!-- 통합 분류별 도넛 + TOP5 -->
+      <!-- 도넛 차트 레이블 잘림 해결(padding), 10% 축소 -->
       <div class="card" style="height:350px;">
         <div class="card-section-title">분류별 업무 투입시간 및 TOP 5</div>
         <div style="display:flex; height:100%; gap:20px; align-items:center;">
@@ -270,30 +219,42 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
            </div>
         </div>
       </div>
-      <!-- 통합 추이 -->
+      <!-- 통합 추이 (클릭형 범례) -->
       <div class="card" style="height:350px;">
           <div class="card-section-title">월별 투입시간 통합 추이</div>
           <div style="flex:1; min-height:0;"><canvas id="timelineChart"></canvas></div>
-          <div class="legend" style="justify-content:center; margin-top:10px;" id="timelineLegend"></div>
+          <div id="timelineLegendWrap" style="display:flex; justify-content:center; gap:15px; margin-top:15px; flex-wrap:wrap;"></div>
       </div>
     </div>
     
-    <!-- 세 번째 줄 (근무 밀도) -->
+    <!-- 세 번째 줄 (3분할: 근무밀도, 초과근무막대, 초과근무도넛) -->
     <div class="dash-row-3">
       <div class="card">
         <div class="card-section-title" style="margin-bottom:8px;">월별 근무 밀도 <span id="heatYearTabs" style="margin-left:auto;"></span></div>
         <div style="overflow-x:auto;"><table class="heat-table" id="heatTable"></table></div>
       </div>
+      <div class="card">
+        <div class="card-section-title">일별 초과근무 일수</div>
+        <div style="flex:1; min-height:0; position:relative;"><canvas id="dashOvertimeBarChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-section-title">팀원별 9h 이상 근무 비율</div>
+        <div style="flex:1; min-height:0; position:relative;">
+            <canvas id="dashOvertimeDonutChart"></canvas>
+            <div id="dashDonutCenterTxt" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div>
+        </div>
+      </div>
     </div>
     
-    <!-- 네 번째 줄 (CV, HHI) -->
+    <!-- 네 번째 줄 (CV 🔴 주요일정 추가, 섀넌-HHI 사분면 배경 추가) -->
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:15px;">
       <div class="card" style="height:400px;">
         <div class="card-section-title">업무 변동성(CV) 추이
           <div class="info-wrap"><div class="info-icon">?</div>
             <div class="info-tooltip">
-              <strong style="color:#00428E;">CV 1이상:</strong> 해당 주에 평소보다 수 배 이상의 업무가 몰림 (과부하)<br>
-              <strong style="color:#00428E;">급격한 경사도:</strong> 짧은 기간 내 업무 쏠림 현상 발생<br><br>
+              <span style="color:#ef4444; font-weight:800;">● 빨간 점: 주요일정 마감일</span><br><br>
+              <strong style="color:#60a5fa;">CV 1이상:</strong> 해당 주에 평소보다 수 배 이상의 업무가 몰림 (과부하)<br>
+              <strong style="color:#60a5fa;">급격한 경사도:</strong> 짧은 기간 내 업무 쏠림 현상 발생<br><br>
               전체 인원의 업무 변동성을 시계열로 나타냅니다.
             </div>
           </div>
@@ -304,10 +265,10 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
         <div class="card-section-title">섀넌-HHI 업무 다양성 및 변동성 분석
           <div class="info-wrap"><div class="info-icon">?</div>
             <div class="info-tooltip">
-              <strong style="color:#00428E;">X축(1-HHI):</strong> 1에 가까울수록 특정 업무 독점이 아닌 균등 분배<br>
-              <strong style="color:#00428E;">Y축(Shannon):</strong> 위로 갈수록 수행한 업무 종류의 절대값이 많음<br>
-              <strong style="color:#00428E;">버블 크기:</strong> 해당 주차의 CV(변동성)<br><br>
-              버블이 크고 중앙/하단에 위치할수록 업무 기복이 심함을 의미합니다.
+              <strong style="color:#60a5fa;">X축(1-HHI):</strong> 1에 가까울수록 특정 업무 독점이 아닌 균등 분배<br>
+              <strong style="color:#60a5fa;">Y축(Shannon):</strong> 위로 갈수록 수행한 업무 종류의 절대값이 많음<br>
+              <strong style="color:#60a5fa;">버블 크기:</strong> 해당 주차의 CV(변동성)<br><br>
+              배경의 사분면 컬러를 통해 현재 업무 상태를 직관적으로 파악하세요.
             </div>
           </div>
         </div>
@@ -315,93 +276,66 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
       </div>
     </div>
   </div>
-
-  <!-- ✨ 2. [Working] 탭 (스플릿 뷰 형태, 3x3 구조 적용) -->
+  
+  <!-- ✨ 2. [Working] 탭 (Full Width 3x3 구조 적용) -->
   <div id="view-members" class="view-section">
-    <div class="working-layout">
-        <!-- 좌측: 대표카드 사이드바 -->
-        <div class="working-sidebar" id="workingSidebar"></div>
-        
-        <!-- 우측: 상세 차트 내용 -->
-        <div class="working-content" id="workingContent">
-            <!-- 1. 상단 프로필 요약 (전체 폭) -->
-            <div class="eval-profile-card" id="workingProfileCard" style="margin-bottom:0;"></div>
-            
-            <!-- 2. 3x3 차트 영역 -->
-            <div class="grid-3" id="workingChartsGrid">
-                <!-- Row 1 -->
-                <div class="eval-trend-card">
-                    <div class="eval-trend-title">분류별 업무 투입시간</div>
-                    <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
-                    <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; justify-content:center;"></div>
+    <div class="working-content" id="workingContent">
+        <!-- 1. 상단 프로필 및 AI 코칭 영역 -->
+        <div class="eval-profile-card" id="workingProfileCard" style="margin-bottom:0;"></div>
+        <!-- 2. 3x3 차트 영역 -->
+        <div class="grid-3" id="workingChartsGrid">
+            <!-- Row 1 -->
+            <div class="eval-trend-card">
+                <div class="eval-trend-title">분류별 업무 투입시간</div>
+                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
+                <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; justify-content:center;"></div>
+            </div>
+            <div class="eval-trend-card">
+                <div class="eval-trend-title">업무 다양성 분석(Week) [Shannon-HHI]</div>
+                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpDiversityBubble"></canvas></div>
+            </div>
+            <div class="eval-trend-card">
+                <div class="eval-trend-title">개인 업무 변동성(CV) 추이</div>
+                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpCvChart"></canvas></div>
+            </div>
+            <!-- Row 2 -->
+            <div class="eval-trend-card">
+                <div class="eval-trend-title">설계단계별 투입 비중</div>
+                <div style="flex:1; position:relative; margin-top:10px;">
+                    <canvas id="dpDonut"></canvas>
+                    <div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div>
                 </div>
-                <div class="eval-trend-card">
-                    <div class="eval-trend-title">업무 다양성 분석(Week) [Shannon-HHI]
-                        <div class="info-wrap"><div class="info-icon">?</div>
-                            <div class="info-tooltip">
-                                <div style="text-align:center; font-weight:800; color:#00428E; margin-bottom:10px;">SHANNON INDEX (다양성 ↑)</div>
-                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                                    <div style="background:#f0fdf4; border-radius:8px; padding:10px;"><span style="color:#166534;font-weight:800;">2사분면(마당발)</span><br>업무종류 많음, 시간 균등</div>
-                                    <div style="background:#fefce8; border-radius:8px; padding:10px;"><span style="color:#a16207;font-weight:800;">1사분면(과도기)</span><br>종류는 많으나 1등이 독식</div>
-                                    <div style="background:#eff6ff; border-radius:8px; padding:10px;"><span style="color:#1e40af;font-weight:800;">3사분면(시작단계)</span><br>종류 적고 비슷비슷한 규모</div>
-                                    <div style="background:#fef2f2; border-radius:8px; padding:10px;"><span style="color:#991b1b;font-weight:800;">4사분면(정체/위험)</span><br>종류 적고 한두가지 집중</div>
-                                </div>
-                                <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #e2e8f0; font-size:11px; color:#00428E; font-weight:700;">
-                                    ▶ 역량 강화 팁: 1사분면(과도기)일 경우, 주력 업무 외에 새로운 서브 업무를 하나 더 개척해 보세요.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpDiversityBubble"></canvas></div>
+            </div>
+            <div class="eval-trend-card" style="display:flex; flex-direction:column; gap:15px;">
+                <div style="flex:1; display:flex; flex-direction:column; min-height:0;">
+                    <div class="eval-trend-title">집중업무 vs 분산업무 비율</div>
+                    <div style="height:60px;"><canvas id="dpFocusBar"></canvas></div>
                 </div>
-                <div class="eval-trend-card">
-                    <div class="eval-trend-title">개인 업무 변동성(CV) 추이</div>
-                    <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpCvChart"></canvas></div>
+                <div style="flex:1; display:flex; flex-direction:column; min-height:0; border-top:1px dashed #e2e8f0; padding-top:15px;">
+                    <div class="eval-trend-title">업무 파편화 분석 (전환 빈도)</div>
+                    <div style="flex:1;"><canvas id="dpSwitchBar"></canvas></div>
                 </div>
-                
-                <!-- Row 2 -->
-                <div class="eval-trend-card">
-                    <div class="eval-trend-title">설계단계별 투입 비중</div>
-                    <div style="flex:1; position:relative; margin-top:10px;">
-                        <canvas id="dpDonut"></canvas>
-                        <div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div>
-                    </div>
-                </div>
-                <div class="eval-trend-card" style="display:flex; flex-direction:column; gap:15px;">
-                    <div style="flex:1; display:flex; flex-direction:column; min-height:0;">
-                        <div class="eval-trend-title">집중업무 vs 분산업무 비율</div>
-                        <div style="height:60px;"><canvas id="dpFocusBar"></canvas></div>
-                    </div>
-                    <div style="flex:1; display:flex; flex-direction:column; min-height:0; border-top:1px dashed #e2e8f0; padding-top:15px;">
-                        <div class="eval-trend-title">업무 파편화 분석 (전환 빈도)</div>
-                        <div style="flex:1;"><canvas id="dpSwitchBar"></canvas></div>
-                    </div>
-                </div>
-                <div class="eval-table-card">
-                    <div class="card-section-title" style="margin-bottom:8px;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div>
-                    <div style="overflow-x:auto;"><table class="heat-table" id="dpHeatTable"></table></div>
-                </div>
-                
-                <!-- Row 3 -->
-                <div class="eval-table-card" id="dpOvertimeCardWrap"></div>
-                <div class="eval-table-card">
-                    <div class="card-section-title">업무 연속성 (최장 연속 출근일) TOP 5</div>
-                    <div id="dpContinuityWrap" style="margin-top:10px;"></div>
-                </div>
-                <div class="eval-table-card" style="background:#fff; padding:0; border:none; box-shadow:none;">
-                    <div id="dpIncDecWrap" style="height:100%;"></div>
-                </div>
+            </div>
+            <div class="eval-table-card">
+                <div class="card-section-title" style="margin-bottom:8px;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div>
+                <div style="overflow-x:auto;"><table class="heat-table" id="dpHeatTable"></table></div>
+            </div>
+            <!-- Row 3 -->
+            <div class="eval-table-card" id="dpOvertimeCardWrap"></div>
+            <div class="eval-table-card">
+                <div class="card-section-title">업무 연속성 (최장 연속 출근일) TOP 5</div>
+                <div id="dpContinuityWrap" style="margin-top:10px;"></div>
+            </div>
+            <div class="eval-table-card" style="background:transparent; padding:0; border:none; box-shadow:none;">
+                <div id="dpIncDecWrap" style="height:100%;"></div>
             </div>
         </div>
     </div>
   </div>
-
-  <!-- ✨ 3. [Personal KPI] 역량평가 탭 (3x3 Grid) -->
+  
+  <!-- ✨ 3. [Personal KPI] 탭 -->
   <div id="view-kpieval" class="view-section">
-      <!-- 1. 상단 프로필 요약 -->
       <div class="eval-profile-card" id="kpiProfileCard" style="margin-bottom:0;"></div>
-      
-      <!-- 2. 3x3 차트 영역 -->
       <div class="grid-3">
           <!-- Row 1 -->
           <div class="eval-trend-card">
@@ -409,7 +343,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
             <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="evalTrendChart"></canvas></div>
             <div class="legend" style="justify-content:center;margin-top:15px;display:flex;gap:12px;flex-wrap:wrap;" id="evalTrendLegend"></div>
           </div>
-          
           <div class="eval-trend-card">
             <div class="eval-trend-title">주력 업무 투입시간 (소분류)</div>
             <div style="flex:1; position:relative; margin-top: 10px;">
@@ -420,11 +353,8 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
             </div>
             <div class="eval-top3-box-row" id="evalTop2Row" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:15px;"></div>
           </div>
-          
           <div class="eval-trend-card" style="display:flex; flex-direction:column;">
-            <div class="eval-trend-title">고득점 분기 vs 평균 분기
-                <div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">해당 팀원이 가장 높은 평가를 받았던 상위 2개 분기와 나머지 분기의 업무 투입 패턴을 비교합니다.</div></div>
-            </div>
+            <div class="eval-trend-title">고득점 분기 vs 평균 분기</div>
             <div style="display:flex; gap:15px; flex:1; margin-top:10px;" id="highVsAvgChartsWrap">
                 <div style="flex:1; position:relative; background:#f8fafc; border-radius:12px; padding:15px; display:flex; flex-direction:column;">
                     <div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div>
@@ -437,23 +367,19 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
             </div>
             <div id="highVsAvgLegend" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:15px;"></div>
           </div>
-
           <!-- Row 2 -->
           <div class="eval-table-card" style="text-align:center;">
               <div id="evalRadarYearLabel" style="font-size:14px; font-weight:900; color:#64748b; margin-bottom:10px;">PJ 전체 평균 역량</div>
               <div style="flex:1; min-height:0;"><canvas id="evalRadarYear"></canvas></div>
               <div id="evalRadarYearScore" style="margin-top:10px;"></div>
           </div>
-          
           <div class="eval-table-card" style="text-align:center;">
               <div id="evalRadarQtrLabel" style="font-size:14px; font-weight:900; color:#00428E; margin-bottom:10px;">해당 분기 개인 역량</div>
               <div style="flex:1; min-height:0;"><canvas id="evalRadarQtr"></canvas></div>
               <div id="evalRadarQtrScore" style="margin-top:10px;"></div>
           </div>
-          
           <div class="eval-table-card" id="kpiOvertimeCardWrap"></div>
-
-          <!-- Row 3 (Full width span) -->
+          <!-- Row 3 -->
           <div class="eval-table-card" style="grid-column: 1 / -1; height: auto;">
               <div class="card-section-title">분기별 역량평가 추이 요약표</div>
               <div style="overflow-x:auto;" id="evalTrendTableWrap"></div>
@@ -463,32 +389,31 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 68px
 </div>
 
 <script>
-// ✨ 전역 아이콘 상수 및 플러그인 등록
+/* ✨ 플러그인 & 아이콘 설정 */
 const I_CLOC = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-const I_UP   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`;
-const I_DOWN = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
 const I_BULB = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
 const I_TROP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
 const I_RULE = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3l-5.6 5.6a2 2 0 0 1-2.8 0L2.7 10.7a2 2 0 0 1 0-2.8l5.6-5.6a2 2 0 0 1 2.8 0l10.2 10.2a2 2 0 0 1 0 2.8z"/><path d="M14.5 9.5L12 7"/><path d="M10.5 13.5L8 11"/><path d="M6.5 17.5L4 15"/></svg>`;
+const I_AI   = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00428E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 
 Chart.defaults.animation.duration = 400;
-Chart.defaults.animation.easing = 'easeOutQuart';
 Chart.defaults.font.family = "'Pretendard Variable', Pretendard, sans-serif";
 
+// 플러그인 1: 점선 평균선
 const avgLinePlugin = {
   id: 'avgLinePlugin',
   beforeDraw: (chart) => {
     if(chart.config.options.plugins.avgLinePlugin && chart.config.options.plugins.avgLinePlugin.active) {
       const avgData = chart.config.data.datasets.find(ds => ds.label === '전체 평균');
       if(!avgData || !avgData.data.length) return;
-      const avgVal = avgData.data[0];
       const { ctx, chartArea: { left, right }, scales: { y } } = chart;
-      const yPos = y.getPixelForValue(avgVal);
-      ctx.save(); ctx.beginPath(); ctx.setLineDash([5, 5]); ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(148, 163, 184, 0.8)';
+      const yPos = y.getPixelForValue(avgData.data[0]);
+      ctx.save(); ctx.beginPath(); ctx.setLineDash([5, 5]); ctx.lineWidth = 1.5; ctx.strokeStyle = '#94a3b8';
       ctx.moveTo(left, yPos); ctx.lineTo(right, yPos); ctx.stroke(); ctx.restore();
     }
   }
 };
+// 플러그인 2: 사분면 배경 & 텍스트 (마당발/과도기)
 const quadPlugin = {
   id: 'quadPlugin',
   beforeDraw: (chart) => {
@@ -496,7 +421,23 @@ const quadPlugin = {
       const { ctx, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
       const midX = x.getPixelForValue((x.max + x.min) / 2);
       const midY = y.getPixelForValue((y.max + y.min) / 2);
-      ctx.save(); ctx.beginPath(); ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1.5;
+      
+      ctx.save();
+      // 사분면 배경색
+      ctx.fillStyle = 'rgba(22, 101, 52, 0.05)'; ctx.fillRect(left, top, midX - left, midY - top); // 좌상(마당발)
+      ctx.fillStyle = 'rgba(161, 98, 7, 0.05)'; ctx.fillRect(midX, top, right - midX, midY - top); // 우상(과도기)
+      ctx.fillStyle = 'rgba(30, 64, 175, 0.05)'; ctx.fillRect(left, midY, midX - left, bottom - midY); // 좌하(시작)
+      ctx.fillStyle = 'rgba(153, 27, 27, 0.05)'; ctx.fillRect(midX, midY, right - midX, bottom - midY); // 우하(위험)
+      
+      // 텍스트 라벨
+      ctx.font = '800 11px Pretendard'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center';
+      ctx.fillText('마당발', left + (midX - left)/2, top + 20);
+      ctx.fillText('과도기', midX + (right - midX)/2, top + 20);
+      ctx.fillText('시작단계', left + (midX - left)/2, bottom - 10);
+      ctx.fillText('정체/위험', midX + (right - midX)/2, bottom - 10);
+      
+      // 크로스헤어 라인
+      ctx.beginPath(); ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1.5; ctx.setLineDash([4,4]);
       ctx.moveTo(midX, top); ctx.lineTo(midX, bottom); ctx.moveTo(left, midY); ctx.lineTo(right, midY);
       ctx.stroke(); ctx.restore();
     }
@@ -504,15 +445,12 @@ const quadPlugin = {
 };
 Chart.register(ChartDataLabels, avgLinePlugin, quadPlugin);
 
+/* ✨ 글로벌 변수 & 유틸 */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
-
-const C_PRI = '#00428E'; const C_SEC = '#4A90E2';
-// ✨ 지정된 퍼스널 컬러 테마 적용 (윤진관, 이혜인B, 정인태, 김효언 순서)
 const DYNAMIC_COLORS = ['#00428E', '#7545fb', '#14b8a6', '#eb5f8c', '#f59e0b', '#f97316', '#ec4899', '#8b5cf6'];
 const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
 const CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
 const SUB_PAL = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f7','#f43f5e','#f97316','#facc15','#4ade80','#14b8a6'];
-const RANK_C = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8'];
 const RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력'];
 const RADAR_COLORS_ARR = ['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
@@ -520,14 +458,11 @@ const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월'
 let MEMBERS = []; let MC = {}; let INITIALS = {};
 let SCHEDULE_DATA = []; let EVAL_DATA = []; let RAW = [];
 let CH = {};
-let G = { heatYear:null, dpHeatYear:null, dpActiveMonth:null };
-let H = { dashSub:null, dpSub:null };
-let GLOBAL_MEMBER = 'ALL'; // 디폴트 '전체'
-
+let GLOBAL_MEMBER = 'ALL'; 
+let hlCompare = null; let hlTimeline = null;
 window.filterStartIndex = 0; window.filterEndIndex = 11; window.lastClickedIndex = 0;
 const filterYears = [2024, 2025, 2026]; const filterQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-const totalNodes = filterYears.length * filterQuarters.length;
-let percentPositions = [];
+const totalNodes = filterYears.length * 4; let percentPositions = [];
 
 const formatNum = val => typeof val==='number' ? val.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}) : val;
 const mToH = m => parseFloat((m/60).toFixed(1));
@@ -537,18 +472,16 @@ const getMos = data => [...new Set(data.map(r=>r.date.slice(0,7)))].sort();
 window.getQ = (dateStr) => { const y = dateStr.slice(0,4); const m = parseInt(dateStr.slice(5,7)); return `${y}-Q${Math.ceil(m/3)}`; };
 function destroyChart(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 function hexRgba(hex,a){try{return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;}catch{return hex;}}
-
 function isFocusedWork(cat, sub) {
-  const cleanCat = (cat||'').replace(/\s+/g, ''); const cleanSub = (sub||'').replace(/\s+/g, '');
+  const c = (cat||'').replace(/\s+/g, ''); const s = (sub||'').replace(/\s+/g, '');
   const rules = {
     '기획설계': ['컨셉디자인', '배치계획', '평면계획', '입면계획', '단면계획', '모형/3D모델링', '사업성검토', '사전조사/분석/검토'],
     '계획설계': ['컨셉디자인', '배치계획', '평면계획', '입면계획', '단면계획', '모형/3D모델링', '사전조사/분석/검토'],
     '기본설계': ['개요/기본도면', '공통도면', '재료마감/상세도', '구조계획도', '시방서/공사비산정', '컨셉디자인', '사전조사/분석/검토'],
     '실시설계': ['개요/실시도면', '공통도면', '마감도/상세도', '구조도면', '시방서/내역서', '사전조사/분석/검토']
   };
-  return rules[cleanCat] ? rules[cleanCat].map(r => r.replace(/\s+/g, '')).includes(cleanSub) : false;
+  return rules[c] ? rules[c].map(r => r.replace(/\s+/g, '')).includes(s) : false;
 }
-
 function filtered(){
   return RAW.filter(r => {
     const q = getQ(r.date); const y = parseInt(q.slice(0,4)); const qN = parseInt(q.slice(6,7)) - 1;
@@ -564,158 +497,125 @@ function filteredEvalQs(){
   });
 }
 
-function setLoadingProgress(pct,msg){
-  const bar=document.getElementById('ovProgress');const msgEl=document.getElementById('ovMsg');
-  if(bar) bar.style.width=pct+'%';if(msgEl) msgEl.textContent=msg;
-}
-function hideLoadingOverlay(){
-  const el=document.getElementById('loadingOverlay');
-  if(el){el.style.opacity='0';el.style.pointerEvents='none';}
-}
-
+/* ✨ 데이터 페칭 */
 async function loadDataFromSheets(){
   try{
-    setLoadingProgress(15,'데이터베이스 연결 중...');
+    document.getElementById('ovProgress').style.width = '30%';
     const response = await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`);
-    setLoadingProgress(50,'데이터 수신 및 파싱 중...');
+    document.getElementById('ovProgress').style.width = '60%';
     const json = await response.json();
-    if(json.status!=='ok') throw new Error('API 오류');
-    
     SCHEDULE_DATA = json.schedule || [];
-    EVAL_DATA=(json.eval||[]).map(row=>{
-      const year=String(row['연도']||'').trim(); const qtr=String(row['분기']||'').trim();
-      const qtrF=qtr.startsWith('Q')?qtr:'Q'+qtr;
-      return{q:`${year}-${qtrF}`, year, qtr:qtrF, name:String(row['성명']||'').trim(),
-        vals:[parseFloat(row['적극성'])||0,parseFloat(row['생산성'])||0,parseFloat(row['전문성'])||0,parseFloat(row['창의성'])||0,parseFloat(row['협업능력'])||0]};
+    EVAL_DATA=(json.eval||[]).map(r=>{
+      const qtr=String(r['분기']).trim(); const qF=qtr.startsWith('Q')?qtr:'Q'+qtr;
+      return { q: `${r['연도']}-${qF}`, name: String(r['성명']).trim(), vals: [parseFloat(r['적극성'])||0,parseFloat(r['생산성'])||0,parseFloat(r['전문성'])||0,parseFloat(r['창의성'])||0,parseFloat(r['협업능력'])||0] };
     }).filter(d=>d.name&&d.q);
-    
-    RAW=(json.work||[]).filter(row=>row.name&&row.date&&row.min>0).map(row=>({
-      name:String(row.name||'').trim(), pos:String(row.pos||'').trim(),
-      date:String(row.date||'').slice(0,10), cat:String(row.cat||'미분류').trim(),
-      sub:String(row.sub||'기타').trim(), min:parseInt(row.min)||0,
-      week: (function(){
-        const d = new Date(row.date); d.setHours(0,0,0,0); d.setDate(d.getDate() + 3 - (d.getDay()||7));
-        const yStart = new Date(d.getFullYear(),0,1);
-        return d.getFullYear() + '-W' + Math.ceil((((d - yStart) / 86400000) + 1)/7).toString().padStart(2, '0');
-      })()
+    RAW=(json.work||[]).filter(r=>r.name&&r.date&&r.min>0).map(r=>({
+      name:String(r.name).trim(), pos:String(r.pos||'').trim(), date:String(r.date).slice(0,10), cat:String(r.cat||'미분류').trim(), sub:String(r.sub||'기타').trim(), min:parseInt(r.min)||0,
+      week: (function(){ const d=new Date(r.date); d.setHours(0,0,0,0); d.setDate(d.getDate()+3-(d.getDay()||7)); return d.getFullYear()+'-W'+Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7).toString().padStart(2,'0'); })()
     }));
-
-    // ✨ 글로벌 정렬 순서 강제 적용 (윤진관, 이혜인B, 정인태, 김효언)
     const targetOrder = ['윤진관', '이혜인B', '정인태', '김효언'];
-    const memberSet=new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]);
-    MEMBERS=Array.from(memberSet).filter(n=>n);
-    MEMBERS.sort((a, b) => {
-        const idxA = targetOrder.indexOf(a); const idxB = targetOrder.indexOf(b);
-        return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
+    MEMBERS = Array.from(new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)])).filter(n=>n).sort((a,b)=>{
+        const iA = targetOrder.indexOf(a); const iB = targetOrder.indexOf(b); return (iA!==-1?iA:99)-(iB!==-1?iB:99);
     });
-
-    MEMBERS.forEach((name,idx)=>{
-      MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length];
-      INITIALS[name]=name.length>=3 ? name.substring(1,3) : name;
-    });
-
-    setLoadingProgress(85,'대시보드 UI 렌더링 중...');
-    initSlider();
-    renderGlobalDropdown();
-    renderAllViews();
+    MEMBERS.forEach((name,idx)=>{ MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length]; INITIALS[name]=name.length>=3?name.substring(1,3):name; });
     
-    setLoadingProgress(100,'로딩 완료!');
-    const sp = document.getElementById('ovSpinner'); if(sp) sp.style.display='none';
-    const pw = document.getElementById('ovProgressWrap'); if(pw) pw.style.display='none';
-    const btn = document.getElementById('ovEnterBtn'); if(btn) btn.style.display='block';
-  }catch(err){
-    document.getElementById('ovMsg').innerHTML = `<span style="color:#ff8585;">❌ 연결 실패: ${err.message}</span>`;
+    document.getElementById('ovProgress').style.width = '100%';
+    initSlider(); renderCustomDropdown(); updateNavSlider(); renderAllViews();
+    
+    setTimeout(() => {
+        document.getElementById('ovSpinner').style.display='none';
+        document.getElementById('ovProgressWrap').style.display='none';
+        document.getElementById('ovMsg').style.display='none';
+        document.getElementById('ovEnterBtn').style.display='block';
+    }, 500);
+  }catch(err){ document.getElementById('ovMsg').innerHTML = `<span style="color:#ff8585;">❌ 연결 실패: ${err.message}</span>`; }
+}
+
+function hideLoadingOverlay(){
+  const el = document.getElementById('loadingOverlay');
+  if(el){ el.style.opacity='0'; setTimeout(()=>el.style.display='none', 500); }
+}
+
+/* ✨ Nav Slider Animation */
+function updateNavSlider() {
+  const active = document.querySelector('.nav-item.active');
+  const slider = document.getElementById('navSlider');
+  if(active && slider) {
+    slider.style.width = active.offsetWidth + 'px';
+    slider.style.left = active.offsetLeft + 'px';
   }
 }
-
-// ✨ 글로벌 드롭다운 렌더링 (전체 포함, MEMBER 글자 삭제)
-function renderGlobalDropdown() {
-    const select = document.getElementById('globalMemberSelect');
-    if(!select) return;
-    const targetOrder = ['윤진관', '이혜인B', '정인태', '김효언'];
-    let html = `<option value="ALL" ${GLOBAL_MEMBER === 'ALL' ? 'selected' : ''}>전체 보기</option>`;
-    targetOrder.forEach(name => {
-        if(MEMBERS.includes(name)) html += `<option value="${name}" ${name === GLOBAL_MEMBER ? 'selected' : ''}>${name}</option>`;
-    });
-    MEMBERS.forEach(name => {
-        if(!targetOrder.includes(name)) html += `<option value="${name}" ${name === GLOBAL_MEMBER ? 'selected' : ''}>${name}</option>`;
-    });
-    select.innerHTML = html;
-}
-
-function selectGlobalMember(val) {
-    GLOBAL_MEMBER = val;
-    const activeViewId = document.querySelector('.view-section.active').id;
-    if(activeViewId === 'view-members') {
-        renderWorkingSidebar();
-        renderWorkingDetail(val);
-    } else if (activeViewId === 'view-kpieval') {
-        renderEvalTab();
-    }
-}
-
 function showView(view, navEl) {
   document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('view-' + view).classList.add('active');
   navEl.classList.add('active');
+  updateNavSlider();
   
-  if(view === 'members') {
-      renderWorkingSidebar();
-      renderWorkingDetail(GLOBAL_MEMBER);
-  }
-  else if(view === 'kpieval') renderEvalTab();
-  else renderDashboardTab();
+  if(view === 'members') { renderWorkingTab(GLOBAL_MEMBER); }
+  else if(view === 'kpieval') { renderEvalTab(); }
+  else { renderDashboardTab(); }
 }
 
-function renderAllViews() {
-    renderDashboardTab();
-    renderWorkingSidebar();
-    renderWorkingDetail(GLOBAL_MEMBER);
-    renderEvalTab();
+/* ✨ 커스텀 드롭다운 로직 */
+function renderCustomDropdown() {
+    const opts = document.getElementById('customSelectOptions');
+    let html = `<div class="custom-option" onclick="selectGlobalMember('ALL')"><div class="avatar-sm" style="background:#00428E;">A</div> 전체 보기</div>`;
+    MEMBERS.forEach(name => {
+        html += `<div class="custom-option" onclick="selectGlobalMember('${name}')"><div class="avatar-sm" style="background:${MC[name]};">${INITIALS[name]}</div> ${name}</div>`;
+    });
+    opts.innerHTML = html;
+    updateCustomSelectTrigger();
 }
+function toggleDropdown() { document.getElementById('customSelectOptions').classList.toggle('open'); }
+function selectGlobalMember(val) {
+    GLOBAL_MEMBER = val; document.getElementById('customSelectOptions').classList.remove('open');
+    updateCustomSelectTrigger();
+    const activeId = document.querySelector('.view-section.active').id;
+    if(activeId === 'view-members') renderWorkingTab(val);
+    else if(activeId === 'view-kpieval') renderEvalTab();
+}
+function updateCustomSelectTrigger() {
+    const tg = document.getElementById('customSelectTrigger');
+    if(GLOBAL_MEMBER === 'ALL') tg.innerHTML = `<div class="avatar-sm" style="background:#00428E;">A</div> 전체 보기`;
+    else tg.innerHTML = `<div class="avatar-sm" style="background:${MC[GLOBAL_MEMBER]};">${INITIALS[GLOBAL_MEMBER]}</div> ${GLOBAL_MEMBER}`;
+}
+document.addEventListener('click', (e) => {
+    if(!document.getElementById('globalMemberSelectWrap').contains(e.target)) {
+        document.getElementById('customSelectOptions').classList.remove('open');
+    }
+});
 
-// 필터 로직
+/* ✨ 슬라이더 필터 */
 function initSlider() {
-  const nodesContainer = document.getElementById('nodesContainer');
-  const yearRow = document.getElementById('yearRow');
-  if(!nodesContainer) return;
-  nodesContainer.innerHTML=''; yearRow.innerHTML='';
-  
-  let currentPos = 0; let positions = [];
-  for(let i=0; i<totalNodes; i++) {
-    positions.push(currentPos);
-    if(i < totalNodes-1) currentPos += (i % 4 === 3 ? 1.6 : 1);
-  }
-  percentPositions = positions.map(p => (p / currentPos) * 100);
-
+  const nodesCont = document.getElementById('nodesContainer'); const yearRow = document.getElementById('yearRow');
+  nodesCont.innerHTML=''; yearRow.innerHTML='';
+  let cPos=0; let posArr=[];
+  for(let i=0; i<totalNodes; i++) { posArr.push(cPos); if(i<totalNodes-1) cPos += (i%4===3?1.6:1); }
+  percentPositions = posArr.map(p => (p/cPos)*100);
   filterYears.forEach((y, i) => {
     const el = document.createElement('div'); el.className='year-label'; el.innerText=y;
     el.onclick = () => { window.filterStartIndex=i*4; window.filterEndIndex=i*4+3; updateFilterUI(); };
-    el.style.left = `${(percentPositions[i*4] + percentPositions[i*4+3])/2}%`;
-    yearRow.appendChild(el);
+    el.style.left = `${(percentPositions[i*4] + percentPositions[i*4+3])/2}%`; yearRow.appendChild(el);
   });
-
   for(let i=0; i<totalNodes; i++) {
-    const pct = percentPositions[i];
-    const n = document.createElement('div'); n.className='node'; n.style.left=`${pct}%`;
+    const n = document.createElement('div'); n.className='node'; n.style.left=`${percentPositions[i]}%`;
     n.onclick = (e) => {
       if(e.shiftKey) { window.filterStartIndex = Math.min(window.lastClickedIndex, i); window.filterEndIndex = Math.max(window.lastClickedIndex, i); }
       else { window.filterStartIndex = window.filterEndIndex = window.lastClickedIndex = i; }
       updateFilterUI();
     };
-    nodesContainer.appendChild(n);
+    nodesCont.appendChild(n);
   }
   updateFilterUI();
 }
-function resetFilter() { window.filterStartIndex=0; window.filterEndIndex=totalNodes-1; H.dashSub = null; H.dpSub = null; updateFilterUI(); }
+function resetFilter() { window.filterStartIndex=0; window.filterEndIndex=totalNodes-1; updateFilterUI(); }
 function updateFilterUI() {
   const nodes = document.querySelectorAll('.node');
   nodes.forEach((n,i) => {
     n.className = 'node';
     if(i>=filterStartIndex && i<=filterEndIndex) {
-      n.classList.add('active');
-      if(i===filterStartIndex || i===filterEndIndex) n.classList.add('endpoint');
+      n.classList.add('active'); if(i===filterStartIndex || i===filterEndIndex) n.classList.add('endpoint');
     }
   });
   document.getElementById('trackActive').style.left = `${percentPositions[filterStartIndex]}%`;
@@ -728,787 +628,504 @@ function updateFilterUI() {
   
   if(RAW.length>0) renderAllViews();
 }
+function renderAllViews() {
+    renderDashboardTab();
+    if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(GLOBAL_MEMBER);
+    if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab();
+}
 
-// ----------------------------------------------------
-// 1. [Project] 탭
-// ----------------------------------------------------
+/* ==========================================
+   1. [Project] 탭
+========================================== */
 function renderDashboardTab() {
-  if(document.getElementById('view-dashboard').style.display === 'none') return;
   const all=filtered(); if(!all.length) return;
   const totalMin=all.reduce((s,r)=>s+r.min,0); const mos=getMos(all);
   
-  const grid=document.getElementById('topKpiGrid'); if(!grid) return; grid.innerHTML='';
-  const totalCard = document.createElement('div'); totalCard.className='card kpi-card';
-  totalCard.innerHTML = `<div class="card-section-title">${I_CLOC} 총 투입시간</div><div class="card-value">${formatHour(totalMin)}h</div><div class="card-sub">선택기간 중 ${mos.length}개월 | ${MEMBERS.length}명 참여</div>`;
-  grid.appendChild(totalCard);
-  
+  // 1-1. Top Grid
+  const grid=document.getElementById('topKpiGrid'); grid.innerHTML='';
+  const totC = document.createElement('div'); totC.className='card kpi-card';
+  totC.innerHTML = `<div class="card-section-title">${I_CLOC} 총 투입시간</div><div class="card-value">${formatHour(totalMin)}h</div><div class="card-sub">선택기간 중 ${mos.length}개월 | ${MEMBERS.length}명 참여</div>`;
+  grid.appendChild(totC);
   MEMBERS.forEach(name => {
-    const d=all.filter(r=>r.name===name); const tot=d.reduce((s,r)=>s+r.min,0); const pct=totalMin>0?Math.round(tot/totalMin*100):0;
-    const c=MC[name];
+    const tot=all.filter(r=>r.name===name).reduce((s,r)=>s+r.min,0); const pct=totalMin>0?Math.round(tot/totalMin*100):0;
     const mc = document.createElement('div'); mc.className='card kpi-card';
-    mc.innerHTML = `<div class="member-kpi-header"><div style="font-size:16px;font-weight:900;color:#1e293b;">${name}</div><div class="member-kpi-photo" style="background:${c};">${INITIALS[name]}</div></div>
-      <div class="card-value" style="color:${c};">${formatHour(tot)}h</div>
-      <div class="progress-wrap"><div class="progress-label"><span>기여율</span><span>${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="background:${c};width:${pct}%"></div></div></div>`;
+    mc.innerHTML = `<div class="member-kpi-header"><div style="font-size:16px;font-weight:900;color:#1e293b;">${name}</div><div class="member-kpi-photo" style="background:${MC[name]};">${INITIALS[name]}</div></div>
+      <div class="card-value" style="color:${MC[name]};">${formatHour(tot)}h</div>
+      <div class="progress-wrap"><div class="progress-label"><span>기여율</span><span>${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="background:${MC[name]};width:${pct}%"></div></div></div>`;
     grid.appendChild(mc);
   });
 
-  renderDashStage(all); renderDashCompare(all); renderDashDonutAndTop5(all, H.dashSub); renderDashHeat(all); renderCVAndBubble(all); renderDashTimeline(all, mos);
+  // 1-2. Stage & Compare Chart (클릭 하이라이트 기능 추가)
+  renderDashStage(all); renderDashCompare(all);
+  // 1-3. Donut & Timeline
+  renderDashDonutAndTop5(all); renderDashTimeline(all, mos);
+  // 1-4. Heatmap & Overtime Row
+  renderDashHeat(all); renderDashOvertimeBars(all); renderDashOvertimeDonut(all);
+  // 1-5. CV & Bubble
+  renderCVAndBubble(all);
 }
 
 function renderDashStage(all) {
-  const canvas = document.getElementById('stageChart'); if(!canvas) return; destroyChart('stage');
+  destroyChart('stage');
   const catMap=grpMin(all,'cat'); const tot=Object.values(catMap).reduce((a,b)=>a+b,0);
   const data = CAT_ORDER.map(c => tot>0?Math.round((catMap[c]||0)/tot*100):0);
-  CH.stage=new Chart(canvas.getContext('2d'),{
+  CH.stage = new Chart(document.getElementById('stageChart').getContext('2d'),{
     type:'bar', data:{labels:[''], datasets:CAT_ORDER.map((c,i)=>({label:c, data:[data[i]], backgroundColor:CAT_COLORS[i]}))},
     options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:12}}, datalabels:{color:'#fff', font:{weight:'bold'}, formatter:v=>v>5?v+'%':''}}, scales:{x:{stacked:true,display:false}, y:{stacked:true,display:false}}}
   });
 }
+
 function renderDashCompare(all) {
-  const canvas = document.getElementById('compareChart'); if(!canvas) return; destroyChart('compare');
-  const dss = MEMBERS.map(name => ({
-    label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor:MC[name], borderRadius:4
-  }));
-  CH.compare=new Chart(canvas.getContext('2d'),{
+  destroyChart('compare');
+  const dss = MEMBERS.map(name => {
+      const isHl = hlCompare === null || hlCompare === name;
+      return {
+        label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))),
+        backgroundColor: isHl ? MC[name] : '#e2e8f0', borderRadius:4
+      };
+  });
+  CH.compare = new Chart(document.getElementById('compareChart').getContext('2d'),{
     type:'bar', data:{labels:CAT_ORDER, datasets:dss},
-    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true, position:'bottom', labels:{boxWidth:10, font:{size:11}}}, datalabels:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'#f1f5f9'}}}}
+    options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:true, position:'bottom', labels:{boxWidth:10}, onClick: (e, item, legend) => { hlCompare = hlCompare === item.text ? null : item.text; renderDashCompare(filtered()); }}, datalabels:{display:false}},
+        scales:{x:{grid:{display:false}}, y:{grid:{color:'#f1f5f9'}}},
+        onClick: (e, els) => {
+            if(els.length) { const n = CH.compare.data.datasets[els[0].datasetIndex].label; hlCompare = hlCompare === n ? null : n; renderDashCompare(filtered()); }
+            else { hlCompare = null; renderDashCompare(filtered()); }
+        }
+    }
   });
 }
 
-// ✨ 분류별 업무(도넛) + TOP5 통합 함수
-function renderDashDonutAndTop5(all, hl) {
-   const subMap = grpMin(all, 'sub');
-   const tot = Object.values(subMap).reduce((a,b)=>a+b,0);
+function renderDashDonutAndTop5(all) {
+   const subMap = grpMin(all, 'sub'); const tot = Object.values(subMap).reduce((a,b)=>a+b,0);
    const topArr = Object.entries(subMap).sort((a,b)=>b[1]-a[1]);
-   const donutTop = topArr.slice(0, 8); 
-   const listTop = topArr.slice(0, 5);  
-
-   const dc = document.getElementById('donutCenter'); if(dc) dc.innerText = formatHour(tot) + 'h';
-
-   // TOP 5 리스트 렌더링
-   const listEl = document.getElementById('top5List');
-   if(listEl) {
-       listEl.innerHTML = listTop.map(([k,v], i) => {
-          const isHL = hl === k; const isDim = hl && hl !== k;
-          return `<li class="top5-rank-item ${isHL?'highlighted':''} ${isDim?'dimmed':''}" onclick="dashClickSub('${k}')">
-             <div class="top5-rank-badge" style="background:${SUB_PAL[i%SUB_PAL.length]};">${i+1}</div>
-             <span class="top5-rank-name" style="color:${isHL?SUB_PAL[i%SUB_PAL.length]:'#1e293b'}">${k}</span>
-             <strong style="color:${C_PRI};">${formatHour(v)}h</strong>
-          </li>`;
-       }).join('');
-   }
-
-   // 도넛 렌더링
-   const canvas = document.getElementById('donutChart'); if(!canvas) return; destroyChart('donut');
-   const labels = donutTop.map(x=>x[0]);
-   const data = donutTop.map(x=>mToH(x[1]));
-   const baseColors = labels.map((_,i)=>SUB_PAL[i%SUB_PAL.length]);
-   const bgColors = hl ? labels.map((l,i)=> l===hl ? baseColors[i] : baseColors[i]+'44') : baseColors;
-
-   CH.donut = new Chart(canvas.getContext('2d'), {
-      type: 'doughnut',
-      data: { labels, datasets: [{ data, backgroundColor: bgColors, borderWidth:2, borderColor:'#fff', hoverOffset:4 }] },
-      options: {
-         responsive: true, maintainAspectRatio: false, cutout: '60%', layout:{padding:20},
-         plugins: {
-            legend: { display: false },
-            datalabels: {
-               display: (ctx) => ctx.dataIndex < 5,
-               color: (ctx) => hl && labels[ctx.dataIndex] !== hl ? 'rgba(148,163,184,0.3)' : '#1e293b',
-               font: { size: 10, weight: '800' },
-               formatter: (val, ctx) => {
-                  const p = Math.round(val / mToH(tot) * 100);
-                  return `${labels[ctx.dataIndex]}\n${formatNum(val)}h (${p}%)`;
-               },
-               anchor: 'end', align: 'end', textAlign: 'center'
-            },
-            tooltip: { backgroundColor:'rgba(30,41,59,.95)', callbacks: { label: c => `${c.label}: ${formatNum(c.parsed)}h` } }
-         },
-         onClick: (e, els) => { if(els.length) dashClickSub(labels[els[0].index]); }
-      }
+   document.getElementById('donutCenter').innerText = formatHour(tot) + 'h';
+   document.getElementById('top5List').innerHTML = topArr.slice(0, 5).map(([k,v], i) => `
+      <li class="top5-rank-item">
+         <div class="top5-rank-badge" style="background:${SUB_PAL[i]};">${i+1}</div>
+         <span class="top5-rank-name">${k}</span><strong style="color:#00428E;">${formatHour(v)}h</strong>
+      </li>`).join('');
+   
+   destroyChart('donut');
+   CH.donut = new Chart(document.getElementById('donutChart').getContext('2d'), {
+      type: 'doughnut', data: { labels: topArr.slice(0,8).map(x=>x[0]), datasets: [{ data: topArr.slice(0,8).map(x=>mToH(x[1])), backgroundColor: SUB_PAL, borderWidth:2, borderColor:'#fff' }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '65%', layout:{padding:25}, plugins: { legend: { display: false }, datalabels: { display: ctx=>ctx.dataIndex<5, color:'#1e293b', font:{size:10,weight:'800'}, formatter:(v,ctx)=>`${ctx.chart.data.labels[ctx.dataIndex]}\n${formatNum(v)}h`, anchor:'end', align:'end' } } }
    });
 }
 
-function dashClickSub(sub){
-    H.dashSub = H.dashSub === sub ? null : sub;
-    renderDashDonutAndTop5(filtered(), H.dashSub);
-    if(GLOBAL_MEMBER && GLOBAL_MEMBER !== 'ALL' && document.getElementById('memberDetailView')?.style.display === 'block') {
-        H.dpSub = H.dashSub;
-        renderDpStackedHighlight();
-    }
+function renderDashTimeline(all, mos) {
+  destroyChart('timeline'); const ctx = document.getElementById('timelineChart').getContext('2d');
+  const dss=MEMBERS.map(name=>{
+    const moMap={}; all.filter(r=>r.name===name).forEach(r=>{moMap[r.date.slice(0,7)]=(moMap[r.date.slice(0,7)]||0)+r.min;});
+    const c=MC[name]; const grad=ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,c+'88'); grad.addColorStop(1,c+'00');
+    const isHl = hlTimeline === null || hlTimeline === name;
+    return{ type:'line', label:name, data:mos.map(m=>mToH(moMap[m]||0)), borderColor:isHl?c:'#e2e8f0', backgroundColor:isHl?grad:'transparent', borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:isHl?c:'#e2e8f0', pointRadius:isHl?3:0, pointHoverRadius:5, order:isHl?1:2 };
+  });
+  
+  const lgWrap = document.getElementById('timelineLegendWrap');
+  lgWrap.innerHTML = MEMBERS.map(n => `<div class="legend-item ${hlTimeline!==null && hlTimeline!==n ? 'dimmed':''}" onclick="dashToggleTimeline('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
+
+  CH.timeline=new Chart(ctx,{ type:'line',data:{labels:mos,datasets:dss}, options:{responsive:true,maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{display:false}, datalabels:{display:false}}, scales:{x:{grid:{display:false}},y:{grid:{color:'#f1f5f9'}}} } });
 }
+function dashToggleTimeline(name) { hlTimeline = hlTimeline === name ? null : name; renderDashTimeline(filtered(), getMos(filtered())); }
 
 function renderDashHeat(all) {
-  const years=[...new Set(all.map(r=>r.date.slice(0,4)))].sort(); if(!years.length)return;
-  const targetYear = years[years.length-1];
-  const tabs = document.getElementById('heatYearTabs'); if(!tabs) return;
-  tabs.innerHTML = `<button class="tab-btn-sm active">${targetYear}년</button>`;
-  drawHeatmap(all, targetYear, 'heatTable', C_PRI);
-}
-function drawHeatmap(data, year, tableId, color) {
-  const table = document.getElementById(tableId); if(!table) return;
-  table.innerHTML='';
-  const dailyMap = {}; data.filter(r=>r.date.startsWith(year+'-')).forEach(r => { dailyMap[r.date] = (dailyMap[r.date] || 0) + r.min; });
-  const mat = Array.from({length:5},()=>new Array(12).fill(0));
-  const hasMo = new Array(12).fill(false);
-  let maxV = 1;
-  for (let date in dailyMap) {
-    const sum = dailyMap[date]; const p = date.split('-'); const mo = parseInt(p[1])-1, day = parseInt(p[2]);
-    const fd = new Date(parseInt(year), mo, 1).getDay(); const wk = Math.ceil((day+fd)/7)-1;
-    if(wk>=0 && wk<5) { mat[wk][mo] += sum; hasMo[mo] = true; if(mat[wk][mo]>maxV) maxV=mat[wk][mo]; }
-  }
-  let thead = '<thead><tr><th style="width:30px;"></th>';
-  MONTH_KO.forEach((lbl,mi) => { thead += `<th style="color:${hasMo[mi]?color:'#cbd5e1'}; font-weight:${hasMo[mi]?'800':'500'};">${lbl}</th>`; });
-  thead += '</tr></thead>';
-  let tbody = '<tbody>';
+  const targetYear = [...new Set(all.map(r=>r.date.slice(0,4)))].sort().pop() || '2024';
+  document.getElementById('heatYearTabs').innerHTML = `<button class="tab-btn-sm active">${targetYear}년</button>`;
+  const dailyMap = {}; all.filter(r=>r.date.startsWith(targetYear+'-')).forEach(r => dailyMap[r.date] = (dailyMap[r.date] || 0) + r.min);
+  const mat = Array.from({length:5},()=>new Array(12).fill(0)); const hasMo = new Array(12).fill(false); let maxV = 1;
+  for (let d in dailyMap) { const sum = dailyMap[d]; const p = d.split('-'); const mo = parseInt(p[1])-1, day = parseInt(p[2]); const fd = new Date(parseInt(targetYear), mo, 1).getDay(); const wk = Math.ceil((day+fd)/7)-1; if(wk>=0 && wk<5) { mat[wk][mo] += sum; hasMo[mo] = true; if(mat[wk][mo]>maxV) maxV=mat[wk][mo]; } }
+  
+  let th = '<thead><tr><th style="width:30px;"></th>'; MONTH_KO.forEach((l,i) => th+=`<th style="color:${hasMo[i]?'#00428E':'#cbd5e1'}; font-weight:${hasMo[i]?'800':'500'};">${l}</th>`); th+='</tr></thead>';
+  let tb = '<tbody>';
   for(let w=0; w<5; w++){
-    tbody += `<tr><td style="font-size:10px; font-weight:700; color:#94a3b8; text-align:right; padding-right:6px;">${w+1}주</td>`;
+    tb += `<tr><td style="font-size:10px; font-weight:700; color:#94a3b8; text-align:right; padding-right:6px;">${w+1}주</td>`;
     for(let mo=0; mo<12; mo++){
-      const v = mat[w][mo];
-      if(!hasMo[mo]) tbody += `<td><div class="hm-cell" style="background:#f8fafc;opacity:0.5;"></div></td>`;
-      else if(v<=0) tbody += `<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`;
-      else {
-        const ratio = v/maxV; const bg = hexRgba(color, 0.2 + ratio*0.8);
-        const txtColor = ratio > 0.4 ? '#fff' : '#1e293b';
-        tbody += `<td><div class="hm-cell" style="background:${bg}; color:${txtColor};" title="${year}년 ${mo+1}월 ${w+1}주차: ${formatHour(v)}h">${formatHour(v)}</div></td>`;
-      }
+      if(!hasMo[mo]) tb += `<td><div class="hm-cell" style="background:#f8fafc;opacity:0.5;"></div></td>`;
+      else if(mat[w][mo]<=0) tb += `<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`;
+      else tb += `<td><div class="hm-cell" style="background:${hexRgba('#00428E', 0.2 + (mat[w][mo]/maxV)*0.8)}; color:${(mat[w][mo]/maxV)>0.4?'#fff':'#1e293b'};" title="${formatHour(mat[w][mo])}h">${formatHour(mat[w][mo])}</div></td>`;
     }
-    tbody += '</tr>';
+    tb += '</tr>';
   }
-  table.innerHTML = thead + tbody + '</tbody>';
+  document.getElementById('heatTable').innerHTML = th + tb + '</tbody>';
+}
+
+function renderDashOvertimeBars(all) {
+    destroyChart('dashOvertimeBarChart');
+    const dateMap = {}; all.forEach(r => { dateMap[r.date] = (dateMap[r.date] || 0) + r.min; });
+    let counts = [0, 0, 0, 0];
+    for(let d in dateMap) { const m = dateMap[d]; if(m>=540 && m<600) counts[0]++; else if(m>=600 && m<660) counts[1]++; else if(m>=660 && m<720) counts[2]++; else if(m>=720) counts[3]++; }
+    CH.dashOvertimeBarChart = new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'), {
+        type: 'bar', data: { labels: ['9~10h', '10~11h', '11~12h', '12h 이상'], datasets: [{ data: counts, backgroundColor: ['#fde047', '#f97316', '#ef4444', '#b91c1c'], borderRadius: 4 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, color: '#1e293b', font:{weight:'bold'}, anchor: 'end', align: 'right', formatter: v=>v>0?v+'일':'' } }, scales: { x: { display: false, grace: '15%' }, y: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } } } }
+    });
+}
+
+function renderDashOvertimeDonut(all) {
+    destroyChart('dashOvertimeDonutChart');
+    let data = [];
+    MEMBERS.forEach(n => {
+        const pDates = {}; all.filter(r=>r.name===n).forEach(r => pDates[r.date] = (pDates[r.date]||0) + r.min);
+        let otDays = 0; for(let d in pDates) { if(pDates[d] >= 540) otDays++; }
+        if(otDays > 0) data.push({ name: n, days: otDays });
+    });
+    data.sort((a,b)=>b.days-a.days);
+    const totOt = data.reduce((a,b)=>a+b.days,0);
+    document.getElementById('dashDonutCenterTxt').innerHTML = `<div style="font-size:20px;font-weight:900;color:#ef4444;">${totOt}일</div><div style="font-size:10px;color:#94a3b8;">총 초과근무</div>`;
+    
+    CH.dashOvertimeDonutChart = new Chart(document.getElementById('dashOvertimeDonutChart').getContext('2d'), {
+        type: 'doughnut', data: { labels: data.map(d=>d.name), datasets: [{ data: data.map(d=>d.days), backgroundColor: data.map(d=>MC[d.name]), borderWidth: 2, borderColor:'#fff' }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels:{boxWidth:10, font:{size:11}} }, datalabels: { display: true, color: '#fff', font:{weight:'bold'}, formatter: v => v+'일' } } }
+    });
 }
 
 function renderCVAndBubble(all) {
-  const cvCanvas = document.getElementById('cvTimeScatterChart'); const bubCanvas = document.getElementById('shannonHhiBubbleChart');
-  if(!cvCanvas || !bubCanvas) return; destroyChart('cvTimeScatterChart'); destroyChart('shannonHhiBubbleChart');
+  destroyChart('cvTimeScatterChart'); destroyChart('shannonHhiBubbleChart');
   const dates = [...new Set(all.map(r => r.date))].sort();
   const dailyMins = {}; all.forEach(r => { dailyMins[r.date] = (dailyMins[r.date]||0) + r.min; });
+  const calcCV = (values) => { const m = values.reduce((a,b)=>a+b, 0)/values.length; return m===0 ? 0 : Math.sqrt(values.reduce((a,b)=>a+Math.pow(b-m, 2), 0)/values.length)/m; };
   
-  const calcCV = (values) => {
-    if (!values || values.length === 0) return null;
-    const mean = values.reduce((a,b)=>a+b, 0) / values.length;
-    if (mean === 0) return 0;
-    const variance = values.reduce((a,b)=>a + Math.pow(b - mean, 2), 0) / values.length;
-    return Math.sqrt(variance) / mean;
-  };
+  const cvData = dates.map((d, idx) => { let wVals = []; for(let i=0; i<7; i++) { if(idx-i>=0) wVals.push(dailyMins[dates[idx-i]] || 0); } return { x: d, y: wVals.every(v=>v===0) ? null : calcCV(wVals) }; }).filter(p=>p.y!==null);
+  const avgCV = cvData.length > 0 ? (cvData.reduce((a,b)=>a+b.y,0)/cvData.length) : 0;
+  
+  // 🔴 주요일정 마커 오버레이
+  const schPoints = dates.filter(d => SCHEDULE_DATA.some(s => s.date === d)).map(d => ({ x: d, y: cvData.find(c=>c.x===d)?.y || avgCV, rawTitle: SCHEDULE_DATA.find(s=>s.date===d)?.title }));
 
-  const cvData = dates.map((d, idx) => {
-    let windowVals = [];
-    for(let i = 0; i < 7; i++) { if(idx - i >= 0) windowVals.push(dailyMins[dates[idx - i]] || 0); }
-    return { x: d, y: windowVals.every(v=>v===0) ? null : calcCV(windowVals) };
-  });
-
-  const validCVs = cvData.filter(pt => pt.y !== null).map(pt=>pt.y);
-  const avgCV = validCVs.length > 0 ? (validCVs.reduce((a,b)=>a+b,0)/validCVs.length) : 0;
-
-  CH.cvTimeScatterChart = new Chart(cvCanvas.getContext('2d'), {
-    type: 'line',
+  CH.cvTimeScatterChart = new Chart(document.getElementById('cvTimeScatterChart').getContext('2d'), {
     data: {
       datasets: [
-        { label: '전체 변동성(CV)', data: cvData, borderColor: C_SEC, backgroundColor: hexRgba(C_SEC,0.2), borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0, order: 2 },
-        { label: 'CV 평균선', data: [{x:dates[0], y:avgCV}, {x:dates[dates.length-1], y:avgCV}], borderColor: '#94a3b8', borderWidth: 1.5, borderDash: [5,5], pointRadius: 0, order: 3 }
+        { type:'bubble', label: '주요일정', data: schPoints, backgroundColor: '#ef4444', borderColor:'#fff', borderWidth:2, radius: 6, hoverRadius: 8, order: 1 },
+        { type:'line', label: 'CV', data: cvData, borderColor: '#4A90E2', backgroundColor: hexRgba('#4A90E2',0.2), borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0, order: 2 },
+        { type:'line', label: 'CV 평균선', data: [{x:dates[0], y:avgCV}, {x:dates[dates.length-1], y:avgCV}], borderColor: '#94a3b8', borderWidth: 1.5, borderDash: [5,5], pointRadius: 0, order: 3 }
       ]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }, y: { grid: { color: '#f1f5f9' }, min: 0 } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip:{ callbacks:{ label: c => c.dataset.label==='주요일정' ? `[마감] ${c.raw.rawTitle}` : `CV: ${c.raw.y.toFixed(2)}` } } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }, y: { grid: { color: '#f1f5f9' }, min: 0 } } }
   });
 
   const weeks = [...new Set(all.map(r => r.week))].sort();
   const bubbleData = weeks.map(w => {
-      const dWk = all.filter(r => r.week === w);
-      if(dWk.length === 0) return null;
-      const totMin = dWk.reduce((s,r) => s+r.min, 0);
-      const sMap = grpMin(dWk, 'sub');
-      let hhiSum = 0; let shannon = 0;
-      Object.values(sMap).forEach(v => { const p = v / totMin; hhiSum += p * p; if (p > 0) shannon -= p * Math.log(p); });
-      
-      const dailyT = {}; dWk.forEach(r => { dailyT[r.date] = (dailyT[r.date]||0) + r.min; });
-      const vals = [0,0,0,0,0]; Object.values(dailyT).forEach((m, i) => { if(i<5) vals[i]=m; });
-      const wkCV = calcCV(vals) || 0.1;
-      
-      return { x: 1 - hhiSum, y: shannon, r: Math.max(wkCV * 15, 4), cvRaw: wkCV, wk: w, time: formatHour(totMin) };
-  }).filter(x => x !== null);
-
-  CH.shannonHhiBubbleChart = new Chart(bubCanvas.getContext('2d'), {
-    type: 'bubble', data: { datasets: [{ label: '주차별 다양성', data: bubbleData, backgroundColor: hexRgba(C_PRI, 0.6), borderColor: C_PRI, borderWidth: 1 }] },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, quadPlugin: { active: true }, datalabels: { display: false }, tooltip: { callbacks: { label: c => `다양성(1-HHI): ${c.raw.x.toFixed(2)}, Shannon: ${c.raw.y.toFixed(2)}, CV: ${c.raw.cvRaw.toFixed(2)}` } } },
-      scales: { x: { title: { display: true, text: '집중도(HHI) (독점→)' }, min: 0, max: 1.0 }, y: { title: { display: true, text: '다양성(SHANNON) (복잡→)' }, min: 0 } }
-    }
+      const dWk = all.filter(r => r.week === w); if(!dWk.length) return null;
+      const tMin = dWk.reduce((s,r) => s+r.min, 0); const sMap = grpMin(dWk, 'sub');
+      let hhi = 0, shan = 0; Object.values(sMap).forEach(v => { const p = v/tMin; hhi += p*p; if(p>0) shan -= p*Math.log(p); });
+      const wkCV = calcCV([0,1,2,3,4].map(i => Object.values(grpMin(dWk, 'date'))[i]||0)) || 0.1;
+      return { x: 1-hhi, y: shan, r: Math.max(wkCV*15, 4), cvRaw: wkCV };
+  }).filter(x => x!==null);
+  
+  CH.shannonHhiBubbleChart = new Chart(document.getElementById('shannonHhiBubbleChart').getContext('2d'), {
+    type: 'bubble', data: { datasets: [{ data: bubbleData, backgroundColor: hexRgba('#00428E', 0.6), borderColor: '#00428E' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, quadPlugin: { active: true }, datalabels: { display: false }, tooltip: { callbacks: { label: c => `다양성(1-HHI): ${c.raw.x.toFixed(2)}, Shannon: ${c.raw.y.toFixed(2)}, CV: ${c.raw.cvRaw.toFixed(2)}` } } }, scales: { x: { title: { display: true, text: '집중도(HHI) (독점→)' }, min: 0, max: 1.0 }, y: { title: { display: true, text: '다양성(SHANNON) (복잡→)' }, min: 0 } } }
   });
 }
 
-function renderDashTimeline(all, mos){
-  const canvas = document.getElementById('timelineChart'); if(!canvas) return; destroyChart('timeline'); const ctx = canvas.getContext('2d');
-  const dss=MEMBERS.map(name=>{
-    const moMap={};all.filter(r=>r.name===name).forEach(r=>{const mo=r.date.slice(0,7);moMap[mo]=(moMap[mo]||0)+r.min;}); 
-    const c=MC[name]; const grad=ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,c+'88'); grad.addColorStop(1,c+'00');
-    return{type:'line', label:name, data:mos.map(m=>mToH(moMap[m]||0)), borderColor:c, backgroundColor:grad, borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:c, pointRadius:3, pointHoverRadius:5};
-  });
-  const tl = document.getElementById('timelineLegend'); if(tl) tl.innerHTML=MEMBERS.map(n=>`<div class="legend-item"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
-  CH.timeline=new Chart(ctx,{ type:'line',data:{labels:mos,datasets:dss}, options:{responsive:true,maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{display:false}, datalabels:{display:false}}, scales:{x:{grid:{display:false}},y:{grid:{color:'#f1f5f9'}}} } });
-}
-
-// ----------------------------------------------------
-// 2. [Working] 탭 (스플릿 뷰 구성)
-// ----------------------------------------------------
-function renderWorkingTab() {
-    renderWorkingSidebar();
-    renderWorkingDetail(GLOBAL_MEMBER);
-}
-
-function renderWorkingSidebar() {
-    const all = filtered(); const totAll = all.reduce((a,b)=>a+b.min,0);
-    const sidebar = document.getElementById('workingSidebar');
-    if(!sidebar) return; sidebar.innerHTML = '';
+/* ==========================================
+   2. [Working] 탭 (Full width) & AI 코칭
+========================================== */
+function generateCoachingMessage(name, d, isAll) {
+    if(isAll) return `${I_AI} <strong>전체 팀원 인사이트:</strong> 각 팀원들의 특성을 파악하여 적절한 업무 분배와 일정 관리를 진행해 주세요.`;
+    const otDates = new Set(); d.forEach(r=>{ if(r.min >= 540) otDates.add(r.date); });
+    const ev = EVAL_DATA.filter(e => e.name === name); const score = ev.length ? ev.reduce((a,b)=>a+b.vals.reduce((c,d)=>c+d,0)/5,0)/ev.length : 3.0;
     
-    MEMBERS.forEach(name => {
-        const d=all.filter(r=>r.name===name); const tot=d.reduce((s,r)=>s+r.min,0); const pct=totAll>0?Math.round(tot/totAll*100):0;
-        const c=MC[name];
-        const isActive = name === GLOBAL_MEMBER;
-        
-        const card = document.createElement('div');
-        card.className = `working-sidebar-card ${isActive ? 'active' : ''}`;
-        card.innerHTML = `
-            <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
-                <div style="background:${c}; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:14px;">${INITIALS[name]}</div>
-                <div>
-                    <div style="font-size:16px; font-weight:900; color:#1e293b;">${name}</div>
-                    <div style="font-size:11px; color:#64748b; font-weight:600;">프로젝트 참여율 ${pct}%</div>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                <div style="font-size:11px; color:#94a3b8; font-weight:700;">총 투입시간</div>
-                <div style="font-size:24px; font-weight:900; color:${isActive ? C_PRI : '#334155'}; line-height:1;">${formatHour(tot)}<span style="font-size:14px;">h</span></div>
-            </div>
-        `;
-        card.onclick = () => { selectGlobalMember(name); };
-        sidebar.appendChild(card);
-    });
+    if (otDates.size > 5) return `${I_AI} <strong>과부하 경고:</strong> 최근 초과근무 일수가 ${otDates.size}일로 높습니다. 번아웃 예방을 위해 업무 조율이 필요합니다.`;
+    if (score >= 4.0) return `${I_AI} <strong>에이스 코칭:</strong> 훌륭한 퍼포먼스를 유지 중입니다! 주력 업무 외에 새로운 설계 단계의 업무를 리드해 보는 것을 추천합니다.`;
+    return `${I_AI} <strong>성장 팁:</strong> 업무 변동성이 안정적입니다. '업무 다양성 분석' 차트의 위치를 확인하고, 부족한 역량을 보완할 수 있는 테스크에 자원해 보세요.`;
 }
 
-function renderWorkingDetail(name) {
-  const isAll = (name === 'ALL');
-  const allData = filtered();
-  const d = isAll ? allData : allData.filter(r=>r.name===name);
-  const tot = d.reduce((s,r)=>s+r.min,0);
-  const mos = getMos(d); const subMap = grpMin(d,'sub');
+function renderWorkingTab(name) {
+  const isAll = (name === 'ALL'); const allData = filtered(); const d = isAll ? allData : allData.filter(r=>r.name===name);
+  const tot = d.reduce((s,r)=>s+r.min,0); const mos = getMos(d); const subMap = grpMin(d,'sub');
   
-  // 1. 요약 프로필 영역
-  const pCard = document.getElementById('workingProfileCard');
-  if(pCard) {
-      const avgMo = mos.length > 0 ? formatNum(mToH(tot) / mos.length) : 0;
-      const moMap = {}; d.forEach(r => { const mo = r.date.slice(0,7); moMap[mo] = (moMap[mo]||0) + r.min; });
-      const pkM = Object.entries(moMap).sort((a,b)=>b[1]-a[1])[0];
-      const dateMap = grpMin(d, 'date'); const pkD = Object.entries(dateMap).sort((a,b)=>b[1]-a[1])[0];
-      const top3Subs = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
-      const catMap = grpMin(d, 'cat'); const maxCat = Math.max(...Object.values(catMap), 1);
-      const stageBarsHTML = CAT_ORDER.filter(c=>catMap[c]>0).map(c=>{
-        const ci=CAT_ORDER.indexOf(c);
-        return `<div class="stage-row" style="margin-bottom:6px;"><span class="stage-name">${c.replace('설계','')}</span><div class="stage-track"><div class="stage-fill" style="width:${Math.round((catMap[c]||0)/maxCat*100)}%;background:${CAT_COLORS[ci]};"></div></div><span class="stage-val">${formatHour(catMap[c]||0)}h</span></div>`;
-      }).join('');
-      
-      const pColor = isAll ? C_PRI : MC[name];
-      const pInitial = isAll ? 'ALL' : INITIALS[name];
-      const pName = isAll ? '전체 팀원 합산' : name;
-      const pPos = isAll ? '-' : (RAW.find(r=>r.name===name)?.pos || '');
-      
-      pCard.innerHTML = `
-        <div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor};border-radius:20px 20px 0 0;"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
-            <div style="display:flex; align-items:center; gap:20px;">
-                <div style="background:${pColor}; width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:24px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">${pInitial}</div>
-                <div><div style="font-size:24px; font-weight:900; color:#1e293b;">${pName}</div><div style="font-size:13px; color:#64748b; font-weight:600;">${pPos}</div></div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:13px; color:#64748b; font-weight:700;">선택 기간 총 투입시간</div>
-                <div style="font-size:38px; font-weight:900; color:${pColor}; line-height:1;">${formatHour(tot)}<span style="font-size:18px;">h</span></div>
-            </div>
+  // 1. 프로필 카드 & AI 코칭
+  const pColor = isAll ? '#00428E' : MC[name]; const pInit = isAll ? 'ALL' : INITIALS[name]; const pName = isAll ? '전체 팀원 합산' : name;
+  const pPos = isAll ? '-' : (RAW.find(r=>r.name===name)?.pos || '');
+  const top3 = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  
+  document.getElementById('workingProfileCard').innerHTML = `
+    <div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor};"></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+        <div style="display:flex; align-items:center; gap:20px;">
+            <div style="background:${pColor}; width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:24px;">${pInit}</div>
+            <div><div style="font-size:24px; font-weight:900; color:#1e293b;">${pName}</div><div style="font-size:13px; color:#64748b; font-weight:600;">${pPos}</div></div>
         </div>
-        
-        <div style="display:grid; grid-template-columns:1fr 1.5fr 1fr; gap:20px; margin-top:20px; padding-top:20px; border-top:1px solid #f1f5f9;">
-            <div>
-                <div style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:10px; display:flex; align-items:center; gap:4px;">${I_BULB} 참여 요약</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div style="border:1px solid #e2e8f0; border-radius:10px; padding:15px 10px; text-align:center;"><div style="font-size:18px; font-weight:900; color:#334155; margin-bottom:4px;">${mos.length}</div><div style="font-size:11px; color:#94a3b8; font-weight:700;">참여 월수</div></div>
-                    <div style="border:1px solid #e2e8f0; border-radius:10px; padding:15px 10px; text-align:center;"><div style="font-size:18px; font-weight:900; color:#334155; margin-bottom:4px;">${avgMo}h</div><div style="font-size:11px; color:#94a3b8; font-weight:700;">월 평균 투입</div></div>
-                </div>
-            </div>
-            <div>
-                <div style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:10px; display:flex; align-items:center; gap:4px;">${I_TROP} 업무 요약 TOP 3</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                    ${top3Subs.map((s, i) => `<div style="background:${['#fef9c3', '#f1f5f9', '#ffedd5'][i]}; border:1.5px solid ${['#fde047', '#e2e8f0', '#fed7aa'][i]}44; border-radius:8px; padding:12px 4px; text-align:center; display:flex; flex-direction:column; justify-content:center; height:80px;"><div style="font-size:18pt; margin-bottom:4px; line-height:1;">${['🥇','🥈','🥉'][i]}</div><div style="font-size:11px; font-weight:800; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; margin-bottom:4px;">${s[0]}</div><div style="font-size:14px; font-weight:900; color:${['#d97706', '#475569', '#c2410c'][i]};">${formatHour(s[1])}h</div></div>`).join('')}
-                </div>
-            </div>
-            <div>
-                <div style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:10px; display:flex; align-items:center; gap:4px;">${I_RULE} 단계별 투입 비중</div>
-                <div style="display:flex; flex-direction:column; gap:6px;">${stageBarsHTML}</div>
-            </div>
+        <div style="text-align:right;">
+            <div style="font-size:13px; color:#64748b; font-weight:700;">선택 기간 총 투입</div>
+            <div style="font-size:38px; font-weight:900; color:${pColor}; line-height:1;">${formatHour(tot)}<span style="font-size:18px;">h</span></div>
         </div>
-      `;
-  }
+    </div>
+    <div class="ai-coach-box">${generateCoachingMessage(name, d, isAll)}</div>
+    <div style="display:grid; grid-template-columns:1fr 2fr; gap:20px; margin-top:20px; padding-top:20px; border-top:1px solid #f1f5f9;">
+        <div><div style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:10px;">${I_BULB} 참여 월수</div><div style="font-size:24px; font-weight:900;">${mos.length}개월 <span style="font-size:12px;color:#94a3b8;font-weight:normal;">(평균 ${mos.length>0?formatNum(mToH(tot)/mos.length):0}h/월)</span></div></div>
+        <div><div style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:10px;">${I_TROP} 주요 업무 TOP 3</div><div style="display:flex; gap:10px;">${top3.map((s,i)=>`<div style="flex:1; background:#f8fafc; border-radius:8px; padding:10px; text-align:center;"><div style="font-size:14px; margin-bottom:4px;">${['🥇','🥈','🥉'][i]}</div><div style="font-size:11px; font-weight:800; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s[0]}</div></div>`).join('')}</div></div>
+    </div>
+  `;
 
-  // 2. 각종 차트 렌더링
-  renderDpStacked(d, mos, subMap, isAll ? C_PRI : MC[name], isAll);
-  renderPatternAnalysis(d, mos, isAll);
-  renderDpCvChart(name, d, isAll);
-  renderFocusBar(d);
-  renderDpDonut(d, tot);
-  
-  // 히트맵
-  const allYears=[...new Set(mos.map(m=>m.split('-')[0]))].sort();
-  const tYear = allYears[allYears.length-1] || '2024';
-  const tabs = document.getElementById('dpHeatTabs');
-  if(tabs) tabs.innerHTML = `<button class="tab-btn-sm active">${tYear}년</button>`;
-  drawHeatmap(d, tYear, 'dpHeatTable', isAll ? C_PRI : MC[name]);
-  
-  // 초과근무
-  drawOvertimeWithList('dpOvertimeCardWrap', d, isAll);
-
-  // 전분기 증감 연산
-  const getQ = window.getQ; const allMemberData = isAll ? RAW : RAW.filter(r => r.name === name);
-  const filteredQs = [...new Set(d.map(r => getQ(r.date)))].sort(); const currentQ = filteredQs[filteredQs.length - 1];
-  let incHTML = ''; let decHTML = '';
-  if (currentQ) {
-      const [cY, cQ] = currentQ.split('-Q'); let pY = parseInt(cY); let pQ = parseInt(cQ) - 1; if (pQ === 0) { pY -= 1; pQ = 4; }
-      const prevQ = `${pY}-Q${pQ}`; const curMins = {}; const prevMins = {};
-      allMemberData.forEach(r => { const q = getQ(r.date); if (q === currentQ) curMins[r.sub] = (curMins[r.sub] || 0) + r.min; if (q === prevQ) prevMins[r.sub] = (prevMins[r.sub] || 0) + r.min; });
-      const diffs = []; const allSubs = new Set([...Object.keys(curMins), ...Object.keys(prevMins)]);
-      allSubs.forEach(s => { const curH = mToH(curMins[s] || 0); const prevH = mToH(prevMins[s] || 0); diffs.push({ sub: s, cur: curH, prev: prevH, diff: curH - prevH }); });
-      const inc = diffs.filter(x => x.diff > 0).sort((a,b) => b.diff - a.diff).slice(0,3); const dec = diffs.filter(x => x.diff < 0).sort((a,b) => a.diff - b.diff).slice(0,3);
-      const buildMiniList = (arr, isInc) => {
-          if(arr.length === 0) return `<div style="font-size:11px;color:#94a3b8;text-align:center;padding:10px;">데이터 없음</div>`;
-          return arr.map(x => `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; font-weight:800; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${x.sub}</span><div style="display:flex; align-items:center; gap:6px;"><span style="font-size:10px; color:#94a3b8;">${x.prev.toFixed(1)}h → ${x.cur.toFixed(1)}h</span><span style="font-size:11px; font-weight:900; color:${isInc?'#ef4444':'#3b82f6'};">${isInc?'▲':'▼'} ${Math.abs(x.diff).toFixed(1)}h</span></div></div>`).join('');
-      };
-      incHTML = buildMiniList(inc, true); decHTML = buildMiniList(dec, false);
-  }
-  const dpIncDecWrap = document.getElementById('dpIncDecWrap');
-  if(dpIncDecWrap) dpIncDecWrap.innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; height:100%;"><div style="background:#fffaf8; border:1px solid #fecaca; border-radius:10px; padding:15px;"><div style="font-size:12px;font-weight:900;color:#ef4444;margin-bottom:10px;">📈 전분기 대비 증가 TOP3</div>${incHTML}</div><div style="background:#f0f9ff; border:1px solid #bfdbfe; border-radius:10px; padding:15px;"><div style="font-size:12px;font-weight:900;color:#3b82f6;margin-bottom:10px;">📉 전분기 대비 감소 TOP3</div>${decHTML}</div></div>`;
+  // 나머지 차트 렌더링 호출
+  renderDpStacked(d, mos, subMap, pColor); renderPatternAnalysis(d, mos, isAll); renderDpCvChart(pColor, d); renderFocusBar(d); renderDpDonut(d, tot);
+  drawHeatmapList(d, mos, pColor); drawOvertimeWithList('dpOvertimeCardWrap', d); renderDpIncDec(d, name, isAll);
 }
 
-function renderDpStacked(d, mos, subMap, color, isAll) {
-  const canvas = document.getElementById('dpStackedBar'); if(!canvas) return;
+function renderDpStacked(d, mos, subMap, color) {
   destroyChart('dpStackedBar');
-  const subList = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,10); 
+  const subList = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,10);
   const moSubMap = {}; d.forEach(r => { moSubMap[r.date.slice(0,7)] = moSubMap[r.date.slice(0,7)] || {}; moSubMap[r.date.slice(0,7)][r.sub] = (moSubMap[r.date.slice(0,7)][r.sub] || 0) + r.min; });
-  
-  const lg = document.getElementById('dpStackedLegend');
-  if(lg) lg.innerHTML = subList.map((sub, i) => `<div style="display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#475569;"><div style="width:10px; height:10px; border-radius:3px; background:${SUB_PAL[i%SUB_PAL.length]};"></div>${sub}</div>`).join('');
-  
-  const datasets = subList.map((sub,i)=> ({ type: 'bar', label: sub, data: mos.map(m=>mToH((moSubMap[m] && moSubMap[m][sub]) || 0)), backgroundColor: SUB_PAL[i%SUB_PAL.length], borderRadius: 2, stack: 's' }));
-  
-  CH.dpStackedBar=new Chart(canvas.getContext('2d'), {
-    data:{ labels: mos, datasets: datasets },
+  document.getElementById('dpStackedLegend').innerHTML = subList.map((s, i) => `<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i]}"></div>${s}</div>`).join('');
+  CH.dpStackedBar = new Chart(document.getElementById('dpStackedBar').getContext('2d'), {
+    data:{ labels: mos, datasets: subList.map((sub,i)=> ({ type: 'bar', label: sub, data: mos.map(m=>mToH(moSubMap[m]?.[sub] || 0)), backgroundColor: SUB_PAL[i], stack: 's' })) },
     options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{display:false} }, scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{color:'#f1f5f9'}} } }
   });
 }
 
 function renderPatternAnalysis(d, mos, isAll) {
-  const bubCanvas = document.getElementById('dpDiversityBubble');
-  const swCanvas = document.getElementById('dpSwitchBar');
-  const contWrap = document.getElementById('dpContinuityWrap');
-  if(!bubCanvas || !swCanvas || !contWrap) return;
-
   destroyChart('dpDiversityBubble'); destroyChart('dpSwitchBar');
-
-  // 1. Bubble
-  const weeks = [...new Set(d.map(r=>r.week))].sort();
-  const bubbleData = weeks.map(w => {
-    const rWk = d.filter(r => r.week === w); if(rWk.length === 0) return null;
-    const totMin = rWk.reduce((s,x)=>s+x.min, 0); const sMap = grpMin(rWk, 'sub');
-    let hhiSum = 0; let shannon = 0;
-    Object.values(sMap).forEach(v => { const p = v / totMin; hhiSum += p * p; if(p > 0) shannon -= p * Math.log(p); });
-    return { x: 1 - hhiSum, y: shannon, r: Math.max(Math.pow(mToH(totMin), 1.2) * 0.1, 4), wk: w };
-  }).filter(x => x !== null);
-
-  CH.dpDiversityBubble = new Chart(bubCanvas.getContext('2d'), {
-    type: 'bubble', data: { datasets: [{ label: '다양성', data: bubbleData, backgroundColor: hexRgba(C_PRI, 0.6), borderColor: C_PRI }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, quadPlugin: { active: true }, datalabels: { display: false } }, scales: { x: { title: { display: true, text: '집중도(HHI) (독점→)' }, max: 1.0 }, y: { title: { display: true, text: '다양성(SHANNON) (복잡→)' } } } }
+  
+  // 1. Bubble (사분면 플러그인 적용)
+  const weeks = [...new Set(d.map(r=>r.week))];
+  const bData = weeks.map(w => {
+    const rWk = d.filter(r => r.week === w); if(!rWk.length) return null;
+    const tMin = rWk.reduce((s,x)=>s+x.min, 0); const sMap = grpMin(rWk, 'sub');
+    let hhi = 0, shan = 0; Object.values(sMap).forEach(v => { const p = v/tMin; hhi += p*p; if(p>0) shan -= p*Math.log(p); });
+    return { x: 1-hhi, y: shan, r: Math.max(Math.pow(mToH(tMin), 1.2)*0.1, 4) };
+  }).filter(x=>x!==null);
+  
+  CH.dpDiversityBubble = new Chart(document.getElementById('dpDiversityBubble').getContext('2d'), {
+    type: 'bubble', data: { datasets: [{ data: bData, backgroundColor: hexRgba('#00428E', 0.6), borderColor: '#00428E' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, quadPlugin: { active: true }, datalabels: { display: false } }, scales: { x: { title: { display: true, text: '집중도(HHI)' }, max: 1.0 }, y: { title: { display: true, text: '다양성(SHANNON)' } } } }
   });
 
   // 2. Switch Bar
-  let switchByMonth = {}; let prevSub = null;
-  d.forEach(r => { const mo = r.date.slice(0,7); if(!switchByMonth[mo]) switchByMonth[mo] = 0; if(prevSub !== null && prevSub !== r.sub) switchByMonth[mo]++; prevSub = r.sub; });
-  const switchData = mos.map(m => switchByMonth[m] || 0);
-  
-  let allSwitches = [];
-  MEMBERS.forEach(mName => {
-    const md = filtered().filter(r => r.name === mName); let sByMo = {}; let pr = null;
-    md.forEach(r => { const mo = r.date.slice(0, 7); if(!sByMo[mo]) sByMo[mo] = 0; if(pr !== null && pr !== r.sub) sByMo[mo]++; pr = r.sub; });
-    Object.values(sByMo).forEach(v => allSwitches.push(v));
-  });
-  const avgSwitch = allSwitches.length ? allSwitches.reduce((a,b)=>a+b,0)/allSwitches.length : 0; const avgData = mos.map(() => isAll ? 0 : avgSwitch);
-  
-  CH.dpSwitchBar = new Chart(swCanvas.getContext('2d'), {
-      type: 'bar', data: { labels: mos, datasets: [ { label: '업무 전환 횟수', data: switchData, backgroundColor: C_PRI, borderRadius: 4, order: 2 }, { type: 'line', label: '전체 평균', data: avgData, borderColor: '#94a3b8', borderDash:[5,5], pointRadius:0, fill: false, order: 1 } ] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, avgLinePlugin: { active: !isAll }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { grace: '20%', grid: { color: '#f1f5f9' }, beginAtZero: true } } }
+  let swMo = {}; let prv = null; d.forEach(r => { const mo = r.date.slice(0,7); if(!swMo[mo]) swMo[mo] = 0; if(prv !== null && prv !== r.sub) swMo[mo]++; prv = r.sub; });
+  CH.dpSwitchBar = new Chart(document.getElementById('dpSwitchBar').getContext('2d'), {
+      type: 'bar', data: { labels: mos, datasets: [ { label: '업무 전환', data: mos.map(m=>swMo[m]||0), backgroundColor: '#00428E', borderRadius: 4 } ] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#f1f5f9' }, beginAtZero: true } } }
   });
 
-  // 3. Continuity
-  let continuityResults = [];
-  if(isAll) {
-      contWrap.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8; font-weight:700;">전체 합산 뷰에서는 제공되지 않습니다.</div>`;
-  } else {
-      const workDates = Array.from(new Set(d.map(r=>r.date))).sort(); const subMapFull = grpMin(d, 'sub'); const subs = Object.keys(subMapFull);
+  // 3. Continuity Top 5
+  const wrap = document.getElementById('dpContinuityWrap');
+  if(isAll) { wrap.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8; font-weight:700;">전체 합산 뷰에서는 제공되지 않습니다.</div>`; }
+  else {
+      let res = []; const dates = [...new Set(d.map(r=>r.date))].sort(); const subs = Object.keys(grpMin(d,'sub'));
       subs.forEach(s => {
-        let currentStreak = 0; let currentStart = ''; let maxS = 0; let tmpStart = ''; let tmpEnd = '';
-        workDates.forEach(wd => { const didWork = d.some(r => r.date === wd && r.sub === s); if(didWork) { if(currentStreak === 0) currentStart = wd; currentStreak++; if(currentStreak > maxS) { maxS = currentStreak; tmpStart = currentStart; tmpEnd = wd; } } else { currentStreak = 0; } });
-        if(maxS > 0) continuityResults.push({ sub: s, streak: maxS, start: tmpStart, end: tmpEnd });
+        let maxS=0, curS=0, tmpStart='', curStart='', tmpEnd='';
+        dates.forEach(dt => { if(d.some(r=>r.date===dt&&r.sub===s)) { if(curS===0) curStart=dt; curS++; if(curS>maxS) { maxS=curS; tmpStart=curStart; tmpEnd=dt; } } else curS=0; });
+        if(maxS>0) res.push({sub:s, streak:maxS, start:tmpStart, end:tmpEnd});
       });
-      continuityResults.sort((a,b) => b.streak - a.streak); const top5Cont = continuityResults.slice(0, 5);
-      
-      let contHTML = `<div style="display:flex; flex-direction:column; gap:8px; height:100%; justify-content:center;">`;
-      top5Cont.forEach((c, i) => {
-        const colors = ['#f59e0b', '#94a3b8', '#cd7c3b', '#64748b', '#64748b']; const emojis = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-        contHTML += `<div style="background:#fff; border:1px solid #f1f5f9; border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px;"><div style="font-size:18px;">${emojis[i]}</div><div style="flex:1;"><div style="font-size:12px; font-weight:900; color:#1e293b;">${c.sub}</div><div style="font-size:10px; color:#94a3b8; margin-top:2px;">${c.start} ~ ${c.end}</div></div><div style="text-align:right;"><div style="font-size:16px; font-weight:900; color:${colors[i]};">${c.streak}<span style="font-size:10px; color:#94a3b8; font-weight:normal; margin-left:2px;">일 연속</span></div></div></div>`;
-      });
-      contHTML += `</div>`;
-      contWrap.innerHTML = contHTML;
+      res.sort((a,b)=>b.streak-a.streak);
+      wrap.innerHTML = `<div style="display:flex; flex-direction:column; gap:8px;">` + res.slice(0,5).map((c,i)=>`<div style="background:#fff; border:1px solid #f1f5f9; border-radius:10px; padding:10px; display:flex; align-items:center; gap:10px;"><div style="font-size:18px;">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</div><div style="flex:1;"><div style="font-size:12px; font-weight:900; color:#1e293b;">${c.sub}</div><div style="font-size:10px; color:#94a3b8;">${c.start} ~ ${c.end}</div></div><div style="font-size:16px; font-weight:900; color:#f59e0b;">${c.streak}<span style="font-size:10px; color:#94a3b8; font-weight:normal;">일</span></div></div>`).join('') + `</div>`;
   }
 }
 
-function renderDpCvChart(name, d, isAll) {
-  const cvCanvas = document.getElementById('dpCvChart'); if(!cvCanvas) return; destroyChart('dpCv');
-  const dates = [...new Set(d.map(r => r.date))].sort();
-  const calcCV = (vals) => { const m = vals.reduce((a,b)=>a+b,0)/vals.length; return m===0 ? 0 : Math.sqrt(vals.reduce((a,b)=>a+Math.pow(b-m,2),0)/vals.length)/m; };
-  const dailyMins = {}; d.forEach(r => { dailyMins[r.date] = (dailyMins[r.date]||0) + r.min; });
-  const data = dates.map((dt, idx) => { let wVals = []; for(let i=0; i<7; i++) { if(idx-i>=0) wVals.push(dailyMins[dates[idx-i]]||0); } return { x: dt, y: calcCV(wVals) }; });
-
-  const chartColor = isAll ? C_PRI : MC[name];
-  CH.dpCv = new Chart(cvCanvas.getContext('2d'), {
-    type: 'line', data: { datasets: [{ label: 'CV', data: data, borderColor: chartColor, backgroundColor: hexRgba(chartColor,0.1), borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }] },
+function renderDpCvChart(color, d) {
+  destroyChart('dpCvChart');
+  const dates = [...new Set(d.map(r => r.date))].sort(); const daily = {}; d.forEach(r => daily[r.date] = (daily[r.date]||0) + r.min);
+  const data = dates.map((dt, i) => { let w=[]; for(let j=0; j<7; j++) if(i-j>=0) w.push(daily[dates[i-j]]||0); const m=w.reduce((a,b)=>a+b,0)/w.length; return { x: dt, y: m===0?0:Math.sqrt(w.reduce((a,b)=>a+Math.pow(b-m,2),0)/w.length)/m }; });
+  CH.dpCvChart = new Chart(document.getElementById('dpCvChart').getContext('2d'), {
+    type: 'line', data: { datasets: [{ data: data, borderColor: color, backgroundColor: hexRgba(color,0.1), borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }, y: { grid: { color: '#f1f5f9' }, min: 0 } } }
   });
 }
 
 function renderFocusBar(d) {
-  const fBar = document.getElementById('dpFocusBar'); if(!fBar) return; destroyChart('dpFocusBar');
+  destroyChart('dpFocusBar');
   let fM=0, dM=0; d.forEach(r => { if(isFocusedWork(r.cat, r.sub)) fM+=r.min; else dM+=r.min; });
-  const tot = fM+dM; const fPct = tot>0?(fM/tot*100):0; const dPct = tot>0?(dM/tot*100):0;
-  CH.dpFocusBar = new Chart(fBar.getContext('2d'), {
-    type: 'bar', data: { labels: ['업무 비율'], datasets: [{ label: '집중업무', data: [fPct], backgroundColor: C_PRI, barThickness: 30 }, { label: '분산업무', data: [dPct], backgroundColor: '#cbd5e1', barThickness: 30 }] },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, max: 100, display: false }, y: { stacked: true, display: false } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v>5?v.toFixed(1)+'%':'' } } }
+  const t = fM+dM;
+  CH.dpFocusBar = new Chart(document.getElementById('dpFocusBar').getContext('2d'), {
+    type: 'bar', data: { labels: [''], datasets: [{ label: '집중업무', data: [t>0?fM/t*100:0], backgroundColor: '#00428E' }, { label: '분산업무', data: [t>0?dM/t*100:0], backgroundColor: '#cbd5e1' }] },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, max: 100, display: false }, y: { stacked: true, display: false } }, plugins: { legend: { position: 'bottom', labels:{boxWidth:12} }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v>5?v.toFixed(1)+'%':'' } } }
   });
 }
 
 function renderDpDonut(d, tot) {
-  const canvas = document.getElementById('dpDonut'); if(!canvas) return; destroyChart('dpDonut');
-  const catMap=grpMin(d,'cat'); const cats=CAT_ORDER.filter(c=>catMap[c]>0); const data=cats.map(c=>mToH(catMap[c]||0)); const colors=cats.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]);
-  document.getElementById('dpDonutCenter').innerHTML = `<div style="font-size:22px;font-weight:900;color:#1e293b;">${formatHour(tot)}h</div><div style="font-size:11px;color:#94a3b8;font-weight:700;">총 투입</div>`;
-  CH.dpDonut=new Chart(canvas.getContext('2d'),{
-    type:'doughnut', data:{labels:cats, datasets:[{data:data, backgroundColor:colors, borderWidth:2, borderColor:'#fff'}]},
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{ legend:{display:false}, datalabels:{ display:true, color:'#1e293b', font:{weight:'bold'}, formatter:(v,ctx)=>{ const p = Math.round(v/mToH(tot)*100); return p>5 ? `${cats[ctx.dataIndex]}\n${p}%` : ''; }, anchor:'end', align:'end' } } }
+  destroyChart('dpDonut');
+  const catMap=grpMin(d,'cat'); const cats=CAT_ORDER.filter(c=>catMap[c]>0);
+  document.getElementById('dpDonutCenter').innerHTML = `<div style="font-size:22px;font-weight:900;color:#1e293b;">${formatHour(tot)}h</div>`;
+  CH.dpDonut = new Chart(document.getElementById('dpDonut').getContext('2d'),{
+    type:'doughnut', data:{labels:cats, datasets:[{data:cats.map(c=>mToH(catMap[c])), backgroundColor:cats.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]), borderWidth:2, borderColor:'#fff'}]},
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{ legend:{display:false}, datalabels:{ color:'#1e293b', font:{weight:'bold'}, formatter:(v,ctx)=>{ const p=Math.round(v/mToH(tot)*100); return p>5?`${cats[ctx.dataIndex]}\n${p}%`:''; }, anchor:'end', align:'end' } } }
   });
 }
 
-// ✨ 공통기능: 초과근무 막대차트 + 리스트 필터링 기능 (KPI탭에서도 공유)
-function drawOvertimeWithList(wrapId, d, isAll = false) {
-  const wrap = document.getElementById(wrapId); if(!wrap) return;
-  const dateMap = {}; d.forEach(r => { dateMap[r.date] = (dateMap[r.date] || 0) + r.min; });
-  const otData = []; for(let date in dateMap) { const min = dateMap[date]; if(min >= 540) otData.push({ date, min }); }
-  otData.sort((a,b) => a.date.localeCompare(b.date));
-  let counts = [0, 0, 0, 0];
-  otData.forEach(r => { if(r.min < 600) counts[0]++; else if(r.min < 660) counts[1]++; else if(r.min < 720) counts[2]++; else counts[3]++; });
-
-  wrap.innerHTML = `
-    <div class="card-section-title">일별 초과 근무일 수 및 내역 <span style="font-size:11px; color:#64748b; font-weight:500; margin-left:8px;">(막대 클릭 시 필터링)</span></div>
-    <div style="height:150px; position:relative;"><canvas id="${wrapId}_canvas"></canvas></div>
-    <div class="scroll-list" id="${wrapId}_list" style="flex:1; overflow-y:auto; margin-top:15px; border-top:1px solid #f1f5f9; padding-top:10px; font-size:12px; color:#475569;"></div>
-  `;
-
-  const listContainer = document.getElementById(`${wrapId}_list`);
-  const renderList = (catIndex) => {
-      let fData = otData;
-      if(catIndex === 0) fData = otData.filter(r => r.min >= 540 && r.min < 600);
-      else if(catIndex === 1) fData = otData.filter(r => r.min >= 600 && r.min < 660);
-      else if(catIndex === 2) fData = otData.filter(r => r.min >= 660 && r.min < 720);
-      else if(catIndex === 3) fData = otData.filter(r => r.min >= 720);
-      
-      if(fData.length === 0) { listContainer.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:20px; font-weight:600;">해당 구간의 초과근무 기록이 없습니다.</div>'; return; }
-      listContainer.innerHTML = fData.map(r => `
-          <div style="display:flex; justify-content:space-between; padding:8px 10px; border-bottom:1px solid #f8fafc; background:${r.min>=720 ? '#fef2f2' : '#fff'}; border-radius:6px; margin-bottom:4px;">
-             <span style="font-weight:800; color:#334155;">${r.date}</span>
-             <span style="color:${r.min>=720 ? '#dc2626' : C_PRI}; font-weight:900;">${formatHour(r.min)}h</span>
-          </div>
-      `).join('');
-  };
-  renderList(-1);
-
-  if(CH[wrapId]) destroyChart(wrapId);
-  const canvas = document.getElementById(`${wrapId}_canvas`);
-  if(canvas) {
-    CH[wrapId] = new Chart(canvas.getContext('2d'), {
-        type: 'bar',
-        data: { labels: ['9~10h', '10~11h', '11~12h', '12h 이상'], datasets: [{ data: counts, backgroundColor: ['#fde047', '#f97316', '#ef4444', '#b91c1c'], borderRadius: 4, barPercentage: 0.7 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, color: '#1e293b', font:{weight:'bold'}, anchor: 'end', align: 'right', formatter: v => v>0 ? v+'일' : '' } }, scales: { x: { grid: { display: false }, ticks: { display: false }, grace: '15%' }, y: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } } }, onClick: (e, els) => { if(els.length > 0) renderList(els[0].index); else renderList(-1); } }
-    });
+function drawHeatmapList(d, mos, color) {
+  const tYear = [...new Set(mos.map(m=>m.split('-')[0]))].sort().pop() || '2024';
+  document.getElementById('dpHeatTabs').innerHTML = `<button class="tab-btn-sm active">${tYear}년</button>`;
+  
+  const dailyMap = {}; d.filter(r=>r.date.startsWith(tYear+'-')).forEach(r => dailyMap[r.date] = (dailyMap[r.date] || 0) + r.min);
+  const mat = Array.from({length:5},()=>new Array(12).fill(0)); const hasMo = new Array(12).fill(false); let maxV = 1;
+  for (let date in dailyMap) { const sum = dailyMap[date]; const p = date.split('-'); const mo = parseInt(p[1])-1, day = parseInt(p[2]); const fd = new Date(parseInt(tYear), mo, 1).getDay(); const wk = Math.ceil((day+fd)/7)-1; if(wk>=0 && wk<5) { mat[wk][mo] += sum; hasMo[mo] = true; if(mat[wk][mo]>maxV) maxV=mat[wk][mo]; } }
+  
+  let th = '<thead><tr><th style="width:30px;"></th>'; MONTH_KO.forEach((l,i) => th+=`<th style="color:${hasMo[i]?color:'#cbd5e1'};">${l}</th>`); th+='</tr></thead>';
+  let tb = '<tbody>';
+  for(let w=0; w<5; w++){
+    tb += `<tr><td style="font-size:10px; font-weight:700; color:#94a3b8; text-align:right; padding-right:6px;">${w+1}주</td>`;
+    for(let mo=0; mo<12; mo++){
+      if(!hasMo[mo]) tb += `<td><div class="hm-cell" style="background:#f8fafc;opacity:0.5;"></div></td>`;
+      else if(mat[w][mo]<=0) tb += `<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`;
+      else tb += `<td><div class="hm-cell" style="background:${hexRgba(color, 0.2 + (mat[w][mo]/maxV)*0.8)}; color:${(mat[w][mo]/maxV)>0.4?'#fff':'#1e293b'};" title="${formatHour(mat[w][mo])}h">${formatHour(mat[w][mo])}</div></td>`;
+    }
+    tb += '</tr>';
   }
+  document.getElementById('dpHeatTable').innerHTML = th + tb + '</tbody>';
 }
 
-// ----------------------------------------------------
-// 3. [Personal KPI] 역량평가 탭
-// ----------------------------------------------------
-function renderEvalTab() {
-  const isAll = (GLOBAL_MEMBER === 'ALL');
-  const qs = filteredEvalQs();
-  renderEvalProfile(GLOBAL_MEMBER, qs, isAll);
-  renderEvalTrendChartWithSchedule(GLOBAL_MEMBER, qs, isAll);
-  renderEvalDonut(GLOBAL_MEMBER, isAll);
-  renderHighVsAvg(GLOBAL_MEMBER, qs, isAll);
-  renderEvalRadarDual(GLOBAL_MEMBER, qs, isAll);
-  renderEvalTrendTable(GLOBAL_MEMBER, qs, isAll);
+function renderDpIncDec(d, name, isAll) {
+  const getQ = window.getQ; const allMem = isAll ? RAW : RAW.filter(r => r.name === name);
+  const qs = [...new Set(d.map(r => getQ(r.date)))].sort(); const cQStr = qs[qs.length - 1];
+  let incHTML = '', decHTML = '';
+  if (cQStr) {
+      let [cY, cQn] = cQStr.split('-Q'); cY=parseInt(cY); cQn=parseInt(cQn)-1; if(cQn===0){ cY-=1; cQn=4; }
+      const pQStr = `${cY}-Q${cQn}`; const cMins={}, pMins={};
+      allMem.forEach(r => { const q = getQ(r.date); if(q===cQStr) cMins[r.sub]=(cMins[r.sub]||0)+r.min; if(q===pQStr) pMins[r.sub]=(pMins[r.sub]||0)+r.min; });
+      const diffs = [...new Set([...Object.keys(cMins), ...Object.keys(pMins)])].map(s => { const cur=mToH(cMins[s]||0), prv=mToH(pMins[s]||0); return {sub:s, cur, prv, diff:cur-prv}; });
+      const mkList = (arr, isInc) => arr.length ? arr.map(x=>`<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; font-weight:800; color:#334155; white-space:nowrap; overflow:hidden; max-width:100px;">${x.sub}</span><div style="font-size:10px;"><span style="color:#94a3b8;margin-right:6px;">${x.prv.toFixed(1)}→${x.cur.toFixed(1)}</span><strong style="color:${isInc?'#ef4444':'#3b82f6'};">${isInc?'▲':'▼'} ${Math.abs(x.diff).toFixed(1)}h</strong></div></div>`).join('') : '<div style="font-size:11px;color:#94a3b8;text-align:center;">데이터 없음</div>';
+      incHTML = mkList(diffs.filter(x=>x.diff>0).sort((a,b)=>b.diff-a.diff).slice(0,3), true);
+      decHTML = mkList(diffs.filter(x=>x.diff<0).sort((a,b)=>a.diff-b.diff).slice(0,3), false);
+  }
+  document.getElementById('dpIncDecWrap').innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; height:100%;"><div style="background:#fffaf8; border:1px solid #fecaca; border-radius:10px; padding:15px;"><div style="font-size:12px;font-weight:900;color:#ef4444;margin-bottom:10px;">📈 전분기 대비 증가 TOP3</div>${incHTML}</div><div style="background:#f0f9ff; border:1px solid #bfdbfe; border-radius:10px; padding:15px;"><div style="font-size:12px;font-weight:900;color:#3b82f6;margin-bottom:10px;">📉 전분기 대비 감소 TOP3</div>${decHTML}</div></div>`;
+}
+
+/* 초과근무 리스트 공통함수 */
+function drawOvertimeWithList(wrapId, d) {
+  const wrap = document.getElementById(wrapId); if(!wrap) return;
+  const dateMap = {}; d.forEach(r => dateMap[r.date] = (dateMap[r.date] || 0) + r.min);
+  const otData = []; for(let dt in dateMap) if(dateMap[dt] >= 540) otData.push({ date:dt, min:dateMap[dt] });
+  otData.sort((a,b) => a.date.localeCompare(b.date));
+  let counts = [0, 0, 0, 0]; otData.forEach(r => { if(r.min<600) counts[0]++; else if(r.min<660) counts[1]++; else if(r.min<720) counts[2]++; else counts[3]++; });
   
-  const allData = filtered();
-  const d = isAll ? allData : allData.filter(r => r.name === GLOBAL_MEMBER);
-  drawOvertimeWithList('kpiOvertimeCardWrap', d, isAll);
+  wrap.innerHTML = `<div class="card-section-title">일별 초과근무 상세 <span style="font-size:11px; color:#64748b; font-weight:500; margin-left:8px;">(막대 클릭 시 필터링)</span></div><div style="height:120px; position:relative;"><canvas id="${wrapId}_canvas"></canvas></div><div class="scroll-list" id="${wrapId}_list" style="flex:1; overflow-y:auto; margin-top:10px; border-top:1px solid #f1f5f9; padding-top:10px;"></div>`;
+  
+  const renderList = (idx) => {
+      let fd = otData;
+      if(idx===0) fd = otData.filter(r=>r.min<600); else if(idx===1) fd = otData.filter(r=>r.min>=600&&r.min<660); else if(idx===2) fd = otData.filter(r=>r.min>=660&&r.min<720); else if(idx===3) fd = otData.filter(r=>r.min>=720);
+      document.getElementById(`${wrapId}_list`).innerHTML = fd.length ? fd.map(r => `<div style="display:flex; justify-content:space-between; padding:8px 10px; background:${r.min>=720?'#fef2f2':'#fff'}; border-bottom:1px solid #f8fafc; margin-bottom:4px; font-size:12px;"><span style="font-weight:800; color:#334155;">${r.date}</span><span style="color:${r.min>=720?'#dc2626':'#00428E'}; font-weight:900;">${formatHour(r.min)}h</span></div>`).join('') : '<div style="text-align:center; color:#94a3b8; padding:20px; font-size:12px;">데이터 없음</div>';
+  }; renderList(-1);
+  
+  destroyChart(wrapId);
+  CH[wrapId] = new Chart(document.getElementById(`${wrapId}_canvas`).getContext('2d'), {
+      type: 'bar', data: { labels: ['9~10h', '10~11h', '11~12h', '12h 이상'], datasets: [{ data: counts, backgroundColor: ['#fde047', '#f97316', '#ef4444', '#b91c1c'], borderRadius: 4 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'right', font:{weight:'bold'}, formatter: v=>v>0?v+'일':'' } }, scales: { x: { display: false, grace:'15%' }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } } }, onClick: (e, els) => renderList(els.length ? els[0].index : -1) }
+  });
+}
+
+
+/* ==========================================
+   3. [Personal KPI] 탭
+========================================== */
+function renderEvalTab() {
+  const isAll = (GLOBAL_MEMBER === 'ALL'); const qs = filteredEvalQs();
+  renderEvalProfile(GLOBAL_MEMBER, qs, isAll); renderEvalTrendChart(GLOBAL_MEMBER, qs, isAll); renderEvalDonut(GLOBAL_MEMBER, isAll);
+  renderHighVsAvg(GLOBAL_MEMBER, qs, isAll); renderEvalRadarDual(GLOBAL_MEMBER, qs, isAll); renderEvalTrendTable(GLOBAL_MEMBER, qs, isAll);
+  drawOvertimeWithList('kpiOvertimeCardWrap', isAll ? filtered() : filtered().filter(r => r.name === GLOBAL_MEMBER));
 }
 
 function renderEvalProfile(name, qs, isAll) {
-  const card = document.getElementById('kpiProfileCard'); if(!card) return;
+  const card = document.getElementById('kpiProfileCard');
   const allQs = [...new Set(EVAL_DATA.map(d=>d.q))];
+  const fAvgs = RADAR_LABELS.map((lbl, i) => { const vals = qs.map(q => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===q) : EVAL_DATA.filter(e=>e.q===q&&e.name===name); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : null; }).filter(v=>v!==null); return { lbl, avg: vals.length?parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)):0, idx: i }; });
+  const oAvg = fAvgs.length ? parseFloat((fAvgs.reduce((s,x)=>s+x.avg,0)/fAvgs.length).toFixed(1)) : 0;
+  const gd = oAvg>3.5 ? {g:'S',c:'#f59e0b',b:'#fef9ee'} : oAvg>3.2 ? {g:'A+',c:'#22c55e',b:'#f0fdf4'} : oAvg>2.8 ? {g:'A',c:'#00428E',b:'#F0F5FA'} : oAvg>=2.5 ? {g:'B',c:'#0ea5e9',b:'#eff6ff'} : {g:'C',c:'#f97316',b:'#fff7ed'};
   
-  let totalItemAvgs = []; let filteredItemAvgs = [];
-  if(isAll) {
-      totalItemAvgs = RADAR_LABELS.map((lbl, i) => { const vals = allQs.map(q => { const evs = EVAL_DATA.filter(e => e.q === q); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : null; }).filter(v => v !== null); return { lbl, avg: vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i }; });
-      filteredItemAvgs = RADAR_LABELS.map((lbl, i) => { const vals = qs.map(q => { const evs = EVAL_DATA.filter(e => e.q === q); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : null; }).filter(v => v !== null); return { lbl, avg: vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i }; });
-  } else {
-      totalItemAvgs = RADAR_LABELS.map((lbl, i) => { const vals = allQs.map(q => { const ev = EVAL_DATA.find(e => e.q === q && e.name === name); return ev ? ev.vals[i] : null; }).filter(v => v !== null); return { lbl, avg: vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i }; });
-      filteredItemAvgs = RADAR_LABELS.map((lbl, i) => { const vals = qs.map(q => { const ev = EVAL_DATA.find(e => e.q === q && e.name === name); return ev ? ev.vals[i] : null; }).filter(v => v !== null); return { lbl, avg: vals.length > 0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0, idx: i }; });
-  }
-
-  const overallAvg = filteredItemAvgs.length ? parseFloat((filteredItemAvgs.reduce((s,x)=>s+x.avg,0)/filteredItemAvgs.length).toFixed(1)) : 0;
-  const sorted = [...filteredItemAvgs].sort((a,b)=>b.avg-a.avg);
-  
-  function getGrade(score){ if(score>3.5) return {grade:'S',color:'#f59e0b',bg:'#fef9ee'}; if(score>3.2) return {grade:'A+',color:'#22c55e',bg:'#f0fdf4'}; if(score>2.8) return {grade:'A',color:C_PRI,bg:'#F0F5FA'}; if(score>=2.5) return {grade:'B',color:'#0ea5e9',bg:'#eff6ff'}; return {grade:'C',color:'#f97316',bg:'#fff7ed'}; }
-  const gd = getGrade(overallAvg);
-  
-  function getTrend(idx){ 
-      if(qs.length<2) return ''; 
-      let curVal, prevVal;
-      if(isAll) {
-          const curEvs = EVAL_DATA.filter(e=>e.q===qs[qs.length-1]); const prevEvs = EVAL_DATA.filter(e=>e.q===qs[qs.length-2]);
-          curVal = curEvs.length ? curEvs.reduce((a,x)=>a+x.vals[idx],0)/curEvs.length : 0; prevVal = prevEvs.length ? prevEvs.reduce((a,x)=>a+x.vals[idx],0)/prevEvs.length : 0;
-      } else {
-          const curEv = EVAL_DATA.find(e=>e.q===qs[qs.length-1]&&e.name===name); const prevEv = EVAL_DATA.find(e=>e.q===qs[qs.length-2]&&e.name===name);
-          curVal = curEv ? curEv.vals[idx] : 0; prevVal = prevEv ? prevEv.vals[idx] : 0;
-      }
-      if(curVal === 0 || prevVal === 0) return '';
-      const diff = curVal - prevVal;
-      if(diff>0) return `<div class="eval-top3-trend" style="color:#22c55e;">▲ +${diff.toFixed(1)}</div>`; if(diff<0) return `<div class="eval-top3-trend" style="color:#ef4444;">▼ ${Math.abs(diff).toFixed(1)}</div>`; return `<div class="eval-top3-trend" style="color:#94a3b8;">→ 유지</div>`; 
-  }
-  
-  const rankColors=['#f59e0b','#94a3b8','#cd7c3b'];const rankBg=['#fef9ee','#f8fafc','#fdf6f0'];const rankEmoji=['🥇','🥈','🥉'];
-  const pColor = isAll ? C_PRI : MC[name];
-  const pInitial = isAll ? 'ALL' : INITIALS[name];
-  const pName = isAll ? '전체 팀원 평균' : name;
-  const pPos = isAll ? '종합 리포트' : (RAW.find(r=>r.name===name)?.pos||'');
-
-  card.style.border = `1.5px solid ${pColor}44`;
+  const pColor = isAll ? '#00428E' : MC[name];
   card.innerHTML=`
-    <div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor}; border-radius:18px 18px 0 0;"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor};"></div>
     <div style="text-align:center; padding-top:10px; margin-bottom:20px;">
-      <div class="eval-profile-avatar" style="background:${pColor}; margin:0 auto 15px auto;">${pInitial}</div>
-      <div style="font-size:24px; font-weight:900; color:#1e293b;">${pName}</div>
-      <div style="font-size:13px; color:#64748b; margin-top:4px; font-weight:600;">${pPos}</div>
+      <div class="eval-profile-avatar" style="background:${pColor}; margin:0 auto 15px auto;">${isAll ? 'ALL' : INITIALS[name]}</div>
+      <div style="font-size:24px; font-weight:900; color:#1e293b;">${isAll ? '전체 팀원 평균' : name}</div>
     </div>
-    <div class="eval-score-big" style="margin-bottom:25px;">
-      <div class="eval-score-big-num" style="color:${pColor};">${overallAvg.toFixed(1)}</div>
-      <div class="eval-score-big-label">종합 역량 점수 / 5.0점</div>
-      <span class="eval-score-grade" style="background:${gd.bg};color:${gd.color};">평균 등급 ${gd.grade}</span>
+    <div style="text-align:center; margin-bottom:25px;">
+      <div style="font-size:48px; font-weight:900; color:${pColor}; line-height:1;">${oAvg.toFixed(1)}</div>
+      <div style="font-size:12px; color:#64748b; margin-top:8px;">종합 역량 점수 / 5.0점</div>
+      <span style="display:inline-block; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:800; margin-top:10px; background:${gd.b}; color:${gd.c};">평균 등급 ${gd.g}</span>
     </div>
-    <div class="eval-scores-list">
-    ${filteredItemAvgs.map((item,i)=>{ const barColor=RADAR_COLORS_ARR[i];const pct=Math.round(item.avg/5*100); const scoreColor=item.avg>=4.5?'#22c55e':item.avg>=3.5?C_PRI:item.avg>=2.5?'#f97316':'#ef4444'; return `<div class="eval-score-item"><span class="eval-score-item-label">${item.lbl}</span><div class="eval-score-item-bar-wrap"><div class="eval-score-item-bar" style="width:${pct}%;background:${barColor};"></div></div><span class="eval-score-item-val" style="color:${scoreColor};">${item.avg.toFixed(1)}</span></div>`; }).join('')}
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+    ${fAvgs.map((item,i)=>`<div style="display:flex; align-items:center; gap:10px;"><span style="font-size:12px; font-weight:700; color:#475569; width:60px;">${item.lbl}</span><div style="flex:1; height:8px; background:#F0F5FA; border-radius:6px; overflow:hidden;"><div style="height:100%; background:${RADAR_COLORS_ARR[i]}; width:${item.avg/5*100}%"></div></div><span style="font-size:12px; font-weight:900; color:${item.avg>=3.5?'#00428E':'#ef4444'};">${item.avg.toFixed(1)}</span></div>`).join('')}
     </div>
-    <div style="font-size:11px;font-weight:800;color:#64748b;margin:15px 0 8px 0;display:flex;align-items:center;gap:4px;">${I_TROP} 기간 평균 TOP 3 강점</div>
-    <div class="eval-top3-row">
-    ${sorted.slice(0,3).map((item,rank)=>`<div class="eval-top3-card" style="background:${['#fef9ee','#f8fafc','#fdf6f0'][rank]};border:1.5px solid ${['#f59e0b','#94a3b8','#cd7c3b'][rank]}33;"><div class="eval-top3-medal">${['🥇','🥈','🥉'][rank]}</div><div class="eval-top3-label">${item.lbl}</div><div class="eval-top3-score" style="color:${item.avg>=4?'#22c55e':item.avg>=3?C_PRI:'#f97316'};">${item.avg.toFixed(1)}</div>${getTrend(item.idx)}</div>`).join('')}
+    <div style="font-size:11px;font-weight:800;color:#64748b;margin:15px 0 8px 0;display:flex;align-items:center;gap:4px;">${I_TROP} 상위 3 역량</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+    ${[...fAvgs].sort((a,b)=>b.avg-a.avg).slice(0,3).map((item,rank)=>`<div style="background:${['#fef9ee','#f8fafc','#fdf6f0'][rank]}; border-radius:12px; padding:12px 8px; text-align:center;"><div style="font-size:18px;">${['🥇','🥈','🥉'][rank]}</div><div style="font-size:12px; font-weight:800; margin-top:4px;">${item.lbl}</div></div>`).join('')}
     </div>
   `;
 }
 
-// ✨ 주요일정 마커가 추가된 역량 트렌드 차트
-function renderEvalTrendChartWithSchedule(name, qs, isAll) {
-  const canvas = document.getElementById('evalTrendChart'); if(!canvas || !qs.length) return;
+function renderEvalTrendChart(name, qs, isAll) {
   destroyChart('evalTrendChart');
+  const dss = RADAR_LABELS.map((lbl, i) => ({ label: lbl, data: qs.map(q => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===q) : EVAL_DATA.filter(e=>e.q===q&&e.name===name); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : 0; }), backgroundColor: RADAR_COLORS_ARR[i], borderRadius: 4, barPercentage: 0.6 }));
   
-  const datasets = RADAR_LABELS.map((lbl, i) => {
-    return {
-      label: lbl,
-      data: qs.map(q => { 
-          if(isAll) {
-              const evs = EVAL_DATA.filter(e=>e.q===q); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : 0;
-          } else {
-              const ev = EVAL_DATA.find(e => e.q === q && e.name === name); return ev ? ev.vals[i] : 0; 
-          }
-      }),
-      backgroundColor: RADAR_COLORS_ARR[i], borderRadius: 4, barPercentage: 0.6
-    };
-  });
-
-  const schData = qs.map(q => SCHEDULE_DATA.filter(s => getQ(s.date) === q).length > 0 ? 5.2 : null);
-  datasets.push({
-      type: 'line', label: '주요일정', data: schData, yAxisID: 'ySch',
-      showLine: false, pointStyle: 'circle', pointBackgroundColor: '#ef4444', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6, pointHoverRadius: 8
-  });
-
-  const lg = document.getElementById('evalTrendLegend');
-  if(lg) lg.innerHTML = RADAR_LABELS.map((lbl, i) => `<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#475569;"><div style="width:10px; height:10px; border-radius:3px; background:${RADAR_COLORS_ARR[i]};"></div>${lbl}</div>`).join('');
-
-  CH.evalTrendChart = new Chart(canvas.getContext('2d'), {
-    type: 'bar', data: { labels: qs, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-          legend: { display: false },
-          datalabels: { display: true, anchor: 'end', align: 'end', font:{size:10, weight:'bold'}, color:'#64748b', formatter: (v, ctx) => ctx.dataset.label==='주요일정' ? '' : (v>0 ? v.toFixed(1) : '') },
-          tooltip: { backgroundColor:'rgba(30,41,59,.95)', callbacks: { label: c => c.dataset.label==='주요일정' ? '해당 분기 주요일정 있음' : `${c.dataset.label}: ${c.raw.toFixed(1)}점` } }
-      },
-      scales: {
-          x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } },
-          y: { min: 0, max: 5, grid: { color: '#f1f5f9' }, ticks:{stepSize:1} },
-          ySch: { display: false, min: 0, max: 5.5, position: 'right' }
-      }
-    }
+  // 주요일정 라인 플롯 (빨간 점)
+  const schData = qs.map(q => SCHEDULE_DATA.some(s => getQ(s.date) === q) ? 5.2 : null);
+  dss.push({ type: 'line', label: '주요일정', data: schData, yAxisID: 'ySch', showLine: false, pointStyle: 'circle', pointBackgroundColor: '#ef4444', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6, pointHoverRadius: 8 });
+  
+  document.getElementById('evalTrendLegend').innerHTML = RADAR_LABELS.map((l, i) => `<div class="legend-item"><div class="legend-dot" style="background:${RADAR_COLORS_ARR[i]}"></div>${l}</div>`).join('');
+  CH.evalTrendChart = new Chart(document.getElementById('evalTrendChart').getContext('2d'), {
+    type: 'bar', data: { labels: qs, datasets: dss },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'end', font:{size:10, weight:'bold'}, color:'#64748b', formatter: (v, ctx) => ctx.dataset.label==='주요일정' ? '' : (v>0 ? v.toFixed(1) : '') } }, scales: { x: { grid: { display: false } }, y: { min: 0, max: 5, grid: { color: '#f1f5f9' }, ticks:{stepSize:1} }, ySch: { display: false, min: 0, max: 5.5, position: 'right' } } }
   });
 }
 
 function renderEvalDonut(name, isAll) {
-   const canvas = document.getElementById('evalDonutChart'); if(!canvas) return; destroyChart('evalDonutChart');
+   destroyChart('evalDonutChart');
    const all = isAll ? RAW : RAW.filter(r => r.name === name);
-   const subMap = grpMin(all, 'sub'); const tot = Object.values(subMap).reduce((a,b)=>a+b,0);
-   const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
-   
-   const dc = document.getElementById('evalDonutCenter'); if(dc) dc.innerText = formatHour(tot) + 'h';
-   const topRow = document.getElementById('evalTop2Row');
-   if(topRow) topRow.innerHTML = top.map(([k,v], i) => `
-      <div style="background:#F0F5FA; border-radius:8px; padding:10px; text-align:center;">
-         <div style="font-size:16px; margin-bottom:4px;">${['🥇','🥈','🥉'][i]}</div>
-         <div style="font-size:11px; font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${k}</div>
-      </div>
-   `).join('');
-
-   CH.evalDonutChart = new Chart(canvas.getContext('2d'), {
+   const subMap = grpMin(all, 'sub'); const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
+   document.getElementById('evalDonutCenter').innerText = formatHour(Object.values(subMap).reduce((a,b)=>a+b,0)) + 'h';
+   document.getElementById('evalTop2Row').innerHTML = top.map(([k,v], i) => `<div style="background:#F0F5FA; border-radius:8px; padding:10px; text-align:center;"><div style="font-size:16px; margin-bottom:4px;">${['🥇','🥈','🥉'][i]}</div><div style="font-size:11px; font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${k}</div></div>`).join('');
+   CH.evalDonutChart = new Chart(document.getElementById('evalDonutChart').getContext('2d'), {
       type: 'doughnut', data: { labels: top.map(x=>x[0]), datasets: [{ data: top.map(x=>x[1]), backgroundColor: SUB_PAL, borderWidth: 2, borderColor:'#fff' }] },
       options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false }, datalabels: { display: false } } }
    });
 }
 
-// ✨ 고득점 분기 vs 평균 분기 업무 비중 비교
 function renderHighVsAvg(name, qs, isAll) {
-    const cHigh = document.getElementById('chartHighQ'); const cAvg = document.getElementById('chartAvgQ'); const wrap = document.getElementById('highVsAvgChartsWrap'); const lg = document.getElementById('highVsAvgLegend');
-    if(!cHigh || !cAvg || !wrap || !lg) return;
     destroyChart('chartHighQ'); destroyChart('chartAvgQ');
+    const wrap = document.getElementById('highVsAvgChartsWrap'); const lg = document.getElementById('highVsAvgLegend');
+    if(qs.length < 2) { wrap.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; font-weight:700; width:100%;">비교를 위한 분기 데이터가 부족합니다.</div>`; lg.innerHTML=''; return; }
     
-    if(qs.length < 2) {
-        wrap.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; font-weight:700; width:100%;">비교 분석을 위한 분기 데이터가 부족합니다 (최소 2개 분기 필요)</div>`;
-        lg.innerHTML = ''; return;
-    }
-
-    let qScores = qs.map(q => { 
-        if(isAll) {
-            const evs = EVAL_DATA.filter(e=>e.q===q); return { q, avg: evs.length ? evs.reduce((a,x)=>a+x.vals.reduce((c,d)=>c+d,0)/5,0)/evs.length : 0 };
-        } else {
-            const ev = EVAL_DATA.find(e => e.q === q && e.name === name); return { q, avg: ev ? ev.vals.reduce((a,b)=>a+b,0)/5 : 0 }; 
-        }
-    }).sort((a,b) => b.avg - a.avg);
-
-    const top2Qs = qScores.slice(0, 2).map(x => x.q); const restQs = qScores.slice(2).map(x => x.q);
-
+    let qScores = qs.map(q => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===q) : EVAL_DATA.filter(e=>e.q===q&&e.name===name); return { q, avg: evs.length ? evs.reduce((a,x)=>a+x.vals.reduce((c,d)=>c+d,0)/5,0)/evs.length : 0 }; }).sort((a,b) => b.avg - a.avg);
+    const top2Qs = qScores.slice(0, 2).map(x=>x.q); const restQs = qScores.slice(2).map(x=>x.q);
     const allData = isAll ? RAW : RAW.filter(r => r.name === name);
-    const top2Data = allData.filter(r => top2Qs.includes(getQ(r.date)));
-    const restData = allData.filter(r => restQs.includes(getQ(r.date)));
-
-    const top2Map = grpMin(top2Data, 'sub'); const restMap = grpMin(restData, 'sub');
-    const combinedMap = {};
-    Object.keys(top2Map).forEach(k => combinedMap[k] = (combinedMap[k]||0) + top2Map[k]); Object.keys(restMap).forEach(k => combinedMap[k] = (combinedMap[k]||0) + restMap[k]);
-    const topSubs = Object.entries(combinedMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x[0]);
-
-    wrap.innerHTML = `<div style="flex:1; position:relative; background:#f8fafc; border-radius:12px; padding:15px;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 고득점 상위 2개 분기</div><div style="height: 140px; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:#f1f5f9; border-radius:12px; padding:15px;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 나머지 평균 분기</div><div style="height: 140px; position:relative;"><canvas id="chartAvgQ"></canvas></div></div>`;
-
-    const drawDoughnut = (canvasId, dataMap) => {
-        const dataVals = topSubs.map(s => dataMap[s] || 0);
-        return new Chart(document.getElementById(canvasId).getContext('2d'), {
-            type: 'doughnut', data: { labels: topSubs, datasets: [{ data: dataVals, backgroundColor: SUB_PAL.slice(0,5), borderWidth: 2, borderColor:'#fff' }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: { legend: { display: false }, datalabels: { display: true, color: '#1e293b', font: { size: 10, weight: 'bold' }, formatter: (v, ctx) => { const sum = ctx.dataset.data.reduce((a,b)=>a+b,0); const pct = sum>0 ? Math.round(v/sum*100) : 0; return pct > 8 ? pct + '%' : ''; } } } }
-        });
-    };
-
-    CH.chartHighQ = drawDoughnut('chartHighQ', top2Map);
-    CH.chartAvgQ = restData.length > 0 ? drawDoughnut('chartAvgQ', restMap) : null;
-
-    lg.innerHTML = topSubs.map((s, i) => `<div style="display:flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#475569;"><div style="width:10px; height:10px; border-radius:50%; background:${SUB_PAL[i]};"></div>${s}</div>`).join('');
+    const top2Map = grpMin(allData.filter(r => top2Qs.includes(getQ(r.date))), 'sub');
+    const restMap = grpMin(allData.filter(r => restQs.includes(getQ(r.date))), 'sub');
+    const topSubs = Object.entries({...top2Map, ...restMap}).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x[0]);
+    
+    wrap.innerHTML = `<div style="flex:1; position:relative; background:#f8fafc; border-radius:12px; padding:15px;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div><div style="height: 140px; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:#f1f5f9; border-radius:12px; padding:15px;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 평균 분기</div><div style="height: 140px; position:relative;"><canvas id="chartAvgQ"></canvas></div></div>`;
+    
+    const drawDoughnut = (id, map) => new Chart(document.getElementById(id).getContext('2d'), { type: 'doughnut', data: { labels: topSubs, datasets: [{ data: topSubs.map(s=>map[s]||0), backgroundColor: SUB_PAL.slice(0,5), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: { legend: { display: false }, datalabels: { display: true, color: '#1e293b', font: { size: 10, weight: 'bold' }, formatter: (v, ctx) => { const sum = ctx.dataset.data.reduce((a,b)=>a+b,0); return sum>0&&Math.round(v/sum*100)>8 ? Math.round(v/sum*100)+'%' : ''; } } } } });
+    CH.chartHighQ = drawDoughnut('chartHighQ', top2Map); CH.chartAvgQ = drawDoughnut('chartAvgQ', restMap);
+    lg.innerHTML = topSubs.map((s, i) => `<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i]}"></div>${s}</div>`).join('');
 }
 
-// 듀얼 레이더 (전체평균 vs 개인/전체)
 function renderEvalRadarDual(name, qs, isAll) {
-    const cYear = document.getElementById('evalRadarYear'); const cQtr = document.getElementById('evalRadarQtr');
-    if(!cYear || !cQtr) return;
     destroyChart('evalRadarYear'); destroyChart('evalRadarQtr');
-    
     const allQs = [...new Set(EVAL_DATA.map(d=>d.q))];
-    const yearAvgs = RADAR_LABELS.map((_,i) => { const vals = allQs.map(q => { const evs = EVAL_DATA.filter(e=>e.q===q); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : null; }).filter(v=>v!==null); return vals.length>0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0; });
+    const yearAvgs = RADAR_LABELS.map((_,i) => { const vals = allQs.map(q => { const evs=EVAL_DATA.filter(e=>e.q===q); return evs.length?evs.reduce((a,x)=>a+x.vals[i],0)/evs.length:null; }).filter(v=>v!==null); return vals.length>0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0; });
+    const latestQ = qs[qs.length-1] || '';
+    const qtrVals = RADAR_LABELS.map((_,i) => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===latestQ) : EVAL_DATA.filter(e=>e.q===latestQ&&e.name===name); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : 0; });
     
-    const latestQ = qs[qs.length-1] || ''; 
-    let qtrVals = [0,0,0,0,0];
-    if(isAll) {
-        qtrVals = RADAR_LABELS.map((_,i) => { const evs = EVAL_DATA.filter(e=>e.q===latestQ); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : 0; });
-    } else {
-        const latestEv = latestQ ? EVAL_DATA.find(e=>e.q===latestQ && e.name===name) : null; qtrVals = latestEv ? latestEv.vals : [0,0,0,0,0];
-    }
-
-    const yAvgScore = yearAvgs.length ? (yearAvgs.reduce((a,b)=>a+b,0)/5).toFixed(1) : 0;
-    const qAvgScore = qtrVals.length ? (qtrVals.reduce((a,b)=>a+b,0)/5).toFixed(1) : 0;
-
-    const ys = document.getElementById('evalRadarYearScore'); if(ys) ys.innerHTML = `<span style="font-size:20px;font-weight:900;color:#334155;">${yAvgScore}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`;
-    const qsEl = document.getElementById('evalRadarQtrScore'); if(qsEl) qsEl.innerHTML = `<span style="font-size:20px;font-weight:900;color:${C_PRI};">${qAvgScore}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`;
-
-    const radarOpts = (data, color) => ({
-        type:'radar', data:{labels:RADAR_LABELS, datasets:[{data, backgroundColor:hexRgba(color,0.2), borderColor:color, borderWidth:2.5, pointBackgroundColor:color, pointRadius:4}]},
-        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:10}, scales:{ r:{ min:0, max:5, ticks:{display:false, stepSize:1}, pointLabels:{font:{size:11, weight:'bold'}, color:'#475569'}, grid:{color:'#e2e8f0'}, angleLines:{color:'#e2e8f0'} } }, plugins:{ legend:{display:false}, datalabels:{display:true, color:color, font:{weight:'900'}, formatter:v=>v>0?v.toFixed(1):'', anchor:'end', align:'end'}, tooltip:{backgroundColor:'rgba(30,41,59,.95)',callbacks:{label:c=>`${c.label}: ${c.raw.toFixed(1)}점`}} } }
-    });
-
-    CH.evalRadarYear = new Chart(cYear.getContext('2d'), radarOpts(yearAvgs, '#94a3b8'));
-    CH.evalRadarQtr = new Chart(cQtr.getContext('2d'), radarOpts(qtrVals, C_PRI));
+    document.getElementById('evalRadarYearScore').innerHTML = `<span style="font-size:20px;font-weight:900;color:#334155;">${yearAvgs.length?(yearAvgs.reduce((a,b)=>a+b,0)/5).toFixed(1):0}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`;
+    document.getElementById('evalRadarQtrScore').innerHTML = `<span style="font-size:20px;font-weight:900;color:#00428E;">${qtrVals.length?(qtrVals.reduce((a,b)=>a+b,0)/5).toFixed(1):0}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`;
+    
+    const radarOpts = (data, color) => ({ type:'radar', data:{labels:RADAR_LABELS, datasets:[{data, backgroundColor:hexRgba(color,0.2), borderColor:color, borderWidth:2.5, pointBackgroundColor:color, pointRadius:4}]}, options:{ responsive:true, maintainAspectRatio:false, layout:{padding:10}, scales:{ r:{ min:0, max:5, ticks:{display:false, stepSize:1}, pointLabels:{font:{size:11, weight:'bold'}, color:'#475569'}, grid:{color:'#e2e8f0'}, angleLines:{color:'#e2e8f0'} } }, plugins:{ legend:{display:false}, datalabels:{display:true, color:color, font:{weight:'900'}, formatter:v=>v>0?v.toFixed(1):'', anchor:'end', align:'end'} } } });
+    CH.evalRadarYear = new Chart(document.getElementById('evalRadarYear').getContext('2d'), radarOpts(yearAvgs, '#94a3b8'));
+    CH.evalRadarQtr = new Chart(document.getElementById('evalRadarQtr').getContext('2d'), radarOpts(qtrVals, '#00428E'));
 }
 
-// 역량평가 추이 요약표
 function renderEvalTrendTable(name, qs, isAll) {
-    const wrap = document.getElementById('evalTrendTableWrap'); if(!wrap) return;
     const rQs = [...qs].reverse();
-    let html = `<table class="eval-trend-table" style="width:100%; border-collapse:collapse; font-size:12px; text-align:center;"><thead><tr style="background:#F0F5FA; color:#00428E; font-weight:900;"><th style="padding:10px; border-radius:8px 0 0 8px;">분기</th>`;
-    RADAR_LABELS.forEach(l => html += `<th style="padding:10px;">${l}</th>`);
-    html += `<th style="padding:10px; border-radius:0 8px 8px 0;">평균</th></tr></thead><tbody>`;
-
+    let html = `<table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center;"><thead><tr style="background:#F0F5FA; color:#00428E; font-weight:900;"><th style="padding:10px; border-radius:8px 0 0 8px;">분기</th>` + RADAR_LABELS.map(l=>`<th style="padding:10px;">${l}</th>`).join('') + `<th style="padding:10px; border-radius:0 8px 8px 0;">평균</th></tr></thead><tbody>`;
     rQs.forEach((q, idx) => {
-        let curVals = null; let prevVals = null;
-        if(isAll) {
-            const evs = EVAL_DATA.filter(e=>e.q===q); curVals = evs.length ? RADAR_LABELS.map((_,i)=>evs.reduce((a,x)=>a+x.vals[i],0)/evs.length) : null;
-            const pEvs = rQs[idx+1] ? EVAL_DATA.filter(e=>e.q===rQs[idx+1]) : []; prevVals = pEvs.length ? RADAR_LABELS.map((_,i)=>pEvs.reduce((a,x)=>a+x.vals[i],0)/pEvs.length) : null;
-        } else {
-            const ev = EVAL_DATA.find(e => e.q === q && e.name === name); curVals = ev ? ev.vals : null;
-            const pEv = rQs[idx+1] ? EVAL_DATA.find(e => e.q === rQs[idx+1] && e.name === name) : null; prevVals = pEv ? pEv.vals : null;
-        }
-        
-        html += `<tr style="border-bottom:1px solid #f1f5f9; ${idx===0 ? 'background:#f8fafc;' : ''}"><td style="padding:12px 10px; font-weight:800; color:${idx===0 ? C_PRI : '#64748b'};">${q}</td>`;
+        const getVals = (qtr) => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===qtr) : EVAL_DATA.filter(e=>e.q===qtr&&e.name===name); return evs.length ? RADAR_LABELS.map((_,i)=>evs.reduce((a,x)=>a+x.vals[i],0)/evs.length) : null; };
+        const curVals = getVals(q); const prevVals = rQs[idx+1] ? getVals(rQs[idx+1]) : null;
+        html += `<tr style="border-bottom:1px solid #f1f5f9; ${idx===0?'background:#f8fafc;':''}"><td style="padding:12px 10px; font-weight:800; color:${idx===0?'#00428E':'#64748b'};">${q}</td>`;
         if(!curVals) { html += `<td colspan="6" style="padding:12px; color:#94a3b8;">데이터 없음</td></tr>`; return; }
-        
         const avg = curVals.reduce((a,b)=>a+b,0)/5;
         curVals.forEach((v, i) => {
-            let diffStr = '';
-            if(idx===0 && prevVals) { const diff = v - prevVals[i]; if(diff > 0) diffStr = `<span style="color:#22c55e; font-size:10px; display:block;">▲${diff.toFixed(1)}</span>`; else if(diff < 0) diffStr = `<span style="color:#ef4444; font-size:10px; display:block;">▼${Math.abs(diff).toFixed(1)}</span>`; }
+            let diffStr = ''; if(idx===0 && prevVals) { const diff = v - prevVals[i]; if(diff>0) diffStr=`<span style="color:#22c55e; font-size:10px; display:block;">▲${diff.toFixed(1)}</span>`; else if(diff<0) diffStr=`<span style="color:#ef4444; font-size:10px; display:block;">▼${Math.abs(diff).toFixed(1)}</span>`; }
             html += `<td style="padding:12px 10px;"><div style="font-weight:800; color:#334155;">${v.toFixed(1)}</div>${diffStr}</td>`;
         });
-        
-        let avgDiffStr = '';
-        if(idx===0 && prevVals) { const pAvg = prevVals.reduce((a,b)=>a+b,0)/5; const diff = avg - pAvg; if(diff > 0) avgDiffStr = `<span style="color:#22c55e; font-size:10px; display:block;">▲${diff.toFixed(1)}</span>`; else if(diff < 0) avgDiffStr = `<span style="color:#ef4444; font-size:10px; display:block;">▼${Math.abs(diff).toFixed(1)}</span>`; }
-        html += `<td style="padding:12px 10px;"><div style="font-weight:900; color:${C_PRI}; font-size:14px;">${avg.toFixed(1)}</div>${avgDiffStr}</td></tr>`;
+        let aDiff = ''; if(idx===0 && prevVals) { const diff = avg - (prevVals.reduce((a,b)=>a+b,0)/5); if(diff>0) aDiff=`<span style="color:#22c55e; font-size:10px; display:block;">▲${diff.toFixed(1)}</span>`; else if(diff<0) aDiff=`<span style="color:#ef4444; font-size:10px; display:block;">▼${Math.abs(diff).toFixed(1)}</span>`; }
+        html += `<td style="padding:12px 10px;"><div style="font-weight:900; color:#00428E; font-size:14px;">${avg.toFixed(1)}</div>${aDiff}</td></tr>`;
     });
-    wrap.innerHTML = html + `</tbody></table>`;
+    document.getElementById('evalTrendTableWrap').innerHTML = html + `</tbody></table>`;
 }
 
-// ----------------------------------------------------
-// Init
-// ----------------------------------------------------
 window.addEventListener('DOMContentLoaded', loadDataFromSheets);
 </script>
 </body>
