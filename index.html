@@ -15,18 +15,39 @@ body {
     font-weight: 600; color: #334155; background-color: #f4f7f9;
 }
 
-/* ✨ 배경 구슬 애니메이션 (은은하고 채도 낮은 톤) */
-.background-orbs { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; background-color: #f8fafc; }
-.orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; }
-.orb-1 { width: 450px; height: 450px; background: rgba(148, 163, 184, 0.25); top: 10%; left: 15%; animation: float1 22s infinite alternate ease-in-out; }
-.orb-2 { width: 600px; height: 600px; background: rgba(100, 116, 139, 0.2); top: 40%; right: 5%; animation: float2 28s infinite alternate-reverse ease-in-out; }
-.orb-3 { width: 350px; height: 350px; background: rgba(56, 189, 248, 0.2); bottom: 5%; left: 10%; animation: float3 20s infinite alternate ease-in-out; }
-.orb-4 { width: 500px; height: 500px; background: rgba(99, 102, 241, 0.15); top: -10%; right: 25%; animation: float1 32s infinite alternate-reverse ease-in-out; }
-.orb-5 { width: 300px; height: 300px; background: rgba(14, 165, 233, 0.2); bottom: 30%; right: 20%; animation: float2 24s infinite alternate ease-in-out; }
+/* ✨ 배경 구슬 애니메이션 (하드웨어 가속 강제 적용) */
+.background-orbs { 
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+    z-index: -1; pointer-events: none; overflow: hidden; background-color: #f8fafc; 
+}
+.orb { 
+    position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; 
+    /* 브라우저에게 "이 요소는 변형될 거니까 GPU를 써서 미리 준비해둬!" 라고 명령 */
+    will-change: transform; 
+}
 
-@keyframes float1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 80px) scale(1.1); } }
-@keyframes float2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-60px, 40px) scale(0.9); } }
-@keyframes float3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, -50px) scale(1.05); } }
+.orb-1 { width: 450px; height: 450px; background: rgba(148, 163, 184, 0.25); top: 10%; left: 15%; animation: float1 25s infinite ease-in-out; }
+.orb-2 { width: 600px; height: 600px; background: rgba(100, 116, 139, 0.2); top: 40%; right: 5%; animation: float2 30s infinite ease-in-out; }
+.orb-3 { width: 350px; height: 350px; background: rgba(56, 189, 248, 0.2); bottom: 5%; left: 10%; animation: float3 20s infinite ease-in-out; }
+.orb-4 { width: 500px; height: 500px; background: rgba(99, 102, 241, 0.15); top: -10%; right: 25%; animation: float1 35s infinite ease-in-out reverse; }
+.orb-5 { width: 300px; height: 300px; background: rgba(14, 165, 233, 0.2); bottom: 30%; right: 20%; animation: float2 22s infinite ease-in-out reverse; }
+
+/* translate 대신 translate3d를 쓰면 강제로 3D 그래픽 엔진(GPU)을 사용해 무조건 움직임 */
+@keyframes float1 { 
+    0% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+    50% { transform: translate3d(50px, 80px, 0px) scale(1.1); } 
+    100% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+}
+@keyframes float2 { 
+    0% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+    50% { transform: translate3d(-60px, 40px, 0px) scale(0.9); } 
+    100% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+}
+@keyframes float3 { 
+    0% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+    50% { transform: translate3d(40px, -50px, 0px) scale(1.05); } 
+    100% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+}
 
 /* 로딩 오버레이 */
 #loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#00428E,#4A90E2);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
