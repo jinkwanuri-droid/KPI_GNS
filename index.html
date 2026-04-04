@@ -12,43 +12,38 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Pretendard Variable', Pretendard, sans-serif !important; }
 body { 
     display:flex; min-height:100vh; flex-direction: column; padding-top: 68px; 
-    font-weight: 600; color: #334155; background-color: #eef2f6; /* 맑은 배경색 */
+    font-weight: 600; color: #334155; background-color: #f4f7f9;
 }
 
-/* ✨ 배경 구슬 애니메이션 (하드웨어 가속 + 속도/반경 증가 + 맑은 톤) */
+/* ✨ 배경 구슬 애니메이션 (하드웨어 가속 강제 + 맑고 부드러운 톤) */
 .background-orbs { 
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-    z-index: -1; pointer-events: none; overflow: hidden; 
+    z-index: -1; pointer-events: none; overflow: hidden; background-color: #f4f7f9;
 }
 .orb { 
-    position: absolute; border-radius: 50%; 
-    will-change: transform; /* GPU 가속 강제 */
+    position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.45;
+    will-change: transform; 
 }
+.orb-1 { width: 400px; height: 400px; background: rgba(59, 130, 246, 0.2); top: 10%; left: 15%; animation: float1 25s infinite ease-in-out; }
+.orb-2 { width: 600px; height: 600px; background: rgba(99, 102, 241, 0.15); top: 40%; right: 5%; animation: float2 30s infinite ease-in-out; }
+.orb-3 { width: 350px; height: 350px; background: rgba(14, 165, 233, 0.2); bottom: 5%; left: 10%; animation: float3 20s infinite ease-in-out; }
+.orb-4 { width: 500px; height: 500px; background: rgba(139, 92, 246, 0.15); top: -10%; right: 25%; animation: float1 35s infinite ease-in-out reverse; }
+.orb-5 { width: 300px; height: 300px; background: rgba(56, 189, 248, 0.2); bottom: 30%; right: 20%; animation: float2 22s infinite ease-in-out reverse; }
 
-/* 거대한 흰색 구슬 (빛 번짐 효과) */
-.orb-white-1 { width: 1200px; height: 1200px; background: rgba(255, 255, 255, 0.95); top: -30%; right: -20%; filter: blur(80px); animation: float1 25s infinite ease-in-out; }
-.orb-white-2 { width: 1000px; height: 1000px; background: rgba(255, 255, 255, 0.85); bottom: -30%; left: -15%; filter: blur(70px); animation: float2 22s infinite ease-in-out reverse; }
-
-/* 맑고 선명한 파란 구슬들 */
-.orb-blue-1 { width: 450px; height: 450px; background: #3b82f6; top: 30%; right: 10%; filter: blur(50px); opacity: 0.4; animation: float3 18s infinite ease-in-out; }
-.orb-blue-2 { width: 300px; height: 300px; background: #0ea5e9; bottom: 20%; left: 15%; filter: blur(40px); opacity: 0.45; animation: float1 15s infinite ease-in-out reverse; }
-.orb-blue-3 { width: 350px; height: 350px; background: #6366f1; top: 10%; left: 20%; filter: blur(55px); opacity: 0.35; animation: float2 20s infinite ease-in-out; }
-
-/* 큰 폭의 3D 이동을 통한 역동적인 꿀렁임 */
 @keyframes float1 { 
-    0% { transform: translate3d(0, 0, 0) scale(1); } 
-    50% { transform: translate3d(120px, 150px, 0) scale(1.15); } 
-    100% { transform: translate3d(0, 0, 0) scale(1); } 
+    0% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+    50% { transform: translate3d(120px, 150px, 0px) scale(1.1); } 
+    100% { transform: translate3d(0px, 0px, 0px) scale(1); } 
 }
 @keyframes float2 { 
-    0% { transform: translate3d(0, 0, 0) scale(1); } 
-    50% { transform: translate3d(-150px, 80px, 0) scale(0.9); } 
-    100% { transform: translate3d(0, 0, 0) scale(1); } 
+    0% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+    50% { transform: translate3d(-150px, 80px, 0px) scale(0.9); } 
+    100% { transform: translate3d(0px, 0px, 0px) scale(1); } 
 }
 @keyframes float3 { 
-    0% { transform: translate3d(0, 0, 0) scale(1); } 
-    50% { transform: translate3d(80px, -140px, 0) scale(1.1); } 
-    100% { transform: translate3d(0, 0, 0) scale(1); } 
+    0% { transform: translate3d(0px, 0px, 0px) scale(1); } 
+    50% { transform: translate3d(80px, -140px, 0px) scale(1.05); } 
+    100% { transform: translate3d(0px, 0px, 0px) scale(1); } 
 }
 
 /* 로딩 오버레이 */
@@ -61,7 +56,7 @@ body {
 .ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
 .ov-enter-btn{background:#fff;color:#00428E;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:800;cursor:pointer;margin-top:20px;display:none;}
 
-/* 탑 바 네비게이션 */
+/* 탑 바 네비게이션 (Flex 3분할) */
 .topbar { position: fixed; top: 0; left: 0; right: 0; height: 68px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
 .topbar-logo { flex: 1 1 0; font-size: 22px; font-weight: 900; color: #00428E; letter-spacing: 1.5px; }
 .topbar-center { flex: none; display: flex; align-items: center; position: relative; height: 100%; }
@@ -100,16 +95,14 @@ body {
 .reset-btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: transparent; border: none; color: #94a3b8; cursor: pointer; border-radius: 50%; transition: all 0.2s;}
 .reset-btn:hover { background: #F0F5FA; color: #00428E; }
 
-/* ✨ 메인 레이아웃 및 카드 공통 */
+/* ✨ 메인 레이아웃 (카드 공통 패딩 25px 유지) */
 .main { flex: 1; padding: 25px 30px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 1500px; margin: 0 auto; position: relative; z-index: 10; }
-.dash-row-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.dash-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.dash-row-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } /* 1:1 배치 */
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
 
-/* 카드섹션 불투명도 및 블러 효과 적용 */
 .card, .eval-trend-card, .eval-table-card { 
-    background: rgba(255, 255, 255, 0.55); 
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.65); 
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 16px; padding: 25px; box-shadow: 0 4px 16px rgba(31, 38, 135, 0.05); position: relative; display: flex; flex-direction: column; overflow: visible; 
 }
@@ -117,11 +110,12 @@ body {
 .eval-table-card { height: auto; min-height: 350px; }
 .card-section-title, .eval-trend-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
 .card-title-left { display: flex; align-items: center; gap: 6px; }
+.card-value { font-size: 26px; font-weight: 800; color: #0f172a; }
 .kpi-card { overflow: hidden; padding: 15px 20px; } 
 
 /* 툴팁 */
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; z-index: 9999; }
-.info-icon { width: 16px; height: 16px; background: rgba(203, 213, 225, 0.8); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.info-icon { width: 16px; height: 16px; background: #cbd5e1; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .info-wrap:hover .info-icon { background: #00428E; }
 .info-tooltip { position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%); width: auto; min-width: 320px; background: rgba(30,41,59,0.98); color: #f8fafc; font-size: 12px; line-height: 1.6; padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 9999; pointer-events: none; font-weight: 500; text-align: left; }
 .info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 160%; }
@@ -136,7 +130,7 @@ body {
 .progress-bar { height: 8px; background: rgba(240, 245, 250, 0.8); border-radius: 10px; overflow: hidden; }
 .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
 
-/* ✨ TOP 7 리스트 디자인 최적화 (폰트 확대 적용) */
+/* ✨ TOP 7 리스트 디자인 최적화 (폰트 13px로 크게) */
 .top5-rank-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 6px; margin-left: 0; }
 .top5-rank-item { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; transition: all .2s; cursor: pointer; }
 .top5-rank-item:hover, .top5-rank-item.active { background: rgba(255, 255, 255, 0.5); }
@@ -155,26 +149,23 @@ body {
 .view-section.active { display: flex; flex-direction: column; gap: 15px; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ✨ Working 탭 공통 및 구분선 */
+/* ✨ Working 탭 레이아웃 */
 .working-content { display: flex; flex-direction: column; gap: 15px; width: 100%; }
-.eval-profile-card { background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 20px; padding: 25px; box-shadow: 0 4px 16px rgba(31, 38, 135, 0.05); height: auto; display: flex; flex-direction: column; position: relative; overflow:hidden; }
-.ai-coach-box { background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(240,245,250,0.8) 100%); border: 1px solid rgba(255,255,255,0.9); border-left: 4px solid #00428E; padding: 16px 20px; border-radius: 12px; font-size: 13px; color: #1e293b; font-weight: 600; line-height: 1.6; display: flex; align-items: center; gap: 12px; margin-top: 15px; }
+.eval-profile-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-radius: 20px; padding: 25px; box-shadow: 0 4px 16px rgba(31, 38, 135, 0.05); height: auto; display: flex; flex-direction: column; position: relative; overflow:hidden; }
+.ai-coach-box { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(240,245,250,0.7) 100%); border: 1px solid rgba(255,255,255,0.8); border-left: 4px solid #00428E; padding: 16px 20px; border-radius: 12px; font-size: 13px; color: #1e293b; font-weight: 600; line-height: 1.6; display: flex; align-items: center; gap: 12px; margin-top: 15px; }
 
 /* 범례 아이템 공통 */
 .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#475569; cursor:pointer; transition:opacity 0.2s; padding:4px 6px; border-radius:6px; }
 .legend-item:hover { background:rgba(255, 255, 255, 0.5); }
 .legend-item.dimmed { opacity:0.3; }
-.legend-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
-
-.split-card-wrap { display: flex; flex-direction: column; gap: 15px; height: 100%; }
-.split-card-item { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
 
 /* 섹션 구분선 */
 .section-divider { margin: 15px 0 5px 0; padding-top: 25px; border-top: 2px solid rgba(226, 232, 240, 0.6); display:flex; align-items:center; }
 .section-divider h2 { font-size: 20px; font-weight: 800; color: #1e293b; letter-spacing: 0.5px; }
 
 @media(max-width:1200px){
-  .dash-row-1, .dash-row-2 { grid-template-columns: 1fr; }
+  .dash-row-1 { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
   .working-top-row { grid-template-columns: 1fr !important; }
   .overall-wrap { flex-direction: column !important; height: auto !important; }
@@ -185,12 +176,11 @@ body {
 
 <!-- ✨ 뒷배경 구슬 애니메이션 요소 -->
 <div class="background-orbs">
-  <div class="orb orb-white-1"></div>
-  <div class="orb orb-white-2"></div>
-  <div class="orb orb-light-1"></div>
-  <div class="orb orb-blue-1"></div>
-  <div class="orb orb-blue-2"></div>
-  <div class="orb orb-blue-3"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+  <div class="orb orb-5"></div>
 </div>
 
 <div id="loadingOverlay">
@@ -241,15 +231,15 @@ body {
   <!-- 1. [Project] 탭 -->
   <div id="view-dashboard" class="view-section active">
       
-    <!-- ✨ 1행: OVERALL(좌 1.4) + Team Grid(우 1) -->
+    <!-- ✨ 최상단 레이아웃 개편: OVERALL(좌 1.4) + Team Grid(우 1) -->
     <div class="overall-wrap" style="display:flex; gap:15px; margin-bottom: 5px;">
-        <!-- LEFT: OVERALL Card -->
+        <!-- LEFT: OVERALL Card (비율 크게 확보) -->
         <div class="card" style="flex: 1.4; display:flex; flex-direction:column; gap:25px;">
             <div class="card-section-title" style="margin-bottom:0;">
                 <span class="card-title-left" style="font-size:20px; color:#00428E; font-weight:900;">PROJECT OVERALL</span>
             </div>
             
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.8); padding:20px 25px; border-radius:12px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; background:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.8); padding:20px 25px; border-radius:12px;">
                 <div>
                     <div style="font-size:13px; color:#64748b; font-weight:600; margin-bottom:6px;">선택 기간 총 투입</div>
                     <div style="font-size:30px; font-weight:800; color:#00428E;" id="ovTotalHour">0h</div>
@@ -278,7 +268,7 @@ body {
             </div>
         </div>
         
-        <!-- RIGHT: 팀원 2x2 그리드 & 설계단계 막대 -->
+        <!-- RIGHT: 팀원 2x2 그리드 & 설계단계 막대차트 -->
         <div style="flex: 1; display:flex; flex-direction:column; gap:15px; height:100%;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;" id="topKpiGrid"></div>
             
@@ -301,7 +291,7 @@ body {
         <div style="flex:1; min-height:0; margin-top:5px;"><canvas id="stageChart"></canvas></div>
     </div>
     
-    <!-- 3행 (분류별 TOP 7 & 월별 통합 추이, 1:1 배치) -->
+    <!-- ✨ 3행 (분류별 TOP 7 & 월별 통합 추이, 1:1 배치) -->
     <div class="dash-row-1" style="margin-top: 5px;">
       <div class="card" style="height:400px;">
         <div class="card-section-title">분류별 업무 투입시간 및 TOP 7</div>
@@ -361,7 +351,7 @@ body {
       
       <div class="card" style="height:320px;">
           <div class="card-section-title">
-              <span class="card-title-left">월별 9h 이상 초과근무 발생 건수 (팀 합산)</span>
+              <span class="card-title-left">월별 9h 이상 발생 건수 <span style="font-size:11px; color:#94a3b8; font-weight:600;">(팀 합산)</span></span>
               <div id="dashMonthlyOtLegendWrap" style="display:flex; gap:6px;"></div>
           </div>
           <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
@@ -388,8 +378,9 @@ body {
   <!-- ✨ 2. [Working] 탭 (상단 1:1, 하단 3열 균등) -->
   <div id="view-members" class="view-section">
     <div class="working-content" id="workingContent">
+        
         <!-- 상단 1:1 배치 -->
-        <div class="working-top-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="dash-row-1">
             <div class="eval-profile-card" id="workingProfileCard" style="margin-bottom:0; height:100%;"></div>
             <div class="eval-trend-card" style="height:100%;">
                 <div class="eval-trend-title">분류별 업무 투입시간 추이</div>
@@ -408,9 +399,9 @@ body {
             <div class="eval-trend-card"><div class="eval-trend-title">업무량 지속성 (허스트 지수)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="dpHurstChart"></canvas><div id="dpHurstTxt" style="position:absolute;top:65%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none; width:100%;"></div></div></div>
             <div class="eval-table-card" style="height:350px;"><div class="card-section-title" style="margin-bottom:0;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div><div style="overflow-x:auto; height:100%; display:flex; flex-direction:column; justify-content:center; margin-top:10px;"><table class="heat-table" id="dpHeatTable" style="height:100%;"></table></div></div>
             
-            <div class="eval-trend-card split-card-wrap" style="height:450px;"><div class="split-card-item"><div class="eval-trend-title">설계단계별 비중 / 파편화</div><div style="flex:1; display:flex; gap:10px;"><div style="flex:1; position:relative;"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div><div style="flex:1; display:flex; flex-direction:column; gap:10px;"><div style="flex:1;"><canvas id="dpFocusBar"></canvas></div><div style="flex:1;"><canvas id="dpSwitchBar"></canvas></div></div></div></div></div>
-            <div class="eval-table-card split-card-wrap" style="height:450px; background:transparent; padding:0; border:none; box-shadow:none;"><div class="card" style="flex:1; min-height:0; margin-bottom:0;" id="dpOvertimeCardWrap"></div><div class="card" style="flex:1; min-height:0; margin-bottom:0;"><div class="card-section-title">연속 최장 출근일 TOP 3</div><div id="dpContinuityWrap" style="flex:1; overflow-y:auto; margin-top:5px;"></div></div></div>
-            <div class="eval-table-card" style="height:450px; border:1px dashed rgba(203,213,225,0.6); background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">데이터 준비 중</div>
+            <div class="eval-trend-card"><div class="eval-trend-title">설계단계별 비중 / 파편화</div><div style="flex:1; display:flex; gap:10px;"><div style="flex:1; position:relative;"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div><div style="flex:1; display:flex; flex-direction:column; gap:10px;"><div style="flex:1;"><canvas id="dpFocusBar"></canvas></div><div style="flex:1;"><canvas id="dpSwitchBar"></canvas></div></div></div></div>
+            <div class="eval-table-card"><div class="card-section-title">연속 최장 출근일 TOP 3</div><div id="dpContinuityWrap" style="flex:1; overflow-y:auto; margin-top:10px;"></div></div>
+            <div class="eval-table-card" style="border:1px dashed rgba(203,213,225,0.6); background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">데이터 준비 중</div>
         </div>
     </div>
   </div>
@@ -421,7 +412,7 @@ body {
       <div class="grid-3">
           <div class="eval-trend-card"><div class="eval-trend-title">분기별 역량 점수 추이 <span style="font-size:11px;color:#ef4444;margin-left:8px;font-weight:600;">(🔴 주요일정)</span></div><div style="flex:1; min-height:0; margin-top:5px;"><canvas id="evalTrendChart"></canvas></div><div class="legend" style="justify-content:center;margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;" id="evalTrendLegend"></div></div>
           <div class="eval-trend-card"><div class="eval-trend-title">주력 업무 투입시간 (소분류)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="evalDonutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:16px;font-weight:900;color:#1e293b;" id="evalDonutCenter">-</div></div></div><div class="eval-top3-box-row" id="evalTop2Row" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px;"></div></div>
-          <div class="eval-trend-card" style="display:flex; flex-direction:column;"><div class="eval-trend-title">고득점 분기 vs 평균 분기</div><div style="display:flex; gap:10px; flex:1; margin-top:5px;" id="highVsAvgChartsWrap"><div style="flex:1; position:relative; background:rgba(255,255,255,0.5); border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div><div style="flex:1; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:rgba(241,245,249,0.5); border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 평균 분기</div><div style="flex:1; position:relative;"><canvas id="chartAvgQ"></canvas></div></div></div><div id="highVsAvgLegend" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div></div>
+          <div class="eval-trend-card" style="display:flex; flex-direction:column;"><div class="eval-trend-title">고득점 분기 vs 평균 분기</div><div style="display:flex; gap:10px; flex:1; margin-top:5px;" id="highVsAvgChartsWrap"><div style="flex:1; position:relative; background:rgba(240,245,250,0.8); border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div><div style="flex:1; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:rgba(241,245,249,0.8); border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 평균 분기</div><div style="flex:1; position:relative;"><canvas id="chartAvgQ"></canvas></div></div></div><div id="highVsAvgLegend" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div></div>
           <div class="eval-table-card" style="text-align:center;"><div id="evalRadarYearLabel" style="font-size:14px; font-weight:900; color:#64748b; margin-bottom:10px;">PJ 전체 평균 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarYear"></canvas></div><div id="evalRadarYearScore" style="margin-top:10px;"></div></div>
           <div class="eval-table-card" style="text-align:center;"><div id="evalRadarQtrLabel" style="font-size:14px; font-weight:900; color:#00428E; margin-bottom:10px;">해당 분기 개인 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarQtr"></canvas></div><div id="evalRadarQtrScore" style="margin-top:10px;"></div></div>
           <div class="eval-table-card" id="kpiOvertimeCardWrap"></div>
@@ -438,11 +429,12 @@ const I_BULB = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stro
 const I_TROP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
 const I_AI   = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00428E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 
-// ✨ 프로필 이미지 매핑 (안전한 상대경로)
+// 프로필 이미지 매핑 (안전한 상대경로)
 const PROFILE_IMG = { '윤진관':'./jk.yoon.jpg', '김효언':'./he.kim.jpg', '정인태':'./intae.jeoung.jpg', '이혜인B':'./hi.lee2.jpg' };
 const DYNAMIC_COLORS = ['#00428E', '#7545fb', '#14b8a6', '#eb5f8c', '#f59e0b', '#f97316', '#ec4899', '#8b5cf6'];
 const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계']; const CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
 const SUB_PAL = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f7','#f43f5e','#f97316','#facc15','#4ade80','#14b8a6'];
+// 초과근무 색상 (파란/보라 계열)
 const OT_COLORS = ['#818cf8', '#6366f1', '#4A90E2', '#00428E'];
 const RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력']; const RADAR_COLORS_ARR = ['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
@@ -499,7 +491,6 @@ async function loadDataFromSheets(){
     SCHEDULE_DATA = json.schedule || [];
     EVAL_DATA=(json.eval||[]).map(r=>{ const qtr=String(r['분기']).trim(); const qF=qtr.startsWith('Q')?qtr:'Q'+qtr; return { q: `${r['연도']}-${qF}`, name: String(r['성명']).trim(), vals: [parseFloat(r['적극성'])||0,parseFloat(r['생산성'])||0,parseFloat(r['전문성'])||0,parseFloat(r['창의성'])||0,parseFloat(r['협업능력'])||0] }; }).filter(d=>d.name&&d.q);
     
-    // 프로젝트 필드 처리
     RAW=(json.work||[]).filter(r=>r.name&&r.date&&r.min>0).map(r=>({ 
         name:String(r.name).trim(), pos:String(r.pos||'').trim(), date:String(r.date).slice(0,10), cat:String(r.cat||'미분류').trim(), sub:String(r.sub||'기타').trim(), 
         project:String(r.project||r['프로젝트']||'경상남도 서부의료원').trim(), 
@@ -563,7 +554,6 @@ function renderDashboardTab() {
   document.getElementById('ovTotalMember').innerText = MEMBERS.length + '명';
   document.getElementById('ovTotalMonth').innerText = mos.length + '개월';
   renderOvProjectRatio(all); 
-  renderOvMonthlyOt(all, mos); // 이 차트는 여기서만 렌더링 (아래에서 중복 삭제)
   
   // 팀원 카드 2x2
   const grid=document.getElementById('topKpiGrid'); grid.innerHTML='';
@@ -576,7 +566,9 @@ function renderDashboardTab() {
   
   renderDashStage(all); renderDashCompare(all); 
   renderDashDonutAndTop7(all); renderDashTimeline(all, mos); 
+  
   renderDashHeat(all); renderDashOvertimeBars(all); renderDashOvertimeDonut(all);
+  renderDashMonthlyOvertime(all, mos);
   
   const weeks = [...new Set(all.map(r=>r.week))].sort();
   renderShannonHhiCv(all, weeks, '#00428E', 'pj');
@@ -592,57 +584,6 @@ function renderOvProjectRatio(all) {
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, color: '#475569', font: { weight: 'bold', size: 11 }, formatter: v=>v>0?formatNum(v)+'h':'', anchor: 'end', align: 'top' } }, scales: { x: { grid: { display: false }, ticks:{font:{size:11, weight:600}} }, y: { display:false, grace:'20%' } } }
     });
 }
-
-// ✨ OVERALL: 월별 9h 발생 건수 (누적 막대, 클릭 연동, 다크그레이 텍스트)
-function renderOvMonthlyOt(all, mos) {
-    destroyChart('ovMonthlyOtBar');
-    const bands = ['9~10h', '10~11h', '11~12h', '12h 이상']; let bandData = [[], [], [], []];
-    mos.forEach(m => {
-        const mData = all.filter(r => r.date.startsWith(m));
-        const pDates = {}; mData.forEach(r => pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min);
-        let c = [0,0,0,0];
-        for(let k in pDates) { const min=pDates[k]; if(min>=540&&min<600) c[0]++; else if(min>=600&&min<660) c[1]++; else if(min>=660&&min<720) c[2]++; else if(min>=720) c[3]++; }
-        c.forEach((v,i) => bandData[i].push(v));
-    });
-
-    document.getElementById('ovMonthlyOtLegend').innerHTML = bands.map((b, i) => {
-        const isDim = hlMonthlyOt !== null && hlMonthlyOt !== b;
-        return `<div class="legend-item ${isDim?'dimmed':''}" onclick="ovToggleMonthlyOt('${b}')"><div class="legend-dot" style="background:${OT_COLORS[i]}"></div><span style="font-size:10px;">${b}</span></div>`;
-    }).join('');
-
-    const datasets = bands.map((b, i) => ({
-        label: b, data: bandData[i], 
-        backgroundColor: (hlMonthlyOt===null || hlMonthlyOt===b) ? OT_COLORS[i] : '#e2e8f0', 
-        stack: 'Stack 0', borderRadius: 2
-    }));
-
-    CH.ovMonthlyOtBar = new Chart(document.getElementById('ovMonthlyOtBar').getContext('2d'), {
-        type: 'bar', data: { labels: mos, datasets: datasets },
-        options: { 
-            responsive: true, maintainAspectRatio: false, 
-            plugins: { 
-                legend: { display: false }, 
-                datalabels: { 
-                    display: function(ctx) { 
-                        if(hlMonthlyOt!==null) return ctx.dataset.label === hlMonthlyOt && ctx.dataset.data[ctx.dataIndex] > 0;
-                        return ctx.datasetIndex === 3 && ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) > 0; 
-                    },
-                    color: '#475569', font: { weight: 'bold', size: 11 }, anchor: 'end', align: 'end', offset: 2,
-                    formatter: (v, ctx) => { 
-                        if(hlMonthlyOt!==null) return v + '건';
-                        return ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) + '건'; 
-                    } 
-                } 
-            }, 
-            scales: { x: { stacked:true, grid: { display: false } }, y: { stacked:true, display:false, grace: '20%' } },
-            onClick: (e, els) => {
-                if(els.length) ovToggleMonthlyOt(CH.ovMonthlyOtBar.data.datasets[els[0].datasetIndex].label);
-                else { hlMonthlyOt = null; renderOvMonthlyOt(filtered(), getMos(filtered())); }
-            }
-        }
-    });
-}
-function ovToggleMonthlyOt(b) { hlMonthlyOt = hlMonthlyOt === b ? null : b; renderOvMonthlyOt(filtered(), getMos(filtered())); }
 
 // 단계별 투입비율 (가로 막대 꽉차게, 라벨)
 function renderDashStage(all) { 
@@ -752,7 +693,7 @@ function renderDashDonutAndTop7(all) {
 }
 function dashToggleDonut(k) { hlDonutWork = hlDonutWork === k ? null : k; renderDashDonutAndTop7(filtered()); }
 
-// ✨ 통합 추이 (음수 방지, 최댓값/최솟값만)
+// ✨ 통합 추이 (점 축소, 음수 안나오게 최솟값 0, 0 제외 최대/최소만 표시)
 function renderDashTimeline(all, mos) {
   destroyChart('timeline'); const ctx = document.getElementById('timelineChart').getContext('2d');
   const dss=MEMBERS.map(name=>{ 
@@ -780,6 +721,8 @@ function renderDashTimeline(all, mos) {
                       const nonZeroD = d.filter(v => v > 0);
                       if(nonZeroD.length === 0) return false;
                       const min = Math.min(...nonZeroD); const max = Math.max(...nonZeroD);
+                      
+                      // 여러 개의 최솟값/최댓값이 있을 때 가장 처음 발견되는 것만 표시 (깔끔하게)
                       const isMax = val === max && d.indexOf(max) === ctx.dataIndex;
                       const isMin = val === min && d.indexOf(min) === ctx.dataIndex;
                       return isMax || isMin; 
@@ -850,6 +793,58 @@ function renderDashOvertimeDonut(all) {
 }
 function dashToggleOvertimeDonut(name) { hlOvertimeDonut = hlOvertimeDonut === name ? null : name; renderDashOvertimeDonut(filtered()); }
 
+// ✨ 월별 9h 이상 발생 건수 (누적 막대, 클릭 연동, 다크그레이 텍스트)
+function renderDashMonthlyOvertime(all, mos) {
+    destroyChart('dashMonthlyOvertimeChart');
+    
+    const bands = ['9~10h', '10~11h', '11~12h', '12h 이상']; let bandData = [[], [], [], []];
+    mos.forEach(m => {
+        const mData = all.filter(r => r.date.startsWith(m));
+        const pDates = {}; mData.forEach(r => pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min);
+        let c = [0,0,0,0];
+        for(let k in pDates) { const min=pDates[k]; if(min>=540&&min<600) c[0]++; else if(min>=600&&min<660) c[1]++; else if(min>=660&&min<720) c[2]++; else if(min>=720) c[3]++; }
+        c.forEach((v,i) => bandData[i].push(v));
+    });
+
+    document.getElementById('dashMonthlyOtLegendWrap').innerHTML = bands.map((b, i) => {
+        const isDim = hlMonthlyOt !== null && hlMonthlyOt !== b;
+        return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleMonthlyOt('${b}')"><div class="legend-dot" style="background:${OT_COLORS[i]}"></div><span style="font-size:10px;">${b}</span></div>`;
+    }).join('');
+
+    const datasets = bands.map((b, i) => ({
+        label: b, data: bandData[i], 
+        backgroundColor: (hlMonthlyOt===null || hlMonthlyOt===b) ? OT_COLORS[i] : '#e2e8f0', 
+        stack: 'Stack 0', borderRadius: 2
+    }));
+
+    CH.dashMonthlyOvertimeChart = new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'), {
+        type: 'bar', data: { labels: mos, datasets: datasets },
+        options: { 
+            responsive: true, maintainAspectRatio: false, 
+            plugins: { 
+                legend: { display: false }, 
+                datalabels: { 
+                    display: function(ctx) { 
+                        if(hlMonthlyOt!==null) return ctx.dataset.label === hlMonthlyOt && ctx.dataset.data[ctx.dataIndex] > 0;
+                        return ctx.datasetIndex === 3 && ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) > 0; 
+                    },
+                    color: '#475569', font: { weight: 'bold', size: 11 }, anchor: 'end', align: 'end', offset: 2,
+                    formatter: (v, ctx) => { 
+                        if(hlMonthlyOt!==null) return v + '건';
+                        return ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) + '건'; 
+                    } 
+                } 
+            }, 
+            scales: { x: { stacked:true, grid: { display: false } }, y: { stacked:true, display:false, grace: '20%' } },
+            onClick: (e, els) => {
+                if(els.length) dashToggleMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label);
+                else { hlMonthlyOt = null; renderDashMonthlyOvertime(filtered(), getMos(filtered())); }
+            }
+        }
+    });
+}
+function dashToggleMonthlyOt(b) { hlMonthlyOt = hlMonthlyOt === b ? null : b; renderDashMonthlyOvertime(filtered(), getMos(filtered())); }
+
 
 // 공통 고급분석 차트 렌더링 함수
 function renderShannonHhiCv(d, weeks, color, prefix) {
@@ -874,20 +869,13 @@ function renderShannonHhiCv(d, weeks, color, prefix) {
         document.getElementById('ovAvgCv').innerText = avgC.toFixed(2);
     }
 
-    const opts = (yTitle, maxVal) => {
-        const config = { responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{display:false} }, scales: { x:{grid:{display:false}, ticks:{maxTicksLimit:8}}, y:{title:{display:true,text:yTitle}, grid:{color:'rgba(226,232,240,0.5)'}, min:0} } };
-        // ✨ 여기서 maxVal이 있으면 적용, 없으면 자동 스케일링하게 만들어 에러를 원천 차단합니다.
-        if (maxVal !== undefined) config.scales.y.max = maxVal;
-        return config;
-    };
-    
+    const opts = (yTitle, maxVal) => ({ responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{display:false} }, scales: { x:{grid:{display:false}, ticks:{maxTicksLimit:8}}, y:{title:{display:true,text:yTitle}, grid:{color:'rgba(226,232,240,0.5)'}, min:0, max:maxVal} } });
     if(document.getElementById(prefix+'ShannonChart')) {
         CH[prefix+'ShannonChart'] = new Chart(document.getElementById(prefix+'ShannonChart').getContext('2d'), { type:'line', data:{datasets:[{data:sData, borderColor:'#14b8a6', backgroundColor:hexRgba('#14b8a6',0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:0}]}, options: opts('다양성 지수') });
         CH[prefix+'HhiChart'] = new Chart(document.getElementById(prefix+'HhiChart').getContext('2d'), { type:'line', data:{datasets:[{data:hData, borderColor:'#f59e0b', backgroundColor:hexRgba('#f59e0b',0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:0}]}, options: opts('집중도 지수', 1.0) });
         CH[prefix+'CvChart'] = new Chart(document.getElementById(prefix+'CvChart').getContext('2d'), { type:'line', data:{datasets:[{data:cvData, borderColor:color, backgroundColor:hexRgba(color,0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:0}]}, options: opts('변동성 (CV)') });
     }
 }
-
 
 /* =========================================================
    2. [Working] 탭
