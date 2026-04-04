@@ -12,7 +12,7 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Pretendard Variable', Pretendard, sans-serif !important; }
 body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px; font-weight: 600; color: #334155; background-color: #f4f7f9; }
 
-/* ✨ 배경 구슬 애니메이션 (먼지 제거, 작은 구슬 빠르게 여러 개) */
+/* 배경 구슬 애니메이션 (먼지 제거, 작은 구슬 빠르게 여러 개) */
 .background-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; background-color: #f4f7f9; }
 .orb { position: absolute; border-radius: 50%; filter: blur(30px); opacity: 0.4; will-change: transform; }
 .orb-1 { width: 120px; height: 120px; background: rgba(59, 130, 246, 0.6); top: 15%; left: 10%; animation: floatS 8s infinite alternate ease-in-out; }
@@ -35,12 +35,14 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .ov-progress { width:260px; height:5px; background:rgba(255,255,255,.2); border-radius:10px; margin-top:12px; }
 .ov-progress-fill { height:100%; background:#fff; border-radius:10px; transition:width .4s ease; width:0%; }
-.ov-enter-btn { background:#fff; color:#00428E; border:none; border-radius:12px; padding:14px 40px; font-size:16px; font-weight:800; cursor:pointer; margin-top:20px; display:none; }
+/* ✨ 로딩 버튼 레이아웃 고정 (화면 흔들림 방지) */
+.ov-enter-btn { background:#fff; color:#00428E; border:none; border-radius:12px; padding:14px 40px; font-size:16px; font-weight:800; cursor:pointer; margin-top:20px; display:block; visibility: hidden; opacity: 0; transition: opacity 0.5s ease; }
+.ov-enter-btn.show { visibility: visible; opacity: 1; }
 
 /* 탑 바 네비게이션 (높이 75px, 글래스모피즘) */
 .topbar { position: fixed; top: 0; left: 0; right: 0; height: 75px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(31, 38, 135, 0.05); }
 
-/* ✨ 로고 디자인 컨테이너 */
+/* 로고 디자인 컨테이너 */
 .logo-container { display:flex; align-items:center; gap:15px; cursor: default; }
 .logo-left-block { display:flex; flex-direction:column; justify-content:center; }
 .logo-title { font-size: 29px; font-weight: 900; letter-spacing: -0.05em; line-height: 1; }
@@ -117,10 +119,13 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .top5-rank-item.dimmed { opacity: 0.25; }
 .top5-rank-badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .top5-rank-name { flex: 1; font-size: 13px !important; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ✨ 히트맵 내부 글자 조정 및 트랜지션 연장 */
 .heat-table { border-collapse: separate; border-spacing: 2px; width: 100%; height: 100%; table-layout: fixed; }
 .heat-table th { font-size: 11px; color: #94a3b8; font-weight: 700; text-align: center; padding: 2px; }
-.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; cursor:pointer; transition:transform .15s; }
+.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor:pointer; transition: all 0.2s; }
 .hm-cell:hover { transform: scale(1.4); z-index: 10; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
 .tab-btn-sm { padding: 4px 10px; border-radius: 20px; border: none; font-size: 11px; font-weight: 600; background: #00428E; color: #fff; cursor: pointer; }
 .view-section { display: none; animation: fadeIn 0.4s ease forwards; }
 .view-section.active { display: flex; flex-direction: column; gap: 15px; }
@@ -271,9 +276,10 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         </div>
       </div>
       <div class="card" style="height:350px;">
+        <!-- ✨ 범례 복구 -->
         <div class="card-section-title">
           <span class="card-title-left">설계단계별 투입시간 <span style="font-size:11px; color:#94a3b8; font-weight:600;">(단계 연동 하이라이트)</span></span>
-          <div id="dashCompareLegendWrap" style="display:flex; gap:6px; opacity:0; pointer-events:none; position:absolute; right:20px; top:20px;"></div>
+          <div id="dashCompareLegendWrap" style="display:flex; gap:6px;"></div>
         </div>
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="compareChart"></canvas></div>
       </div>
@@ -311,7 +317,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:0; position:relative; margin-top:10px;"><canvas id="dashOvertimeBarChart"></canvas></div>
       </div>
       
-      <!-- ✨ 팀원별 초과근무 도넛 차트 (축소 및 연동) -->
+      <!-- 팀원별 초과근무 도넛 차트 -->
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:flex-start;">
           <span class="card-title-left">팀원별 초과근무 발생 비율</span>
@@ -421,7 +427,9 @@ let MEMBERS = [], MC = {}, INITIALS = {};
 let SCHEDULE_DATA = [], EVAL_DATA = [], RAW = [];
 let CH = {}, GLOBAL_MEMBER = 'ALL';
 let hlCompare=null, hlTimeline=null, hlStage=null, hlOvertimeDonut=null, hlMonthlyOt=null, hlDonutWork=null, hlPjRatio=null;
-let hlOvertimeRange=null; // ✨ 일별 초과근무 막대 클릭 상태 (0,1,2,3)
+let hlOvertimeRange=null; // ✨ 초과근무 막대 클릭 상태
+let hlHeatBin=null; // ✨ 히트맵 클릭 상태 (0~5 구간)
+
 const OVERTIME_RANGES = ['9~10h', '10~11h', '11~12h', '12h 이상'];
 
 window.filterStartIndex = 0; window.filterEndIndex = 11; window.lastClickedIndex = 0;
@@ -433,7 +441,7 @@ Chart.defaults.animation.duration = 400;
 Chart.defaults.font.family = "'Pretendard Variable', Pretendard, sans-serif";
 Chart.register(ChartDataLabels);
 
-// ✨ 모든 차트의 툴팁이 마우스 커서를 따라다니게 설정
+// ✨ 툴팁을 마우스 커서 위치에 띄우도록 설정
 Chart.Tooltip.positioners.cursor = function(elements, eventPosition) { return { x: eventPosition.x, y: eventPosition.y }; };
 Chart.defaults.plugins.tooltip.position = 'cursor';
 
@@ -496,13 +504,13 @@ async function loadDataFromSheets() {
       document.getElementById('ovSpinner').style.display='none';
       document.getElementById('ovProgressWrap').style.display='none';
       document.getElementById('ovMsg').style.display='none';
-      document.getElementById('ovEnterBtn').style.display='block';
+      // ✨ 버튼을 visible로 변경 (레이아웃 유지)
+      document.getElementById('ovEnterBtn').classList.add('show');
     }, 500);
   } catch(err) {
     document.getElementById('ovMsg').innerHTML = `<span style="color:#ff8585;">❌ 연결 실패: ${err.message}</span>`;
     document.getElementById('ovSpinner').style.display='none';
-    document.getElementById('ovEnterBtn').style.display='block';
-    document.getElementById('ovEnterBtn').textContent = '대시보드 입장하기';
+    document.getElementById('ovEnterBtn').classList.add('show');
   }
 }
 
@@ -548,7 +556,6 @@ function renderDashboardTab(){
   const all=filtered(); if(!all.length) return;
   const totalMin=all.reduce((s,r)=>s+r.min,0); const mos=getMos(all);
   
-  // ✨ 서부의료원 데이터 추출
   const pjData=all.filter(r=>r.project==='경남 서부의료원'); const pjMos=getMos(pjData);
   
   document.getElementById('ovTotalHour').innerText=formatHour(totalMin)+'h';
@@ -613,17 +620,12 @@ function renderDashStage(all){
   });
   document.getElementById('stageCenter').innerText=formatHour(tot)+'h';
 }
-// ✨ 도넛 조각 클릭 시 단계(막대) 연동
 function dashToggleStage(cat){ hlStage=hlStage===cat?null:cat; const pjData = filtered().filter(r=>r.project==='경남 서부의료원'); renderDashStage(pjData); renderDashCompare(pjData); }
 
-// ✨ 단계별 막대 차트 (hlStage 상태에 따라 색상 연동)
 function renderDashCompare(all){
   destroyChart('compare'); if(!all.length) return;
   const dss=MEMBERS.map(name=>{ 
-      const bgColors = CAT_ORDER.map(c => {
-          if (hlStage !== null && hlStage !== c) return '#e2e8f0'; // 연동 부분
-          return MC[name];
-      });
+      const bgColors = CAT_ORDER.map(c => (hlStage !== null && hlStage !== c) ? '#e2e8f0' : MC[name]);
       return {label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: bgColors, borderRadius:4}; 
   });
   CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{ type:'bar', data:{labels:CAT_ORDER,datasets:dss}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end',formatter:v=>v>0?v.toFixed(1):''} }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'10%'}} } });
@@ -634,7 +636,6 @@ function renderDashDonutAndTop7(all){
   const subMap=grpMin(all,'sub'); const tot=Object.values(subMap).reduce((a,b)=>a+b,0); const topArr=Object.entries(subMap).sort((a,b)=>b[1]-a[1]);
   document.getElementById('donutCenter').innerText=formatHour(tot)+'h';
   if(topArr.length===0){ document.getElementById('top5List').innerHTML=`<li style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">데이터 없음</li>`; return; }
-  // ✨ 항목명은 그대로 두고 시간은 2pt 작게, BOLD 해제
   document.getElementById('top5List').innerHTML=topArr.slice(0,7).map(([k,v],i)=>{ const isDim=hlDonutWork!==null&&hlDonutWork!==k; const pct=tot>0?(v/tot*100).toFixed(1):0; return `<li class="top5-rank-item ${isDim?'dimmed':''}" style="cursor:pointer;" onclick="dashToggleDonut('${k}')"><div class="top5-rank-badge" style="background:${SUB_PAL[i]};">${i+1}</div><span class="top5-rank-name">${k}</span><div style="text-align:right;"><span style="font-weight:500; font-size:11px; color:#1e293b;">${formatHour(v)}h</span> <span style="font-size:10px;color:#94a3b8;">(${pct}%)</span></div></li>`; }).join('');
   const labels=topArr.slice(0,7).map(x=>x[0]); const data=topArr.slice(0,7).map(x=>mToH(x[1])); const bgColors=labels.map((l,i)=>(hlDonutWork===null||hlDonutWork===l)?SUB_PAL[i]:'#e2e8f0');
   CH.donut=new Chart(document.getElementById('donutChart').getContext('2d'),{ type:'doughnut', data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, options:{ responsive:true, maintainAspectRatio:false, cutout:'60%', layout:{padding:30}, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'800'},textAlign:'center',formatter:(v,ctx)=>{ const pct=(v/mToH(tot)*100).toFixed(1); return `${ctx.chart.data.labels[ctx.dataIndex]}\n${formatNum(v)}h (${pct}%)`; },anchor:'end',align:'end',clamp:true,clip:false} }, onClick:(e,els)=>{ if(els.length) dashToggleDonut(CH.donut.data.labels[els[0].index]); else{ hlDonutWork=null; renderDashDonutAndTop7(filtered().filter(r=>r.project==='경남 서부의료원')); } } } });
@@ -649,6 +650,12 @@ function renderDashTimeline(all,mos){
   CH.timeline=new Chart(ctx,{ type:'line', data:{labels:mos,datasets:dss}, options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{ legend:{display:false}, datalabels:{ display:function(ctx){ if(hlTimeline!==null&&ctx.dataset.label!==hlTimeline) return false; const val=ctx.raw; if(val<=0) return false; const d=ctx.dataset.data; const nz=d.filter(v=>v>0); if(!nz.length) return false; const min=Math.min(...nz); const max=Math.max(...nz); return (val===max&&d.indexOf(max)===ctx.dataIndex)||(val===min&&d.indexOf(min)===ctx.dataIndex); }, color:ctx=>ctx.dataset.borderColor, font:{size:10,weight:'bold'}, align:'top', anchor:'end', offset:4, formatter:v=>v>0?v.toFixed(1):'' } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0,beginAtZero:true,grace:'10%'}} } });
 }
 function dashToggleTimeline(name){ hlTimeline=hlTimeline===name?null:name; renderDashTimeline(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
+
+// ✨ 히트맵 클릭 시 구간 하이라이트 연동 (전역 변수 hlHeatBin 사용)
+window.toggleHeatBin = function(bin, year) {
+  hlHeatBin = (hlHeatBin === bin) ? null : bin;
+  renderHeatmapOnly(year);
+};
 
 function renderDashHeat(all){
   let targetYear=[...new Set(all.map(r=>r.date.slice(0,4)))].sort().pop()||'2024';
@@ -665,15 +672,42 @@ window.renderHeatmapOnly=function(year){
   let th='<thead><tr><th style="width:30px;"></th>';
   MONTH_KO.forEach((l,i)=>{ th+=`<th style="color:${hasMo[i]?'#00428E':'#cbd5e1'};font-weight:${hasMo[i]?'800':'500'};">${l}</th>`; });
   th+='</tr></thead>';
-  // ✨ 히트맵 내부 텍스트 폰트 1px 축소, 굵기 해제(font-weight: 500)
-  let tb='<tbody>'; for(let w=0;w<5;w++){ tb+=`<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">${w+1}주</td>`; for(let mo=0;mo<12;mo++){ if(!hasMo[mo]) tb+=`<td><div class="hm-cell" style="background:transparent;"></div></td>`; else if(mat[w][mo]<=0) tb+=`<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`; else tb+=`<td><div class="hm-cell" style="background:${hexRgba('#00428E',0.2+(mat[w][mo]/maxV)*0.8)};color:${(mat[w][mo]/maxV)>0.4?'#fff':'#1e293b'};" title="${formatHour(mat[w][mo])}h">${formatHour(mat[w][mo])}</div></td>`; } tb+='</tr>'; }
+  let tb='<tbody>'; 
+  for(let w=0;w<5;w++){ 
+    tb+=`<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">${w+1}주</td>`; 
+    for(let mo=0;mo<12;mo++){ 
+      if(!hasMo[mo]) tb+=`<td><div class="hm-cell" style="background:transparent;"></div></td>`; 
+      else if(mat[w][mo]<=0) {
+          const isDim = hlHeatBin !== null;
+          tb+=`<td><div class="hm-cell" style="background:#F0F5FA; opacity:${isDim?0.2:1};"></div></td>`; 
+      }
+      else {
+          const val = mat[w][mo];
+          const ratio = val / maxV;
+          const bin = Math.ceil(ratio * 5); // 1~5 단계
+          const isDim = hlHeatBin !== null && hlHeatBin !== bin;
+          tb+=`<td><div class="hm-cell" onclick="toggleHeatBin(${bin}, '${year}')" style="background:${hexRgba('#00428E',0.2+ratio*0.8)};color:${ratio>0.4?'#fff':'#1e293b'}; opacity:${isDim?0.2:1};" title="${formatHour(val)}h">${formatHour(val)}</div></td>`; 
+      }
+    } 
+    tb+='</tr>'; 
+  }
   document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
 
-// ✨ 막대 클릭 시 도넛 차트 연동 로직 적용
+// ✨ [팀원별 그룹화] 데이터 검증 및 연동 로직
 function renderDashOvertimeBars(all){
-  destroyChart('dashOvertimeBarChart'); const dateMap={}; all.forEach(r=>{dateMap[r.date]=(dateMap[r.date]||0)+r.min;}); let counts=[0,0,0,0];
-  for(let d in dateMap){ const m=dateMap[d]; if(m>=540&&m<600) counts[0]++; else if(m>=600&&m<660) counts[1]++; else if(m>=660&&m<720) counts[2]++; else if(m>=720) counts[3]++; }
+  destroyChart('dashOvertimeBarChart'); 
+  const pDates={}; 
+  all.forEach(r=>{ pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min; }); 
+  
+  let counts=[0,0,0,0];
+  for(let k in pDates){ 
+      const m=pDates[k]; 
+      if(m>=540&&m<600) counts[0]++; 
+      else if(m>=600&&m<660) counts[1]++; 
+      else if(m>=660&&m<720) counts[2]++; 
+      else if(m>=720) counts[3]++; 
+  }
   
   const bgColors = counts.map((_, i) => (hlOvertimeRange === null || hlOvertimeRange === i) ? OT_COLORS[i] : '#e2e8f0');
   
@@ -706,7 +740,6 @@ function renderDashOvertimeDonut(all){
   let dMain = [], dSub = [];
   
   if (hlOvertimeRange !== null) {
-      // 범위 클릭됨 -> 왼쪽 차트에만 해당 구간의 팀원 분포 표시
       title9.innerText = OVERTIME_RANGES[hlOvertimeRange] + ' 비율';
       wrap12.style.display = 'none';
       divider.style.display = 'none';
@@ -725,7 +758,6 @@ function renderDashOvertimeDonut(all){
       });
       dMain.sort((a,b)=>b.days-a.days);
   } else {
-      // 기본 상태 (9h, 12h)
       title9.innerText = '9h 이상 비율';
       title12.innerText = '12h 이상 비율';
       wrap12.style.display = 'flex';
@@ -749,8 +781,8 @@ function renderDashOvertimeDonut(all){
       data:{labels:dataArr.map(d=>d.name),datasets:[{data:dataArr.map(d=>d.days),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, 
       options:{ 
         responsive:true, maintainAspectRatio:false, 
-        cutout:'70%', // 도넛 두께 얇게
-        radius:'75%', // ✨ 전체 크기 대폭 축소
+        cutout:'70%', 
+        radius:'75%', 
         layout:{padding:25}, 
         plugins:{ 
           legend:{display:false}, 
@@ -759,7 +791,6 @@ function renderDashOvertimeDonut(all){
             formatter:(v,ctx)=>{
               const sum = ctx.dataset.data.reduce((a,b)=>a+b,0);
               const pct = sum>0 ? Math.round(v/sum*100) : 0;
-              // ✨ [이름, N일(N%)] 표시
               return v>0 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${v}일 (${pct}%)` : '';
             },
             anchor:'end', align:'end'
@@ -784,7 +815,6 @@ function renderDashMonthlyOvertime(all,mos){
   const bands=['9~10h','10~11h','11~12h','12h 이상']; let bandData=[[],[],[],[]];
   mos.forEach(m=>{ const mData=all.filter(r=>r.date.startsWith(m)); const pDates={}; mData.forEach(r=>pDates[r.name+'|'+r.date]=(pDates[r.name+'|'+r.date]||0)+r.min); let c=[0,0,0,0]; for(let k in pDates){const min=pDates[k];if(min>=540&&min<600)c[0]++;else if(min>=600&&min<660)c[1]++;else if(min>=660&&min<720)c[2]++;else if(min>=720)c[3]++;} c.forEach((v,i)=>bandData[i].push(v)); });
   
-  // ✨ 범례 글자 크기 12px 통일
   document.getElementById('dashMonthlyOtLegendWrap').innerHTML=bands.map((b,i)=>{ const isDim=hlMonthlyOt!==null&&hlMonthlyOt!==b; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleMonthlyOt('${b}')"><div class="legend-dot" style="background:${OT_COLORS[i]}"></div><span style="font-size:12px;">${b}</span></div>`; }).join('');
   const datasets=bands.map((b,i)=>({ label:b, data:bandData[i], backgroundColor:(hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0', stack:'Stack 0', borderRadius:2 }));
   CH.dashMonthlyOvertimeChart=new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'),{ type:'bar', data:{labels:mos,datasets}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{ display:function(ctx){ if(hlMonthlyOt!==null) return ctx.dataset.label===hlMonthlyOt&&ctx.dataset.data[ctx.dataIndex]>0; return ctx.datasetIndex===3&&ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)>0; }, color:'#475569', font:{weight:'bold',size:11}, anchor:'end', align:'end', offset:2, formatter:(v,ctx)=>{ if(hlMonthlyOt!==null) return v+'건'; return ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)+'건'; } } }, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}, onClick:(e,els)=>{ if(els.length) dashToggleMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label); else{hlMonthlyOt=null;renderDashMonthlyOvertime(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원')));} } } });
