@@ -30,7 +30,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 @keyframes floatM { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(-60px, 40px, 0) scale(0.9); } }
 @keyframes floatL { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(70px, -50px, 0) scale(1.15); } }
 
-/* ✨ 로딩 오버레이 (밝은 파스텔 블루톤 + 다수 블러 구슬 + 화이트톤 대형 구슬) */
+/* 로딩 오버레이 (밝은 파스텔 블루톤 + 다수 블러 구슬 + 화이트톤 대형 구슬) */
 #loadingOverlay {
     position: fixed; inset: 0; z-index: 9999;
     background: radial-gradient(ellipse at 60% 40%, #dbeafe 0%, #eff6ff 40%, #f0f9ff 70%, #e0f2fe 100%);
@@ -38,7 +38,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
     transition: opacity 0.6s ease; overflow: hidden;
 }
 .ld-orb { position: absolute; border-radius: 50%; will-change: transform; }
-/* 컬러 구슬들 - saturate(0.7)로 채도를 30% 낮춤 */
 .ld-orb-1 { width: 280px; height: 280px; background: radial-gradient(circle at 35% 30%, #93c5fd, #3b82f6 50%, #1d4ed8 100%); top: -60px; right: 60px; filter: blur(25px) saturate(0.7); opacity: 0.6; animation: ldFloat1 7s infinite alternate ease-in-out; }
 .ld-orb-2 { width: 360px; height: 360px; background: radial-gradient(circle at 40% 35%, rgba(186, 230, 253, 0.9), rgba(147, 197, 253, 0.6) 50%, rgba(96, 165, 250, 0.3) 100%); top: -100px; right: -60px; filter: blur(35px) saturate(0.7); opacity: 0.5; animation: ldFloat2 9s infinite alternate-reverse ease-in-out; }
 .ld-orb-3 { width: 140px; height: 140px; background: radial-gradient(circle at 35% 30%, #7dd3fc, #38bdf8 50%, #0ea5e9 100%); bottom: 80px; left: 80px; filter: blur(15px) saturate(0.7); opacity: 0.7; animation: ldFloat3 6s infinite alternate ease-in-out; }
@@ -49,7 +48,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .ld-orb-8 { width: 110px; height: 110px; background: rgba(56, 189, 248, 0.8); bottom: 45%; left: 25%; filter: blur(15px) saturate(0.7); opacity: 0.7; animation: ldFloat2 7s infinite alternate-reverse ease-in-out; }
 .ld-orb-9 { width: 220px; height: 220px; background: rgba(99, 102, 241, 0.5); top: 5%; left: 40%; filter: blur(35px) saturate(0.7); opacity: 0.5; animation: ldFloat3 9s infinite alternate ease-in-out; }
 
-/* ✨ 초대형 화이트톤 구슬 (우측 하단 1/3, 좌측 상단 등) */
+/* 초대형 화이트톤 구슬 (우측 하단 1/3, 좌측 상단 등) */
 .ld-orb-white-1 { width: 1200px; height: 1200px; background: radial-gradient(circle at 40% 40%, rgba(255,255,255,1), rgba(255,255,255,0.9) 40%, rgba(255,255,255,0) 80%); bottom: -600px; right: -500px; filter: blur(6px); opacity: 0.95; animation: ldFloat1 15s infinite alternate ease-in-out; z-index: 1; }
 .ld-orb-white-2 { width: 800px; height: 800px; background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.9), rgba(255,255,255,0) 80%); top: -400px; left: -300px; filter: blur(15px); opacity: 0.8; animation: ldFloat2 12s infinite alternate-reverse ease-in-out; z-index: 1; }
 
@@ -131,7 +130,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-/* ✨ 호버 시 카드가 가장 위로 오게 하여 툴팁 잘림 완벽 방지 */
+/* 호버 시 카드가 가장 위로 오게 하여 툴팁 잘림 완벽 방지 */
 .card, .eval-trend-card, .eval-table-card, .eval-profile-card { 
     background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
     border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 16px; padding: 25px; 
@@ -145,24 +144,26 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .card-section-title, .eval-trend-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
 .card-title-left { display: flex; align-items: center; gap: 6px; }
 
-/* 팀원 카드 및 툴팁 */
+/* 팀원 카드 및 툴팁 (잘림 방지) */
 .kpi-card { overflow: hidden; padding: 20px 25px; display: flex; flex-direction: column; justify-content: center; }
 .mini-stat-card { background: rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.7); }
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; z-index: 9999; }
 .info-icon { width: 16px; height: 16px; background: rgba(148, 163, 184, 0.8); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .info-wrap:hover .info-icon { background: #00428E; }
 
-/* ✨ 툴팁 디자인 및 내용 렌더링 지원 (HTML 포함) */
+/* ✨ 툴팁이 밑으로 뜨도록 속성 변경 및 상세 설명 포맷팅 */
 .info-tooltip { 
     position: absolute; top: 140%; bottom: auto; left: 50%; transform: translateX(-50%); 
-    width: auto; min-width: 320px; white-space: normal; /* 리스트 및 줄바꿈 지원 */
+    width: auto; min-width: 380px; white-space: normal; 
     background: rgba(30,41,59,0.98); color: #f8fafc; font-size: 12px; line-height: 1.6; 
-    padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); 
+    padding: 16px 20px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); 
     visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 99999; pointer-events: none; font-weight: 500; text-align: left; 
 }
 .info-tooltip::after { content:''; position:absolute; bottom:100%; top:auto; left:50%; transform:translateX(-50%); border-width:6px; border-style:solid; border-color: transparent transparent rgba(30,41,59,0.98) transparent; }
 .info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; top: 160%; }
-.info-tooltip ul { padding-left: 18px; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.info-tooltip ul { padding-left: 18px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.info-tooltip li { word-break: keep-all; }
+.info-tooltip b { color: #fff; font-weight: 800; }
 
 /* 리스트 및 히트맵 */
 .scroll-list::-webkit-scrollbar { width: 6px; }
@@ -225,9 +226,9 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
   <div class="orb orb-9"></div><div class="orb orb-10"></div>
 </div>
 
-<!-- ✨ 로딩 오버레이 (새로운 구슬 및 채도 감소 버전) -->
+<!-- 로딩 오버레이 (새로운 구슬 및 채도 감소 버전) -->
 <div id="loadingOverlay">
-  <!-- ✨ 컬러 구슬 채도 -30% 및 블러/크기 다양화 -->
+  <!-- 컬러 구슬 채도 -30% 및 블러/크기 다양화 -->
   <div class="ld-orb ld-orb-1"></div>
   <div class="ld-orb ld-orb-2"></div>
   <div class="ld-orb ld-orb-3"></div>
@@ -238,7 +239,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
   <div class="ld-orb ld-orb-8"></div>
   <div class="ld-orb ld-orb-9"></div>
   
-  <!-- ✨ 초대형 화이트톤 구슬 (우측 하단 1/3, 좌측 상단 등) -->
+  <!-- 초대형 화이트톤 구슬 (우측 하단 1/3, 좌측 상단 등) -->
   <div class="ld-orb ld-orb-white-1"></div>
   <div class="ld-orb ld-orb-white-2"></div>
 
@@ -331,7 +332,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
       </div>
       <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:15px;" id="topKpiGrid"></div>
     </div>
-    
+
     <!-- Project Time Analysis 챕터 -->
     <div class="section-divider">
       <h2>Project Time Analysis <span style="font-size:13px; color:#94a3b8; font-weight:600; margin-left:10px;">(경남 서부의료원 데이터 전용)</span></h2>
@@ -386,12 +387,14 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
       <h2>Working Hours Analysis <span style="font-size:13px; color:#00428E; font-weight:800; margin-left:10px;">(경남 서부의료원 데이터 전용)</span></h2>
     </div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:5px;">
-      <!-- 1. 일별 초과근무 일수 -->
+      
+      <!-- 1. 일별 초과근무 일수 (우측 막대와 연동) -->
       <div class="card" style="height:320px;">
         <div class="card-section-title">일별 초과근무 일수 <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:8px;">(클릭 시 우측 막대 연동)</span></div>
         <div style="flex:1; min-height:0; position:relative; margin-top:10px;"><canvas id="dashOvertimeBarChart"></canvas></div>
       </div>
-      <!-- 2. 월별 초과근무 건수 -->
+
+      <!-- 2. 월별 9h 이상 발생 건수 -->
       <div class="card" style="height:320px;">
         <div class="card-section-title">
           <span class="card-title-left">월별 9h 이상 초과근무 발생 건수</span>
@@ -399,13 +402,14 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         </div>
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
       </div>
-      <!-- ✨ 3. 팀원별 초과근무 발생 비율 (위로 올리기, 중앙 타이틀, 사이즈 증가) -->
+      
+      <!-- ✨ 3. 팀원별 초과근무 발생 비율 (위치 상향 조정 및 소제목 중앙 배치) -->
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:flex-start;">
           <span class="card-title-left">팀원별 초과근무 발생 비율</span>
           <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:10px; justify-content:flex-end;"></div>
         </div>
-        <!-- 위로 15px 올려서 차트 잘림 완벽 방지 -->
+        <!-- 위로 올려서 차트 잘림 방지 -->
         <div style="display:flex; flex:1; min-height:0; gap:10px; margin-top:-15px;">
           <div style="flex:1; position:relative; display:flex; justify-content:center; align-items:center;">
             <div style="width:100%; height:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
@@ -418,6 +422,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
           </div>
         </div>
       </div>
+
       <!-- 4. 월별 근무 밀도 -->
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0;">
@@ -428,8 +433,10 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
       </div>
     </div>
     
-    <!-- ✨ 고급분석 3종 세트 (툴팁 내용 HTML 적용 완료) -->
+    <!-- ✨ 고급분석 3종 세트 (툴팁 내용 및 HHI 스케일 수정 완벽 적용) -->
     <div class="grid-2" style="margin-top:15px;">
+      
+      <!-- 섀넌 엔트로피 -->
       <div class="eval-trend-card" style="min-height:350px;">
         <div class="eval-trend-title" style="justify-content:space-between;">
             업무 균등 분산 (섀넌 엔트로피)
@@ -439,10 +446,10 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
                     <ul>
                         <li>업무의 다양성과 분산을 판단</li>
                         <li>수식 : H = -∑ p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>)</li>
-                        <li><b>Low(0.0~0.5)</b> : 업무가 단순 명확(Deep Work), 80%이상을 특정업무 전담</li>
-                        <li><b>MID(0.5~1.5)</b> : 주업무 중 간간히 회의 등을 병행하는 일반적인 상태</li>
-                        <li><b>High(1.5~2.5)</b> : 업무 파편화(Fragmented) 가능성, 맥락 전환 비용 상승</li>
-                        <li><b>Danger(2.5이상)</b> : 정신없음. 번아웃 위험</li>
+                        <li><b>0.0~0.5</b> : 단순 명확한 업무(Deep Work), 80%이상의 시간을 특정업무에 전담</li>
+                        <li><b>0.5~1.5</b> : 주업무 중 간간히 회의 등을 병행하는 일반적인 상태</li>
+                        <li><b>1.5~2.5</b> : 업무 파편화 가능성, 맥락 전환 비용 상승</li>
+                        <li><b>2.5이상</b> : 정신없음. 번아웃 위험</li>
                     </ul>
                 </div>
             </div>
@@ -450,6 +457,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjShannonChart"></canvas></div>
       </div>
 
+      <!-- HHI 지수 -->
       <div class="eval-trend-card" style="min-height:350px;">
         <div class="eval-trend-title" style="justify-content:space-between;">
             업무 쏠림도 (HHI 지수)
@@ -457,11 +465,12 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
                 <div class="info-tooltip">
                     <div style="font-weight:700; margin-bottom:4px; color:#f59e0b;">[업무 쏠림도 (HHI 지수)]</div>
                     <ul>
-                        <li>특정 업무나 특정 인원에게 얼마나 쏠려 있는가(독점/집중)를 수치로 환산</li>
-                        <li>수식 : HHI = ∑(s<sub>i</sub>)<sup>2</sup></li>
-                        <li><b>1,500 미만</b> : 다양한 업무가 고르게 진행 중. (안정적이나 핵심 부족 가능성)</li>
-                        <li><b>1,500 ~ 2,500</b> : 특정 프로젝트에 리소스가 적절히 집중됨.</li>
-                        <li><b>2,500 초과</b> : 특정 업무나 인원에 극도로 쏠림. (위험)</li>
+                        <li>특정 업무, 인원에게 얼마나 쏠려 있는가(독점/집중)를 수치로 환산</li>
+                        <li>수식 : HHI = ∑ (s<sub>i</sub>)<sup>2</sup></li>
+                        <li><b>0.15 미만</b> : 저집중. 안정적이나 핵심 부족 가능성</li>
+                        <li><b>0.15~0.25</b> : 핵심업무에 적절히 리소스 배분</li>
+                        <li><b>0.25~0.40</b> : 특정 업무/인원 의존도 높음</li>
+                        <li><b>0.40 초과</b> : 초고집중. 특정 업무나 인원에 극도로 쏠림. (병목)</li>
                     </ul>
                 </div>
             </div>
@@ -469,6 +478,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjHhiChart"></canvas></div>
       </div>
 
+      <!-- CV 추이 -->
       <div class="eval-trend-card" style="min-height:350px;">
         <div class="eval-trend-title" style="justify-content:space-between;">
             전체 업무 변동성 (CV 추이)
@@ -478,8 +488,8 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
                     <ul>
                         <li>업무의 양과 내용이 주차별/일별로 얼마나 일관성 있게 유지되는지 판단</li>
                         <li>수식 : CV = σ / μ</li>
-                        <li><b>Low(0.3 미만)</b> : 매일 업무량이 일정하고 루틴이 잡혀 있습니다.</li>
-                        <li><b>High(1.0 이상)</b> : 어떤 날은 8시간 내내 한 일만 하다가, 어떤 날은 수십 가지 일을 번갈아 합니다.</li>
+                        <li><b>Low(0.3 미만)</b> : 업무량이 일정. 루틴이 정해져 있음</li>
+                        <li><b>High(1.0 이상)</b> : 어떤 날은 8시간 내내 한 일만 하다가, 어떤 날은 수십 가지 일을 번갈아 함</li>
                     </ul>
                 </div>
             </div>
@@ -487,6 +497,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjCvChart"></canvas></div>
       </div>
 
+      <!-- 빈 공간 -->
       <div class="card" style="min-height:350px; background:rgba(255,255,255,0.2); border: 1px dashed rgba(203,213,225,0.6); display:flex; align-items:center; justify-content:center;">
         <div style="color:#94a3b8; font-weight:700; font-size:14px;">분석 지표 준비 중</div>
       </div>
@@ -505,9 +516,57 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         </div>
       </div>
       <div class="grid-3" id="workingChartsGrid">
-        <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다.</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpShannonChart"></canvas></div></div>
-        <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">업무 쏠림도 (HHI 지수)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (위험)</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpHhiChart"></canvas></div></div>
-        <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">개인 업무 변동성 (CV 추이)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">그래프가 높게 치솟을수록 평소보다 업무가 갑자기 몰려 과부하가 왔음을 의미합니다.</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpCvChart"></canvas></div></div>
+        
+        <!-- ✨ 워킹 탭 툴팁 동일 교체 -->
+        <div class="eval-trend-card">
+          <div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div>
+            <div class="info-tooltip">
+                <div style="font-weight:700; margin-bottom:4px; color:#38bdf8;">[업무 균등 분산 (섀넌 엔트로피)]</div>
+                <ul>
+                    <li>업무의 다양성과 분산을 판단</li>
+                    <li>수식 : H = -∑ p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>)</li>
+                    <li><b>0.0~0.5</b> : 단순 명확한 업무(Deep Work), 80%이상의 시간을 특정업무에 전담</li>
+                    <li><b>0.5~1.5</b> : 주업무 중 간간히 회의 등을 병행하는 일반적인 상태</li>
+                    <li><b>1.5~2.5</b> : 업무 파편화 가능성, 맥락 전환 비용 상승</li>
+                    <li><b>2.5이상</b> : 정신없음. 번아웃 위험</li>
+                </ul>
+            </div>
+          </div></div>
+          <div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpShannonChart"></canvas></div>
+        </div>
+
+        <div class="eval-trend-card">
+          <div class="eval-trend-title" style="justify-content:space-between;">업무 쏠림도 (HHI 지수)<div class="info-wrap"><div class="info-icon">?</div>
+            <div class="info-tooltip">
+                <div style="font-weight:700; margin-bottom:4px; color:#f59e0b;">[업무 쏠림도 (HHI 지수)]</div>
+                <ul>
+                    <li>특정 업무, 인원에게 얼마나 쏠려 있는가(독점/집중)를 수치로 환산</li>
+                    <li>수식 : HHI = ∑ (s<sub>i</sub>)<sup>2</sup></li>
+                    <li><b>0.15 미만</b> : 저집중. 안정적이나 핵심 부족 가능성</li>
+                    <li><b>0.15~0.25</b> : 핵심업무에 적절히 리소스 배분</li>
+                    <li><b>0.25~0.40</b> : 특정 업무/인원 의존도 높음</li>
+                    <li><b>0.40 초과</b> : 초고집중. 특정 업무나 인원에 극도로 쏠림. (병목)</li>
+                </ul>
+            </div>
+          </div></div>
+          <div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpHhiChart"></canvas></div>
+        </div>
+
+        <div class="eval-trend-card">
+          <div class="eval-trend-title" style="justify-content:space-between;">개인 업무 변동성 (CV 추이)<div class="info-wrap"><div class="info-icon">?</div>
+            <div class="info-tooltip">
+                <div style="font-weight:700; margin-bottom:4px; color:#00428E;">[전체 업무 변동성 (CV 추이)]</div>
+                <ul>
+                    <li>업무의 양과 내용이 주차별/일별로 얼마나 일관성 있게 유지되는지 판단</li>
+                    <li>수식 : CV = σ / μ</li>
+                    <li><b>Low(0.3 미만)</b> : 업무량이 일정. 루틴이 정해져 있음</li>
+                    <li><b>High(1.0 이상)</b> : 어떤 날은 8시간 내내 한 일만 하다가, 어떤 날은 수십 가지 일을 번갈아 함</li>
+                </ul>
+            </div>
+          </div></div>
+          <div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpCvChart"></canvas></div>
+        </div>
+
         <div class="eval-trend-card"><div class="eval-trend-title">업무시간 배분도 (로렌츠 곡선 & 지니계수)</div><div style="flex:1; min-height:0; position:relative; margin-top:5px;"><canvas id="dpGiniChart"></canvas><div id="dpGiniTxt" style="position:absolute; top:5%; left:5%; background:rgba(255,255,255,0.7); padding:4px 8px; border-radius:6px; font-weight:800; font-size:12px; color:#1e293b;"></div></div></div>
         <div class="eval-trend-card"><div class="eval-trend-title">업무량 지속성 (허스트 지수)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="dpHurstChart"></canvas><div id="dpHurstTxt" style="position:absolute;top:65%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none; width:100%;"></div></div></div>
         <div class="eval-table-card" style="height:350px;"><div class="card-section-title" style="margin-bottom:0;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div><div style="overflow-x:auto; height:100%; display:flex; flex-direction:column; justify-content:center; margin-top:10px;"><table class="heat-table" id="dpHeatTable" style="height:100%;"></table></div></div>
@@ -565,11 +624,11 @@ Chart.defaults.animation.duration = 400;
 Chart.defaults.font.family = "'Pretendard Variable', Pretendard, sans-serif";
 Chart.register(ChartDataLabels);
 
-// 툴팁 커서 추적
+// 툴팁 마우스 커서 따라다니기 설정
 Chart.Tooltip.positioners.cursor = function(elements, eventPosition) { return { x: eventPosition.x, y: eventPosition.y }; };
 Chart.defaults.plugins.tooltip.position = 'cursor';
 
-// ✨ 고급분석 세로선 플러그인 (주요 일정 점 아래로 선 긋기)
+// ✨ 고급분석 주요일정 세로선 연결 플러그인
 const verticalLinePlugin = {
     id: 'verticalLine',
     beforeDatasetsDraw(chart) {
@@ -724,6 +783,7 @@ function renderDashboardTab(){
   if(pjData.length>0){ renderDashStage(pjData); renderDashCompare(pjData); renderDashDonutAndTop7(pjData); renderDashTimeline(pjData,pjMos); }
   else{ ['stageChart','compareChart','donutChart','timelineChart'].forEach(destroyChart); document.getElementById('top5List').innerHTML=`<li style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">서부의료원 데이터가 없습니다.</li>`; }
   
+  // Working Hours Analysis (서부의료원 기준)
   renderDashHeat(pjData); 
   renderDashOvertimeBars(pjData); 
   renderDashOvertimeDonut(pjData); 
@@ -847,7 +907,7 @@ window.renderHeatmapOnly=function(year){
   document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
 
-// ✨ [일별 초과근무 일수] & [월별 9h 건수] 데이터 완벽 동기화 연동
+// [일별 초과근무 일수] & [월별 9h 건수] 연동
 function renderDashOvertimeBars(all){
   destroyChart('dashOvertimeBarChart'); 
   const dailyPersonMap = {}; 
@@ -918,7 +978,7 @@ function renderDashMonthlyOvertime(all,mos){
 }
 function dashToggleMonthlyOt(b){ hlMonthlyOt=hlMonthlyOt===b?null:b; renderDashMonthlyOvertime(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
 
-// ✨ 팀원별 초과근무 도넛 (위치 올리기 및 텍스트 중앙 배치 + 사이즈 조절)
+// ✨ 팀원별 초과근무 도넛 (독립화 및 10% 크기 확장)
 function renderDashOvertimeDonut(all){
   destroyChart('dashOvertimeDonutChart9'); destroyChart('dashOvertimeDonutChart12');
   
@@ -930,7 +990,6 @@ function renderDashOvertimeDonut(all){
   });
   dMain.sort((a,b)=>b.days-a.days); dSub.sort((a,b)=>b.days-a.days);
 
-  // 범례 한 줄 정렬
   document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(n=>{ const isDim=hlOvertimeDonut!==null&&hlOvertimeDonut!==n; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleOvertimeDonut('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`; }).join('');
   
   const drawHalfDonut=(id,dataArr)=>{ 
@@ -941,8 +1000,8 @@ function renderDashOvertimeDonut(all){
       data:{labels:dataArr.map(d=>d.name),datasets:[{data:dataArr.map(d=>d.days),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, 
       options:{ 
         responsive:true, maintainAspectRatio:false, 
-        cutout:'60%', // ✨ 두께 10% 두껍게 (기존 70% -> 60%)
-        radius:'85%', // ✨ 크기 10% 키우기 (기존 75% -> 85%)
+        cutout:'60%', // ✨ 10% 두껍게
+        radius:'85%', // ✨ 10% 넓게
         layout:{padding:15}, 
         plugins:{ 
           legend:{display:false}, 
@@ -968,7 +1027,8 @@ function renderDashOvertimeDonut(all){
 }
 function dashToggleOvertimeDonut(name){ hlOvertimeDonut=hlOvertimeDonut===name?null:name; renderDashOvertimeDonut(filtered().filter(r=>r.project==='경남 서부의료원')); }
 
-// ✨ 고급분석 3종 (세로선 플러그인 연동, 상단 여백, 툴팁 표시내용 커스텀)
+
+// ✨ 고급분석 3종 (세로선 플러그인, 툴팁 표시내용 커스텀, HHI 스케일 완벽 고정)
 function renderShannonHhiCv(d,datesArr,color,prefix){
   destroyChart(prefix+'ShannonChart'); destroyChart(prefix+'HhiChart'); destroyChart(prefix+'CvChart');
   const sData=[],hData=[],cvData=[];
@@ -984,7 +1044,6 @@ function renderShannonHhiCv(d,datesArr,color,prefix){
       
       sData.push({x:dt,y:shan}); hData.push({x:dt,y:hhi}); cvData.push({x:dt,y:cv}); 
 
-      // 주요일정(SCHEDULE_DATA)에 해당 날짜가 있으면 포인트 생성 및 텍스트 매핑
       if(SCHEDULE_DATA.some(s => s.date && s.date.slice(0,10) === dt)) {
           const schObj = SCHEDULE_DATA.find(s => s.date && s.date.slice(0,10) === dt);
           const schTitle = schObj.title || schObj.name || schObj['일정'] || schObj['내용'] || '';
@@ -1008,25 +1067,29 @@ function renderShannonHhiCv(d,datesArr,color,prefix){
   const opts=(yTitle,maxVal)=>{ 
       const config={
           responsive:true, maintainAspectRatio:false, 
+          interaction: { mode: 'nearest', intersect: true }, // ✨ 툴팁 겹침 방지
           plugins:{
               legend:{display:false},
               datalabels:{display:false},
               tooltip: {
+                  displayColors: false, // ✨ 컬러박스(빨간 네모) 제거
                   callbacks: {
+                      title: () => null, // ✨ 상단 볼드체 날짜 제거
                       label: function(context) {
                           if (context.dataset.isSchedule) {
                               const raw = context.raw;
-                              // ✨ 툴팁에 [날짜 - 일정내용] 출력
+                              // ✨ 주요 일정 텍스트 반환
                               return raw.schTitle ? `${raw.x} ${raw.schTitle}` : `${raw.x} 주요 일정`;
                           }
-                          return `${context.dataset.label}: ${context.raw.y.toFixed(2)}`;
+                          return `${context.raw.x} | ${context.dataset.label}: ${context.raw.y.toFixed(2)}`;
                       }
                   }
               }
           },
           scales:{
               x:{grid:{display:false},ticks:{maxTicksLimit:10}},
-              y:{title:{display:true,text:yTitle},grid:{color:'rgba(226,232,240,0.5)'},min:0, grace:'20%'}, 
+              // ✨ HHI의 경우 grace를 0으로 하여 1.0 돌파 방지
+              y:{title:{display:true,text:yTitle},grid:{color:'rgba(226,232,240,0.5)'},min:0, grace: maxVal === 1.0 ? '0%' : '20%'}, 
               ySch: { display: false, min: 0, max: 1.1, position: 'right' }
           }
       }; 
