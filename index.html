@@ -30,7 +30,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 @keyframes floatM { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(-60px, 40px, 0) scale(0.9); } }
 @keyframes floatL { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(70px, -50px, 0) scale(1.15); } }
 
-/* ✨ 로딩 오버레이 */
+/* 로딩 오버레이 */
 #loadingOverlay {
     position: fixed; inset: 0; z-index: 9999;
     background: radial-gradient(ellipse at 60% 40%, #dbeafe 0%, #eff6ff 40%, #f0f9ff 70%, #e0f2fe 100%);
@@ -38,7 +38,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
     transition: opacity 0.6s ease; overflow: hidden;
 }
 
-/* ✨ 로딩 구슬 속도 2배 향상 */
+/* 로딩 구슬 */
 .ld-orb { position: absolute; border-radius: 50%; will-change: transform; }
 .ld-orb-1 { width: 280px; height: 280px; background: radial-gradient(circle at 35% 30%, #93c5fd, #3b82f6 50%, #1d4ed8 100%); top: -60px; right: 60px; filter: blur(25px) saturate(0.7); opacity: 0.6; animation: ldFloat1 3.5s infinite alternate ease-in-out; }
 .ld-orb-2 { width: 360px; height: 360px; background: radial-gradient(circle at 40% 35%, rgba(186, 230, 253, 0.9), rgba(147, 197, 253, 0.6) 50%, rgba(96, 165, 250, 0.3) 100%); top: -100px; right: -60px; filter: blur(35px) saturate(0.7); opacity: 0.5; animation: ldFloat2 4.5s infinite alternate-reverse ease-in-out; }
@@ -50,7 +50,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .ld-orb-8 { width: 110px; height: 110px; background: rgba(56, 189, 248, 0.8); bottom: 45%; left: 25%; filter: blur(15px) saturate(0.7); opacity: 0.7; animation: ldFloat2 3.5s infinite alternate-reverse ease-in-out; }
 .ld-orb-9 { width: 220px; height: 220px; background: rgba(99, 102, 241, 0.5); top: 5%; left: 40%; filter: blur(35px) saturate(0.7); opacity: 0.5; animation: ldFloat3 4.5s infinite alternate ease-in-out; }
 
-/* ✨ 초대형 화이트톤 구슬 (우측 하단 반투명도 조절, 속도 2배) */
+/* 초대형 화이트톤 구슬 */
 .ld-orb-white-1 { width: 1200px; height: 1200px; background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.5), rgba(255,255,255,0.4) 40%, rgba(255,255,255,0) 80%); bottom: -600px; right: -500px; filter: blur(6px); opacity: 1; animation: ldFloat1 7.5s infinite alternate ease-in-out; z-index: 1; }
 .ld-orb-white-2 { width: 800px; height: 800px; background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.6), rgba(255,255,255,0) 80%); top: -400px; left: -300px; filter: blur(15px); opacity: 1; animation: ldFloat2 6s infinite alternate-reverse ease-in-out; z-index: 1; }
 
@@ -58,8 +58,8 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 @keyframes ldFloat2 { 0% { transform: translate(0px, 0px) scale(1); } 100% { transform: translate(25px, -35px) scale(0.95); } }
 @keyframes ldFloat3 { 0% { transform: translate(0px, 0px) scale(1); } 100% { transform: translate(20px, -25px) scale(1.08); } }
 
-/* ✨ 로딩 먼지 파티클 추가 (빠르고 다양하게) */
-.ld-dust { position: absolute; border-radius: 50%; background: #94a3b8; filter: blur(1px); will-change: transform; z-index: 2; }
+/* ✨ 로딩 먼지 파티클 추가 (화이트톤, 부드러운 투명도 30% 수준) */
+.ld-dust { position: absolute; border-radius: 50%; background: #ffffff; filter: blur(1px); will-change: transform; z-index: 2; }
 @keyframes ldFloatDust1 { 0% { transform: translate(0, 0); } 100% { transform: translate(150px, -150px); } }
 @keyframes ldFloatDust2 { 0% { transform: translate(0, 0); } 100% { transform: translate(-100px, 120px); } }
 @keyframes ldFloatDust3 { 0% { transform: translate(0, 0); } 100% { transform: translate(100px, 100px); } }
@@ -87,7 +87,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .ov-enter-btn { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border: none; border-radius: 50px; padding: 16px 50px; font-size: 16px; font-weight: 800; cursor: pointer; letter-spacing: 0.05em; box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5); transition: all 0.3s ease; }
 .ov-enter-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6); background: linear-gradient(135deg, #60a5fa, #3b82f6); }
 
-/* 탑 바 네비게이션 */
+/* 탑 바 */
 .topbar { position: fixed; top: 0; left: 0; right: 0; height: 75px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(31, 38, 135, 0.05); }
 .logo-container { display:flex; align-items:center; gap:15px; cursor: default; }
 .logo-left-block { display:flex; flex-direction:column; justify-content:center; }
@@ -152,14 +152,14 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .card-section-title, .eval-trend-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
 .card-title-left { display: flex; align-items: center; gap: 6px; }
 
-/* 팀원 카드 및 툴팁 (잘림 방지) */
+/* 팀원 카드 및 툴팁 */
 .kpi-card { overflow: hidden; padding: 20px 25px; display: flex; flex-direction: column; justify-content: center; }
 .mini-stat-card { background: rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.7); }
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; z-index: 9999; }
 .info-icon { width: 16px; height: 16px; background: rgba(148, 163, 184, 0.8); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .info-wrap:hover .info-icon { background: #00428E; }
 
-/* ✨ 툴팁이 밑으로 뜨도록 속성 변경 및 상세 설명 포맷팅 */
+/* 툴팁 아래 표시 및 수식 리스트 포맷팅 */
 .info-tooltip { 
     position: absolute; top: 140%; bottom: auto; left: 50%; transform: translateX(-50%); 
     width: auto; min-width: 380px; white-space: normal; 
@@ -234,27 +234,45 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
   <div class="orb orb-9"></div><div class="orb orb-10"></div>
 </div>
 
-<!-- ✨ 로딩 오버레이 (새로운 구슬 및 채도 감소 버전) -->
+<!-- ✨ 로딩 오버레이 (먼지 추가, 채도 -30%, 빠르고 다양한 구슬) -->
 <div id="loadingOverlay">
-  <!-- 먼지 효과 파티클 생성 -->
-  <div class="ld-dust" style="width:5px; height:5px; top:20%; left:30%; opacity:0.8; animation:ldFloatDust1 5s infinite alternate ease-in-out;"></div>
-  <div class="ld-dust" style="width:8px; height:8px; top:70%; left:10%; opacity:0.6; animation:ldFloatDust2 7s infinite alternate-reverse ease-in-out;"></div>
-  <div class="ld-dust" style="width:6px; height:6px; top:40%; right:20%; opacity:0.9; animation:ldFloatDust3 6s infinite alternate ease-in-out;"></div>
-  <div class="ld-dust" style="width:4px; height:4px; top:10%; right:40%; opacity:0.7; animation:ldFloatDust1 8s infinite alternate-reverse ease-in-out;"></div>
-  <div class="ld-dust" style="width:7px; height:7px; bottom:20%; right:30%; opacity:0.8; animation:ldFloatDust2 5s infinite alternate ease-in-out;"></div>
-  <div class="ld-dust" style="width:5px; height:5px; bottom:10%; left:40%; opacity:0.6; animation:ldFloatDust3 9s infinite alternate-reverse ease-in-out;"></div>
-  <div class="ld-dust" style="width:9px; height:9px; top:50%; left:50%; opacity:0.7; animation:ldFloatDust1 6s infinite alternate ease-in-out;"></div>
-  <div class="ld-dust" style="width:6px; height:6px; bottom:30%; left:20%; opacity:0.9; animation:ldFloatDust2 7s infinite alternate-reverse ease-in-out;"></div>
-  <div class="ld-dust" style="width:4px; height:4px; top:80%; right:10%; opacity:0.8; animation:ldFloatDust3 5s infinite alternate ease-in-out;"></div>
-  <div class="ld-dust" style="width:7px; height:7px; top:15%; left:60%; opacity:0.6; animation:ldFloatDust1 8s infinite alternate-reverse ease-in-out;"></div>
+  <!-- 먼지 파티클 30개 추가 (화이트, 투명도 0.2~0.4 무작위, 다양한 속도/크기) -->
+  <div class="ld-dust" style="width:5px; height:5px; top:20%; left:30%; opacity:0.3; animation:ldFloatDust1 5s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:8px; height:8px; top:70%; left:10%; opacity:0.25; animation:ldFloatDust2 7s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:6px; height:6px; top:40%; right:20%; opacity:0.35; animation:ldFloatDust3 6s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:4px; height:4px; top:10%; right:40%; opacity:0.2; animation:ldFloatDust1 8s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:7px; height:7px; bottom:20%; right:30%; opacity:0.3; animation:ldFloatDust2 5s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:5px; height:5px; bottom:10%; left:40%; opacity:0.25; animation:ldFloatDust3 9s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:9px; height:9px; top:50%; left:50%; opacity:0.35; animation:ldFloatDust1 6s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:6px; height:6px; bottom:30%; left:20%; opacity:0.3; animation:ldFloatDust2 7s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:4px; height:4px; top:80%; right:10%; opacity:0.2; animation:ldFloatDust3 5s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:7px; height:7px; top:15%; left:60%; opacity:0.35; animation:ldFloatDust1 8s infinite alternate-reverse ease-in-out;"></div>
   
-  <div class="ld-dust" style="width:5px; height:5px; top:35%; left:25%; opacity:0.8; animation:ldFloatDust1 6s infinite alternate ease-in-out;"></div>
-  <div class="ld-dust" style="width:8px; height:8px; top:65%; right:15%; opacity:0.7; animation:ldFloatDust2 5s infinite alternate-reverse ease-in-out;"></div>
-  <div class="ld-dust" style="width:6px; height:6px; bottom:25%; right:45%; opacity:0.9; animation:ldFloatDust3 8s infinite alternate ease-in-out;"></div>
-  <div class="ld-dust" style="width:4px; height:4px; top:45%; right:55%; opacity:0.6; animation:ldFloatDust1 7s infinite alternate-reverse ease-in-out;"></div>
-  <div class="ld-dust" style="width:7px; height:7px; bottom:15%; left:35%; opacity:0.8; animation:ldFloatDust2 6s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:5px; height:5px; top:35%; left:25%; opacity:0.3; animation:ldFloatDust1 6s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:8px; height:8px; top:65%; right:15%; opacity:0.25; animation:ldFloatDust2 5s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:6px; height:6px; bottom:25%; right:45%; opacity:0.35; animation:ldFloatDust3 8s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:4px; height:4px; top:45%; right:55%; opacity:0.2; animation:ldFloatDust1 7s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:7px; height:7px; bottom:15%; left:35%; opacity:0.3; animation:ldFloatDust2 6s infinite alternate ease-in-out;"></div>
 
-  <!-- ✨ 컬러 구슬 채도 -30% 및 블러/크기 다양화, 애니메이션 2배 속도 -->
+  <div class="ld-dust" style="width:5px; height:5px; top:55%; left:85%; opacity:0.25; animation:ldFloatDust3 5s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:8px; height:8px; top:85%; right:25%; opacity:0.35; animation:ldFloatDust1 8s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:6px; height:6px; bottom:45%; right:5%; opacity:0.3; animation:ldFloatDust2 6s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:4px; height:4px; top:25%; right:75%; opacity:0.2; animation:ldFloatDust3 7s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:7px; height:7px; bottom:5%; left:55%; opacity:0.35; animation:ldFloatDust1 5s infinite alternate-reverse ease-in-out;"></div>
+
+  <div class="ld-dust" style="width:5px; height:5px; top:75%; left:45%; opacity:0.3; animation:ldFloatDust2 8s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:8px; height:8px; top:5%; right:5%; opacity:0.25; animation:ldFloatDust3 6s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:6px; height:6px; bottom:55%; right:65%; opacity:0.35; animation:ldFloatDust1 7s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:4px; height:4px; top:65%; right:85%; opacity:0.2; animation:ldFloatDust2 5s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:7px; height:7px; bottom:85%; left:75%; opacity:0.3; animation:ldFloatDust3 8s infinite alternate ease-in-out;"></div>
+
+  <div class="ld-dust" style="width:5px; height:5px; top:45%; left:5%; opacity:0.25; animation:ldFloatDust1 6s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:8px; height:8px; top:85%; right:45%; opacity:0.35; animation:ldFloatDust2 7s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:6px; height:6px; bottom:75%; right:15%; opacity:0.3; animation:ldFloatDust3 5s infinite alternate-reverse ease-in-out;"></div>
+  <div class="ld-dust" style="width:4px; height:4px; top:55%; right:35%; opacity:0.2; animation:ldFloatDust1 8s infinite alternate ease-in-out;"></div>
+  <div class="ld-dust" style="width:7px; height:7px; bottom:35%; left:85%; opacity:0.35; animation:ldFloatDust2 6s infinite alternate-reverse ease-in-out;"></div>
+
+  <!-- 컬러 구슬들 채도 -30% 및 속도 2배 -->
   <div class="ld-orb ld-orb-1"></div>
   <div class="ld-orb ld-orb-2"></div>
   <div class="ld-orb ld-orb-3"></div>
@@ -265,7 +283,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
   <div class="ld-orb ld-orb-8"></div>
   <div class="ld-orb ld-orb-9"></div>
   
-  <!-- ✨ 초대형 화이트톤 구슬 (우측 하단 1/3, 좌측 상단 등) -->
+  <!-- 초대형 화이트톤 구슬 (우측 하단 1/3, 투명도 50%) -->
   <div class="ld-orb ld-orb-white-1"></div>
   <div class="ld-orb ld-orb-white-2"></div>
 
@@ -429,13 +447,13 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
       </div>
       
-      <!-- ✨ 3. 팀원별 초과근무 발생 비율 (위치 상향 조정 및 소제목 중앙 배치) -->
+      <!-- 3. 팀원별 초과근무 발생 비율 -->
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:flex-start;">
           <span class="card-title-left">팀원별 초과근무 발생 비율</span>
           <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:10px; justify-content:flex-end;"></div>
         </div>
-        <!-- 위로 올려서 차트 잘림 방지 -->
+        <!-- 위로 15px 올려서 차트 잘림 방지 -->
         <div style="display:flex; flex:1; min-height:0; gap:10px; margin-top:-15px;">
           <div style="flex:1; position:relative; display:flex; justify-content:center; align-items:center;">
             <div style="width:100%; height:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
@@ -459,10 +477,8 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
       </div>
     </div>
     
-    <!-- ✨ 고급분석 3종 세트 (툴팁 내용 및 HHI 스케일 수정 완벽 적용) -->
+    <!-- ✨ 고급분석 3종 세트 -->
     <div class="grid-2" style="margin-top:15px;">
-      
-      <!-- 섀넌 엔트로피 -->
       <div class="eval-trend-card" style="min-height:350px;">
         <div class="eval-trend-title" style="justify-content:space-between;">
             업무 균등 분산 (섀넌 엔트로피)
@@ -483,7 +499,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjShannonChart"></canvas></div>
       </div>
 
-      <!-- HHI 지수 -->
       <div class="eval-trend-card" style="min-height:350px;">
         <div class="eval-trend-title" style="justify-content:space-between;">
             업무 쏠림도 (HHI 지수)
@@ -504,7 +519,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjHhiChart"></canvas></div>
       </div>
 
-      <!-- CV 추이 -->
       <div class="eval-trend-card" style="min-height:350px;">
         <div class="eval-trend-title" style="justify-content:space-between;">
             전체 업무 변동성 (CV 추이)
@@ -523,7 +537,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjCvChart"></canvas></div>
       </div>
 
-      <!-- 빈 공간 -->
       <div class="card" style="min-height:350px; background:rgba(255,255,255,0.2); border: 1px dashed rgba(203,213,225,0.6); display:flex; align-items:center; justify-content:center;">
         <div style="color:#94a3b8; font-weight:700; font-size:14px;">분석 지표 준비 중</div>
       </div>
@@ -752,7 +765,7 @@ async function loadDataFromSheets() {
       
       // ✨ 로딩 완료 시 텍스트 변경
       const loadingDesc = document.getElementById('loadingDescText');
-      loadingDesc.innerHTML = '<span style="color:#2563eb; font-weight:800;">데이터 분석 완료 ✨</span>';
+      loadingDesc.innerHTML = '<span style="color:#2563eb; font-weight:600;">데이터 분석 완료</span>';
 
       document.getElementById('ovEnterBtnWrap').classList.add('show');
     }, 500);
@@ -829,7 +842,7 @@ function renderDashboardTab(){
   if(pjData.length>0){ renderDashStage(pjData); renderDashCompare(pjData); renderDashDonutAndTop7(pjData); renderDashTimeline(pjData,pjMos); }
   else{ ['stageChart','compareChart','donutChart','timelineChart'].forEach(destroyChart); document.getElementById('top5List').innerHTML=`<li style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">서부의료원 데이터가 없습니다.</li>`; }
   
-  // Working Hours Analysis (서부의료원 기준)
+  // ✨ Working Hours Analysis (서부의료원 기준)
   renderDashHeat(pjData); 
   renderDashOvertimeBars(pjData); 
   renderDashOvertimeDonut(pjData); 
@@ -856,6 +869,7 @@ function renderOvProjectRatio(all){
 }
 function ovTogglePjRatio(b){ hlPjRatio=hlPjRatio===b?null:b; renderOvProjectRatio(filtered()); }
 
+// ✨ 단계 도넛 차트
 function renderDashStage(all){
   destroyChart('stageChart');
   const catMap=grpMin(all,'cat'); const tot=Object.values(catMap).reduce((a,b)=>a+b,0); if(tot===0) return;
@@ -870,13 +884,18 @@ function renderDashStage(all){
   });
   document.getElementById('stageCenter').innerText=formatHour(tot)+'h';
 }
+// ✨ 도넛 조각 클릭 시 단계(막대) 연동
 function dashToggleStage(cat){ hlStage=hlStage===cat?null:cat; const pjData = filtered().filter(r=>r.project==='경남 서부의료원'); renderDashStage(pjData); renderDashCompare(pjData); }
 
+// ✨ 단계별 막대 차트 (hlStage 상태에 따라 색상 연동)
 function renderDashCompare(all){
   destroyChart('compare'); if(!all.length) return;
-  const dss=MEMBERS.map(name=>{
-      const bgColors = CAT_ORDER.map(c => (hlStage !== null && hlStage !== c) ? '#e2e8f0' : MC[name]);
-      return {label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: bgColors, borderRadius:4};
+  const dss=MEMBERS.map(name=>{ 
+      const bgColors = CAT_ORDER.map(c => {
+          if (hlStage !== null && hlStage !== c) return '#e2e8f0'; // 연동 부분
+          return MC[name];
+      });
+      return {label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: bgColors, borderRadius:4}; 
   });
   CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{ type:'bar', data:{labels:CAT_ORDER,datasets:dss}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end',formatter:v=>v>0?v.toFixed(1):''} }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'10%'}} } });
 }
@@ -886,6 +905,7 @@ function renderDashDonutAndTop7(all){
   const subMap=grpMin(all,'sub'); const tot=Object.values(subMap).reduce((a,b)=>a+b,0); const topArr=Object.entries(subMap).sort((a,b)=>b[1]-a[1]);
   document.getElementById('donutCenter').innerText=formatHour(tot)+'h';
   if(topArr.length===0){ document.getElementById('top5List').innerHTML=`<li style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">데이터 없음</li>`; return; }
+  // ✨ 항목명은 그대로 두고 시간은 2pt 작게, BOLD 해제
   document.getElementById('top5List').innerHTML=topArr.slice(0,7).map(([k,v],i)=>{ const isDim=hlDonutWork!==null&&hlDonutWork!==k; const pct=tot>0?(v/tot*100).toFixed(1):0; return `<li class="top5-rank-item ${isDim?'dimmed':''}" style="cursor:pointer;" onclick="dashToggleDonut('${k}')"><div class="top5-rank-badge" style="background:${SUB_PAL[i]};">${i+1}</div><span class="top5-rank-name">${k}</span><div style="text-align:right;"><span style="font-weight:500; font-size:11px; color:#1e293b;">${formatHour(v)}h</span> <span style="font-size:10px;color:#94a3b8;">(${pct}%)</span></div></li>`; }).join('');
   const labels=topArr.slice(0,7).map(x=>x[0]); const data=topArr.slice(0,7).map(x=>mToH(x[1])); const bgColors=labels.map((l,i)=>(hlDonutWork===null||hlDonutWork===l)?SUB_PAL[i]:'#e2e8f0');
   CH.donut=new Chart(document.getElementById('donutChart').getContext('2d'),{ type:'doughnut', data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, options:{ responsive:true, maintainAspectRatio:false, cutout:'60%', layout:{padding:30}, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'800'},textAlign:'center',formatter:(v,ctx)=>{ const pct=(v/mToH(tot)*100).toFixed(1); return `${ctx.chart.data.labels[ctx.dataIndex]}\n${formatNum(v)}h (${pct}%)`; },anchor:'end',align:'end',clamp:true,clip:false} }, onClick:(e,els)=>{ if(els.length) dashToggleDonut(CH.donut.data.labels[els[0].index]); else{ hlDonutWork=null; renderDashDonutAndTop7(filtered().filter(r=>r.project==='경남 서부의료원')); } } } });
@@ -901,17 +921,10 @@ function renderDashTimeline(all,mos){
 }
 function dashToggleTimeline(name){ hlTimeline=hlTimeline===name?null:name; renderDashTimeline(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
 
+// ✨ 히트맵 클릭 시 구간 하이라이트 연동 (전역 변수 hlHeatBin 사용)
 window.toggleHeatBin = function(bin, year) {
   hlHeatBin = (hlHeatBin === bin) ? null : bin;
-  const cells = document.querySelectorAll('.hm-cell');
-  cells.forEach(cell => {
-      const cellBin = parseInt(cell.getAttribute('data-bin'));
-      if(isNaN(cellBin) || cellBin === 0) {
-          cell.style.opacity = (hlHeatBin !== null) ? 0.2 : 1;
-      } else {
-          cell.style.opacity = (hlHeatBin !== null && hlHeatBin !== cellBin) ? 0.2 : 1;
-      }
-  });
+  renderHeatmapOnly(year);
 };
 
 function renderDashHeat(all){
@@ -944,6 +957,7 @@ window.renderHeatmapOnly=function(year){
           const ratio = val / maxV;
           const bin = Math.ceil(ratio * 5); // 1~5 단계
           const isDim = hlHeatBin !== null && hlHeatBin !== bin;
+          // 색상을 뚜렷하게 구분
           const alpha = 0.2 + (bin - 1) * 0.2; 
           tb+=`<td><div class="hm-cell" data-bin="${bin}" onclick="toggleHeatBin(${bin}, '${year}')" style="background:${hexRgba('#00428E', alpha)};color:${alpha>=0.6?'#fff':'#1e293b'}; opacity:${isDim?0.2:1};" title="${formatHour(val)}h">${formatHour(val)}</div></td>`; 
       }
@@ -953,9 +967,11 @@ window.renderHeatmapOnly=function(year){
   document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
 
-// [일별 초과근무 일수] & [월별 9h 건수] 연동
+// ✨ [일별 초과근무 일수] & [월별 9h 건수] 데이터 완벽 동기화
 function renderDashOvertimeBars(all){
   destroyChart('dashOvertimeBarChart'); 
+  
+  // ✨ 팀원별, 날짜별 합산을 위해 맵 구성
   const dailyPersonMap = {}; 
   all.forEach(r=>{ 
       const key = r.name + '|' + r.date;
@@ -995,6 +1011,7 @@ function renderDashMonthlyOvertime(all,mos){
   destroyChart('dashMonthlyOvertimeChart');
   const bands=['9~10h','10~11h','11~12h','12h 이상']; let bandData=[[],[],[],[]];
   
+  // ✨ 팀원별, 날짜별 합산 맵
   const pDates={}; 
   all.forEach(r=>{ pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min; }); 
 
@@ -1024,7 +1041,7 @@ function renderDashMonthlyOvertime(all,mos){
 }
 function dashToggleMonthlyOt(b){ hlMonthlyOt=hlMonthlyOt===b?null:b; renderDashMonthlyOvertime(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
 
-// ✨ 팀원별 초과근무 도넛 (위치 올리기 및 텍스트 중앙 배치 + 사이즈 조절)
+// ✨ 팀원별 초과근무 도넛 (독립화 및 10% 크기 확장)
 function renderDashOvertimeDonut(all){
   destroyChart('dashOvertimeDonutChart9'); destroyChart('dashOvertimeDonutChart12');
   
@@ -1036,7 +1053,6 @@ function renderDashOvertimeDonut(all){
   });
   dMain.sort((a,b)=>b.days-a.days); dSub.sort((a,b)=>b.days-a.days);
 
-  // 범례 한 줄 정렬
   document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(n=>{ const isDim=hlOvertimeDonut!==null&&hlOvertimeDonut!==n; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleOvertimeDonut('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`; }).join('');
   
   const drawHalfDonut=(id,dataArr)=>{ 
@@ -1047,8 +1063,8 @@ function renderDashOvertimeDonut(all){
       data:{labels:dataArr.map(d=>d.name),datasets:[{data:dataArr.map(d=>d.days),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, 
       options:{ 
         responsive:true, maintainAspectRatio:false, 
-        cutout:'60%', // ✨ 10% 두껍게
-        radius:'85%', // ✨ 10% 넓게
+        cutout:'60%', // ✨ 10% 두껍게 (기존 70% -> 60%)
+        radius:'85%', // ✨ 10% 넓게 (기존 75% -> 85%)
         layout:{padding:15}, 
         plugins:{ 
           legend:{display:false}, 
