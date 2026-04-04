@@ -8,10 +8,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
+/* 기본 설정: 폰트 Pretendard 통일, body 상단 패딩 증가(75px 탑바에 맞춤) */
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Pretendard Variable', Pretendard, sans-serif !important; }
 body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px; font-weight: 600; color: #334155; background-color: #f4f7f9; }
 
-/* 대시보드 뒷배경 구슬 */
+/* 대시보드 뒷배경 구슬 애니메이션 */
 .background-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; background-color: #f4f7f9; }
 .orb { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.45; will-change: transform; }
 .orb-1 { width: 140px; height: 140px; background: rgba(59, 130, 246, 0.7); top: 10%; left: 10%; animation: floatS 6s infinite alternate ease-in-out; }
@@ -29,202 +30,50 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 @keyframes floatM { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(-60px, 40px, 0) scale(0.9); } }
 @keyframes floatL { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(70px, -50px, 0) scale(1.15); } }
 
-/* ═══════════════════════════════════════
-   ✨ 로딩 오버레이 - 이미지 스타일 재설계
-   배경: 밝은 블루-화이트 그라데이션
-   구슬: 이미지처럼 크고 선명한 3D 구슬
-═══════════════════════════════════════ */
+/* ✨ 로딩 오버레이 (밝은 파스텔 블루톤 + 다수 블러 구슬) */
 #loadingOverlay {
     position: fixed; inset: 0; z-index: 9999;
-    /* 이미지처럼 밝은 파란빛 화이트 배경 */
     background: radial-gradient(ellipse at 60% 40%, #dbeafe 0%, #eff6ff 40%, #f0f9ff 70%, #e0f2fe 100%);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.6s ease; overflow: hidden;
 }
+.ld-orb { position: absolute; border-radius: 50%; will-change: transform; }
+.ld-orb-1 { width: 280px; height: 280px; background: radial-gradient(circle at 35% 30%, #93c5fd, #3b82f6 50%, #1d4ed8 100%); top: -60px; right: 60px; filter: blur(25px); opacity: 0.6; animation: ldFloat1 7s infinite alternate ease-in-out; }
+.ld-orb-2 { width: 360px; height: 360px; background: radial-gradient(circle at 40% 35%, rgba(186, 230, 253, 0.9), rgba(147, 197, 253, 0.6) 50%, rgba(96, 165, 250, 0.3) 100%); top: -100px; right: -60px; filter: blur(35px); opacity: 0.5; animation: ldFloat2 9s infinite alternate-reverse ease-in-out; }
+.ld-orb-3 { width: 140px; height: 140px; background: radial-gradient(circle at 35% 30%, #7dd3fc, #38bdf8 50%, #0ea5e9 100%); bottom: 80px; left: 80px; filter: blur(15px); opacity: 0.7; animation: ldFloat3 6s infinite alternate ease-in-out; }
+.ld-orb-4 { width: 280px; height: 280px; background: radial-gradient(circle at 40% 30%, rgba(186, 230, 253, 0.8), rgba(147, 197, 253, 0.4) 60%, rgba(96, 165, 250, 0.1) 100%); bottom: -80px; left: -60px; filter: blur(40px); opacity: 0.6; animation: ldFloat1 11s infinite alternate-reverse ease-in-out; }
+.ld-orb-5 { width: 90px; height: 90px; background: rgba(59, 130, 246, 0.8); top: 30%; left: 15%; filter: blur(12px); opacity: 0.6; animation: ldFloat2 8s infinite alternate ease-in-out; }
+.ld-orb-6 { width: 70px; height: 70px; background: rgba(14, 165, 233, 0.7); bottom: 25%; right: 25%; filter: blur(10px); opacity: 0.7; animation: ldFloat3 10s infinite alternate-reverse ease-in-out; }
+.ld-orb-7 { width: 180px; height: 180px; background: rgba(139, 92, 246, 0.6); top: 40%; right: 10%; filter: blur(25px); opacity: 0.6; animation: ldFloat1 6s infinite alternate ease-in-out; }
+.ld-orb-8 { width: 110px; height: 110px; background: rgba(56, 189, 248, 0.8); bottom: 45%; left: 25%; filter: blur(15px); opacity: 0.7; animation: ldFloat2 7s infinite alternate-reverse ease-in-out; }
+.ld-orb-9 { width: 220px; height: 220px; background: rgba(99, 102, 241, 0.5); top: 5%; left: 40%; filter: blur(35px); opacity: 0.5; animation: ldFloat3 9s infinite alternate ease-in-out; }
 
-/* ✨ 이미지처럼 크고 선명한 3D 구슬들 */
-.ld-orb {
-    position: absolute; border-radius: 50%;
-    will-change: transform;
-}
-/* 오른쪽 상단 큰 구슬 그룹 (이미지의 우상단처럼) */
-.ld-orb-1 {
-    width: 280px; height: 280px;
-    background: radial-gradient(circle at 35% 30%, #93c5fd, #3b82f6 50%, #1d4ed8 100%);
-    top: -60px; right: 60px;
-    filter: blur(0px);
-    opacity: 0.9;
-    animation: ldFloat1 7s infinite alternate ease-in-out;
-    box-shadow: 0 20px 60px rgba(59, 130, 246, 0.4);
-}
-/* 오른쪽 상단 반투명 큰 구슬 (이미지의 뒤에 겹친 큰 구슬) */
-.ld-orb-2 {
-    width: 360px; height: 360px;
-    background: radial-gradient(circle at 40% 35%, rgba(186, 230, 253, 0.9), rgba(147, 197, 253, 0.6) 50%, rgba(96, 165, 250, 0.3) 100%);
-    top: -100px; right: -60px;
-    filter: blur(2px);
-    opacity: 0.7;
-    animation: ldFloat2 9s infinite alternate-reverse ease-in-out;
-}
-/* 왼쪽 하단 작은 구슬 (이미지의 좌하단 작은 파란 구슬) */
-.ld-orb-3 {
-    width: 140px; height: 140px;
-    background: radial-gradient(circle at 35% 30%, #7dd3fc, #38bdf8 50%, #0ea5e9 100%);
-    bottom: 80px; left: 80px;
-    filter: blur(0px);
-    opacity: 0.95;
-    animation: ldFloat3 6s infinite alternate ease-in-out;
-    box-shadow: 0 15px 40px rgba(14, 165, 233, 0.5);
-}
-/* 왼쪽 하단 배경 반투명 구슬 */
-.ld-orb-4 {
-    width: 280px; height: 280px;
-    background: radial-gradient(circle at 40% 30%, rgba(186, 230, 253, 0.8), rgba(147, 197, 253, 0.4) 60%, rgba(96, 165, 250, 0.1) 100%);
-    bottom: -80px; left: -60px;
-    filter: blur(2px);
-    opacity: 0.6;
-    animation: ldFloat1 11s infinite alternate-reverse ease-in-out;
-}
-/* 좌상단 작은 점 구슬 */
-.ld-orb-5 {
-    width: 50px; height: 50px;
-    background: radial-gradient(circle at 35% 30%, #e2e8f0, #cbd5e1 100%);
-    top: 30%; left: 15%;
-    filter: blur(0px);
-    opacity: 0.6;
-    animation: ldFloat2 8s infinite alternate ease-in-out;
-}
-/* 우하단 작은 점 구슬 */
-.ld-orb-6 {
-    width: 40px; height: 40px;
-    background: radial-gradient(circle at 35% 30%, #e2e8f0, #cbd5e1 100%);
-    bottom: 25%; right: 20%;
-    filter: blur(0px);
-    opacity: 0.5;
-    animation: ldFloat3 10s infinite alternate-reverse ease-in-out;
-}
+@keyframes ldFloat1 { 0% { transform: translate(0px, 0px) scale(1); } 100% { transform: translate(-30px, 40px) scale(1.05); } }
+@keyframes ldFloat2 { 0% { transform: translate(0px, 0px) scale(1); } 100% { transform: translate(25px, -35px) scale(0.95); } }
+@keyframes ldFloat3 { 0% { transform: translate(0px, 0px) scale(1); } 100% { transform: translate(20px, -25px) scale(1.08); } }
 
-@keyframes ldFloat1 {
-    0% { transform: translate(0px, 0px) scale(1); }
-    100% { transform: translate(-30px, 40px) scale(1.05); }
-}
-@keyframes ldFloat2 {
-    0% { transform: translate(0px, 0px) scale(1); }
-    100% { transform: translate(25px, -35px) scale(0.95); }
-}
-@keyframes ldFloat3 {
-    0% { transform: translate(0px, 0px) scale(1); }
-    100% { transform: translate(20px, -25px) scale(1.08); }
-}
-
-/* ✨ 콘텐츠 영역 (구슬 위에 올라옴) */
-.loading-content {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-/* ✨ 상단 브랜드명 (이미지의 "DesignerJOSH" 스타일) */
-.loading-brand {
-    font-size: 15px;
-    font-weight: 600;
-    color: #64748b;
-    letter-spacing: 0.15em;
-    margin-bottom: 28px;
-}
+/* 로딩 콘텐츠 박스 */
+.loading-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.loading-brand { font-size: 15px; font-weight: 600; color: #64748b; letter-spacing: 0.15em; margin-bottom: 28px; }
 .loading-brand b { color: #1e3a5f; font-weight: 900; }
+.loading-main-title { font-size: 90px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 30%, #3b82f6 60%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; filter: drop-shadow(0 4px 16px rgba(59, 130, 246, 0.3)); }
+.loading-sub-title { font-size: 22px; font-weight: 700; color: #1e40af; letter-spacing: 0.02em; margin-bottom: 12px; }
+.loading-desc { font-size: 15px; font-weight: 500; color: #64748b; margin-bottom: 6px; }
+.loading-desc b { color: #1e3a5f; font-weight: 800; }
 
-/* ✨ 메인 GNWMC 로고 (이미지의 "2026" 대형 텍스트처럼) */
-.loading-main-title {
-    font-size: 90px;
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 30%, #3b82f6 60%, #1d4ed8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 4px;
-    filter: drop-shadow(0 4px 16px rgba(59, 130, 246, 0.3));
-}
-
-/* ✨ 서브타이틀 */
-.loading-sub-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: #1e40af;
-    letter-spacing: 0.02em;
-    margin-bottom: 12px;
-}
-
-/* ✨ 설명 텍스트 */
-.loading-desc {
-    font-size: 15px;
-    font-weight: 500;
-    color: #64748b;
-    margin-bottom: 6px;
-}
-.loading-desc b {
-    color: #1e3a5f;
-    font-weight: 800;
-}
-
-/* ✨ 로딩 상태 영역 */
-#loadingStatusArea {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 32px;
-    transition: opacity 0.5s ease;
-    min-height: 80px;
-}
-
-/* ✨ 진행바 (파란색 계열) */
+/* 상태 영역 고정 레이아웃 */
+#loadingStatusArea { display: flex; flex-direction: column; align-items: center; margin-top: 32px; transition: opacity 0.5s ease; min-height: 80px; }
 .ov-progress { width: 240px; height: 4px; background: rgba(59,130,246,0.15); border-radius: 10px; margin-bottom: 12px; }
 .ov-progress-fill { height: 100%; background: linear-gradient(90deg, #60a5fa, #3b82f6, #1d4ed8); border-radius: 10px; transition: width .4s ease; width: 0%; }
-
 .ov-spinner { width: 36px; height: 36px; border: 3px solid rgba(59,130,246,0.2); border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
 .ov-msg { font-size: 13px; color: #64748b; font-weight: 500; }
 
-/* ✨ 입장 버튼 (이미지의 "SEND A DM TODAY!" 느낌으로) */
-#ovEnterBtnWrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 32px;
-    min-height: 80px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.5s ease;
-}
-#ovEnterBtnWrap.show {
-    opacity: 1;
-    visibility: visible;
-}
-.ov-enter-btn {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 16px 50px;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    letter-spacing: 0.05em;
-    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
-    transition: all 0.3s ease;
-}
-.ov-enter-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6);
-    background: linear-gradient(135deg, #60a5fa, #3b82f6);
-}
+/* 입장 버튼 영역 */
+#ovEnterBtnWrap { display: flex; flex-direction: column; align-items: center; margin-top: 32px; min-height: 80px; opacity: 0; visibility: hidden; transition: all 0.5s ease; position: absolute; bottom: -80px;}
+#ovEnterBtnWrap.show { opacity: 1; visibility: visible; bottom: -20px; }
+.ov-enter-btn { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border: none; border-radius: 50px; padding: 16px 50px; font-size: 16px; font-weight: 800; cursor: pointer; letter-spacing: 0.05em; box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5); transition: all 0.3s ease; }
+.ov-enter-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6); background: linear-gradient(135deg, #60a5fa, #3b82f6); }
 
 /* 탑 바 */
 .topbar { position: fixed; top: 0; left: 0; right: 0; height: 75px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(31, 38, 135, 0.05); }
@@ -241,6 +90,8 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .nav-item:hover { color: #00428E; }
 .nav-item.active { color: #fff; }
 .topbar-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 15px; }
+
+/* Custom Dropdown */
 .custom-select-wrap { position: relative; }
 .custom-select-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(255,255,255,0.9); border: 1.5px solid #E1EDF7; border-radius: 24px; padding: 4px 8px 4px 4px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s; height: 38px; min-width: 60px; }
 .custom-select-trigger:hover { border-color: #00428E; }
@@ -249,6 +100,8 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .custom-option { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; font-size: 13px; font-weight: 700; color: #334155; transition: background 0.2s; }
 .custom-option:hover { background: #F0F5FA; color: #00428E; }
 @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
+
+/* 슬라이더 필터 */
 .top-filter-wrap { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 20px; border: 1.5px solid #E1EDF7; height: 38px; }
 .timeline-container { position: relative; width: 140px; height: 34px; padding: 0 8px; flex-shrink: 0; }
 .year-row { position: relative; height: 12px; margin-bottom: 6px; }
@@ -266,23 +119,32 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .summary-text { color: #00428E; font-weight: 700; font-size: 10px; background: #F0F5FA; padding: 4px 8px; border-radius: 6px; width: 85px; text-align: center; }
 .reset-btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: transparent; border: none; color: #94a3b8; cursor: pointer; border-radius: 50%; transition: all 0.2s; }
 .reset-btn:hover { background: #F0F5FA; color: #00428E; }
+
+/* 메인 레이아웃 및 카드 */
 .main { flex: 1; padding: 25px 30px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 1500px; margin: 0 auto; position: relative; z-index: 10; }
 .dash-row-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
 .card, .eval-trend-card, .eval-table-card, .eval-profile-card { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 16px; padding: 25px; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); position: relative; display: flex; flex-direction: column; overflow: visible; }
 .eval-trend-card, .eval-table-card { height: 350px; }
 .eval-table-card { height: auto; min-height: 350px; }
 .card-section-title, .eval-trend-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
 .card-title-left { display: flex; align-items: center; gap: 6px; }
+
+/* 팀원 카드 및 툴팁 (잘림 방지) */
 .kpi-card { overflow: hidden; padding: 20px 25px; display: flex; flex-direction: column; justify-content: center; }
 .mini-stat-card { background: rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.7); }
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; z-index: 9999; }
 .info-icon { width: 16px; height: 16px; background: rgba(148, 163, 184, 0.8); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .info-wrap:hover .info-icon { background: #00428E; }
+
+/* ✨ 툴팁이 밑으로 뜨도록 속성 변경 */
 .info-tooltip { position: absolute; top: 140%; bottom: auto; left: 50%; transform: translateX(-50%); width: auto; min-width: 280px; background: rgba(30,41,59,0.98); color: #f8fafc; font-size: 12px; line-height: 1.6; padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 9999; pointer-events: none; font-weight: 500; text-align: left; }
 .info-tooltip::after { content:''; position:absolute; bottom:100%; top:auto; left:50%; transform:translateX(-50%); border-width:6px; border-style:solid; border-color: transparent transparent rgba(30,41,59,0.98) transparent; }
 .info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; top: 160%; }
+
+/* 리스트 및 히트맵 */
 .scroll-list::-webkit-scrollbar { width: 6px; }
 .scroll-list::-webkit-scrollbar-track { background: transparent; }
 .scroll-list::-webkit-scrollbar-thumb { background: rgba(203, 213, 225, 0.6); border-radius: 4px; }
@@ -294,16 +156,22 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .top5-rank-item.dimmed { opacity: 0.25; }
 .top5-rank-badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .top5-rank-name { flex: 1; font-size: 13px !important; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ✨ 히트맵 글자 크기 조정(12px) 및 부드러운 애니메이션 */
 .heat-table { border-collapse: separate; border-spacing: 2px; width: 100%; height: 100%; table-layout: fixed; }
 .heat-table th { font-size: 11px; color: #94a3b8; font-weight: 700; text-align: center; padding: 2px; }
-.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor:pointer; transition: all 0.4s ease; }
+.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor:pointer; transition: opacity 0.5s ease, background-color 0.5s ease, transform 0.3s ease, color 0.5s ease; }
 .hm-cell:hover { transform: scale(1.4); z-index: 10; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
 .tab-btn-sm { padding: 4px 10px; border-radius: 20px; border: none; font-size: 11px; font-weight: 600; background: #00428E; color: #fff; cursor: pointer; transition: background 0.2s; }
 .tab-btn-sm:hover { background: #3b82f6; }
 .tab-btn-sm.active { background: #00428E; }
+
 .view-section { display: none; animation: fadeIn 0.4s ease forwards; }
 .view-section.active { display: flex; flex-direction: column; gap: 15px; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 섹션 구분선 등 공통 유틸 */
 .working-content { display: flex; flex-direction: column; gap: 15px; width: 100%; }
 .ai-coach-box { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(240,245,250,0.7) 100%); border: 1px solid rgba(255,255,255,0.9); border-left: 4px solid #00428E; padding: 16px 20px; border-radius: 12px; font-size: 13px; color: #1e293b; font-weight: 600; line-height: 1.6; display: flex; align-items: center; gap: 12px; margin-top: 15px; }
 .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#475569; cursor:pointer; transition:opacity 0.2s; padding:4px 6px; border-radius:6px; white-space: nowrap; }
@@ -316,6 +184,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .section-divider h2 { font-size: 20px; font-weight: 800; color: #1e293b; letter-spacing: 0.5px; }
 .chart-area-65 { flex: 0 0 65%; max-width: 65%; position: relative; height: 100%; padding-left: 10px; }
 .list-area-35 { flex: 0 0 35%; max-width: 35%; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid rgba(226,232,240,0.6); padding-left: 20px; overflow: hidden; }
+
 @media(max-width:1200px){
   .dash-row-1 { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
@@ -328,7 +197,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 </style>
 </head>
 <body>
-
 <!-- 대시보드 뒷배경 구슬 -->
 <div class="background-container">
   <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div>
@@ -338,39 +206,27 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 
 <!-- ✨ 로딩 오버레이 (이미지 스타일 재설계) -->
 <div id="loadingOverlay">
-  <!-- 이미지처럼 크고 선명한 3D 구슬들 -->
   <div class="ld-orb ld-orb-1"></div>
   <div class="ld-orb ld-orb-2"></div>
   <div class="ld-orb ld-orb-3"></div>
   <div class="ld-orb ld-orb-4"></div>
   <div class="ld-orb ld-orb-5"></div>
   <div class="ld-orb ld-orb-6"></div>
+  <div class="ld-orb ld-orb-7"></div>
+  <div class="ld-orb ld-orb-8"></div>
+  <div class="ld-orb ld-orb-9"></div>
 
-  <!-- 콘텐츠 -->
   <div class="loading-content">
-    <!-- 상단 브랜드 (이미지의 DesignerJOSH 위치) -->
     <div class="loading-brand"><b>GNWMC</b> · PATH REFLECTION</div>
-
-    <!-- 메인 초대형 타이틀 (이미지의 2026 위치) -->
     <div class="loading-main-title">GNWMC</div>
-
-    <!-- 서브타이틀 (이미지의 Welcome To 위치) -->
     <div class="loading-sub-title">경상남도 서부의료원</div>
-
-    <!-- 설명 (이미지의 Let's make more magic 위치) -->
     <div class="loading-desc">팀원 KPI 대시보드에 오신 것을 환영합니다.</div>
     <div class="loading-desc">데이터를 수집하고 분석 중입니다...</div>
-
-    <!-- 로딩 상태 영역 -->
     <div id="loadingStatusArea">
-      <div class="ov-progress" id="ovProgressWrap">
-        <div class="ov-progress-fill" id="ovProgress"></div>
-      </div>
+      <div class="ov-progress" id="ovProgressWrap"><div class="ov-progress-fill" id="ovProgress"></div></div>
       <div class="ov-spinner" id="ovSpinner"></div>
       <div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
     </div>
-
-    <!-- 입장 버튼 -->
     <div id="ovEnterBtnWrap">
       <button class="ov-enter-btn" onclick="hideLoadingOverlay()">대시보드 입장하기</button>
     </div>
@@ -423,6 +279,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 <div class="main">
   <!-- 1. Project 탭 -->
   <div id="view-dashboard" class="view-section active">
+    <!-- OVERALL -->
     <div class="overall-wrap" style="display:flex; gap:15px; margin-bottom:5px; min-height:450px; height:auto; align-items:stretch;">
       <div class="card" style="flex:1.4; display:flex; flex-direction:column; gap:20px;">
         <div class="card-section-title" style="margin-bottom:0;">
@@ -448,6 +305,8 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
       </div>
       <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:15px;" id="topKpiGrid"></div>
     </div>
+
+    <!-- Project Time Analysis 챕터 -->
     <div class="section-divider">
       <h2>Project Time Analysis <span style="font-size:13px; color:#94a3b8; font-weight:600; margin-left:10px;">(경남 서부의료원 데이터 전용)</span></h2>
     </div>
@@ -495,14 +354,18 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="timelineChart"></canvas></div>
       </div>
     </div>
+
+    <!-- ✨ Working Hours Analysis -->
     <div class="section-divider">
       <h2>Working Hours Analysis <span style="font-size:13px; color:#00428E; font-weight:800; margin-left:10px;">(경남 서부의료원 데이터 전용)</span></h2>
     </div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:5px;">
+      
       <div class="card" style="height:320px;">
         <div class="card-section-title">일별 초과근무 일수 <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:8px;">(클릭 시 우측 막대 연동)</span></div>
         <div style="flex:1; min-height:0; position:relative; margin-top:10px;"><canvas id="dashOvertimeBarChart"></canvas></div>
       </div>
+
       <div class="card" style="height:320px;">
         <div class="card-section-title">
           <span class="card-title-left">월별 9h 이상 초과근무 발생 건수</span>
@@ -510,31 +373,37 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         </div>
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
       </div>
+      
+      <!-- ✨ 팀원별 초과근무 발생 비율 (위로 10px 올리고 소제목 중앙 정렬) -->
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:flex-start;">
           <span class="card-title-left">팀원별 초과근무 발생 비율</span>
-          <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:10px; flex-wrap:nowrap; justify-content:flex-end;"></div>
+          <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:10px; justify-content:flex-end;"></div>
         </div>
-        <div style="display:flex; flex:1; min-height:0; gap:10px; margin-top:5px;">
-          <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
-            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
-            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:8px;">9h 이상 비율</div>
+        <div style="display:flex; flex:1; min-height:0; gap:10px; margin-top:-10px;">
+          <div style="flex:1; position:relative; display:flex; justify-content:center; align-items:center;">
+            <div style="width:100%; height:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
+            <div id="donutTitle9" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:14px; font-weight:800; color:#1e293b; text-align:center; pointer-events:none;">9h 이상<br>비율</div>
           </div>
-          <div style="width:1px; background:rgba(226,232,240,0.6); margin:10px 0;"></div>
-          <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
-            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart12"></canvas></div>
-            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:8px;">12h 이상 비율</div>
+          <div id="donutDivider" style="width:1px; background:rgba(226,232,240,0.6); margin:10px 0;"></div>
+          <div id="donutWrap12" style="flex:1; position:relative; display:flex; justify-content:center; align-items:center;">
+            <div style="width:100%; height:100%; position:relative;"><canvas id="dashOvertimeDonutChart12"></canvas></div>
+            <div id="donutTitle12" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:14px; font-weight:800; color:#1e293b; text-align:center; pointer-events:none;">12h 이상<br>비율</div>
           </div>
         </div>
       </div>
+
+      <!-- ✨ 월별 근무 밀도 (필터 텍스트 수정 및 여백 추가) -->
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0;">
           <span class="card-title-left">월별 근무 밀도 <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:8px;">(클릭 동일 밀도 연동)</span></span>
-          <div id="heatYearTabs" style="display:flex; gap:5px; margin-left:auto;"></div>
+          <div id="heatYearTabs" style="display:flex; gap:3px; margin-left:auto;"></div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; margin-top:15px; padding:4px;"><table class="heat-table" id="heatTable"></table></div>
       </div>
     </div>
+    
+    <!-- ✨ 고급분석 3종 세트 (주요 일정 세로선 표시 추가) -->
     <div class="grid-2" style="margin-top:15px;">
       <div class="eval-trend-card" style="min-height:350px;">
         <div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다. 🔴표시는 주요 일정입니다.</div></div></div>
@@ -608,22 +477,52 @@ const OT_COLORS = ['#818cf8','#6366f1','#4A90E2','#00428E'];
 const RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력'];
 const RADAR_COLORS_ARR = ['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
 let MEMBERS = [], MC = {}, INITIALS = {};
 let SCHEDULE_DATA = [], EVAL_DATA = [], RAW = [];
 let CH = {}, GLOBAL_MEMBER = 'ALL';
 let hlCompare=null, hlTimeline=null, hlStage=null, hlOvertimeDonut=null, hlMonthlyOt=null, hlDonutWork=null, hlPjRatio=null;
-let hlOvertimeRange=null;
-let hlHeatBin=null;
+let hlOvertimeRange=null; 
+let hlHeatBin=null; 
+
 const OVERTIME_RANGES = ['9~10h', '10~11h', '11~12h', '12h 이상'];
 window.filterStartIndex = 0; window.filterEndIndex = 11; window.lastClickedIndex = 0;
 const filterYears = [2024,2025,2026], filterQuarters = ['Q1','Q2','Q3','Q4'];
 const totalNodes = filterYears.length * 4;
 let percentPositions = [];
+
 Chart.defaults.animation.duration = 400;
 Chart.defaults.font.family = "'Pretendard Variable', Pretendard, sans-serif";
 Chart.register(ChartDataLabels);
+
+// ✨ 툴팁 마우스 커서 따라다니기 설정
 Chart.Tooltip.positioners.cursor = function(elements, eventPosition) { return { x: eventPosition.x, y: eventPosition.y }; };
 Chart.defaults.plugins.tooltip.position = 'cursor';
+
+// ✨ 고급분석 주요 일정 세로선 연결 플러그인 추가
+const verticalLinePlugin = {
+    id: 'verticalLine',
+    beforeDatasetsDraw(chart) {
+        const ctx = chart.ctx;
+        chart.data.datasets.forEach((dataset, i) => {
+            if (dataset.isSchedule) {
+                const meta = chart.getDatasetMeta(i);
+                meta.data.forEach(point => {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(point.x, point.y);
+                    ctx.lineTo(point.x, chart.scales.y.bottom);
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.8)';
+                    ctx.stroke();
+                    ctx.restore();
+                });
+            }
+        });
+    }
+};
+Chart.register(verticalLinePlugin);
+
 const formatNum = val => typeof val==='number' ? val.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}) : val;
 const mToH = m => parseFloat((m/60).toFixed(1));
 const formatHour = m => formatNum(mToH(m));
@@ -650,12 +549,14 @@ async function loadDataFromSheets() {
     const response = await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`);
     document.getElementById('ovProgress').style.width = '60%';
     const json = await response.json();
+
     SCHEDULE_DATA = json.schedule || [];
     EVAL_DATA = (json.eval||[]).map(r=>{
       const qtr=String(r['분기']).trim();
       const qF=qtr.startsWith('Q')?qtr:'Q'+qtr;
       return { q:`${r['연도']}-${qF}`, name:String(r['성명']).trim(), vals:[parseFloat(r['적극성'])||0,parseFloat(r['생산성'])||0,parseFloat(r['전문성'])||0,parseFloat(r['창의성'])||0,parseFloat(r['협업능력'])||0] };
     }).filter(d=>d.name&&d.q);
+
     RAW = (json.work||[]).filter(r=>r.name&&r.date&&r.min>0).map(r=>{
       const rawPj = String(r.project||r['프로젝트']||r['PJ Code']||r['PJ_CODE']||r['pj code']||r['pj_code']||r.pjCode||'').trim();
       let pjType = '공통업무';
@@ -668,14 +569,15 @@ async function loadDataFromSheets() {
         week:(function(){ const d=new Date(r.date); d.setHours(0,0,0,0); d.setDate(d.getDate()+3-(d.getDay()||7)); return d.getFullYear()+'-W'+Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7).toString().padStart(2,'0'); })()
       };
     });
+
     const targetOrder = ['윤진관','이혜인B','정인태','김효언'];
     MEMBERS = Array.from(new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]))
       .filter(n=>n&&n!=='undefined'&&n.trim()!=='')
       .sort((a,b)=>{ const iA=targetOrder.indexOf(a); const iB=targetOrder.indexOf(b); return (iA!==-1?iA:99)-(iB!==-1?iB:99); });
     MEMBERS.forEach((name,idx)=>{ MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length]; INITIALS[name]=name.length>=3?name.substring(1,3):name; });
+
     document.getElementById('ovProgress').style.width = '100%';
     initSlider(); renderCustomDropdown(); updateNavSlider(); renderAllViews();
-    // ✨ 로딩 완료: 스피너 숨기고 버튼 표시
     setTimeout(()=>{
       document.getElementById('loadingStatusArea').style.opacity = '0';
       document.getElementById('loadingStatusArea').style.pointerEvents = 'none';
@@ -729,11 +631,14 @@ function renderAllViews(){ renderDashboardTab(); if(document.getElementById('vie
 function renderDashboardTab(){
   const all=filtered(); if(!all.length) return;
   const totalMin=all.reduce((s,r)=>s+r.min,0); const mos=getMos(all);
+  
   const pjData=all.filter(r=>r.project==='경남 서부의료원'); const pjMos=getMos(pjData);
+  
   document.getElementById('ovTotalHour').innerText=formatHour(totalMin)+'h';
   document.getElementById('ovTotalMember').innerText=MEMBERS.length+'명';
   document.getElementById('ovTotalMonth').innerText=mos.length+'개월';
   renderOvProjectRatio(all);
+  
   const grid=document.getElementById('topKpiGrid'); grid.innerHTML='';
   const gnwmcTotalMin=pjData.reduce((s,r)=>s+r.min,0);
   MEMBERS.forEach(name=>{
@@ -745,13 +650,17 @@ function renderDashboardTab(){
     mc.innerHTML=`<div class="member-kpi-header"><div><div style="font-size:18px;font-weight:900;color:#1e293b;">${name}</div><div style="font-size:11px;color:#94a3b8;font-weight:500;">${pos}</div></div>${getAvatar(name,46,14)}</div><div style="color:${MC[name]};font-size:28px;font-weight:800;">${formatHour(tot)}h <span style="font-size:14px;color:#64748b;">| ${formatHour(mPj)}h</span></div><div style="margin-top:8px;"><div style="font-size:11px;display:flex;justify-content:space-between;"><span>GNWMC내 기여도</span><span>${pct}%</span></div><div style="height:8px;background:#f1f5f9;border-radius:4px;margin-top:4px;overflow:hidden;"><div style="height:100%;background:${MC[name]};width:${pct}%;border-radius:4px;"></div></div></div><div style="margin-top:12px;font-size:11px;color:#64748b;font-weight:600;">개인별 프로젝트 투입 분포</div><div style="margin-top:4px;display:flex;height:8px;border-radius:4px;overflow:hidden;"><div style="width:${p1}%;background:#00428E;" title="서부의료원"></div><div style="width:${p2}%;background:#3b82f6;" title="타 프로젝트"></div><div style="width:${p3}%;background:#cbd5e1;" title="공통업무"></div></div><div style="display:flex;margin-top:4px;font-size:9px;color:#94a3b8;text-align:center;">${p1>0?`<div style="width:${p1}%;">${p1.toFixed(0)}%</div>`:''}${p2>0?`<div style="width:${p2}%;">${p2.toFixed(0)}%</div>`:''}${p3>0?`<div style="width:${p3}%;">${p3.toFixed(0)}%</div>`:''}</div>`;
     grid.appendChild(mc);
   });
+
   if(pjData.length>0){ renderDashStage(pjData); renderDashCompare(pjData); renderDashDonutAndTop7(pjData); renderDashTimeline(pjData,pjMos); }
   else{ ['stageChart','compareChart','donutChart','timelineChart'].forEach(destroyChart); document.getElementById('top5List').innerHTML=`<li style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">서부의료원 데이터가 없습니다.</li>`; }
-  renderDashHeat(pjData);
-  renderDashOvertimeBars(pjData);
-  renderDashOvertimeDonut(pjData);
+  
+  // ✨ Working Hours Analysis (서부의료원 기준)
+  renderDashHeat(pjData); 
+  renderDashOvertimeBars(pjData); 
+  renderDashOvertimeDonut(pjData); 
   renderDashMonthlyOvertime(pjData, pjMos);
-  const dates=[...new Set(pjData.map(r=>r.date))].sort();
+  
+  const dates=[...new Set(pjData.map(r=>r.date))].sort(); 
   renderShannonHhiCv(pjData, dates, '#00428E', 'pj');
 }
 
@@ -791,8 +700,8 @@ function dashToggleStage(cat){ hlStage=hlStage===cat?null:cat; const pjData = fi
 function renderDashCompare(all){
   destroyChart('compare'); if(!all.length) return;
   const dss=MEMBERS.map(name=>{
-    const bgColors = CAT_ORDER.map(c => (hlStage !== null && hlStage !== c) ? '#e2e8f0' : MC[name]);
-    return {label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: bgColors, borderRadius:4};
+      const bgColors = CAT_ORDER.map(c => (hlStage !== null && hlStage !== c) ? '#e2e8f0' : MC[name]);
+      return {label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: bgColors, borderRadius:4};
   });
   CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{ type:'bar', data:{labels:CAT_ORDER,datasets:dss}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end',formatter:v=>v>0?v.toFixed(1):''} }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'10%'}} } });
 }
@@ -817,9 +726,18 @@ function renderDashTimeline(all,mos){
 }
 function dashToggleTimeline(name){ hlTimeline=hlTimeline===name?null:name; renderDashTimeline(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
 
+// ✨ 히트맵 클릭 시 구간 하이라이트 연동 (부드러운 애니메이션)
 window.toggleHeatBin = function(bin, year) {
   hlHeatBin = (hlHeatBin === bin) ? null : bin;
-  renderHeatmapOnly(year);
+  const cells = document.querySelectorAll('.hm-cell');
+  cells.forEach(cell => {
+      const cellBin = parseInt(cell.getAttribute('data-bin'));
+      if(isNaN(cellBin) || cellBin === 0) {
+          cell.style.opacity = (hlHeatBin !== null) ? 0.2 : 1;
+      } else {
+          cell.style.opacity = (hlHeatBin !== null && hlHeatBin !== cellBin) ? 0.2 : 1;
+      }
+  });
 };
 
 function renderDashHeat(all){
@@ -837,37 +755,53 @@ window.renderHeatmapOnly=function(year){
   let th='<thead><tr><th style="width:30px;"></th>';
   MONTH_KO.forEach((l,i)=>{ th+=`<th style="color:${hasMo[i]?'#00428E':'#cbd5e1'};font-weight:${hasMo[i]?'800':'500'};">${l}</th>`; });
   th+='</tr></thead>';
-  let tb='<tbody>';
-  for(let w=0;w<5;w++){
-    tb+=`<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">${w+1}주</td>`;
-    for(let mo=0;mo<12;mo++){
-      if(!hasMo[mo]) tb+=`<td><div class="hm-cell" style="background:transparent;"></div></td>`;
+  
+  let tb='<tbody>'; 
+  for(let w=0;w<5;w++){ 
+    tb+=`<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">${w+1}주</td>`; 
+    for(let mo=0;mo<12;mo++){ 
+      if(!hasMo[mo]) tb+=`<td><div class="hm-cell" data-bin="0" style="background:transparent;"></div></td>`; 
       else if(mat[w][mo]<=0) {
-        const isDim = hlHeatBin !== null;
-        tb+=`<td><div class="hm-cell" style="background:#F0F5FA; opacity:${isDim?0.2:1};"></div></td>`;
-      } else {
-        const val = mat[w][mo];
-        const ratio = val / maxV;
-        const bin = Math.ceil(ratio * 5);
-        const isDim = hlHeatBin !== null && hlHeatBin !== bin;
-        const alpha = 0.2 + (bin - 1) * 0.2;
-        tb+=`<td><div class="hm-cell" onclick="toggleHeatBin(${bin}, '${year}')" style="background:${hexRgba('#00428E', alpha)};color:${alpha>=0.6?'#fff':'#1e293b'}; opacity:${isDim?0.2:1};" title="${formatHour(val)}h">${formatHour(val)}</div></td>`;
+          const isDim = hlHeatBin !== null;
+          tb+=`<td><div class="hm-cell" data-bin="0" style="background:#F0F5FA; opacity:${isDim?0.2:1};"></div></td>`; 
       }
-    }
-    tb+='</tr>';
+      else {
+          const val = mat[w][mo];
+          const ratio = val / maxV;
+          const bin = Math.ceil(ratio * 5); // 1~5 단계
+          const isDim = hlHeatBin !== null && hlHeatBin !== bin;
+          const alpha = 0.2 + (bin - 1) * 0.2; 
+          tb+=`<td><div class="hm-cell" data-bin="${bin}" onclick="toggleHeatBin(${bin}, '${year}')" style="background:${hexRgba('#00428E', alpha)};color:${alpha>=0.6?'#fff':'#1e293b'}; opacity:${isDim?0.2:1};" title="${formatHour(val)}h">${formatHour(val)}</div></td>`; 
+      }
+    } 
+    tb+='</tr>'; 
   }
   document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
 
+// ✨ [일별 초과근무 일수] & [월별 9h 건수] 데이터 완벽 동기화 연동
 function renderDashOvertimeBars(all){
-  destroyChart('dashOvertimeBarChart');
-  const dailyPersonMap = {};
-  all.forEach(r=>{ const key = r.name + '|' + r.date; dailyPersonMap[key] = (dailyPersonMap[key]||0) + r.min; });
+  destroyChart('dashOvertimeBarChart'); 
+  const dailyPersonMap = {}; 
+  all.forEach(r=>{ 
+      const key = r.name + '|' + r.date;
+      dailyPersonMap[key] = (dailyPersonMap[key]||0) + r.min; 
+  }); 
+  
   let counts=[0,0,0,0];
-  for(let k in dailyPersonMap){ const m = dailyPersonMap[k]; if(m>=540&&m<600) counts[0]++; else if(m>=600&&m<660) counts[1]++; else if(m>=660&&m<720) counts[2]++; else if(m>=720) counts[3]++; }
+  for(let k in dailyPersonMap){ 
+      const m = dailyPersonMap[k]; 
+      if(m>=540&&m<600) counts[0]++; 
+      else if(m>=600&&m<660) counts[1]++; 
+      else if(m>=660&&m<720) counts[2]++; 
+      else if(m>=720) counts[3]++; 
+  }
+  
   const bgColors = counts.map((_, i) => (hlOvertimeRange === null || hlOvertimeRange === i) ? OT_COLORS[i] : '#e2e8f0');
-  CH.dashOvertimeBarChart=new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'),{
-    type:'bar', data:{labels:OVERTIME_RANGES,datasets:[{data:counts,backgroundColor:bgColors,borderRadius:4}]},
+  
+  CH.dashOvertimeBarChart=new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'),{ 
+    type:'bar', 
+    data:{labels:OVERTIME_RANGES,datasets:[{data:counts,backgroundColor:bgColors,borderRadius:4}]}, 
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',formatter:v=>v>0?v+'일':''}},
@@ -879,56 +813,141 @@ function renderDashOvertimeBars(all){
         renderDashOvertimeBars(pjData);
         renderDashMonthlyOvertime(pjData, getMos(pjData));
       }
-    }
+    } 
   });
 }
 
 function renderDashMonthlyOvertime(all,mos){
   destroyChart('dashMonthlyOvertimeChart');
   const bands=['9~10h','10~11h','11~12h','12h 이상']; let bandData=[[],[],[],[]];
-  const pDates={};
-  all.forEach(r=>{ pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min; });
-  mos.forEach(m=>{
-    let c=[0,0,0,0];
-    for(let k in pDates){ if(k.split('|')[1].startsWith(m)){ const min=pDates[k]; if(min>=540&&min<600)c[0]++; else if(min>=600&&min<660)c[1]++; else if(min>=660&&min<720)c[2]++; else if(min>=720)c[3]++; } }
-    c.forEach((v,i)=>bandData[i].push(v));
+  
+  const pDates={}; 
+  all.forEach(r=>{ pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min; }); 
+
+  mos.forEach(m=>{ 
+      let c=[0,0,0,0]; 
+      for(let k in pDates){
+          if(k.split('|')[1].startsWith(m)){
+              const min=pDates[k];
+              if(min>=540&&min<600)c[0]++;
+              else if(min>=600&&min<660)c[1]++;
+              else if(min>=660&&min<720)c[2]++;
+              else if(min>=720)c[3]++;
+          }
+      } 
+      c.forEach((v,i)=>bandData[i].push(v)); 
   });
+  
   document.getElementById('dashMonthlyOtLegendWrap').innerHTML=bands.map((b,i)=>{ const isDim=hlMonthlyOt!==null&&hlMonthlyOt!==b; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleMonthlyOt('${b}')"><div class="legend-dot" style="background:${OT_COLORS[i]}"></div><span style="font-size:12px;">${b}</span></div>`; }).join('');
-  const datasets=bands.map((b,i)=>({ label:b, data:bandData[i], backgroundColor:(hlOvertimeRange===null || hlOvertimeRange===i) ? ((hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0') : '#e2e8f0', stack:'Stack 0', borderRadius:2 }));
+  
+  const datasets=bands.map((b,i)=>({ 
+      label:b, data:bandData[i], 
+      backgroundColor:(hlOvertimeRange===null || hlOvertimeRange===i) ? ((hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0') : '#e2e8f0', 
+      stack:'Stack 0', borderRadius:2 
+  }));
+  
   CH.dashMonthlyOvertimeChart=new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'),{ type:'bar', data:{labels:mos,datasets}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{ display:function(ctx){ if(hlMonthlyOt!==null) return ctx.dataset.label===hlMonthlyOt&&ctx.dataset.data[ctx.dataIndex]>0; return ctx.datasetIndex===3&&ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)>0; }, color:'#475569', font:{weight:'bold',size:11}, anchor:'end', align:'end', offset:2, formatter:(v,ctx)=>{ if(hlMonthlyOt!==null) return v+'건'; return ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)+'건'; } } }, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}, onClick:(e,els)=>{ if(els.length) dashToggleMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label); else{hlMonthlyOt=null;renderDashMonthlyOvertime(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원')));} } } });
 }
 function dashToggleMonthlyOt(b){ hlMonthlyOt=hlMonthlyOt===b?null:b; renderDashMonthlyOvertime(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
 
+// ✨ 팀원별 초과근무 도넛 (위치 올리기 및 텍스트 중앙 배치)
 function renderDashOvertimeDonut(all){
   destroyChart('dashOvertimeDonutChart9'); destroyChart('dashOvertimeDonutChart12');
+  
   let dMain = [], dSub = [];
-  MEMBERS.forEach(n=>{ const pDates={}; all.filter(r=>r.name===n).forEach(r=>pDates[r.date]=(pDates[r.date]||0)+r.min); let ot9=0,ot12=0; for(let d in pDates){if(pDates[d]>=540) ot9++; if(pDates[d]>=720) ot12++;} if(ot9>0) dMain.push({name:n,days:ot9}); if(ot12>0) dSub.push({name:n,days:ot12}); });
+  MEMBERS.forEach(n=>{ 
+    const pDates={}; all.filter(r=>r.name===n).forEach(r=>pDates[r.date]=(pDates[r.date]||0)+r.min); 
+    let ot9=0,ot12=0; for(let d in pDates){if(pDates[d]>=540) ot9++; if(pDates[d]>=720) ot12++;} 
+    if(ot9>0) dMain.push({name:n,days:ot9}); if(ot12>0) dSub.push({name:n,days:ot12}); 
+  });
   dMain.sort((a,b)=>b.days-a.days); dSub.sort((a,b)=>b.days-a.days);
+
+  // 범례 한 줄 정렬
   document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(n=>{ const isDim=hlOvertimeDonut!==null&&hlOvertimeDonut!==n; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleOvertimeDonut('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`; }).join('');
-  const drawHalfDonut=(id,dataArr)=>{ if(!dataArr.length) return; const bgColors=dataArr.map(d=>(hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0'); return new Chart(document.getElementById(id).getContext('2d'),{ type:'doughnut', data:{labels:dataArr.map(d=>d.name),datasets:[{data:dataArr.map(d=>d.days),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, options:{ responsive:true, maintainAspectRatio:false, cutout:'70%', radius:'75%', layout:{padding:25}, plugins:{ legend:{display:false}, datalabels:{ display:true, color:'#1e293b', font:{weight:'bold',size:10}, formatter:(v,ctx)=>{ const sum = ctx.dataset.data.reduce((a,b)=>a+b,0); const pct = sum>0 ? Math.round(v/sum*100) : 0; return v>0 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${v}일 (${pct}%)` : ''; }, anchor:'end', align:'end' } }, onClick:(e,els)=>{ if(els.length) dashToggleOvertimeDonut(dataArr[els[0].index].name); else{hlOvertimeDonut=null;renderDashOvertimeDonut(filtered().filter(r=>r.project==='경남 서부의료원'));} } } }); };
+  
+  const drawHalfDonut=(id,dataArr)=>{ 
+    if(!dataArr.length) return; 
+    const bgColors=dataArr.map(d=>(hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0'); 
+    return new Chart(document.getElementById(id).getContext('2d'),{ 
+      type:'doughnut', 
+      data:{labels:dataArr.map(d=>d.name),datasets:[{data:dataArr.map(d=>d.days),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, 
+      options:{ 
+        responsive:true, maintainAspectRatio:false, 
+        cutout:'68%', // 두께 2px 두껍게
+        radius:'75%', 
+        layout:{padding:25}, 
+        plugins:{ 
+          legend:{display:false}, 
+          datalabels:{
+            display:true, color:'#1e293b', font:{weight:'bold',size:10},
+            formatter:(v,ctx)=>{
+              const sum = ctx.dataset.data.reduce((a,b)=>a+b,0);
+              const pct = sum>0 ? Math.round(v/sum*100) : 0;
+              return v>0 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${v}일 (${pct}%)` : '';
+            },
+            anchor:'end', align:'end'
+          } 
+        }, 
+        onClick:(e,els)=>{ 
+          if(els.length) dashToggleOvertimeDonut(dataArr[els[0].index].name); 
+          else{hlOvertimeDonut=null;renderDashOvertimeDonut(filtered().filter(r=>r.project==='경남 서부의료원'));} 
+        } 
+      } 
+    }); 
+  };
   CH.dashOvertimeDonutChart9=drawHalfDonut('dashOvertimeDonutChart9',dMain);
   CH.dashOvertimeDonutChart12=drawHalfDonut('dashOvertimeDonutChart12',dSub);
 }
 function dashToggleOvertimeDonut(name){ hlOvertimeDonut=hlOvertimeDonut===name?null:name; renderDashOvertimeDonut(filtered().filter(r=>r.project==='경남 서부의료원')); }
 
+
+// ✨ 고급분석 3종 (세로선 플러그인 연동 및 상단 여백)
 function renderShannonHhiCv(d,datesArr,color,prefix){
   destroyChart(prefix+'ShannonChart'); destroyChart(prefix+'HhiChart'); destroyChart(prefix+'CvChart');
-  const sData=[],hData=[],cvData=[]; const schS=[], schH=[], schC=[];
-  datesArr.forEach(dt=>{
-    const dDay=d.filter(r=>r.date===dt); if(!dDay.length) return;
-    const tot=dDay.reduce((s,r)=>s+r.min,0); const sMap=grpMin(dDay,'sub');
-    let hhi=0,shan=0; Object.values(sMap).forEach(v=>{const p=v/tot;hhi+=p*p;if(p>0)shan-=p*Math.log(p);});
-    let wVals=[]; for(let i=0;i<7;i++){let pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);let m=d.filter(r=>r.date===pDt).reduce((a,b)=>a+b.min,0);wVals.push(m);}
-    const m=wVals.reduce((a,b)=>a+b,0)/7; const cv=m===0?0:Math.sqrt(wVals.reduce((a,b)=>a+Math.pow(b-m,2),0)/7)/m;
-    sData.push({x:dt,y:shan}); hData.push({x:dt,y:hhi}); cvData.push({x:dt,y:cv});
-    if(SCHEDULE_DATA.some(s => s.date && s.date.slice(0,10) === dt)) { schS.push({x:dt,y:shan}); schH.push({x:dt,y:hhi}); schC.push({x:dt,y:cv}); }
+  const sData=[],hData=[],cvData=[];
+  const schS=[], schH=[], schC=[];
+
+  datesArr.forEach(dt=>{ 
+      const dDay=d.filter(r=>r.date===dt); if(!dDay.length) return; 
+      const tot=dDay.reduce((s,r)=>s+r.min,0); const sMap=grpMin(dDay,'sub'); 
+      let hhi=0,shan=0; Object.values(sMap).forEach(v=>{const p=v/tot;hhi+=p*p;if(p>0)shan-=p*Math.log(p);}); 
+      
+      let wVals=[]; for(let i=0;i<7;i++){let pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);let m=d.filter(r=>r.date===pDt).reduce((a,b)=>a+b.min,0);wVals.push(m);} 
+      const m=wVals.reduce((a,b)=>a+b,0)/7; const cv=m===0?0:Math.sqrt(wVals.reduce((a,b)=>a+Math.pow(b-m,2),0)/7)/m; 
+      
+      sData.push({x:dt,y:shan}); hData.push({x:dt,y:hhi}); cvData.push({x:dt,y:cv}); 
+
+      // 주요일정은 ySch(독립 Y축)을 사용해 차트 최상단에 붙게 만듦
+      if(SCHEDULE_DATA.some(s => s.date && s.date.slice(0,10) === dt)) {
+          schS.push({x:dt,y:1}); schH.push({x:dt,y:1}); schC.push({x:dt,y:1});
+      }
   });
+
   if(prefix==='pj'&&document.getElementById('ovAvgShan')){
     const avgS=sData.length?sData.reduce((a,b)=>a+b.y,0)/sData.length:0; const avgH=hData.length?hData.reduce((a,b)=>a+b.y,0)/hData.length:0; const avgC=cvData.length?cvData.reduce((a,b)=>a+b.y,0)/cvData.length:0;
     document.getElementById('ovAvgShan').innerText=avgS.toFixed(2); document.getElementById('ovAvgHhi').innerText=avgH.toFixed(2); document.getElementById('ovAvgCv').innerText=avgC.toFixed(2);
   }
-  const schConfig = (dataArr) => ({ type: 'scatter', label: '주요 일정', data: dataArr, backgroundColor: '#ef4444', pointRadius: 5, pointHoverRadius: 8, pointBorderColor:'#fff', pointBorderWidth: 1 });
-  const opts=(yTitle,maxVal)=>{ const config={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{title:{display:true,text:yTitle},grid:{color:'rgba(226,232,240,0.5)'},min:0}}}; if(maxVal!==undefined) config.scales.y.max=maxVal; return config; };
+
+  const schConfig = (dataArr) => ({
+      type: 'scatter', label: '주요 일정', data: dataArr,
+      backgroundColor: '#ef4444', pointRadius: 4, pointHoverRadius: 6, pointBorderColor:'#fff', pointBorderWidth: 1.5,
+      yAxisID: 'ySch', isSchedule: true // 세로선을 그리기 위한 플래그
+  });
+
+  const opts=(yTitle,maxVal)=>{ 
+      const config={
+          responsive:true, maintainAspectRatio:false, 
+          plugins:{legend:{display:false},datalabels:{display:false}},
+          scales:{
+              x:{grid:{display:false},ticks:{maxTicksLimit:10}},
+              y:{title:{display:true,text:yTitle},grid:{color:'rgba(226,232,240,0.5)'},min:0, grace:'20%'}, // ✨ grace로 상단 여백 확보
+              ySch: { display: false, min: 0, max: 1.1, position: 'right' } // 점을 꼭대기에 위치시킬 독립축
+          }
+      }; 
+      if(maxVal!==undefined) config.scales.y.max=maxVal; 
+      return config; 
+  };
+  
   if(document.getElementById(prefix+'ShannonChart')){
     CH[prefix+'ShannonChart']=new Chart(document.getElementById(prefix+'ShannonChart').getContext('2d'),{type:'line',data:{datasets:[{data:sData,label:'지수',borderColor:'#14b8a6',backgroundColor:hexRgba('#14b8a6',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schConfig(schS)]},options:opts('다양성 지수')});
     CH[prefix+'HhiChart']=new Chart(document.getElementById(prefix+'HhiChart').getContext('2d'),{type:'line',data:{datasets:[{data:hData,label:'지수',borderColor:'#f59e0b',backgroundColor:hexRgba('#f59e0b',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schConfig(schH)]},options:opts('집중도 지수',1.0)});
@@ -963,13 +982,21 @@ function renderGiniHurst(d,color){
   destroyChart('dpGiniChart'); destroyChart('dpHurstChart');
   const dVals=Object.values(grpMin(d,'date')).filter(v=>v>0).sort((a,b)=>a-b);
   let gLorentz=[{x:0,y:0}]; let gVal=0;
-  if(dVals.length>0){ const n=dVals.length; const sum=dVals.reduce((a,b)=>a+b,0); let cum=0; for(let i=0;i<n;i++){cum+=dVals[i];gLorentz.push({x:(i+1)/n,y:cum/sum});} gVal=(n+1)/n-(2/(n*sum))*dVals.reduce((acc,v,i)=>acc+v*(n-i),0); }
+  if(dVals.length>0){
+    const n=dVals.length; const sum=dVals.reduce((a,b)=>a+b,0); let cum=0;
+    for(let i=0;i<n;i++){cum+=dVals[i];gLorentz.push({x:(i+1)/n,y:cum/sum});}
+    gVal=(n+1)/n-(2/(n*sum))*dVals.reduce((acc,v,i)=>acc+v*(n-i),0);
+  }
   document.getElementById('dpGiniTxt').innerText=`Gini: ${gVal.toFixed(2)}`;
   CH.dpGiniChart=new Chart(document.getElementById('dpGiniChart').getContext('2d'),{data:{datasets:[{type:'line',label:'로렌츠 곡선',data:gLorentz,borderColor:color,borderWidth:2,fill:true,backgroundColor:hexRgba(color,0.1),pointRadius:0},{type:'line',label:'완전평등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderWidth:1.5,borderDash:[5,5],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{min:0,max:1,title:{display:true,text:'누적 일수 비율'}},y:{min:0,max:1,title:{display:true,text:'누적 시간 비율'}}}}});
   let hVal=0.5,hText='데이터 부족',hColor='#94a3b8';
   if(dVals.length>=10){
     let rsVals=[],nVals=[];
-    for(let n=5;n<=Math.floor(dVals.length/2);n+=2){ let rsSum=0,cnt=0; for(let i=0;i<=dVals.length-n;i+=n){let chunk=dVals.slice(i,i+n);let mean=chunk.reduce((a,b)=>a+b,0)/n;let cDev=[],sum=0;chunk.forEach(x=>{sum+=(x-mean);cDev.push(sum);});let R=Math.max(...cDev)-Math.min(...cDev);let S=Math.sqrt(chunk.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n);if(S>0){rsSum+=R/S;cnt++;}} if(cnt>0){rsVals.push(Math.log(rsSum/cnt));nVals.push(Math.log(n));} }
+    for(let n=5;n<=Math.floor(dVals.length/2);n+=2){
+      let rsSum=0,cnt=0;
+      for(let i=0;i<=dVals.length-n;i+=n){let chunk=dVals.slice(i,i+n);let mean=chunk.reduce((a,b)=>a+b,0)/n;let cDev=[],sum=0;chunk.forEach(x=>{sum+=(x-mean);cDev.push(sum);});let R=Math.max(...cDev)-Math.min(...cDev);let S=Math.sqrt(chunk.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n);if(S>0){rsSum+=R/S;cnt++;}}
+      if(cnt>0){rsVals.push(Math.log(rsSum/cnt));nVals.push(Math.log(n));}
+    }
     if(nVals.length>=2){let sx=0,sy=0,sxy=0,sxx=0,len=nVals.length;for(let i=0;i<len;i++){sx+=nVals[i];sy+=rsVals[i];sxy+=nVals[i]*rsVals[i];sxx+=nVals[i]*nVals[i];}hVal=Math.max(0,Math.min((len*sxy-sx*sy)/(len*sxx-sx*sx),1));}
   }
   if(hVal>0.6){hText='추세 지속형';hColor='#ef4444';}else if(hVal<0.4){hText='평균 회귀형';hColor='#3b82f6';}else{hText='랜덤 패턴';hColor='#10b981';}
@@ -979,7 +1006,7 @@ function renderGiniHurst(d,color){
 
 function renderDpStacked(d,mos,subMap,color){destroyChart('dpStackedBar');const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,10);const moSubMap={};d.forEach(r=>{moSubMap[r.date.slice(0,7)]=moSubMap[r.date.slice(0,7)]||{};moSubMap[r.date.slice(0,7)][r.sub]=(moSubMap[r.date.slice(0,7)][r.sub]||0)+r.min;});document.getElementById('dpStackedLegend').innerHTML=subList.map((s,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i]}"></div>${s}</div>`).join('');CH.dpStackedBar=new Chart(document.getElementById('dpStackedBar').getContext('2d'),{data:{labels:mos,datasets:subList.map((sub,i)=>({type:'bar',label:sub,data:mos.map(m=>mToH(moSubMap[m]?.[sub]||0)),backgroundColor:SUB_PAL[i],stack:'s'}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(226,232,240,0.5)'}}}}});}
 function renderDpDonut(d,tot){destroyChart('dpDonut');const catMap=grpMin(d,'cat');const cats=CAT_ORDER.filter(c=>catMap[c]>0);document.getElementById('dpDonutCenter').innerHTML=`<div style="font-size:16px;font-weight:900;color:#1e293b;">${formatHour(tot)}h</div>`;CH.dpDonut=new Chart(document.getElementById('dpDonut').getContext('2d'),{type:'doughnut',data:{labels:cats,datasets:[{data:cats.map(c=>mToH(catMap[c])),backgroundColor:cats.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},datalabels:{color:'#1e293b',font:{size:10,weight:'bold'},formatter:(v,ctx)=>{const p=Math.round(v/mToH(tot)*100);return p>5?`${cats[ctx.dataIndex]}\n${p}%`:'';},anchor:'end',align:'end'}}}});}
-function renderFocusBar(d){destroyChart('dpFocusBar');let fM=0;d.forEach(r=>{fM+=r.min;});CH.dpFocusBar=new Chart(document.getElementById('dpFocusBar').getContext('2d'),{type:'bar',data:{labels:[''],datasets:[{label:'집중업무',data:[100],backgroundColor:'#00428E'},{label:'분산업무',data:[0],backgroundColor:'#cbd5e1'}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,max:100,display:false},y:{stacked:true,display:false}},plugins:{legend:{display:false},datalabels:{color:'#fff',font:{weight:'bold'},formatter:v=>v>5?v.toFixed(1)+'%':''}}}});}
+function renderFocusBar(d){destroyChart('dpFocusBar');let fM=0,dM=0;d.forEach(r=>{fM+=r.min;});const t=fM+dM;CH.dpFocusBar=new Chart(document.getElementById('dpFocusBar').getContext('2d'),{type:'bar',data:{labels:[''],datasets:[{label:'집중업무',data:[100],backgroundColor:'#00428E'},{label:'분산업무',data:[0],backgroundColor:'#cbd5e1'}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,max:100,display:false},y:{stacked:true,display:false}},plugins:{legend:{display:false},datalabels:{color:'#fff',font:{weight:'bold'},formatter:v=>v>5?v.toFixed(1)+'%':''}}}});}
 function renderSwitchBar(d,mos){destroyChart('dpSwitchBar');let swMo={};let prv=null;d.forEach(r=>{const mo=r.date.slice(0,7);if(!swMo[mo])swMo[mo]=0;if(prv!==null&&prv!==r.sub)swMo[mo]++;prv=r.sub;});CH.dpSwitchBar=new Chart(document.getElementById('dpSwitchBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{label:'업무 전환',data:mos.map(m=>swMo[m]||0),backgroundColor:'#00428E',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{display:false},y:{display:false,beginAtZero:true}}}});}
 
 function renderContinuity(d){
