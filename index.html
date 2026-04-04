@@ -3,18 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>해안건축 KPI 대시보드</title>
+<title>GNWMC KPI 대시보드</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
-/* ✨ 기본 설정: 폰트 Pretendard 통일, body 상단 패딩 증가(75px 탑바에 맞춤) */
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Pretendard Variable', Pretendard, sans-serif !important; }
-body {
-    display:flex; min-height:100vh; flex-direction: column; padding-top: 75px;
-    font-weight: 600; color: #334155; background-color: #f4f7f9;
-}
-/* ✨ 배경 구슬 애니메이션 */
+body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px; font-weight: 600; color: #334155; background-color: #f4f7f9; }
 .background-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; background-color: #f4f7f9; }
 .orb { position: absolute; border-radius: 50%; filter: blur(50px); opacity: 0.6; will-change: transform; }
 .orb-1 { width: 300px; height: 300px; background: rgba(59, 130, 246, 0.4); top: 10%; left: 15%; animation: float1 28s infinite alternate ease-in-out; }
@@ -22,7 +17,6 @@ body {
 .orb-3 { width: 250px; height: 250px; background: rgba(14, 165, 233, 0.4); bottom: 10%; left: 10%; animation: float3 22s infinite alternate ease-in-out; }
 .orb-4 { width: 350px; height: 350px; background: rgba(139, 92, 246, 0.3); top: -5%; right: 25%; animation: float1 40s infinite alternate-reverse ease-in-out; }
 .orb-5 { width: 200px; height: 200px; background: rgba(56, 189, 248, 0.4); bottom: 30%; right: 20%; animation: float2 26s infinite alternate ease-in-out; }
-/* 먼지 파티클 */
 .dust { position: absolute; border-radius: 50%; will-change: transform; filter: blur(1px); }
 .dust-1 { width: 6px; height: 6px; background: rgba(100, 116, 139, 0.4); top: 15%; left: 20%; animation: floatDust1 70s infinite alternate ease-in-out; }
 .dust-2 { width: 4px; height: 4px; background: rgba(148, 163, 184, 0.5); top: 50%; left: 10%; animation: floatDust2 85s infinite alternate-reverse ease-in-out; }
@@ -34,30 +28,22 @@ body {
 .dust-8 { width: 5px; height: 5px; background: rgba(100, 116, 139, 0.5); bottom: 15%; right: 10%; animation: floatDust2 95s infinite alternate-reverse ease-in-out; }
 .dust-9 { width: 8px; height: 8px; background: rgba(71, 85, 105, 0.25); bottom: 40%; right: 40%; animation: floatDust3 70s infinite alternate ease-in-out; }
 .dust-10{ width: 3px; height: 3px; background: rgba(148, 163, 184, 0.7); top: 5%; left: 40%; animation: floatDust1 85s infinite alternate-reverse ease-in-out; }
-/* 애니메이션 키프레임 */
 @keyframes float1 { 0% { transform: translate3d(0px, 0px, 0px) scale(1); } 50% { transform: translate3d(80px, 100px, 0px) scale(1.05); } 100% { transform: translate3d(0px, 0px, 0px) scale(1); } }
 @keyframes float2 { 0% { transform: translate3d(0px, 0px, 0px) scale(1); } 50% { transform: translate3d(-100px, 60px, 0px) scale(0.95); } 100% { transform: translate3d(0px, 0px, 0px) scale(1); } }
 @keyframes float3 { 0% { transform: translate3d(0px, 0px, 0px) scale(1); } 50% { transform: translate3d(60px, -90px, 0px) scale(1.08); } 100% { transform: translate3d(0px, 0px, 0px) scale(1); } }
 @keyframes floatDust1 { 0% { transform: translate3d(0px, 0px, 0px); } 100% { transform: translate3d(200px, 150px, 0px); } }
 @keyframes floatDust2 { 0% { transform: translate3d(0px, 0px, 0px); } 100% { transform: translate3d(-180px, 200px, 0px); } }
 @keyframes floatDust3 { 0% { transform: translate3d(0px, 0px, 0px); } 100% { transform: translate3d(150px, -200px, 0px); } }
-/* 로딩 오버레이 */
-#loadingOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#00428E,#4A90E2);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;transition:opacity .5s ease;}
-.ov-icon{font-size:52px;margin-bottom:16px;}
-.ov-title{font-size:26px;font-weight:900;margin-bottom:8px; display:flex; align-items:center; gap:8px;}
-.ov-sub{font-size:13px;opacity:.8;margin-bottom:28px;}
-.ov-spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;}
+#loadingOverlay { position:fixed; inset:0; background:linear-gradient(135deg,#00428E,#4A90E2); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; color:#fff; transition:opacity .5s ease; }
+.ov-icon { font-size:52px; margin-bottom:16px; }
+.ov-title { font-size:26px; font-weight:900; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.ov-sub { font-size:13px; opacity:.8; margin-bottom:28px; }
+.ov-spinner { width:44px; height:44px; border:4px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:16px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.ov-progress{width:260px;height:5px;background:rgba(255,255,255,.2);border-radius:10px;margin-top:12px;}
-.ov-progress-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease;width:0%;}
-.ov-enter-btn{background:#fff;color:#00428E;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:800;cursor:pointer;margin-top:20px;display:none;}
-/* ✨ 탑 바 네비게이션 (높이 75px, 글래스모피즘) */
-.topbar {
-    position: fixed; top: 0; left: 0; right: 0; height: 75px;
-    background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
-    z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(31, 38, 135, 0.05);
-}
+.ov-progress { width:260px; height:5px; background:rgba(255,255,255,.2); border-radius:10px; margin-top:12px; }
+.ov-progress-fill { height:100%; background:#fff; border-radius:10px; transition:width .4s ease; width:0%; }
+.ov-enter-btn { background:#fff; color:#00428E; border:none; border-radius:12px; padding:14px 40px; font-size:16px; font-weight:800; cursor:pointer; margin-top:20px; display:none; }
+.topbar { position: fixed; top: 0; left: 0; right: 0; height: 75px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(31, 38, 135, 0.05); }
 .topbar-logo { flex: 1 1 0; display:flex; align-items:baseline; gap:8px; font-size: 22px; color: #00428E; letter-spacing: 1.5px; }
 .topbar-center { flex: none; display: flex; align-items: center; position: relative; height: 100%; }
 .nav-slider { position: absolute; height: 40px; background: #00428E; border-radius: 20px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 0; top: 50%; transform: translateY(-50%); }
@@ -65,17 +51,15 @@ body {
 .nav-item:hover { color: #00428E; }
 .nav-item.active { color: #fff; }
 .topbar-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 15px; }
-/* Custom Dropdown */
 .custom-select-wrap { position: relative; }
 .custom-select-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(255,255,255,0.9); border: 1.5px solid #E1EDF7; border-radius: 24px; padding: 4px 8px 4px 4px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s; height: 38px; min-width: 60px; }
-.custom-select-trigger:hover { border-color: #00428E; background: rgba(255,255,255,0.9); }
+.custom-select-trigger:hover { border-color: #00428E; }
 .custom-select-options { position: absolute; top: 120%; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.8); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); display: none; flex-direction: column; overflow: hidden; z-index: 3000; min-width: 150px; }
 .custom-select-options.open { display: flex; animation: slideDown 0.2s ease forwards; }
 .custom-option { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; font-size: 13px; font-weight: 700; color: #334155; transition: background 0.2s; }
 .custom-option:hover { background: #F0F5FA; color: #00428E; }
 @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
-/* 슬라이더 필터 */
-.top-filter-wrap { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 20px; border: 1.5px solid #E1EDF7; height: 38px;}
+.top-filter-wrap { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 20px; border: 1.5px solid #E1EDF7; height: 38px; }
 .timeline-container { position: relative; width: 140px; height: 34px; padding: 0 8px; flex-shrink: 0; }
 .year-row { position: relative; height: 12px; margin-bottom: 6px; }
 .year-label { position: absolute; top: 0; transform: translateX(-50%); font-size: 10px; font-weight: 700; color: #9ca3af; cursor: pointer; transition: all 0.3s ease; }
@@ -90,71 +74,53 @@ body {
 .node.endpoint { width: 12px; height: 12px; background: #00428E; border: 2px solid #fff; z-index: 3; }
 .range-summary { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .summary-text { color: #00428E; font-weight: 700; font-size: 10px; background: #F0F5FA; padding: 4px 8px; border-radius: 6px; width: 85px; text-align: center; }
-.reset-btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: transparent; border: none; color: #94a3b8; cursor: pointer; border-radius: 50%; transition: all 0.2s;}
+.reset-btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: transparent; border: none; color: #94a3b8; cursor: pointer; border-radius: 50%; transition: all 0.2s; }
 .reset-btn:hover { background: #F0F5FA; color: #00428E; }
-/* ✨ 메인 레이아웃 */
 .main { flex: 1; padding: 25px 30px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 1500px; margin: 0 auto; position: relative; z-index: 10; }
 .dash-row-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-/* ✨ 글래스모피즘 적용 카드 스타일 */
-.card, .eval-trend-card, .eval-table-card, .eval-profile-card {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 16px; padding: 25px;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
-    position: relative; display: flex; flex-direction: column; overflow: visible;
-}
+.card, .eval-trend-card, .eval-table-card, .eval-profile-card { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 16px; padding: 25px; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); position: relative; display: flex; flex-direction: column; overflow: visible; }
 .eval-trend-card, .eval-table-card { height: 350px; }
 .eval-table-card { height: auto; min-height: 350px; }
 .card-section-title, .eval-trend-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
 .card-title-left { display: flex; align-items: center; gap: 6px; }
-/* ✨ 팀원 카드 및 미니 카드 최적화 */
 .kpi-card { overflow: hidden; padding: 20px 25px; display: flex; flex-direction: column; justify-content: center; }
-.mini-stat-card { background: rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.7);}
-/* 툴팁 */
+.mini-stat-card { background: rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.7); }
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; z-index: 9999; }
 .info-icon { width: 16px; height: 16px; background: rgba(148, 163, 184, 0.8); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .info-wrap:hover .info-icon { background: #00428E; }
 .info-tooltip { position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%); width: auto; min-width: 280px; background: rgba(30,41,59,0.98); color: #f8fafc; font-size: 12px; line-height: 1.6; padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 9999; pointer-events: none; font-weight: 500; text-align: left; }
 .info-tooltip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border-width:6px; border-style:solid; border-color: rgba(30,41,59,0.98) transparent transparent transparent; }
 .info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 160%; }
-/* 리스트, 테이블 공통 */
 .scroll-list::-webkit-scrollbar { width: 6px; }
 .scroll-list::-webkit-scrollbar-track { background: transparent; }
 .scroll-list::-webkit-scrollbar-thumb { background: rgba(203, 213, 225, 0.6); border-radius: 4px; }
 .member-kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
 .avatar-base { border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; box-sizing: border-box; flex-shrink: 0; }
-/* ✨ TOP 7 리스트 디자인 최적화 (폰트 확대) */
-.top5-rank-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 6px; margin-left: 0; }
+.top5-rank-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 6px; }
 .top5-rank-item { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; transition: all .2s; cursor: pointer; }
 .top5-rank-item:hover, .top5-rank-item.active { background: rgba(255, 255, 255, 0.5); }
 .top5-rank-item.dimmed { opacity: 0.25; }
-.top5-rank-badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;}
-.top5-rank-name { flex: 1; font-size: 13px !important; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-/* 히트맵 */
+.top5-rank-badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.top5-rank-name { flex: 1; font-size: 13px !important; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .heat-table { border-collapse: separate; border-spacing: 2px; width: 100%; height: 100%; table-layout: fixed; }
 .heat-table th { font-size: 11px; color: #94a3b8; font-weight: 700; text-align: center; padding: 2px; }
-.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; cursor:pointer; transition:transform .15s;}
+.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; cursor:pointer; transition:transform .15s; }
 .hm-cell:hover { transform: scale(1.4); z-index: 10; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-.tab-btn-sm { padding: 4px 10px; border-radius: 20px; border: none; font-size: 11px; font-weight: 600; background: #00428E; color: #fff; cursor: pointer;}
+.tab-btn-sm { padding: 4px 10px; border-radius: 20px; border: none; font-size: 11px; font-weight: 600; background: #00428E; color: #fff; cursor: pointer; }
 .view-section { display: none; animation: fadeIn 0.4s ease forwards; }
 .view-section.active { display: flex; flex-direction: column; gap: 15px; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-/* ✨ Working 탭 공통 및 구분선 */
 .working-content { display: flex; flex-direction: column; gap: 15px; width: 100%; }
 .ai-coach-box { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(240,245,250,0.7) 100%); border: 1px solid rgba(255,255,255,0.9); border-left: 4px solid #00428E; padding: 16px 20px; border-radius: 12px; font-size: 13px; color: #1e293b; font-weight: 600; line-height: 1.6; display: flex; align-items: center; gap: 12px; margin-top: 15px; }
-/* 범례 아이템 공통 (한줄 정렬 nowrap) */
 .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#475569; cursor:pointer; transition:opacity 0.2s; padding:4px 6px; border-radius:6px; white-space: nowrap; }
 .legend-item:hover { background:rgba(255, 255, 255, 0.5); }
 .legend-item.dimmed { opacity:0.3; }
 .legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
 .split-card-wrap { display: flex; flex-direction: column; gap: 15px; height: 100%; }
 .split-card-item { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-/* 섹션 구분선 */
 .section-divider { margin: 15px 0 5px 0; padding-top: 25px; border-top: 2px solid rgba(226, 232, 240, 0.6); display:flex; align-items:center; }
 .section-divider h2 { font-size: 20px; font-weight: 800; color: #1e293b; letter-spacing: 0.5px; }
-/* ✨ 차트:목록 6.5 : 3.5 고정용 클래스 */
 .chart-area-65 { flex: 0 0 65%; max-width: 65%; position: relative; height: 100%; padding-left: 10px; }
 .list-area-35 { flex: 0 0 35%; max-width: 35%; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid rgba(226,232,240,0.6); padding-left: 20px; overflow: hidden; }
 @media(max-width:1200px){
@@ -166,9 +132,8 @@ body {
   .list-area-35 { flex: 0 0 100%; max-width: 100%; border-left: none; padding-left: 0; margin-top: 20px; }
 }
 </style>
-</head>  
+</head>
 <body>
-<!-- ✨ 뒷배경 애니메이션 (구슬 5개 + 먼지 10개) -->
 <div class="background-container">
   <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
   <div class="dust dust-1"></div><div class="dust dust-2"></div><div class="dust dust-3"></div><div class="dust dust-4"></div><div class="dust dust-5"></div>
@@ -177,8 +142,8 @@ body {
 <div id="loadingOverlay">
   <div class="ov-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 11h8"/><path d="M12 11v6"/></svg></div>
   <div class="ov-title">
-      <span style="font-weight: 900;">GNWMC</span> 
-      <span style="font-weight: 400; font-size: 16px; color: #cbd5e1; letter-spacing: normal;">경상남도 서부의료원</span>
+    <span style="font-weight:900;">GNWMC</span>
+    <span style="font-weight:400; font-size:16px; color:#cbd5e1; letter-spacing:normal;">경상남도 서부의료원</span>
   </div>
   <div class="ov-sub">구글 시트에서 데이터를 수집하고 분석하는 중입니다...</div>
   <div class="ov-spinner" id="ovSpinner"></div>
@@ -187,11 +152,10 @@ body {
   <button class="ov-enter-btn" id="ovEnterBtn" onclick="hideLoadingOverlay()">🚀 대시보드 입장하기</button>
 </div>
 
-<!-- ✨ 탑 바 네비게이션 -->
 <nav class="topbar">
   <div class="topbar-logo">
-      <span style="font-weight: 900;">GNWMC</span>
-      <span style="font-weight: 400; color: #94a3b8; font-size: 15px; letter-spacing: normal;">경상남도 서부의료원</span>
+    <span style="font-weight:900;">GNWMC</span>
+    <span style="font-weight:400; color:#94a3b8; font-size:15px; letter-spacing:normal;">경상남도 서부의료원</span>
   </div>
   <div class="topbar-center" id="navContainer">
     <div class="nav-slider" id="navSlider"></div>
@@ -212,884 +176,645 @@ body {
       <div class="range-summary">
         <span class="summary-text" id="summaryText">-</span>
         <button class="reset-btn" title="필터 초기화" onclick="resetFilter()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         </button>
       </div>
     </div>
-    <!-- 커스텀 드롭다운 -->
     <div class="custom-select-wrap" id="globalMemberSelectWrap">
-        <div class="custom-select-trigger" id="customSelectTrigger" onclick="toggleDropdown()"></div>
-        <div class="custom-select-options" id="customSelectOptions"></div>
+      <div class="custom-select-trigger" id="customSelectTrigger" onclick="toggleDropdown()"></div>
+      <div class="custom-select-options" id="customSelectOptions"></div>
     </div>
   </div>
 </nav>
+
 <div class="main">
-  <!-- 1. [Project] 탭 -->
+  <!-- 1. Project 탭 -->
   <div id="view-dashboard" class="view-section active">
-    <!-- ✨ 최상단 레이아웃 개편: OVERALL(좌) + Team Grid(우) -->
-    <div class="overall-wrap" style="display:flex; gap:15px; margin-bottom: 5px; min-height: 450px; height: auto; align-items: stretch;">
-        <!-- LEFT: OVERALL Card -->
-        <div class="card" style="flex: 1.4; display:flex; flex-direction:column; gap:20px;">
-            <div class="card-section-title" style="margin-bottom:0;">
-                <span class="card-title-left" style="font-size:20px; color:#00428E; font-weight:900;">PROJECT OVERALL</span>
-            </div>
-            <!-- 요약 수치 -->
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; background:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.8); padding:20px 25px; border-radius:12px;">
-                <div>
-                    <div style="font-size:13px; color:#64748b; font-weight:600; margin-bottom:6px;">선택 기간 총 투입</div>
-                    <div style="font-size:30px; font-weight:800; color:#00428E;" id="ovTotalHour">0h</div>
-                </div>
-                <div>
-                    <div style="font-size:13px; color:#64748b; font-weight:600; margin-bottom:6px;">참여 인원</div>
-                    <div style="font-size:30px; font-weight:800; color:#1e293b;" id="ovTotalMember">0명</div>
-                </div>
-                <div>
-                    <div style="font-size:13px; color:#64748b; font-weight:600; margin-bottom:6px;">참여 개월 수</div>
-                    <div style="font-size:30px; font-weight:800; color:#1e293b;" id="ovTotalMonth">0개월</div>
-                </div>
-            </div>
-            <!-- ✨ 서부 vs 타 프로젝트 (높이 80px 막대차트, 우측상단 범례) -->
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <div style="font-size:14px; font-weight:700; color:#475569; display:flex; justify-content:space-between; align-items:center;">
-                    경남 서부의료원 vs 타 프로젝트
-                    <div id="ovPjRatioLegendWrap" style="display:flex; gap:6px;"></div>
-                </div>
-                <div style="height: 80px; position:relative; margin-top: 5px;"><canvas id="ovPjRatioBar"></canvas></div>
-            </div>
-            <!-- 분석 지표 평균 (미니 카드형태) -->
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top: auto; padding-top: 10px;">
-                 <div class="mini-stat-card"><div style="font-size:12px; color:#94a3b8; font-weight:600;">업무 균등 분산 (섀넌) 평균</div><div style="font-size:24px; font-weight:800; color:#14b8a6; margin-top:6px;" id="ovAvgShan">0.00</div></div>
-                 <div class="mini-stat-card"><div style="font-size:12px; color:#94a3b8; font-weight:600;">업무 쏠림도 (HHI) 평균</div><div style="font-size:24px; font-weight:800; color:#f59e0b; margin-top:6px;" id="ovAvgHhi">0.00</div></div>
-                 <div class="mini-stat-card"><div style="font-size:12px; color:#94a3b8; font-weight:600;">전체 업무 변동성 (CV) 평균</div><div style="font-size:24px; font-weight:800; color:#ef4444; margin-top:6px;" id="ovAvgCv">0.00</div></div>
-            </div>
+    <div class="overall-wrap" style="display:flex; gap:15px; margin-bottom:5px; min-height:450px; height:auto; align-items:stretch;">
+      <div class="card" style="flex:1.4; display:flex; flex-direction:column; gap:20px;">
+        <div class="card-section-title" style="margin-bottom:0;">
+          <span class="card-title-left" style="font-size:20px; color:#00428E; font-weight:900;">PROJECT OVERALL</span>
         </div>
-        <!-- RIGHT: 팀원 2x2 그리드 -->
-        <div style="flex: 1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows: 1fr 1fr; gap:15px;" id="topKpiGrid"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; background:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.8); padding:20px 25px; border-radius:12px;">
+          <div><div style="font-size:13px; color:#64748b; font-weight:600; margin-bottom:6px;">선택 기간 총 투입</div><div style="font-size:30px; font-weight:800; color:#00428E;" id="ovTotalHour">0h</div></div>
+          <div><div style="font-size:13px; color:#64748b; font-weight:600; margin-bottom:6px;">참여 인원</div><div style="font-size:30px; font-weight:800; color:#1e293b;" id="ovTotalMember">0명</div></div>
+          <div><div style="font-size:13px; color:#64748b; font-weight:600; margin-bottom:6px;">참여 개월 수</div><div style="font-size:30px; font-weight:800; color:#1e293b;" id="ovTotalMonth">0개월</div></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:14px; font-weight:700; color:#475569; display:flex; justify-content:space-between; align-items:center;">
+            경남 서부의료원 vs 타 프로젝트
+            <div id="ovPjRatioLegendWrap" style="display:flex; gap:6px;"></div>
+          </div>
+          <div style="height:80px; position:relative; margin-top:5px;"><canvas id="ovPjRatioBar"></canvas></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:auto; padding-top:10px;">
+          <div class="mini-stat-card"><div style="font-size:12px; color:#94a3b8; font-weight:600;">업무 균등 분산 (섀넌) 평균</div><div style="font-size:24px; font-weight:800; color:#14b8a6; margin-top:6px;" id="ovAvgShan">0.00</div></div>
+          <div class="mini-stat-card"><div style="font-size:12px; color:#94a3b8; font-weight:600;">업무 쏠림도 (HHI) 평균</div><div style="font-size:24px; font-weight:800; color:#f59e0b; margin-top:6px;" id="ovAvgHhi">0.00</div></div>
+          <div class="mini-stat-card"><div style="font-size:12px; color:#94a3b8; font-weight:600;">전체 업무 변동성 (CV) 평균</div><div style="font-size:24px; font-weight:800; color:#ef4444; margin-top:6px;" id="ovAvgCv">0.00</div></div>
+        </div>
+      </div>
+      <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:15px;" id="topKpiGrid"></div>
     </div>
-    <!-- ✨ Project Time Analysis 챕터 (서부의료원 24188 전용) -->
     <div class="section-divider">
-        <h2>Project Time Analysis <span style="font-size:13px; color:#94a3b8; font-weight:600; margin-left:10px;">(경남 서부의료원 데이터 전용)</span></h2>
+      <h2>Project Time Analysis <span style="font-size:13px; color:#94a3b8; font-weight:600; margin-left:10px;">(경남 서부의료원 데이터 전용)</span></h2>
     </div>
-    <div class="dash-row-1" style="margin-top: 5px;">
-      <!-- 도넛 차트로 변경 -->
+    <div class="dash-row-1" style="margin-top:5px;">
       <div class="card" style="height:350px;">
-          <div class="card-section-title">
-              <span class="card-title-left">단계별 투입비율</span>
-              <div id="dashStageLegendWrap" style="display:flex; gap:6px;"></div>
+        <div class="card-section-title">
+          <span class="card-title-left">단계별 투입비율</span>
+          <div id="dashStageLegendWrap" style="display:flex; gap:6px;"></div>
+        </div>
+        <div style="flex:1; min-height:0; margin-top:10px; position:relative;">
+          <canvas id="stageChart"></canvas>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+            <div style="font-size:18px;font-weight:900;color:#1e293b;" id="stageCenter">-</div>
+            <div style="font-size:12px;color:#94a3b8;font-weight:600;">총 투입</div>
           </div>
-          <div style="flex:1; min-height:0; margin-top:10px; position: relative;">
-              <canvas id="stageChart"></canvas>
-              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-                <div style="font-size:18px;font-weight:900;color:#1e293b;" id="stageCenter">-</div>
-                <div style="font-size:12px;color:#94a3b8;font-weight:600;">총 투입</div>
-              </div>
-          </div>
+        </div>
       </div>
       <div class="card" style="height:350px;">
-          <div class="card-section-title">
-              <span class="card-title-left">설계단계별 투입시간 <span style="font-size:11px; color:#94a3b8; font-weight:600;">(클릭 하이라이트)</span></span>
-              <div id="dashCompareLegendWrap" style="display:flex; gap:6px;"></div>
-          </div>
-          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="compareChart"></canvas></div>
+        <div class="card-section-title">
+          <span class="card-title-left">설계단계별 투입시간 <span style="font-size:11px; color:#94a3b8; font-weight:600;">(클릭 하이라이트)</span></span>
+          <div id="dashCompareLegendWrap" style="display:flex; gap:6px;"></div>
+        </div>
+        <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="compareChart"></canvas></div>
       </div>
     </div>
-    <div class="dash-row-1" style="margin-top: 5px;">
-      <!-- ✨ 분류별 도넛 (도넛 6.5 : 리스트 3.5 고정 레이아웃) -->
+    <div class="dash-row-1" style="margin-top:5px;">
       <div class="card" style="height:400px;">
         <div class="card-section-title">분류별 업무 투입시간 및 TOP 7</div>
         <div style="display:flex; height:100%; align-items:center;">
-           <!-- /* DO NOT REMOVE: 6.5비율 고정 */ -->
-           <div class="chart-area-65">
-              <canvas id="donutChart"></canvas>
-              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-                <div style="font-size:18px;font-weight:900;color:#1e293b;" id="donutCenter">-</div>
-                <div style="font-size:12px;color:#94a3b8;font-weight:600;">총 투입</div>
-              </div>
-           </div>
-           <!-- /* DO NOT REMOVE: 3.5비율 고정 */ -->
-           <div class="list-area-35">
-              <ul class="top5-rank-list" id="top5List"></ul>
-           </div>
+          <div class="chart-area-65">
+            <canvas id="donutChart"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+              <div style="font-size:18px;font-weight:900;color:#1e293b;" id="donutCenter">-</div>
+              <div style="font-size:12px;color:#94a3b8;font-weight:600;">총 투입</div>
+            </div>
+          </div>
+          <div class="list-area-35"><ul class="top5-rank-list" id="top5List"></ul></div>
         </div>
       </div>
-      <!-- 통합 추이 -->
       <div class="card" style="height:400px;">
-          <div class="card-section-title">
-              <span class="card-title-left">월별 투입시간 통합 추이</span>
-              <div id="timelineLegendWrap" style="display:flex; gap:6px;"></div>
-          </div>
-          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="timelineChart"></canvas></div>
+        <div class="card-section-title">
+          <span class="card-title-left">월별 투입시간 통합 추이</span>
+          <div id="timelineLegendWrap" style="display:flex; gap:6px;"></div>
+        </div>
+        <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="timelineChart"></canvas></div>
       </div>
     </div>
-    <!-- ✨ Working Hours Analysis 구분선 -->
     <div class="section-divider">
-        <h2>Working Hours Analysis <span style="font-size:13px; color:#94a3b8; font-weight:600; margin-left:10px;">(전체 프로젝트 기준)</span></h2>
+      <h2>Working Hours Analysis <span style="font-size:13px; color:#94a3b8; font-weight:600; margin-left:10px;">(전체 프로젝트 기준)</span></h2>
     </div>
-    <!-- 2x2 그리드로 4개의 카드 순서대로 배치 -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 5px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:5px;">
       <div class="card" style="height:320px;">
         <div class="card-section-title">일별 초과근무 일수</div>
         <div style="flex:1; min-height:0; position:relative; margin-top:10px;"><canvas id="dashOvertimeBarChart"></canvas></div>
       </div>
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:flex-start;">
-            <span class="card-title-left">팀원별 초과근무 발생 비율</span>
-            <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:4px; flex-wrap:nowrap; justify-content:flex-end; max-width:200px;"></div>
+          <span class="card-title-left">팀원별 초과근무 발생 비율</span>
+          <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:4px; flex-wrap:nowrap; justify-content:flex-end; max-width:200px;"></div>
         </div>
         <div style="display:flex; flex:1; min-height:0; gap:10px; margin-top:5px;">
-            <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
-                <div style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">9h 이상 비율</div>
-                <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
-            </div>
-            <div style="width:1px; background:rgba(226,232,240,0.6); margin:10px 0;"></div>
-            <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
-                <div style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">12h 이상 비율</div>
-                <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart12"></canvas></div>
-            </div>
+          <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
+            <div style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">9h 이상 비율</div>
+            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
+          </div>
+          <div style="width:1px; background:rgba(226,232,240,0.6); margin:10px 0;"></div>
+          <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
+            <div style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">12h 이상 비율</div>
+            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart12"></canvas></div>
+          </div>
         </div>
       </div>
       <div class="card" style="height:320px;">
-          <div class="card-section-title">
-              <span class="card-title-left">월별 9h 이상 초과근무 발생 건수 (팀 합산)</span>
-              <div id="dashMonthlyOtLegendWrap" style="display:flex; gap:6px;"></div>
-          </div>
-          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
+        <div class="card-section-title">
+          <span class="card-title-left">월별 9h 이상 초과근무 발생 건수 (팀 합산)</span>
+          <div id="dashMonthlyOtLegendWrap" style="display:flex; gap:6px;"></div>
+        </div>
+        <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
       </div>
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0;">
-            <span class="card-title-left">월별 근무 밀도</span>
-            <!-- 히트맵 단독 필터 탭 -->
-            <div id="heatYearTabs" class="tab-btns-sm" style="margin-left:auto; margin-bottom:0;"></div>
+          <span class="card-title-left">월별 근무 밀도</span>
+          <div id="heatYearTabs" style="margin-left:auto;"></div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; margin-top:15px; padding:4px;"><table class="heat-table" id="heatTable"></table></div>
       </div>
     </div>
-    <!-- ✨ 5. 고급 분석 지표 3종 (min-height 강제 부여) -->
     <div class="grid-3" style="margin-top:15px;">
-        <div class="eval-trend-card" style="min-height: 350px;">
-            <div class="eval-trend-title" style="justify-content:space-between;">
-                업무 균등 분산 (섀넌 엔트로피)
-                <div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다.</div></div>
-            </div>
-            <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjShannonChart"></canvas></div>
-        </div>
-        <div class="eval-trend-card" style="min-height: 350px;">
-            <div class="eval-trend-title" style="justify-content:space-between;">
-                업무 쏠림도 (HHI 지수)
-                <div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (위험)</div></div>
-            </div>
-            <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjHhiChart"></canvas></div>
-        </div>
-        <div class="eval-trend-card" style="min-height: 350px;">
-            <div class="eval-trend-title" style="justify-content:space-between;">
-                전체 업무 변동성 (CV 추이)
-                <div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">그래프가 높게 치솟을수록 평소보다 업무가 갑자기 몰려 과부하가 왔음을 의미합니다.</div></div>
-            </div>
-            <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjCvChart"></canvas></div>
-        </div>
+      <div class="eval-trend-card" style="min-height:350px;">
+        <div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다.</div></div></div>
+        <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjShannonChart"></canvas></div>
+      </div>
+      <div class="eval-trend-card" style="min-height:350px;">
+        <div class="eval-trend-title" style="justify-content:space-between;">업무 쏠림도 (HHI 지수)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (위험)</div></div></div>
+        <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjHhiChart"></canvas></div>
+      </div>
+      <div class="eval-trend-card" style="min-height:350px;">
+        <div class="eval-trend-title" style="justify-content:space-between;">전체 업무 변동성 (CV 추이)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">그래프가 높게 치솟을수록 평소보다 업무가 갑자기 몰려 과부하가 왔음을 의미합니다.</div></div></div>
+        <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjCvChart"></canvas></div>
+      </div>
     </div>
   </div>
-  <!-- ✨ 2. [Working] 탭 (상단 1:1, 하단 3열 균등) -->
+
+  <!-- 2. Working 탭 -->
   <div id="view-members" class="view-section">
     <div class="working-content" id="workingContent">
-        <!-- 상단 1:1 배치 -->
-        <div class="working-top-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div class="eval-profile-card" id="workingProfileCard" style="margin-bottom:0; height:100%;"></div>
-            <div class="eval-trend-card" style="height:100%;">
-                <div class="eval-trend-title">분류별 업무 투입시간 추이</div>
-                <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
-                <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; justify-content:center;"></div>
-            </div>
+      <div class="working-top-row" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div class="eval-profile-card" id="workingProfileCard" style="margin-bottom:0; height:100%;"></div>
+        <div class="eval-trend-card" style="height:100%;">
+          <div class="eval-trend-title">분류별 업무 투입시간 추이</div>
+          <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dpStackedBar"></canvas></div>
+          <div id="dpStackedLegend" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; justify-content:center;"></div>
         </div>
-        <!-- 하단 3열 균등 그리드 -->
-        <div class="grid-3" id="workingChartsGrid">
-            <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다.</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpShannonChart"></canvas></div></div>
-            <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">업무 쏠림도 (HHI 지수)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (위험)</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpHhiChart"></canvas></div></div>
-            <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">개인 업무 변동성 (CV 추이)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">그래프가 높게 치솟을수록 평소보다 업무가 갑자기 몰려 과부하가 왔음을 의미합니다.</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpCvChart"></canvas></div></div>
-            <div class="eval-trend-card"><div class="eval-trend-title">업무시간 배분도 (로렌츠 곡선 & 지니계수)</div><div style="flex:1; min-height:0; position:relative; margin-top:5px;"><canvas id="dpGiniChart"></canvas><div id="dpGiniTxt" style="position:absolute; top:5%; left:5%; background:rgba(255,255,255,0.7); padding:4px 8px; border-radius:6px; font-weight:800; font-size:12px; color:#1e293b;"></div></div></div>
-            <div class="eval-trend-card"><div class="eval-trend-title">업무량 지속성 (허스트 지수)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="dpHurstChart"></canvas><div id="dpHurstTxt" style="position:absolute;top:65%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none; width:100%;"></div></div></div>
-            <div class="eval-table-card" style="height:350px;"><div class="card-section-title" style="margin-bottom:0;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div><div style="overflow-x:auto; height:100%; display:flex; flex-direction:column; justify-content:center; margin-top:10px;"><table class="heat-table" id="dpHeatTable" style="height:100%;"></table></div></div>
-            <div class="eval-trend-card split-card-wrap" style="height:450px;"><div class="split-card-item"><div class="eval-trend-title">설계단계별 비중 / 파편화</div><div style="flex:1; display:flex; gap:10px;"><div style="flex:1; position:relative;"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div><div style="flex:1; display:flex; flex-direction:column; gap:10px;"><div style="flex:1;"><canvas id="dpFocusBar"></canvas></div><div style="flex:1;"><canvas id="dpSwitchBar"></canvas></div></div></div></div></div>
-            <div class="eval-table-card split-card-wrap" style="height:450px; background:transparent; padding:0; border:none; box-shadow:none;"><div class="card" style="flex:1; min-height:0; margin-bottom:0;" id="dpOvertimeCardWrap"></div><div class="card" style="flex:1; min-height:0; margin-bottom:0;"><div class="card-section-title">연속 최장 출근일 TOP 3</div><div id="dpContinuityWrap" style="flex:1; overflow-y:auto; margin-top:5px;"></div></div></div>
-            <div class="eval-table-card" style="height:450px; border:1px dashed rgba(203,213,225,0.6); background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">데이터 준비 중</div>
-        </div>
+      </div>
+      <div class="grid-3" id="workingChartsGrid">
+        <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다.</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpShannonChart"></canvas></div></div>
+        <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">업무 쏠림도 (HHI 지수)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (위험)</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpHhiChart"></canvas></div></div>
+        <div class="eval-trend-card"><div class="eval-trend-title" style="justify-content:space-between;">개인 업무 변동성 (CV 추이)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">그래프가 높게 치솟을수록 평소보다 업무가 갑자기 몰려 과부하가 왔음을 의미합니다.</div></div></div><div style="flex:1; min-height:100px; margin-top:5px; position:relative;"><canvas id="dpCvChart"></canvas></div></div>
+        <div class="eval-trend-card"><div class="eval-trend-title">업무시간 배분도 (로렌츠 곡선 & 지니계수)</div><div style="flex:1; min-height:0; position:relative; margin-top:5px;"><canvas id="dpGiniChart"></canvas><div id="dpGiniTxt" style="position:absolute; top:5%; left:5%; background:rgba(255,255,255,0.7); padding:4px 8px; border-radius:6px; font-weight:800; font-size:12px; color:#1e293b;"></div></div></div>
+        <div class="eval-trend-card"><div class="eval-trend-title">업무량 지속성 (허스트 지수)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="dpHurstChart"></canvas><div id="dpHurstTxt" style="position:absolute;top:65%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none; width:100%;"></div></div></div>
+        <div class="eval-table-card" style="height:350px;"><div class="card-section-title" style="margin-bottom:0;">월별 근무 밀도 <span id="dpHeatTabs" style="margin-left:auto;"></span></div><div style="overflow-x:auto; height:100%; display:flex; flex-direction:column; justify-content:center; margin-top:10px;"><table class="heat-table" id="dpHeatTable" style="height:100%;"></table></div></div>
+        <div class="eval-trend-card split-card-wrap" style="height:450px;"><div class="split-card-item"><div class="eval-trend-title">설계단계별 비중 / 파편화</div><div style="flex:1; display:flex; gap:10px;"><div style="flex:1; position:relative;"><canvas id="dpDonut"></canvas><div id="dpDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"></div></div><div style="flex:1; display:flex; flex-direction:column; gap:10px;"><div style="flex:1;"><canvas id="dpFocusBar"></canvas></div><div style="flex:1;"><canvas id="dpSwitchBar"></canvas></div></div></div></div></div>
+        <div class="eval-table-card split-card-wrap" style="height:450px; background:transparent; padding:0; border:none; box-shadow:none;"><div class="card" style="flex:1; min-height:0; margin-bottom:0;" id="dpOvertimeCardWrap"></div><div class="card" style="flex:1; min-height:0; margin-bottom:0;"><div class="card-section-title">연속 최장 출근일 TOP 3</div><div id="dpContinuityWrap" style="flex:1; overflow-y:auto; margin-top:5px;"></div></div></div>
+        <div class="eval-table-card" style="height:450px; border:1px dashed rgba(203,213,225,0.6); background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">데이터 준비 중</div>
+      </div>
     </div>
   </div>
-  <!-- ✨ 3. [Personal KPI] 탭 -->
+
+  <!-- 3. Personal KPI 탭 -->
   <div id="view-kpieval" class="view-section">
-      <div class="eval-profile-card" id="kpiProfileCard" style="margin-bottom:0;"></div>
-      <div class="grid-3">
-          <div class="eval-trend-card"><div class="eval-trend-title">분기별 역량 점수 추이 <span style="font-size:11px;color:#ef4444;margin-left:8px;font-weight:600;">(🔴 주요일정)</span></div><div style="flex:1; min-height:0; margin-top:5px;"><canvas id="evalTrendChart"></canvas></div><div class="legend" style="justify-content:center;margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;" id="evalTrendLegend"></div></div>
-          <div class="eval-trend-card"><div class="eval-trend-title">주력 업무 투입시간 (소분류)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="evalDonutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:16px;font-weight:900;color:#1e293b;" id="evalDonutCenter">-</div></div></div><div class="eval-top3-box-row" id="evalTop2Row" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px;"></div></div>
-          <div class="eval-trend-card" style="display:flex; flex-direction:column;"><div class="eval-trend-title">고득점 분기 vs 평균 분기</div><div style="display:flex; gap:10px; flex:1; margin-top:5px;" id="highVsAvgChartsWrap"><div style="flex:1; position:relative; background:rgba(240,245,250,0.8); border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div><div style="flex:1; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:rgba(241,245,249,0.8); border-radius:12px; padding:15px; display:flex; flex-direction:column;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 평균 분기</div><div style="flex:1; position:relative;"><canvas id="chartAvgQ"></canvas></div></div></div><div id="highVsAvgLegend" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div></div>
-          <div class="eval-table-card" style="text-align:center;"><div id="evalRadarYearLabel" style="font-size:14px; font-weight:900; color:#64748b; margin-bottom:10px;">PJ 전체 평균 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarYear"></canvas></div><div id="evalRadarYearScore" style="margin-top:10px;"></div></div>
-          <div class="eval-table-card" style="text-align:center;"><div id="evalRadarQtrLabel" style="font-size:14px; font-weight:900; color:#00428E; margin-bottom:10px;">해당 분기 개인 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarQtr"></canvas></div><div id="evalRadarQtrScore" style="margin-top:10px;"></div></div>
-          <div class="eval-table-card" id="kpiOvertimeCardWrap"></div>
-          <div class="eval-table-card" style="grid-column: 1 / -1; height: auto;"><div class="card-section-title">분기별 역량평가 추이 요약표</div><div style="overflow-x:auto;" id="evalTrendTableWrap"></div></div>
-      </div>
+    <div class="eval-profile-card" id="kpiProfileCard" style="margin-bottom:0;"></div>
+    <div class="grid-3">
+      <div class="eval-trend-card"><div class="eval-trend-title">분기별 역량 점수 추이 <span style="font-size:11px;color:#ef4444;margin-left:8px;font-weight:600;">(🔴 주요일정)</span></div><div style="flex:1; min-height:0; margin-top:5px;"><canvas id="evalTrendChart"></canvas></div><div class="legend" style="justify-content:center;margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;" id="evalTrendLegend"></div></div>
+      <div class="eval-trend-card"><div class="eval-trend-title">주력 업무 투입시간 (소분류)</div><div style="flex:1; position:relative; margin-top:5px;"><canvas id="evalDonutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:16px;font-weight:900;color:#1e293b;" id="evalDonutCenter">-</div></div></div><div class="eval-top3-box-row" id="evalTop2Row" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px;"></div></div>
+      <div class="eval-trend-card" style="display:flex; flex-direction:column;"><div class="eval-trend-title">고득점 분기 vs 평균 분기</div><div style="display:flex; gap:10px; flex:1; margin-top:5px;" id="highVsAvgChartsWrap"></div><div id="highVsAvgLegend" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div></div>
+      <div class="eval-table-card" style="text-align:center;"><div id="evalRadarYearLabel" style="font-size:14px; font-weight:900; color:#64748b; margin-bottom:10px;">PJ 전체 평균 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarYear"></canvas></div><div id="evalRadarYearScore" style="margin-top:10px;"></div></div>
+      <div class="eval-table-card" style="text-align:center;"><div id="evalRadarQtrLabel" style="font-size:14px; font-weight:900; color:#00428E; margin-bottom:10px;">해당 분기 개인 역량</div><div style="flex:1; min-height:0;"><canvas id="evalRadarQtr"></canvas></div><div id="evalRadarQtrScore" style="margin-top:10px;"></div></div>
+      <div class="eval-table-card" id="kpiOvertimeCardWrap"></div>
+      <div class="eval-table-card" style="grid-column:1/-1; height:auto;"><div class="card-section-title">분기별 역량평가 추이 요약표</div><div style="overflow-x:auto;" id="evalTrendTableWrap"></div></div>
+    </div>
   </div>
 </div>
+
 <script>
-/* ✨ 환경설정, 아이콘, 유틸 */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
-const I_CLOC = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
 const I_BULB = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
 const I_TROP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
-const I_AI   = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00428E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
+const I_AI = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00428E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 const PROFILE_IMG = { '윤진관':'./jk.yoon.jpg', '김효언':'./he.kim.jpg', '정인태':'./intae.jeoung.jpg', '이혜인B':'./hi.lee2.jpg' };
-const DYNAMIC_COLORS = ['#00428E', '#7545fb', '#14b8a6', '#eb5f8c', '#f59e0b', '#f97316', '#ec4899', '#8b5cf6'];
-const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계']; const CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
+const DYNAMIC_COLORS = ['#00428E','#7545fb','#14b8a6','#eb5f8c','#f59e0b','#f97316','#ec4899','#8b5cf6'];
+const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
+const CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
 const SUB_PAL = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f7','#f43f5e','#f97316','#facc15','#4ade80','#14b8a6'];
-const OT_COLORS = ['#818cf8', '#6366f1', '#4A90E2', '#00428E'];
-const RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력']; const RADAR_COLORS_ARR = ['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
+const OT_COLORS = ['#818cf8','#6366f1','#4A90E2','#00428E'];
+const RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력'];
+const RADAR_COLORS_ARR = ['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-let MEMBERS = []; let MC = {}; let INITIALS = {};
-let SCHEDULE_DATA = []; let EVAL_DATA = []; let RAW = [];
-let CH = {}; let GLOBAL_MEMBER = 'ALL';
-let hlCompare = null; let hlTimeline = null; let hlStage = null; let hlOvertimeDonut = null; let hlMonthlyOt = null; let hlDonutWork = null; let hlPjRatio = null;
+
+let MEMBERS = [], MC = {}, INITIALS = {};
+let SCHEDULE_DATA = [], EVAL_DATA = [], RAW = [];
+let CH = {}, GLOBAL_MEMBER = 'ALL';
+let hlCompare=null, hlTimeline=null, hlStage=null, hlOvertimeDonut=null, hlMonthlyOt=null, hlDonutWork=null, hlPjRatio=null;
 window.filterStartIndex = 0; window.filterEndIndex = 11; window.lastClickedIndex = 0;
-const filterYears = [2024, 2025, 2026]; const filterQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-const totalNodes = filterYears.length * 4; let percentPositions = [];
-Chart.defaults.animation.duration = 400; Chart.defaults.font.family = "'Pretendard Variable', Pretendard, sans-serif";
+const filterYears = [2024,2025,2026], filterQuarters = ['Q1','Q2','Q3','Q4'];
+const totalNodes = filterYears.length * 4;
+let percentPositions = [];
+
+Chart.defaults.animation.duration = 400;
+Chart.defaults.font.family = "'Pretendard Variable', Pretendard, sans-serif";
 Chart.register(ChartDataLabels);
+
 const formatNum = val => typeof val==='number' ? val.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}) : val;
-const mToH = m => parseFloat((m/60).toFixed(1)); const formatHour = m => formatNum(mToH(m));
+const mToH = m => parseFloat((m/60).toFixed(1));
+const formatHour = m => formatNum(mToH(m));
 const grpMin = (arr,key) => arr.reduce((m,r)=>{m[r[key]]=(m[r[key]]||0)+r.min;return m;},{});
 const getMos = data => [...new Set(data.map(r=>r.date.slice(0,7)))].sort();
-window.getQ = (dateStr) => { const y = dateStr.slice(0,4); const m = parseInt(dateStr.slice(5,7)); return `${y}-Q${Math.ceil(m/3)}`; };
+window.getQ = (dateStr) => { const y=dateStr.slice(0,4); const m=parseInt(dateStr.slice(5,7)); return `${y}-Q${Math.ceil(m/3)}`; };
 function destroyChart(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 function hexRgba(hex,a){try{return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;}catch{return hex;}}
-function filtered(){ return RAW.filter(r => { const q = getQ(r.date); const y = parseInt(q.slice(0,4)); const qN = parseInt(q.slice(6,7)) - 1; const idx = (y - 2024) * 4 + qN; return idx >= window.filterStartIndex && idx <= window.filterEndIndex; }); }
-function filteredEvalQs(){ return [...new Set(EVAL_DATA.map(d => d.q))].sort().filter(q => { const y = parseInt(q.slice(0,4)); const qN = parseInt(q.slice(6,7)) - 1; const idx = (y - 2024) * 4 + qN; return idx >= window.filterStartIndex && idx <= window.filterEndIndex; }); }
-// ✨ 프로필 아바타 생성 (안전한 이미지 로딩 Fallback 적용)
-function getAvatar(name, size = 46, fontSize = 14) {
-    const c = MC[name] || '#00428E';
-    const init = INITIALS[name] || 'ALL';
-    if(name === 'ALL') {
-        return `<div class="avatar-base" style="width:${size}px; height:${size}px; font-size:${fontSize}px; background:${c}; border:2px solid ${c}; font-weight:600;">A</div>`;
-    }
-    if(PROFILE_IMG[name]) {
-        return `
-        <div style="position:relative; width:${size}px; height:${size}px; flex-shrink:0; border-radius:50%; border:2px solid ${c}; background-color:${c}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:${fontSize}px; box-sizing:border-box; overflow:hidden;">
-            <span>${init}</span>
-            <img src="${PROFILE_IMG[name]}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; transition:opacity 0.2s;" onerror="this.style.opacity='0'" alt="${name}">
-        </div>`;
-    }
-    return `<div class="avatar-base" style="width:${size}px; height:${size}px; font-size:${fontSize}px; background:${c}; border:2px solid ${c}; font-weight:600;">${init}</div>`;
+function filtered(){ return RAW.filter(r=>{ const q=getQ(r.date); const y=parseInt(q.slice(0,4)); const qN=parseInt(q.slice(6,7))-1; const idx=(y-2024)*4+qN; return idx>=window.filterStartIndex&&idx<=window.filterEndIndex; }); }
+function filteredEvalQs(){ return [...new Set(EVAL_DATA.map(d=>d.q))].sort().filter(q=>{ const y=parseInt(q.slice(0,4)); const qN=parseInt(q.slice(6,7))-1; const idx=(y-2024)*4+qN; return idx>=window.filterStartIndex&&idx<=window.filterEndIndex; }); }
+
+function getAvatar(name, size=46, fontSize=14) {
+  const c = MC[name]||'#00428E';
+  const init = INITIALS[name]||'ALL';
+  if(name==='ALL') return `<div class="avatar-base" style="width:${size}px;height:${size}px;font-size:${fontSize}px;background:${c};border:2px solid ${c};font-weight:600;">A</div>`;
+  if(PROFILE_IMG[name]) return `<div style="position:relative;width:${size}px;height:${size}px;flex-shrink:0;border-radius:50%;border:2px solid ${c};background-color:${c};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:${fontSize}px;box-sizing:border-box;overflow:hidden;"><span>${init}</span><img src="${PROFILE_IMG[name]}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.opacity='0'" alt="${name}"></div>`;
+  return `<div class="avatar-base" style="width:${size}px;height:${size}px;font-size:${fontSize}px;background:${c};border:2px solid ${c};font-weight:600;">${init}</div>`;
 }
-/* 데이터 페칭 */
-async function loadDataFromSheets(){
-  try{
+
+/* ── 데이터 페칭 ── */
+async function loadDataFromSheets() {
+  try {
     document.getElementById('ovProgress').style.width = '30%';
-    const response = await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`); // 오타 수정
+    // ✅ 수정: fetch() 괄호 정상화
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=all&t=${Date.now()}`);
     document.getElementById('ovProgress').style.width = '60%';
     const json = await response.json();
+
     SCHEDULE_DATA = json.schedule || [];
-    EVAL_DATA=(json.eval||[]).map(r=>{ const qtr=String(r['분기']).trim(); const qF=qtr.startsWith('Q')?qtr:'Q'+qtr; return { q: `${r['연도']}-${qF}`, name: String(r['성명']).trim(), vals: [parseFloat(r['적극성'])||0,parseFloat(r['생산성'])||0,parseFloat(r['전문성'])||0,parseFloat(r['창의성'])||0,parseFloat(r['협업능력'])||0] }; }).filter(d=>d.name&&d.q);
-    // ✨ 프로젝트 필드 완벽 파싱
-    RAW=(json.work||[]).filter(r=>r.name&&r.date&&r.min>0).map(r=> {
-        const rawPj = String(r.project || r['프로젝트'] || r['PJ Code'] || r['PJ_CODE'] || r['pj code'] || r['pj_code'] || r.pjCode || '').trim();
-        let pjType = '공통업무';
-        if (rawPj.includes('24188') || rawPj.includes('서부의료원')) pjType = '경남 서부의료원';
-        else if (/^[a-zA-Z가-힣]/.test(rawPj) || rawPj === '') pjType = '공통업무';
-        else if (/\d/.test(rawPj)) pjType = '타 프로젝트';
-        return {
-            name:String(r.name).trim(), pos:String(r.pos||'').trim(), date:String(r.date).slice(0,10), cat:String(r.cat||'미분류').trim(), sub:String(r.sub||'기타').trim(),
-            project: pjType, min:parseInt(r.min)||0,
-            week: (function(){ const d=new Date(r.date); d.setHours(0,0,0,0); d.setDate(d.getDate()+3-(d.getDay()||7)); return d.getFullYear()+'-W'+Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7).toString().padStart(2,'0'); })()
-        };
+    EVAL_DATA = (json.eval||[]).map(r=>{
+      const qtr=String(r['분기']).trim();
+      const qF=qtr.startsWith('Q')?qtr:'Q'+qtr;
+      return { q:`${r['연도']}-${qF}`, name:String(r['성명']).trim(), vals:[parseFloat(r['적극성'])||0,parseFloat(r['생산성'])||0,parseFloat(r['전문성'])||0,parseFloat(r['창의성'])||0,parseFloat(r['협업능력'])||0] };
+    }).filter(d=>d.name&&d.q);
+
+    RAW = (json.work||[]).filter(r=>r.name&&r.date&&r.min>0).map(r=>{
+      const rawPj = String(r.project||r['프로젝트']||r['PJ Code']||r['PJ_CODE']||r['pj code']||r['pj_code']||r.pjCode||'').trim();
+      let pjType = '공통업무';
+      if(rawPj.includes('24188')||rawPj.includes('서부의료원')) pjType='경남 서부의료원';
+      else if(/\d/.test(rawPj)&&rawPj!=='') pjType='타 프로젝트';
+      return {
+        name:String(r.name).trim(), pos:String(r.pos||'').trim(),
+        date:String(r.date).slice(0,10), cat:String(r.cat||'미분류').trim(),
+        sub:String(r.sub||'기타').trim(), project:pjType, min:parseInt(r.min)||0,
+        week:(function(){ const d=new Date(r.date); d.setHours(0,0,0,0); d.setDate(d.getDate()+3-(d.getDay()||7)); return d.getFullYear()+'-W'+Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7).toString().padStart(2,'0'); })()
+      };
     });
-    // ✨ undefined 및 빈문자열 제외한 정확한 팀원 배열 생성
-    const targetOrder = ['윤진관', '이혜인B', '정인태', '김효언'];
+
+    const targetOrder = ['윤진관','이혜인B','정인태','김효언'];
     MEMBERS = Array.from(new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]))
-        .filter(n => n && n !== 'undefined' && n.trim() !== '')
-        .sort((a,b)=>{ const iA = targetOrder.indexOf(a); const iB = targetOrder.indexOf(b); return (iA!==-1?iA:99)-(iB!==-1?iB:99); });
+      .filter(n=>n&&n!=='undefined'&&n.trim()!=='')
+      .sort((a,b)=>{ const iA=targetOrder.indexOf(a); const iB=targetOrder.indexOf(b); return (iA!==-1?iA:99)-(iB!==-1?iB:99); });
     MEMBERS.forEach((name,idx)=>{ MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length]; INITIALS[name]=name.length>=3?name.substring(1,3):name; });
+
     document.getElementById('ovProgress').style.width = '100%';
     initSlider(); renderCustomDropdown(); updateNavSlider(); renderAllViews();
-    setTimeout(() => { document.getElementById('ovSpinner').style.display='none'; document.getElementById('ovProgressWrap').style.display='none'; document.getElementById('ovMsg').style.display='none'; document.getElementById('ovEnterBtn').style.display='block'; }, 500);
-  }catch(err){ document.getElementById('ovMsg').innerHTML = `<span style="color:#ff8585;">❌ 연결 실패: ${err.message}</span>`; }
+    setTimeout(()=>{
+      document.getElementById('ovSpinner').style.display='none';
+      document.getElementById('ovProgressWrap').style.display='none';
+      document.getElementById('ovMsg').style.display='none';
+      document.getElementById('ovEnterBtn').style.display='block';
+    }, 500);
+  } catch(err) {
+    document.getElementById('ovMsg').innerHTML = `<span style="color:#ff8585;">❌ 연결 실패: ${err.message}</span>`;
+    document.getElementById('ovSpinner').style.display='none';
+    // 실패해도 입장 버튼 표시
+    document.getElementById('ovEnterBtn').style.display='block';
+    document.getElementById('ovEnterBtn').textContent = '⚠️ 오프라인으로 입장';
+  }
 }
-function hideLoadingOverlay(){ const el = document.getElementById('loadingOverlay'); if(el){ el.style.opacity='0'; setTimeout(()=>el.style.display='none', 500); } }
-/* Nav Slider & View Control */
-function updateNavSlider() { const active = document.querySelector('.nav-item.active'); const slider = document.getElementById('navSlider'); if(active && slider) { slider.style.width = active.offsetWidth + 'px'; slider.style.left = active.offsetLeft + 'px'; } }
-function showView(view, navEl) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); document.getElementById('view-' + view).classList.add('active'); navEl.classList.add('active'); updateNavSlider(); if(view === 'members') renderWorkingTab(GLOBAL_MEMBER); else if(view === 'kpieval') renderEvalTab(); else renderDashboardTab(); }
-/* Custom Dropdown */
-function renderCustomDropdown() {
-    let html = `<div class="custom-option" onclick="selectGlobalMember('ALL')">${getAvatar('ALL',24,11)} 전체 보기</div>`;
-    MEMBERS.forEach(name => { html += `<div class="custom-option" onclick="selectGlobalMember('${name}')">${getAvatar(name,24,11)} ${name}</div>`; });
-    document.getElementById('customSelectOptions').innerHTML = html; updateCustomSelectTrigger();
+
+function hideLoadingOverlay(){ const el=document.getElementById('loadingOverlay'); if(el){ el.style.opacity='0'; setTimeout(()=>el.style.display='none',500); } }
+
+/* ── Nav ── */
+function updateNavSlider(){ const active=document.querySelector('.nav-item.active'); const slider=document.getElementById('navSlider'); if(active&&slider){ slider.style.width=active.offsetWidth+'px'; slider.style.left=active.offsetLeft+'px'; } }
+function showView(view,navEl){ document.querySelectorAll('.view-section').forEach(s=>s.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.getElementById('view-'+view).classList.add('active'); navEl.classList.add('active'); updateNavSlider(); if(view==='members') renderWorkingTab(GLOBAL_MEMBER); else if(view==='kpieval') renderEvalTab(); else renderDashboardTab(); }
+
+/* ── Dropdown ── */
+function renderCustomDropdown(){
+  let html=`<div class="custom-option" onclick="selectGlobalMember('ALL')">${getAvatar('ALL',24,11)} 전체 보기</div>`;
+  MEMBERS.forEach(name=>{ html+=`<div class="custom-option" onclick="selectGlobalMember('${name}')">${getAvatar(name,24,11)} ${name}</div>`; });
+  document.getElementById('customSelectOptions').innerHTML=html; updateCustomSelectTrigger();
 }
-function toggleDropdown() { document.getElementById('customSelectOptions').classList.toggle('open'); }
-function selectGlobalMember(val) { GLOBAL_MEMBER = val; document.getElementById('customSelectOptions').classList.remove('open'); updateCustomSelectTrigger(); const activeId = document.querySelector('.view-section.active').id; if(activeId === 'view-members') renderWorkingTab(val); else if(activeId === 'view-kpieval') renderEvalTab(); }
-function updateCustomSelectTrigger() { document.getElementById('customSelectTrigger').innerHTML = `${getAvatar(GLOBAL_MEMBER, 28, 12)} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`; }
-document.addEventListener('click', (e) => { if(!document.getElementById('globalMemberSelectWrap').contains(e.target)) document.getElementById('customSelectOptions').classList.remove('open'); });
-/* Slider Filter */
-function initSlider() {
-  const nodesCont = document.getElementById('nodesContainer'); const yearRow = document.getElementById('yearRow'); nodesCont.innerHTML=''; yearRow.innerHTML='';
-  let cPos=0; let posArr=[]; for(let i=0; i<totalNodes; i++) { posArr.push(cPos); if(i<totalNodes-1) cPos += (i%4===3?1.6:1); } percentPositions = posArr.map(p => (p/cPos)*100);
-  filterYears.forEach((y, i) => { const el = document.createElement('div'); el.className='year-label'; el.innerText=y; el.onclick = () => { window.filterStartIndex=i*4; window.filterEndIndex=i*4+3; updateFilterUI(); }; el.style.left = `${(percentPositions[i*4] + percentPositions[i*4+3])/2}%`; yearRow.appendChild(el); });
-  for(let i=0; i<totalNodes; i++) { const n = document.createElement('div'); n.className='node'; n.style.left = `${percentPositions[i]}%`; n.onclick = (e) => { if(e.shiftKey) { window.filterStartIndex = Math.min(window.lastClickedIndex, i); window.filterEndIndex = Math.max(window.lastClickedIndex, i); } else { window.filterStartIndex = window.filterEndIndex = window.lastClickedIndex = i; } updateFilterUI(); }; nodesCont.appendChild(n); } // 오타 수정 (n.style.left =)
+function toggleDropdown(){ document.getElementById('customSelectOptions').classList.toggle('open'); }
+function selectGlobalMember(val){ GLOBAL_MEMBER=val; document.getElementById('customSelectOptions').classList.remove('open'); updateCustomSelectTrigger(); const activeId=document.querySelector('.view-section.active').id; if(activeId==='view-members') renderWorkingTab(val); else if(activeId==='view-kpieval') renderEvalTab(); }
+function updateCustomSelectTrigger(){ document.getElementById('customSelectTrigger').innerHTML=`${getAvatar(GLOBAL_MEMBER,28,12)} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`; }
+document.addEventListener('click',(e)=>{ if(!document.getElementById('globalMemberSelectWrap').contains(e.target)) document.getElementById('customSelectOptions').classList.remove('open'); });
+
+/* ── Slider ── */
+function initSlider(){
+  const nodesCont=document.getElementById('nodesContainer'); const yearRow=document.getElementById('yearRow'); nodesCont.innerHTML=''; yearRow.innerHTML='';
+  let cPos=0; let posArr=[]; for(let i=0;i<totalNodes;i++){ posArr.push(cPos); if(i<totalNodes-1) cPos+=(i%4===3?1.6:1); } percentPositions=posArr.map(p=>(p/cPos)*100);
+  filterYears.forEach((y,i)=>{ const el=document.createElement('div'); el.className='year-label'; el.innerText=y; el.onclick=()=>{ window.filterStartIndex=i*4; window.filterEndIndex=i*4+3; updateFilterUI(); }; el.style.left=`${(percentPositions[i*4]+percentPositions[i*4+3])/2}%`; yearRow.appendChild(el); });
+  for(let i=0;i<totalNodes;i++){ const n=document.createElement('div'); n.className='node'; n.style.left=`${percentPositions[i]}%`; n.onclick=(e)=>{ if(e.shiftKey){ window.filterStartIndex=Math.min(window.lastClickedIndex,i); window.filterEndIndex=Math.max(window.lastClickedIndex,i); }else{ window.filterStartIndex=window.filterEndIndex=window.lastClickedIndex=i; } updateFilterUI(); }; nodesCont.appendChild(n); }
   updateFilterUI();
 }
-function resetFilter() { window.filterStartIndex=0; window.filterEndIndex=totalNodes-1; updateFilterUI(); }
-function updateFilterUI() {
-  const nodes = document.querySelectorAll('.node'); nodes.forEach((n,i) => { n.className = 'node'; if(i>=filterStartIndex && i<=filterEndIndex) { n.classList.add('active'); if(i===filterStartIndex || i===filterEndIndex) n.classList.add('endpoint'); } });
-  document.getElementById('trackActive').style.left = `${percentPositions[filterStartIndex]}%`; document.getElementById('trackActive').style.width = `${percentPositions[filterEndIndex] - percentPositions[filterStartIndex]}%`;
-  const sY = filterYears[Math.floor(filterStartIndex/4)], sQ = filterQuarters[filterStartIndex%4]; const eY = filterYears[Math.floor(filterEndIndex/4)], eQ = filterQuarters[filterEndIndex%4]; const cnt = filterEndIndex - filterStartIndex + 1;
-  document.getElementById('summaryText').innerText = cnt===1 ? `${sY} ${sQ}` : cnt===totalNodes ? '전체 기간' : `${sY} ${sQ} ~ ${eY} ${eQ}`;
+function resetFilter(){ window.filterStartIndex=0; window.filterEndIndex=totalNodes-1; updateFilterUI(); }
+function updateFilterUI(){
+  const nodes=document.querySelectorAll('.node'); nodes.forEach((n,i)=>{ n.className='node'; if(i>=filterStartIndex&&i<=filterEndIndex){ n.classList.add('active'); if(i===filterStartIndex||i===filterEndIndex) n.classList.add('endpoint'); } });
+  document.getElementById('trackActive').style.left=`${percentPositions[filterStartIndex]}%`; document.getElementById('trackActive').style.width=`${percentPositions[filterEndIndex]-percentPositions[filterStartIndex]}%`;
+  const sY=filterYears[Math.floor(filterStartIndex/4)],sQ=filterQuarters[filterStartIndex%4]; const eY=filterYears[Math.floor(filterEndIndex/4)],eQ=filterQuarters[filterEndIndex%4]; const cnt=filterEndIndex-filterStartIndex+1;
+  document.getElementById('summaryText').innerText=cnt===1?`${sY} ${sQ}`:cnt===totalNodes?'전체 기간':`${sY} ${sQ} ~ ${eY} ${eQ}`;
   if(RAW.length>0) renderAllViews();
 }
-function renderAllViews() { renderDashboardTab(); if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(GLOBAL_MEMBER); if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab(); }
-/* =========================================================
-   1. [Project] 탭
-========================================================= */
-function renderDashboardTab() {
+function renderAllViews(){ renderDashboardTab(); if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(GLOBAL_MEMBER); if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab(); }
+
+/* ═══════════════════════════════════════
+   1. Project 탭
+═══════════════════════════════════════ */
+function renderDashboardTab(){
   const all=filtered(); if(!all.length) return;
   const totalMin=all.reduce((s,r)=>s+r.min,0); const mos=getMos(all);
-  const pjData = all.filter(r => r.project === '경남 서부의료원');
-  const pjMos = getMos(pjData);
-  // ✨ PROJECT OVERALL 연동
-  document.getElementById('ovTotalHour').innerText = formatHour(totalMin) + 'h';
-  document.getElementById('ovTotalMember').innerText = MEMBERS.length + '명';
-  document.getElementById('ovTotalMonth').innerText = mos.length + '개월';
+  const pjData=all.filter(r=>r.project==='경남 서부의료원'); const pjMos=getMos(pjData);
+  document.getElementById('ovTotalHour').innerText=formatHour(totalMin)+'h';
+  document.getElementById('ovTotalMember').innerText=MEMBERS.length+'명';
+  document.getElementById('ovTotalMonth').innerText=mos.length+'개월';
   renderOvProjectRatio(all);
-  // ✨ 팀원 카드 2x2 (GNWMC내 기여도 + 타PJ 투입 분포)
   const grid=document.getElementById('topKpiGrid'); grid.innerHTML='';
-  const gnwmcTotalMin = pjData.reduce((s,r)=>s+r.min,0);
-  MEMBERS.forEach(name => {
-    const memData = all.filter(r=>r.name===name);
-    const tot = memData.reduce((s,r)=>s+r.min,0);
-    const pos = memData.find(r=>r.name===name)?.pos || '';
-    let mPj=0, oPj=0, cPj=0;
-    memData.forEach(r => { if(r.project === '경남 서부의료원') mPj+=r.min; else if(r.project === '타 프로젝트') oPj+=r.min; else cPj+=r.min; });
-    // GNWMC내 기여도
-    const pct = gnwmcTotalMin > 0 ? Math.round(mPj/gnwmcTotalMin*100) : 0;
-    // 개인별 프로젝트 투입 분포
-    const p1 = tot>0?(mPj/tot*100):0; const p2 = tot>0?(oPj/tot*100):0; const p3 = tot>0?(cPj/tot*100):0;
-    const mc = document.createElement('div');
-    mc.className='card kpi-card';
-    mc.style.border = `1px solid ${hexRgba(MC[name]||'#00428E', 0.5)}`;
-    mc.innerHTML = `
-        <div class="member-kpi-header">
-            <div>
-                <div style="font-size:18px;font-weight:900;color:#1e293b;">${name}</div>
-                <div style="font-size:11px;color:#94a3b8;font-weight:500;">${pos}</div>
-            </div>
-            ${getAvatar(name, 46, 14)}
-        </div>
-        <div class="card-value" style="color:${MC[name]}; font-size:28px;">${formatHour(tot)}h <span style="font-size:14px; color:#64748b;">| ${formatHour(mPj)}h</span></div>
-        <div class="progress-wrap" style="margin-top:8px;">
-            <div class="progress-label" style="font-size:11px;"><span>GNWMC내 기여도</span><span>${pct}%</span></div>
-            <div class="progress-bar" style="height:8px;"><div class="progress-fill" style="background:${MC[name]};width:${pct}%"></div></div>
-        </div>
-        <div style="margin-top:12px; font-size:11px; color:#64748b; font-weight:600;">개인별 프로젝트 투입 분포</div>
-        <div style="margin-top:4px; display:flex; height:8px; border-radius:4px; overflow:hidden;">
-            <div style="width:${p1}%; background:#00428E;" title="서부의료원"></div>
-            <div style="width:${p2}%; background:#3b82f6;" title="타 프로젝트"></div>
-            <div style="width:${p3}%; background:#cbd5e1;" title="공통업무"></div>
-        </div>
-        <div style="display:flex; margin-top:4px; font-size:9px; color:#94a3b8; text-align:center;">
-            ${p1>0 ? `<div style="width:${p1}%;">${p1.toFixed(0)}%</div>` : ''}
-            ${p2>0 ? `<div style="width:${p2}%;">${p2.toFixed(0)}%</div>` : ''}
-            ${p3>0 ? `<div style="width:${p3}%;">${p3.toFixed(0)}%</div>` : ''}
-        </div>
-    `;
+  const gnwmcTotalMin=pjData.reduce((s,r)=>s+r.min,0);
+  MEMBERS.forEach(name=>{
+    const memData=all.filter(r=>r.name===name); const tot=memData.reduce((s,r)=>s+r.min,0); const pos=memData.find(r=>r.name===name)?.pos||'';
+    let mPj=0,oPj=0,cPj=0; memData.forEach(r=>{ if(r.project==='경남 서부의료원') mPj+=r.min; else if(r.project==='타 프로젝트') oPj+=r.min; else cPj+=r.min; });
+    const pct=gnwmcTotalMin>0?Math.round(mPj/gnwmcTotalMin*100):0;
+    const p1=tot>0?(mPj/tot*100):0; const p2=tot>0?(oPj/tot*100):0; const p3=tot>0?(cPj/tot*100):0;
+    const mc=document.createElement('div'); mc.className='card kpi-card'; mc.style.border=`1px solid ${hexRgba(MC[name]||'#00428E',0.5)}`;
+    mc.innerHTML=`<div class="member-kpi-header"><div><div style="font-size:18px;font-weight:900;color:#1e293b;">${name}</div><div style="font-size:11px;color:#94a3b8;font-weight:500;">${pos}</div></div>${getAvatar(name,46,14)}</div><div style="color:${MC[name]};font-size:28px;font-weight:800;">${formatHour(tot)}h <span style="font-size:14px;color:#64748b;">| ${formatHour(mPj)}h</span></div><div style="margin-top:8px;"><div style="font-size:11px;display:flex;justify-content:space-between;"><span>GNWMC내 기여도</span><span>${pct}%</span></div><div style="height:8px;background:#f1f5f9;border-radius:4px;margin-top:4px;overflow:hidden;"><div style="height:100%;background:${MC[name]};width:${pct}%;border-radius:4px;"></div></div></div><div style="margin-top:12px;font-size:11px;color:#64748b;font-weight:600;">개인별 프로젝트 투입 분포</div><div style="margin-top:4px;display:flex;height:8px;border-radius:4px;overflow:hidden;"><div style="width:${p1}%;background:#00428E;" title="서부의료원"></div><div style="width:${p2}%;background:#3b82f6;" title="타 프로젝트"></div><div style="width:${p3}%;background:#cbd5e1;" title="공통업무"></div></div><div style="display:flex;margin-top:4px;font-size:9px;color:#94a3b8;text-align:center;">${p1>0?`<div style="width:${p1}%;">${p1.toFixed(0)}%</div>`:''}${p2>0?`<div style="width:${p2}%;">${p2.toFixed(0)}%</div>`:''}${p3>0?`<div style="width:${p3}%;">${p3.toFixed(0)}%</div>`:''}</div>`;
     grid.appendChild(mc);
   });
-  // ✨ Project Time Analysis 챕터 렌더링 (서부의료원 24188 데이터만 필터링!)
-  if (pjData.length > 0) {
-      renderDashStage(pjData); renderDashCompare(pjData);
-      renderDashDonutAndTop7(pjData); renderDashTimeline(pjData, pjMos);
-  } else {
-      ['stageChart','compareChart','donutChart','timelineChart'].forEach(destroyChart);
-      document.getElementById('top5List').innerHTML = `<li style="text-align:center; color:#94a3b8; font-size:12px; margin-top:20px;">서부의료원 데이터가 없습니다.</li>`;
-  }
-  // ✨ Working Hours Analysis 렌더링 (전체 데이터 기준)
-  renderDashHeat(all); renderDashOvertimeBars(all); renderDashOvertimeDonut(all);
-  renderDashMonthlyOvertime(all, mos);
-  const dates = [...new Set(all.map(r=>r.date))].sort();
-  renderShannonHhiCv(all, dates, '#00428E', 'pj');
+  if(pjData.length>0){ renderDashStage(pjData); renderDashCompare(pjData); renderDashDonutAndTop7(pjData); renderDashTimeline(pjData,pjMos); }
+  else{ ['stageChart','compareChart','donutChart','timelineChart'].forEach(destroyChart); document.getElementById('top5List').innerHTML=`<li style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">서부의료원 데이터가 없습니다.</li>`; }
+  renderDashHeat(all); renderDashOvertimeBars(all); renderDashOvertimeDonut(all); renderDashMonthlyOvertime(all,mos);
+  const dates=[...new Set(all.map(r=>r.date))].sort(); renderShannonHhiCv(all,dates,'#00428E','pj');
 }
-// ✨ OVERALL: 서부 vs 타 PJ (가로 3분할 누적 막대, 연동 하이라이트)
-function renderOvProjectRatio(all) {
-    destroyChart('ovPjRatioBar');
-    let mainPj = 0, otherPj = 0, commonPj = 0;
-    all.forEach(r => {
-        if(r.project === '경남 서부의료원') mainPj += r.min;
-        else if(r.project === '타 프로젝트') otherPj += r.min;
-        else commonPj += r.min;
-    });
-    const tot = mainPj + otherPj + commonPj;
-    document.getElementById('ovPjRatioLegendWrap').innerHTML = [
-        {k:'경남 서부의료원', c:'#00428E'}, {k:'타 프로젝트', c:'#3b82f6'}, {k:'공통업무', c:'#cbd5e1'}
-    ].map(item => {
-        const isDim = hlPjRatio !== null && hlPjRatio !== item.k;
-        return `<div class="legend-item ${isDim?'dimmed':''}" onclick="ovTogglePjRatio('${item.k}')"><div class="legend-dot" style="background:${item.c}"></div><span style="font-size:11px;">${item.k.replace('경남 ','')}</span></div>`;
-    }).join('');
-    const dsConfig = (lbl, val, col) => ({
-        label: lbl, data: [mToH(val)],
-        backgroundColor: (hlPjRatio === null || hlPjRatio === lbl) ? col : '#e2e8f0',
-        barPercentage: 0.9, categoryPercentage: 1.0 // 막대 두껍게
-    });
-    CH.ovPjRatioBar = new Chart(document.getElementById('ovPjRatioBar').getContext('2d'), {
-        type: 'bar',
-        data: { labels: [''], datasets: [ dsConfig('경남 서부의료원', mainPj, '#00428E'), dsConfig('타 프로젝트', otherPj, '#3b82f6'), dsConfig('공통업무', commonPj, '#cbd5e1') ] },
-        options: {
-            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    display: true, color: '#fff', font: { weight: 'bold', size: 12 }, anchor: 'center', align: 'center', textAlign: 'center',
-                    formatter: (v, ctx) => {
-                        if(v <= 0) return '';
-                        const pct = (v/mToH(tot)*100).toFixed(1);
-                        return `${formatNum(v)}h\n(${pct}%)`; // 항목명 삭제, 줄바꿈 표시
-                    }
-                }
-            },
-            scales: { x: { stacked: true, display: false }, y: { stacked: true, display: false } },
-            onClick: (e, els) => {
-                if(els.length) ovTogglePjRatio(CH.ovPjRatioBar.data.datasets[els[0].datasetIndex].label);
-                else { hlPjRatio = null; renderOvProjectRatio(filtered()); }
-            }
-        }
-    });
-}
-function ovTogglePjRatio(b) { hlPjRatio = hlPjRatio === b ? null : b; renderOvProjectRatio(filtered()); }
-// ✨ [Project Time] 단계별 투입비율 (도넛 차트로 변경)
-function renderDashStage(all) {
-    destroyChart('stageChart');
-    const catMap=grpMin(all,'cat'); const tot=Object.values(catMap).reduce((a,b)=>a+b,0);
-    if(tot === 0) return;
-    document.getElementById('dashStageLegendWrap').innerHTML = CAT_ORDER.map((c, i) => {
-        const isDim = hlStage !== null && hlStage !== c;
-        return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleStage('${c}')"><div class="legend-dot" style="background:${CAT_COLORS[i]}"></div><span style="font-size:11px;">${c}</span></div>`;
-    }).join('');
-    const bgColors = CAT_ORDER.map((c, i) => (hlStage === null || hlStage === c) ? CAT_COLORS[i] : '#e2e8f0');
-    CH.stageChart = new Chart(document.getElementById('stageChart').getContext('2d'),{
-        type:'doughnut',
-        data:{ labels:CAT_ORDER, datasets: [{ data: CAT_ORDER.map(c=>mToH(catMap[c]||0)), backgroundColor: bgColors, borderWidth:2, borderColor:'#fff' }] },
-        options:{
-            responsive:true, maintainAspectRatio:false, cutout:'65%', layout:{padding:25},
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    display: ctx=>ctx.dataset.data[ctx.dataIndex]>0,
-                    color:'#1e293b', font:{weight:'bold', size:10}, anchor: 'end', align: 'end', textAlign: 'center',
-                    formatter:(v, ctx) => {
-                        const pct = (v/mToH(tot)*100).toFixed(1);
-                        return `${ctx.chart.data.labels[ctx.dataIndex]}\n${formatNum(v)}h (${pct}%)`;
-                    }
-                }
-            },
-            onClick: (e, els) => {
-                if(els.length) dashToggleStage(CH.stageChart.data.labels[els[0].index]);
-                else { hlStage = null; renderDashStage(filtered().filter(r => r.project === '경남 서부의료원')); }
-            }
-        }
-    });
-    document.getElementById('stageCenter').innerText = formatHour(tot) + 'h';
-}
-function dashToggleStage(cat) { hlStage = hlStage === cat ? null : cat; renderDashStage(filtered().filter(r => r.project === '경남 서부의료원')); }
-// [Project Time] 설계단계별 투입시간 (막대 상단 레이블)
-function renderDashCompare(all) {
-  destroyChart('compare');
-  if(!all.length) return;
-  document.getElementById('dashCompareLegendWrap').innerHTML = MEMBERS.map(n => {
-      const isDim = hlCompare !== null && hlCompare !== n;
-      return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleCompare('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`;
+
+function renderOvProjectRatio(all){
+  destroyChart('ovPjRatioBar');
+  let mainPj=0,otherPj=0,commonPj=0;
+  all.forEach(r=>{ if(r.project==='경남 서부의료원') mainPj+=r.min; else if(r.project==='타 프로젝트') otherPj+=r.min; else commonPj+=r.min; });
+  const tot=mainPj+otherPj+commonPj;
+  document.getElementById('ovPjRatioLegendWrap').innerHTML=[{k:'경남 서부의료원',c:'#00428E'},{k:'타 프로젝트',c:'#3b82f6'},{k:'공통업무',c:'#cbd5e1'}].map(item=>{
+    const isDim=hlPjRatio!==null&&hlPjRatio!==item.k;
+    return `<div class="legend-item ${isDim?'dimmed':''}" onclick="ovTogglePjRatio('${item.k}')"><div class="legend-dot" style="background:${item.c}"></div><span style="font-size:11px;">${item.k.replace('경남 ','')}</span></div>`;
   }).join('');
-  const dss = MEMBERS.map(name => {
-      const isHl = hlCompare === null || hlCompare === name;
-      return { label:name, data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: isHl ? MC[name] : '#e2e8f0', borderRadius:4 };
-  });
-  CH.compare = new Chart(document.getElementById('compareChart').getContext('2d'),{
-    type:'bar', data:{labels:CAT_ORDER, datasets:dss},
-    options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{
-            legend:{display:false},
-            datalabels:{ display:true, color:'#64748b', font:{size:10, weight:'bold'}, anchor:'end', align:'end', formatter:v=>v>0?v.toFixed(1):'' }
-        },
-        scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(226,232,240,0.5)'}, grace:'10%'}}
-    }
+  const dsConfig=(lbl,val,col)=>({ label:lbl, data:[mToH(val)], backgroundColor:(hlPjRatio===null||hlPjRatio===lbl)?col:'#e2e8f0', barPercentage:0.9, categoryPercentage:1.0 });
+  CH.ovPjRatioBar=new Chart(document.getElementById('ovPjRatioBar').getContext('2d'),{
+    type:'bar', data:{labels:[''],datasets:[dsConfig('경남 서부의료원',mainPj,'#00428E'),dsConfig('타 프로젝트',otherPj,'#3b82f6'),dsConfig('공통업무',commonPj,'#cbd5e1')]},
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{ display:true, color:'#fff', font:{weight:'bold',size:12}, anchor:'center', align:'center', textAlign:'center', formatter:(v,ctx)=>{ if(v<=0) return ''; const pct=(v/mToH(tot)*100).toFixed(1); return `${formatNum(v)}h\n(${pct}%)`; } } }, scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}, onClick:(e,els)=>{ if(els.length) ovTogglePjRatio(CH.ovPjRatioBar.data.datasets[els[0].datasetIndex].label); else{ hlPjRatio=null; renderOvProjectRatio(filtered()); } } }
   });
 }
-function dashToggleCompare(name) { hlCompare = hlCompare === name ? null : name; renderDashCompare(filtered().filter(r => r.project === '경남 서부의료원')); }
-// ✨ [Project Time] 분류별 업무 (비율 레이블, TOP 7, 글자 안 잘리게)
-function renderDashDonutAndTop7(all) {
-   destroyChart('donut');
-   const subMap = grpMin(all, 'sub'); const tot = Object.values(subMap).reduce((a,b)=>a+b,0);
-   const topArr = Object.entries(subMap).sort((a,b)=>b[1]-a[1]);
-   document.getElementById('donutCenter').innerText = formatHour(tot) + 'h';
-   if(topArr.length === 0) {
-       document.getElementById('top5List').innerHTML = `<li style="text-align:center; color:#94a3b8; font-size:12px; margin-top:20px;">데이터 없음</li>`;
-       return;
-   }
-   document.getElementById('top5List').innerHTML = topArr.slice(0, 7).map(([k,v], i) => {
-       const isDim = hlDonutWork !== null && hlDonutWork !== k;
-       const pct = tot > 0 ? (v/tot*100).toFixed(1) : 0;
-       return `<li class="top5-rank-item ${isDim?'dimmed':''}" style="cursor:pointer;" onclick="dashToggleDonut('${k}')">
-           <div class="top5-rank-badge" style="background:${SUB_PAL[i]};">${i+1}</div>
-           <span class="top5-rank-name">${k}</span>
-           <div style="text-align:right;"><strong class="top5-rank-val">${formatHour(v)}h</strong> <span style="font-size:10px; color:#94a3b8;">(${pct}%)</span></div>
-       </li>`;
-   }).join('');
-   const labels = topArr.slice(0,7).map(x=>x[0]);
-   const data = topArr.slice(0,7).map(x=>mToH(x[1]));
-   const bgColors = labels.map((l, i) => (hlDonutWork === null || hlDonutWork === l) ? SUB_PAL[i] : '#e2e8f0');
-   CH.donut = new Chart(document.getElementById('donutChart').getContext('2d'), {
-       type: 'doughnut',
-       data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors, borderWidth:2, borderColor:'#fff' }] },
-       options: {
-           responsive: true, maintainAspectRatio: false, cutout: '60%', layout:{padding:30},
-           plugins: {
-               legend: { display: false },
-               datalabels: {
-                   display: true, color:'#1e293b', font:{size:10,weight:'800'}, textAlign: 'center',
-                   formatter:(v,ctx)=>{ const pct=(v/mToH(tot)*100).toFixed(1); return `${ctx.chart.data.labels[ctx.dataIndex]}\n${formatNum(v)}h (${pct}%)`; },
-                   anchor:'end', align:'end', clamp:true, clip:false
-                }
-            },
-            onClick: (e, els) => {
-                if(els.length) dashToggleDonut(CH.donut.data.labels[els[0].index]);
-                else { hlDonutWork = null; renderDashDonutAndTop7(filtered().filter(r => r.project === '경남 서부의료원')); }
-            }
-        }
-   });
-}
-function dashToggleDonut(k) { hlDonutWork = hlDonutWork === k ? null : k; renderDashDonutAndTop7(filtered().filter(r => r.project === '경남 서부의료원')); }
-// ✨ [Project Time] 통합 추이 (점 축소, 음수 방지, 최댓값/최솟값 1개씩만)
-function renderDashTimeline(all, mos) {
-  destroyChart('timeline');
-  if(!mos.length) return;
-  const ctx = document.getElementById('timelineChart').getContext('2d');
-  const dss=MEMBERS.map(name=>{
-      const moMap={}; all.filter(r=>r.name===name).forEach(r=>{moMap[r.date.slice(0,7)]=(moMap[r.date.slice(0,7)]||0)+r.min;});
-      const c=MC[name]; const grad=ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,c+'88'); grad.addColorStop(1,c+'00');
-      const isHl = hlTimeline === null || hlTimeline === name;
-      const dataArr = mos.map(m=>mToH(moMap[m]||0));
-      return{ type:'line', label:name, data:dataArr, borderColor:isHl?c:'#e2e8f0', backgroundColor:isHl?grad:'transparent', borderWidth:2, tension:0.3, fill:true, pointBackgroundColor:isHl?c:'#e2e8f0', pointRadius:isHl?2:0, pointHoverRadius:5, order:isHl?1:2 };
+function ovTogglePjRatio(b){ hlPjRatio=hlPjRatio===b?null:b; renderOvProjectRatio(filtered()); }
+
+function renderDashStage(all){
+  destroyChart('stageChart');
+  const catMap=grpMin(all,'cat'); const tot=Object.values(catMap).reduce((a,b)=>a+b,0); if(tot===0) return;
+  document.getElementById('dashStageLegendWrap').innerHTML=CAT_ORDER.map((c,i)=>{
+    const isDim=hlStage!==null&&hlStage!==c;
+    return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleStage('${c}')"><div class="legend-dot" style="background:${CAT_COLORS[i]}"></div><span style="font-size:11px;">${c}</span></div>`;
+  }).join('');
+  const bgColors=CAT_ORDER.map((c,i)=>(hlStage===null||hlStage===c)?CAT_COLORS[i]:'#e2e8f0');
+  CH.stageChart=new Chart(document.getElementById('stageChart').getContext('2d'),{
+    type:'doughnut', data:{labels:CAT_ORDER,datasets:[{data:CAT_ORDER.map(c=>mToH(catMap[c]||0)),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]},
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', layout:{padding:25}, plugins:{ legend:{display:false}, datalabels:{ display:ctx=>ctx.dataset.data[ctx.dataIndex]>0, color:'#1e293b', font:{weight:'bold',size:10}, anchor:'end', align:'end', textAlign:'center', formatter:(v,ctx)=>{ const pct=(v/mToH(tot)*100).toFixed(1); return `${ctx.chart.data.labels[ctx.dataIndex]}\n${formatNum(v)}h (${pct}%)`; } } }, onClick:(e,els)=>{ if(els.length) dashToggleStage(CH.stageChart.data.labels[els[0].index]); else{ hlStage=null; renderDashStage(filtered().filter(r=>r.project==='경남 서부의료원')); } } }
   });
-  document.getElementById('timelineLegendWrap').innerHTML = MEMBERS.map(n => `<div class="legend-item ${hlTimeline!==null && hlTimeline!==n ? 'dimmed':''}" onclick="dashToggleTimeline('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
-  CH.timeline=new Chart(ctx,{
-      type:'line',data:{labels:mos,datasets:dss},
-      options:{
-          responsive:true,maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
-          plugins:{
-              legend:{display:false},
-              datalabels:{
-                  display: function(ctx) {
-                      if(hlTimeline !== null && ctx.dataset.label !== hlTimeline) return false;
-                      const val = ctx.raw;
-                      if(val <= 0) return false; // 0이하는 표시 안함
-                      const d = ctx.dataset.data;
-                      const nonZeroD = d.filter(v => v > 0);
-                      if(nonZeroD.length === 0) return false;
-                      const min = Math.min(...nonZeroD); const max = Math.max(...nonZeroD);
-                      // 처음 나오는 최소, 최대값만 표시
-                      const isMax = val === max && d.indexOf(max) === ctx.dataIndex;
-                      const isMin = val === min && d.indexOf(min) === ctx.dataIndex;
-                      return isMax || isMin;
-                  },
-                  color: ctx => ctx.dataset.borderColor,
-                  font: {size:10, weight:'bold'},
-                  align: 'top', anchor: 'end', offset: 4,
-                  formatter: v => v>0?v.toFixed(1):''
-              }
-          },
-          scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'}, min:0, beginAtZero:true, grace:'10%'}}
-      }
-  });
+  document.getElementById('stageCenter').innerText=formatHour(tot)+'h';
 }
-function dashToggleTimeline(name) { hlTimeline = hlTimeline === name ? null : name; renderDashTimeline(filtered().filter(r => r.project === '경남 서부의료원'), getMos(filtered().filter(r => r.project === '경남 서부의료원'))); }
-// ✨ [Working Hours] 월별 근무밀도 (단독 연도 필터 적용)
-function renderDashHeat(all) {
-  let targetYear = [...new Set(all.map(r=>r.date.slice(0,4)))].sort().pop() || '2024';
-  const allYears = [...new Set(all.map(r=>r.date.slice(0,4)))].sort();
-  document.getElementById('heatYearTabs').innerHTML = allYears.map(y => `<button class="tab-btn-sm ${y===targetYear?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}년</button>`).join('');
+function dashToggleStage(cat){ hlStage=hlStage===cat?null:cat; renderDashStage(filtered().filter(r=>r.project==='경남 서부의료원')); }
+
+function renderDashCompare(all){
+  destroyChart('compare'); if(!all.length) return;
+  document.getElementById('dashCompareLegendWrap').innerHTML=MEMBERS.map(n=>{ const isDim=hlCompare!==null&&hlCompare!==n; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleCompare('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`; }).join('');
+  const dss=MEMBERS.map(name=>{ const isHl=hlCompare===null||hlCompare===name; return {label:name,data:CAT_ORDER.map(c=>mToH(all.filter(r=>r.name===name&&r.cat===c).reduce((s,x)=>s+x.min,0))),backgroundColor:isHl?MC[name]:'#e2e8f0',borderRadius:4}; });
+  CH.compare=new Chart(document.getElementById('compareChart').getContext('2d'),{ type:'bar', data:{labels:CAT_ORDER,datasets:dss}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end',formatter:v=>v>0?v.toFixed(1):''} }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'10%'}} } });
+}
+function dashToggleCompare(name){ hlCompare=hlCompare===name?null:name; renderDashCompare(filtered().filter(r=>r.project==='경남 서부의료원')); }
+
+function renderDashDonutAndTop7(all){
+  destroyChart('donut');
+  const subMap=grpMin(all,'sub'); const tot=Object.values(subMap).reduce((a,b)=>a+b,0); const topArr=Object.entries(subMap).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('donutCenter').innerText=formatHour(tot)+'h';
+  if(topArr.length===0){ document.getElementById('top5List').innerHTML=`<li style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">데이터 없음</li>`; return; }
+  document.getElementById('top5List').innerHTML=topArr.slice(0,7).map(([k,v],i)=>{ const isDim=hlDonutWork!==null&&hlDonutWork!==k; const pct=tot>0?(v/tot*100).toFixed(1):0; return `<li class="top5-rank-item ${isDim?'dimmed':''}" style="cursor:pointer;" onclick="dashToggleDonut('${k}')"><div class="top5-rank-badge" style="background:${SUB_PAL[i]};">${i+1}</div><span class="top5-rank-name">${k}</span><div style="text-align:right;"><strong>${formatHour(v)}h</strong> <span style="font-size:10px;color:#94a3b8;">(${pct}%)</span></div></li>`; }).join('');
+  const labels=topArr.slice(0,7).map(x=>x[0]); const data=topArr.slice(0,7).map(x=>mToH(x[1])); const bgColors=labels.map((l,i)=>(hlDonutWork===null||hlDonutWork===l)?SUB_PAL[i]:'#e2e8f0');
+  CH.donut=new Chart(document.getElementById('donutChart').getContext('2d'),{ type:'doughnut', data:{labels,datasets:[{data,backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, options:{ responsive:true, maintainAspectRatio:false, cutout:'60%', layout:{padding:30}, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'800'},textAlign:'center',formatter:(v,ctx)=>{ const pct=(v/mToH(tot)*100).toFixed(1); return `${ctx.chart.data.labels[ctx.dataIndex]}\n${formatNum(v)}h (${pct}%)`; },anchor:'end',align:'end',clamp:true,clip:false} }, onClick:(e,els)=>{ if(els.length) dashToggleDonut(CH.donut.data.labels[els[0].index]); else{ hlDonutWork=null; renderDashDonutAndTop7(filtered().filter(r=>r.project==='경남 서부의료원')); } } } });
+}
+function dashToggleDonut(k){ hlDonutWork=hlDonutWork===k?null:k; renderDashDonutAndTop7(filtered().filter(r=>r.project==='경남 서부의료원')); }
+
+function renderDashTimeline(all,mos){
+  destroyChart('timeline'); if(!mos.length) return;
+  const ctx=document.getElementById('timelineChart').getContext('2d');
+  const dss=MEMBERS.map(name=>{ const moMap={}; all.filter(r=>r.name===name).forEach(r=>{moMap[r.date.slice(0,7)]=(moMap[r.date.slice(0,7)]||0)+r.min;}); const c=MC[name]; const grad=ctx.createLinearGradient(0,0,0,300); grad.addColorStop(0,c+'88'); grad.addColorStop(1,c+'00'); const isHl=hlTimeline===null||hlTimeline===name; const dataArr=mos.map(m=>mToH(moMap[m]||0)); return{type:'line',label:name,data:dataArr,borderColor:isHl?c:'#e2e8f0',backgroundColor:isHl?grad:'transparent',borderWidth:2,tension:0.3,fill:true,pointBackgroundColor:isHl?c:'#e2e8f0',pointRadius:isHl?2:0,pointHoverRadius:5,order:isHl?1:2}; });
+  document.getElementById('timelineLegendWrap').innerHTML=MEMBERS.map(n=>`<div class="legend-item ${hlTimeline!==null&&hlTimeline!==n?'dimmed':''}" onclick="dashToggleTimeline('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`).join('');
+  CH.timeline=new Chart(ctx,{ type:'line', data:{labels:mos,datasets:dss}, options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{ legend:{display:false}, datalabels:{ display:function(ctx){ if(hlTimeline!==null&&ctx.dataset.label!==hlTimeline) return false; const val=ctx.raw; if(val<=0) return false; const d=ctx.dataset.data; const nz=d.filter(v=>v>0); if(!nz.length) return false; const min=Math.min(...nz); const max=Math.max(...nz); return (val===max&&d.indexOf(max)===ctx.dataIndex)||(val===min&&d.indexOf(min)===ctx.dataIndex); }, color:ctx=>ctx.dataset.borderColor, font:{size:10,weight:'bold'}, align:'top', anchor:'end', offset:4, formatter:v=>v>0?v.toFixed(1):'' } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0,beginAtZero:true,grace:'10%'}} } });
+}
+function dashToggleTimeline(name){ hlTimeline=hlTimeline===name?null:name; renderDashTimeline(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
+
+function renderDashHeat(all){
+  let targetYear=[...new Set(all.map(r=>r.date.slice(0,4)))].sort().pop()||'2024';
+  const allYears=[...new Set(all.map(r=>r.date.slice(0,4)))].sort();
+  document.getElementById('heatYearTabs').innerHTML=allYears.map(y=>`<button class="tab-btn-sm ${y===targetYear?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}년</button>`).join('');
   renderHeatmapOnly(targetYear);
 }
-window.renderHeatmapOnly = function(year) {
-  const all = filtered();
-  document.getElementById('heatYearTabs').innerHTML = [...new Set(all.map(r=>r.date.slice(0,4)))].sort().map(y => `<button class="tab-btn-sm ${y===year?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}년</button>`).join('');
-  const dailyMap = {}; all.filter(r=>r.date.startsWith(year+'-')).forEach(r => dailyMap[r.date] = (dailyMap[r.date] || 0) + r.min);
-  const mat = Array.from({length:5},()=>new Array(12).fill(0)); const hasMo = new Array(12).fill(false); let maxV = 1;
-  for (let d in dailyMap) { const sum = dailyMap[d]; const p = d.split('-'); const mo = parseInt(p[1])-1, day = parseInt(p[2]); const fd = new Date(parseInt(year), mo, 1).getDay(); const wk = Math.ceil((day+fd)/7)-1; if(wk>=0 && wk<5) { mat[wk][mo] += sum; hasMo[mo] = true; if(mat[wk][mo]>maxV) maxV=mat[wk][mo]; } }
-  let th = '<thead><tr><th style="width:30px;"></th>'; MONTH_KO.forEach((l,i) => th+`<th style="color:${hasMo[i]?'#00428E':'#cbd5e1'}; font-weight:${hasMo[i]?'800':'500'};">${l}</th>`); th+='</tr></thead>';
-  let tb = '<tbody>'; for(let w=0; w<5; w++){ tb += `<tr><td style="font-size:10px; font-weight:700; color:#94a3b8; text-align:right; padding-right:6px;">${w+1}주</td>`; for(let mo=0; mo<12; mo++){ if(!hasMo[mo]) tb += `<td><div class="hm-cell" style="background:transparent;"></div></td>`; else if(mat[w][mo]<=0) tb += `<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`; else tb += `<td><div class="hm-cell" style="background:${hexRgba('#00428E', 0.2 + (mat[w][mo]/maxV)*0.8)}; color:${(mat[w][mo]/maxV)>0.4?'#fff':'#1e293b'};" title="${formatHour(mat[w][mo])}h">${formatHour(mat[w][mo])}</div></td>`; } tb += '</tr>'; }
-  document.getElementById('heatTable').innerHTML = th + tb + '</tbody>';
+window.renderHeatmapOnly=function(year){
+  const all=filtered();
+  document.getElementById('heatYearTabs').innerHTML=[...new Set(all.map(r=>r.date.slice(0,4)))].sort().map(y=>`<button class="tab-btn-sm ${y===year?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}년</button>`).join('');
+  const dailyMap={}; all.filter(r=>r.date.startsWith(year+'-')).forEach(r=>dailyMap[r.date]=(dailyMap[r.date]||0)+r.min);
+  const mat=Array.from({length:5},()=>new Array(12).fill(0)); const hasMo=new Array(12).fill(false); let maxV=1;
+  for(let d in dailyMap){ const sum=dailyMap[d]; const p=d.split('-'); const mo=parseInt(p[1])-1,day=parseInt(p[2]); const fd=new Date(parseInt(year),mo,1).getDay(); const wk=Math.ceil((day+fd)/7)-1; if(wk>=0&&wk<5){ mat[wk][mo]+=sum; hasMo[mo]=true; if(mat[wk][mo]>maxV) maxV=mat[wk][mo]; } }
+  // ✅ 수정: th += 연산자 정상화
+  let th='<thead><tr><th style="width:30px;"></th>';
+  MONTH_KO.forEach((l,i)=>{ th+=`<th style="color:${hasMo[i]?'#00428E':'#cbd5e1'};font-weight:${hasMo[i]?'800':'500'};">${l}</th>`; });
+  th+='</tr></thead>';
+  let tb='<tbody>'; for(let w=0;w<5;w++){ tb+=`<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">${w+1}주</td>`; for(let mo=0;mo<12;mo++){ if(!hasMo[mo]) tb+=`<td><div class="hm-cell" style="background:transparent;"></div></td>`; else if(mat[w][mo]<=0) tb+=`<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`; else tb+=`<td><div class="hm-cell" style="background:${hexRgba('#00428E',0.2+(mat[w][mo]/maxV)*0.8)};color:${(mat[w][mo]/maxV)>0.4?'#fff':'#1e293b'};" title="${formatHour(mat[w][mo])}h">${formatHour(mat[w][mo])}</div></td>`; } tb+='</tr>'; }
+  document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
-// ✨ [Working Hours] 일별 초과근무 막대
-function renderDashOvertimeBars(all) {
-    destroyChart('dashOvertimeBarChart'); const dateMap = {}; all.forEach(r => { dateMap[r.date] = (dateMap[r.date] || 0) + r.min; }); let counts = [0, 0, 0, 0];
-    for(let d in dateMap) { const m = dateMap[d]; if(m>=540 && m<600) counts[0]++; else if(m>=600 && m<660) counts[1]++; else if(m>=660 && m<720) counts[2]++; else if(m>=720) counts[3]++; }
-    CH.dashOvertimeBarChart = new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'), {
-        type: 'bar', data: { labels: ['9~10h', '10~11h', '11~12h', '12h 이상'], datasets: [{ data: counts, backgroundColor: OT_COLORS, borderRadius: 4 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, color: '#1e293b', font:{weight:'bold'}, anchor: 'end', align: 'right', formatter: v=>v>0?v+'일':'' } }, scales: { x: { display: false, grace: '15%' }, y: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } } } }
-    });
+
+function renderDashOvertimeBars(all){
+  destroyChart('dashOvertimeBarChart'); const dateMap={}; all.forEach(r=>{dateMap[r.date]=(dateMap[r.date]||0)+r.min;}); let counts=[0,0,0,0];
+  for(let d in dateMap){ const m=dateMap[d]; if(m>=540&&m<600) counts[0]++; else if(m>=600&&m<660) counts[1]++; else if(m>=660&&m<720) counts[2]++; else if(m>=720) counts[3]++; }
+  CH.dashOvertimeBarChart=new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'),{ type:'bar', data:{labels:['9~10h','10~11h','11~12h','12h 이상'],datasets:[{data:counts,backgroundColor:OT_COLORS,borderRadius:4}]}, options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',formatter:v=>v>0?v+'일':''}},scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}} });
 }
-// ✨ [Working Hours] 팀원별 9h / 12h 분할 도넛 (연동 하이라이트)
-function renderDashOvertimeDonut(all) {
-    destroyChart('dashOvertimeDonutChart9'); destroyChart('dashOvertimeDonutChart12');
-    let d9 = [], d12 = [];
-    MEMBERS.forEach(n => {
-        const pDates = {}; all.filter(r=>r.name===n).forEach(r => pDates[r.date] = (pDates[r.date]||0) + r.min);
-        let ot9 = 0, ot12 = 0;
-        for(let d in pDates) { if(pDates[d] >= 540) ot9++; if(pDates[d] >= 720) ot12++; }
-        if(ot9 > 0) d9.push({ name: n, days: ot9 });
-        if(ot12 > 0) d12.push({ name: n, days: ot12 });
-    });
-    d9.sort((a,b)=>b.days-a.days); d12.sort((a,b)=>b.days-a.days);
-    document.getElementById('dashOvertimeDonutLegendWrap').innerHTML = MEMBERS.map(n => {
-        const isDim = hlOvertimeDonut !== null && hlOvertimeDonut !== n;
-        return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleOvertimeDonut('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`;
-    }).join('');
-    const drawHalfDonut = (id, dataArr) => {
-        const bgColors = dataArr.map(d => (hlOvertimeDonut === null || hlOvertimeDonut === d.name) ? MC[d.name] : '#e2e8f0');
-        return new Chart(document.getElementById(id).getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: dataArr.map(d=>d.name), datasets: [{ data: dataArr.map(d=>d.days), backgroundColor: bgColors, borderWidth: 2, borderColor:'#fff' }] },
-            options: {
-                responsive: true, maintainAspectRatio: false, cutout: '65%', layout: { padding: 15 },
-                plugins: {
-                    legend: { display: false },
-                    datalabels: {
-                        display: true, color: '#1e293b', font:{weight:'bold', size:10},
-                        formatter: (v, ctx) => { return v>0 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${v}일` : ''; },
-                        anchor:'end', align:'end'
-                    }
-                },
-                onClick: (e, els) => {
-                    if(els.length) dashToggleOvertimeDonut(dataArr[els[0].index].name);
-                    else { hlOvertimeDonut = null; renderDashOvertimeDonut(filtered()); }
-                }
-            }
-        });
-    };
-    CH.dashOvertimeDonutChart9 = drawHalfDonut('dashOvertimeDonutChart9', d9);
-    CH.dashOvertimeDonutChart12 = drawHalfDonut('dashOvertimeDonutChart12', d12);
+
+function renderDashOvertimeDonut(all){
+  destroyChart('dashOvertimeDonutChart9'); destroyChart('dashOvertimeDonutChart12');
+  let d9=[],d12=[];
+  MEMBERS.forEach(n=>{ const pDates={}; all.filter(r=>r.name===n).forEach(r=>pDates[r.date]=(pDates[r.date]||0)+r.min); let ot9=0,ot12=0; for(let d in pDates){if(pDates[d]>=540) ot9++; if(pDates[d]>=720) ot12++;} if(ot9>0) d9.push({name:n,days:ot9}); if(ot12>0) d12.push({name:n,days:ot12}); });
+  d9.sort((a,b)=>b.days-a.days); d12.sort((a,b)=>b.days-a.days);
+  document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(n=>{ const isDim=hlOvertimeDonut!==null&&hlOvertimeDonut!==n; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleOvertimeDonut('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`; }).join('');
+  const drawHalfDonut=(id,dataArr)=>{ if(!dataArr.length) return; const bgColors=dataArr.map(d=>(hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0'); return new Chart(document.getElementById(id).getContext('2d'),{ type:'doughnut', data:{labels:dataArr.map(d=>d.name),datasets:[{data:dataArr.map(d=>d.days),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', layout:{padding:15}, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},formatter:(v,ctx)=>v>0?`${ctx.chart.data.labels[ctx.dataIndex]}\n${v}일`:'',anchor:'end',align:'end'} }, onClick:(e,els)=>{ if(els.length) dashToggleOvertimeDonut(dataArr[els[0].index].name); else{hlOvertimeDonut=null;renderDashOvertimeDonut(filtered());} } } }); };
+  CH.dashOvertimeDonutChart9=drawHalfDonut('dashOvertimeDonutChart9',d9);
+  CH.dashOvertimeDonutChart12=drawHalfDonut('dashOvertimeDonutChart12',d12);
 }
-function dashToggleOvertimeDonut(name) { hlOvertimeDonut = hlOvertimeDonut === name ? null : name; renderDashOvertimeDonut(filtered()); }
-// ✨ [Working Hours] 월별 9h 이상 발생 건수 (누적 막대, 클릭 연동, 다크그레이 텍스트)
-function renderDashMonthlyOvertime(all, mos) {
-    destroyChart('dashMonthlyOvertimeChart');
-    const bands = ['9~10h', '10~11h', '11~12h', '12h 이상']; let bandData = [[], [], [], []];
-    mos.forEach(m => {
-        const mData = all.filter(r => r.date.startsWith(m));
-        const pDates = {}; mData.forEach(r => pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min);
-        let c = [0,0,0,0];
-        for(let k in pDates) { const min=pDates[k]; if(min>=540&&min<600) c[0]++; else if(min>=600&&min<660) c[1]++; else if(min>=660&&min<720) c[2]++; else if(min>=720) c[3]++; }
-        c.forEach((v,i) => bandData[i].push(v));
-    });
-    document.getElementById('dashMonthlyOtLegendWrap').innerHTML = bands.map((b, i) => {
-        const isDim = hlMonthlyOt !== null && hlMonthlyOt !== b;
-        return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleMonthlyOt('${b}')"><div class="legend-dot" style="background:${OT_COLORS[i]}"></div><span style="font-size:10px;">${b}</span></div>`;
-    }).join('');
-    const datasets = bands.map((b, i) => ({
-        label: b, data: bandData[i],
-        backgroundColor: (hlMonthlyOt===null || hlMonthlyOt===b) ? OT_COLORS[i] : '#e2e8f0',
-        stack: 'Stack 0', borderRadius: 2
-    }));
-    CH.dashMonthlyOvertimeChart = new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'), {
-        type: 'bar', data: { labels: mos, datasets: datasets },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    display: function(ctx) {
-                        if(hlMonthlyOt!==null) return ctx.dataset.label === hlMonthlyOt && ctx.dataset.data[ctx.dataIndex] > 0;
-                        return ctx.datasetIndex === 3 && ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) > 0;
-                    },
-                    color: '#475569', font: { weight: 'bold', size: 11 }, anchor: 'end', align: 'end', offset: 2,
-                    formatter: (v, ctx) => {
-                        if(hlMonthlyOt!==null) return v + '건';
-                        return ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0) + '건';
-                    }
-                }
-            },
-            scales: { x: { stacked:true, grid: { display: false } }, y: { stacked:true, display:false, grace: '20%' } },
-            onClick: (e, els) => {
-                if(els.length) dashToggleMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label);
-                else { hlMonthlyOt = null; renderDashMonthlyOvertime(filtered(), getMos(filtered())); }
-            }
-        }
-    });
+function dashToggleOvertimeDonut(name){ hlOvertimeDonut=hlOvertimeDonut===name?null:name; renderDashOvertimeDonut(filtered()); }
+
+function renderDashMonthlyOvertime(all,mos){
+  destroyChart('dashMonthlyOvertimeChart');
+  const bands=['9~10h','10~11h','11~12h','12h 이상']; let bandData=[[],[],[],[]];
+  mos.forEach(m=>{ const mData=all.filter(r=>r.date.startsWith(m)); const pDates={}; mData.forEach(r=>pDates[r.name+'|'+r.date]=(pDates[r.name+'|'+r.date]||0)+r.min); let c=[0,0,0,0]; for(let k in pDates){const min=pDates[k];if(min>=540&&min<600)c[0]++;else if(min>=600&&min<660)c[1]++;else if(min>=660&&min<720)c[2]++;else if(min>=720)c[3]++;} c.forEach((v,i)=>bandData[i].push(v)); });
+  document.getElementById('dashMonthlyOtLegendWrap').innerHTML=bands.map((b,i)=>{ const isDim=hlMonthlyOt!==null&&hlMonthlyOt!==b; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleMonthlyOt('${b}')"><div class="legend-dot" style="background:${OT_COLORS[i]}"></div><span style="font-size:10px;">${b}</span></div>`; }).join('');
+  const datasets=bands.map((b,i)=>({ label:b, data:bandData[i], backgroundColor:(hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0', stack:'Stack 0', borderRadius:2 }));
+  CH.dashMonthlyOvertimeChart=new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'),{ type:'bar', data:{labels:mos,datasets}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{ display:function(ctx){ if(hlMonthlyOt!==null) return ctx.dataset.label===hlMonthlyOt&&ctx.dataset.data[ctx.dataIndex]>0; return ctx.datasetIndex===3&&ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)>0; }, color:'#475569', font:{weight:'bold',size:11}, anchor:'end', align:'end', offset:2, formatter:(v,ctx)=>{ if(hlMonthlyOt!==null) return v+'건'; return ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)+'건'; } } }, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}, onClick:(e,els)=>{ if(els.length) dashToggleMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label); else{hlMonthlyOt=null;renderDashMonthlyOvertime(filtered(),getMos(filtered()));} } } });
 }
-function dashToggleMonthlyOt(b) { hlMonthlyOt = hlMonthlyOt === b ? null : b; renderDashMonthlyOvertime(filtered(), getMos(filtered())); }
-// ✨ 공통 고급분석 차트 (X축 일 단위, min-height 강제 확보)
-function renderShannonHhiCv(d, datesArr, color, prefix) {
-    destroyChart(prefix + 'ShannonChart'); destroyChart(prefix + 'HhiChart'); destroyChart(prefix + 'CvChart');
-    const sData=[], hData=[], cvData=[];
-    datesArr.forEach(dt => {
-        const dDay = d.filter(r=>r.date===dt); if(!dDay.length) return;
-        const tot = dDay.reduce((s,r)=>s+r.min,0); const sMap = grpMin(dDay, 'sub');
-        let hhi = 0, shan = 0; Object.values(sMap).forEach(v => { const p = v/tot; hhi += p*p; if(p>0) shan -= p*Math.log(p); });
-        sData.push({x:dt, y:shan}); hData.push({x:dt, y:hhi});
-        let wVals = [];
-        for(let i=0; i<7; i++) {
-            let pDt = new Date(new Date(dt).getTime() - i*86400000).toISOString().slice(0,10);
-            let m = d.filter(r=>r.date===pDt).reduce((a,b)=>a+b.min,0);
-            wVals.push(m);
-        }
-        const m = wVals.reduce((a,b)=>a+b,0)/7; const cv = m===0?0:Math.sqrt(wVals.reduce((a,b)=>a+Math.pow(b-m,2),0)/7)/m;
-        cvData.push({x:dt, y:cv});
-    });
-    if(prefix === 'pj' && document.getElementById('ovAvgShan')) {
-        const avgS = sData.length ? sData.reduce((a,b)=>a+b.y,0)/sData.length : 0;
-        const avgH = hData.length ? hData.reduce((a,b)=>a+b.y,0)/hData.length : 0;
-        const avgC = cvData.length ? cvData.reduce((a,b)=>a+b.y,0)/cvData.length : 0;
-        document.getElementById('ovAvgShan').innerText = avgS.toFixed(2);
-        document.getElementById('ovAvgHhi').innerText = avgH.toFixed(2);
-        document.getElementById('ovAvgCv').innerText = avgC.toFixed(2);
+function dashToggleMonthlyOt(b){ hlMonthlyOt=hlMonthlyOt===b?null:b; renderDashMonthlyOvertime(filtered(),getMos(filtered())); }
+
+function renderShannonHhiCv(d,datesArr,color,prefix){
+  destroyChart(prefix+'ShannonChart'); destroyChart(prefix+'HhiChart'); destroyChart(prefix+'CvChart');
+  const sData=[],hData=[],cvData=[];
+  datesArr.forEach(dt=>{ const dDay=d.filter(r=>r.date===dt); if(!dDay.length) return; const tot=dDay.reduce((s,r)=>s+r.min,0); const sMap=grpMin(dDay,'sub'); let hhi=0,shan=0; Object.values(sMap).forEach(v=>{const p=v/tot;hhi+=p*p;if(p>0)shan-=p*Math.log(p);}); sData.push({x:dt,y:shan}); hData.push({x:dt,y:hhi}); let wVals=[]; for(let i=0;i<7;i++){let pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);let m=d.filter(r=>r.date===pDt).reduce((a,b)=>a+b.min,0);wVals.push(m);} const m=wVals.reduce((a,b)=>a+b,0)/7; const cv=m===0?0:Math.sqrt(wVals.reduce((a,b)=>a+Math.pow(b-m,2),0)/7)/m; cvData.push({x:dt,y:cv}); });
+  if(prefix==='pj'&&document.getElementById('ovAvgShan')){
+    const avgS=sData.length?sData.reduce((a,b)=>a+b.y,0)/sData.length:0; const avgH=hData.length?hData.reduce((a,b)=>a+b.y,0)/hData.length:0; const avgC=cvData.length?cvData.reduce((a,b)=>a+b.y,0)/cvData.length:0;
+    document.getElementById('ovAvgShan').innerText=avgS.toFixed(2); document.getElementById('ovAvgHhi').innerText=avgH.toFixed(2); document.getElementById('ovAvgCv').innerText=avgC.toFixed(2);
+  }
+  const opts=(yTitle,maxVal)=>{ const config={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{title:{display:true,text:yTitle},grid:{color:'rgba(226,232,240,0.5)'},min:0}}}; if(maxVal!==undefined) config.scales.y.max=maxVal; return config; };
+  if(document.getElementById(prefix+'ShannonChart')){
+    CH[prefix+'ShannonChart']=new Chart(document.getElementById(prefix+'ShannonChart').getContext('2d'),{type:'line',data:{datasets:[{data:sData,borderColor:'#14b8a6',backgroundColor:hexRgba('#14b8a6',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:opts('다양성 지수')});
+    CH[prefix+'HhiChart']=new Chart(document.getElementById(prefix+'HhiChart').getContext('2d'),{type:'line',data:{datasets:[{data:hData,borderColor:'#f59e0b',backgroundColor:hexRgba('#f59e0b',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:opts('집중도 지수',1.0)});
+    CH[prefix+'CvChart']=new Chart(document.getElementById(prefix+'CvChart').getContext('2d'),{type:'line',data:{datasets:[{data:cvData,borderColor:color,backgroundColor:hexRgba(color,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:opts('변동성 (CV)')});
+  }
+}
+
+/* ═══════════════════════════════════════
+   2. Working 탭
+═══════════════════════════════════════ */
+function generateCoachingMessage(name,d,isAll){
+  if(isAll) return `${I_AI} <strong>전체 팀원 인사이트:</strong> 각 팀원들의 특성을 파악하여 적절한 업무 분배와 일정 관리를 진행해 주세요.`;
+  const otDates=new Set(); d.forEach(r=>{if(r.min>=540) otDates.add(r.date);}); const ev=EVAL_DATA.filter(e=>e.name===name); const score=ev.length?ev.reduce((a,b)=>a+b.vals.reduce((c,d)=>c+d,0)/5,0)/ev.length:3.0;
+  if(otDates.size>5) return `${I_AI} <strong>과부하 경고:</strong> 최근 초과근무 일수가 ${otDates.size}일로 높습니다.`;
+  if(score>=4.0) return `${I_AI} <strong>에이스 코칭:</strong> 훌륭한 퍼포먼스를 유지 중입니다!`;
+  return `${I_AI} <strong>성장 팁:</strong> 업무 변동성이 안정적입니다.`;
+}
+
+function renderWorkingTab(name){
+  const isAll=(name==='ALL'); const allData=filtered(); const d=isAll?allData:allData.filter(r=>r.name===name);
+  const tot=d.reduce((s,r)=>s+r.min,0); const mos=getMos(d); const subMap=grpMin(d,'sub');
+  const pColor=isAll?'#00428E':MC[name]; const pName=isAll?'전체 팀원 합산':name; const pPos=isAll?'-':(RAW.find(r=>r.name===name)?.pos||'');
+  const top3=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  document.getElementById('workingProfileCard').innerHTML=`<div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor};"></div><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;"><div style="display:flex;align-items:center;gap:20px;">${getAvatar(name,72,24)}<div><div style="font-size:24px;font-weight:900;color:#1e293b;">${pName}</div><div style="font-size:13px;color:#64748b;font-weight:600;">${pPos}</div></div></div><div style="text-align:right;"><div style="font-size:13px;color:#64748b;font-weight:700;">선택 기간 총 투입</div><div style="font-size:38px;font-weight:900;color:${pColor};line-height:1;">${formatHour(tot)}<span style="font-size:18px;">h</span></div></div></div><div class="ai-coach-box">${generateCoachingMessage(name,d,isAll)}</div><div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;margin-top:20px;padding-top:20px;border-top:1px solid rgba(226,232,240,0.6);"><div><div style="font-size:12px;font-weight:800;color:#94a3b8;margin-bottom:10px;">${I_BULB} 참여 월수</div><div style="font-size:24px;font-weight:900;">${mos.length}개월 <span style="font-size:12px;color:#94a3b8;font-weight:normal;">(평균 ${mos.length>0?formatNum(mToH(tot)/mos.length):0}h/월)</span></div></div><div><div style="font-size:12px;font-weight:800;color:#94a3b8;margin-bottom:10px;">${I_TROP} 주요 업무 TOP 3</div><div style="display:flex;gap:10px;">${top3.map((s,i)=>`<div style="flex:1;background:rgba(240,245,250,0.8);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:14px;margin-bottom:4px;">${['🥇','🥈','🥉'][i]}</div><div style="font-size:11px;font-weight:800;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s[0]}</div></div>`).join('')}</div></div></div>`;
+  const dates=[...new Set(d.map(r=>r.date))].sort();
+  renderShannonHhiCv(d,dates,pColor,'dp'); renderGiniHurst(d,pColor); renderDpStacked(d,mos,subMap,pColor);
+  renderDpDonut(d,tot); renderFocusBar(d); renderSwitchBar(d,mos);
+  drawHeatmapList(d,mos,pColor); drawOvertimeWithList('dpOvertimeCardWrap',d); renderContinuity(d);
+}
+
+function renderGiniHurst(d,color){
+  destroyChart('dpGiniChart'); destroyChart('dpHurstChart');
+  const dVals=Object.values(grpMin(d,'date')).filter(v=>v>0).sort((a,b)=>a-b);
+  let gLorentz=[{x:0,y:0}]; let gVal=0;
+  if(dVals.length>0){
+    const n=dVals.length; const sum=dVals.reduce((a,b)=>a+b,0); let cum=0;
+    for(let i=0;i<n;i++){cum+=dVals[i];gLorentz.push({x:(i+1)/n,y:cum/sum});}
+    // ✅ 수정: * 연산자 정상화
+    gVal=(n+1)/n-(2/(n*sum))*dVals.reduce((acc,v,i)=>acc+v*(n-i),0);
+  }
+  document.getElementById('dpGiniTxt').innerText=`Gini: ${gVal.toFixed(2)}`;
+  CH.dpGiniChart=new Chart(document.getElementById('dpGiniChart').getContext('2d'),{data:{datasets:[{type:'line',label:'로렌츠 곡선',data:gLorentz,borderColor:color,borderWidth:2,fill:true,backgroundColor:hexRgba(color,0.1),pointRadius:0},{type:'line',label:'완전평등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderWidth:1.5,borderDash:[5,5],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{min:0,max:1,title:{display:true,text:'누적 일수 비율'}},y:{min:0,max:1,title:{display:true,text:'누적 시간 비율'}}}}});
+  let hVal=0.5,hText='데이터 부족',hColor='#94a3b8';
+  if(dVals.length>=10){
+    let rsVals=[],nVals=[];
+    for(let n=5;n<=Math.floor(dVals.length/2);n+=2){
+      let rsSum=0,cnt=0;
+      for(let i=0;i<=dVals.length-n;i+=n){let chunk=dVals.slice(i,i+n);let mean=chunk.reduce((a,b)=>a+b,0)/n;let cDev=[],sum=0;chunk.forEach(x=>{sum+=(x-mean);cDev.push(sum);});let R=Math.max(...cDev)-Math.min(...cDev);let S=Math.sqrt(chunk.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n);if(S>0){rsSum+=R/S;cnt++;}}
+      if(cnt>0){rsVals.push(Math.log(rsSum/cnt));nVals.push(Math.log(n));}
     }
-    const opts = (yTitle, maxVal) => {
-        const config = { responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{display:false} }, scales: { x:{grid:{display:false}, ticks:{maxTicksLimit:10}}, y:{title:{display:true,text:yTitle}, grid:{color:'rgba(226,232,240,0.5)'}, min:0} } };
-        if (maxVal !== undefined) config.scales.y.max = maxVal;
-        return config;
-    };
-    if(document.getElementById(prefix+'ShannonChart')) {
-        CH[prefix+'ShannonChart'] = new Chart(document.getElementById(prefix+'ShannonChart').getContext('2d'), { type:'line', data:{datasets:[{data:sData, borderColor:'#14b8a6', backgroundColor:hexRgba('#14b8a6',0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:0}]}, options: opts('다양성 지수') });
-        CH[prefix+'HhiChart'] = new Chart(document.getElementById(prefix+'HhiChart').getContext('2d'), { type:'line', data:{datasets:[{data:hData, borderColor:'#f59e0b', backgroundColor:hexRgba('#f59e0b',0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:0}]}, options: opts('집중도 지수', 1.0) });
-        CH[prefix+'CvChart'] = new Chart(document.getElementById(prefix+'CvChart').getContext('2d'), { type:'line', data:{datasets:[{data:cvData, borderColor:color, backgroundColor:hexRgba(color,0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:0}]}, options: opts('변동성 (CV)') });
-    }
+    if(nVals.length>=2){let sx=0,sy=0,sxy=0,sxx=0,len=nVals.length;for(let i=0;i<len;i++){sx+=nVals[i];sy+=rsVals[i];sxy+=nVals[i]*rsVals[i];sxx+=nVals[i]*nVals[i];}hVal=Math.max(0,Math.min((len*sxy-sx*sy)/(len*sxx-sx*sx),1));}
+  }
+  if(hVal>0.6){hText='추세 지속형';hColor='#ef4444';}else if(hVal<0.4){hText='평균 회귀형';hColor='#3b82f6';}else{hText='랜덤 패턴';hColor='#10b981';}
+  document.getElementById('dpHurstTxt').innerHTML=`<div style="font-size:24px;font-weight:900;color:${hColor};">${hVal.toFixed(2)}</div><div style="font-size:12px;color:#64748b;font-weight:700;">${hText}</div>`;
+  CH.dpHurstChart=new Chart(document.getElementById('dpHurstChart').getContext('2d'),{type:'doughnut',data:{labels:['Hurst',''],datasets:[{data:[hVal,1-hVal],backgroundColor:[hColor,'#f1f5f9'],borderWidth:0}]},options:{rotation:-90,circumference:180,cutout:'75%',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}}}});
 }
-/* =========================================================
-   2. [Working] 탭
-========================================================= */
-function generateCoachingMessage(name, d, isAll) {
-    if(isAll) return `${I_AI} <strong>전체 팀원 인사이트:</strong> 각 팀원들의 특성을 파악하여 적절한 업무 분배와 일정 관리를 진행해 주세요.`;
-    const otDates = new Set(); d.forEach(r=>{ if(r.min >= 540) otDates.add(r.date); });
-    const ev = EVAL_DATA.filter(e => e.name === name); const score = ev.length ? ev.reduce((a,b)=>a+b.vals.reduce((c,d)=>c+d,0)/5,0)/ev.length : 3.0;
-    if (otDates.size > 5) return `${I_AI} <strong>과부하 경고:</strong> 최근 초과근무 일수가 ${otDates.size}일로 높습니다. 번아웃 예방을 위해 업무 조율이 필요합니다.`;
-    if (score >= 4.0) return `${I_AI} <strong>에이스 코칭:</strong> 훌륭한 퍼포먼스를 유지 중입니다! 주력 업무 외에 새로운 설계 단계의 업무를 리드해 보는 것을 추천합니다.`;
-    return `${I_AI} <strong>성장 팁:</strong> 업무 변동성이 안정적입니다. '업무 다양성 분석' 차트의 위치를 확인하고, 부족한 역량을 보완할 수 있는 테스크에 자원해 보세요.`;
+
+function renderDpStacked(d,mos,subMap,color){destroyChart('dpStackedBar');const subList=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,10);const moSubMap={};d.forEach(r=>{moSubMap[r.date.slice(0,7)]=moSubMap[r.date.slice(0,7)]||{};moSubMap[r.date.slice(0,7)][r.sub]=(moSubMap[r.date.slice(0,7)][r.sub]||0)+r.min;});document.getElementById('dpStackedLegend').innerHTML=subList.map((s,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i]}"></div>${s}</div>`).join('');CH.dpStackedBar=new Chart(document.getElementById('dpStackedBar').getContext('2d'),{data:{labels:mos,datasets:subList.map((sub,i)=>({type:'bar',label:sub,data:mos.map(m=>mToH(moSubMap[m]?.[sub]||0)),backgroundColor:SUB_PAL[i],stack:'s'}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(226,232,240,0.5)'}}}}});}
+function renderDpDonut(d,tot){destroyChart('dpDonut');const catMap=grpMin(d,'cat');const cats=CAT_ORDER.filter(c=>catMap[c]>0);document.getElementById('dpDonutCenter').innerHTML=`<div style="font-size:16px;font-weight:900;color:#1e293b;">${formatHour(tot)}h</div>`;CH.dpDonut=new Chart(document.getElementById('dpDonut').getContext('2d'),{type:'doughnut',data:{labels:cats,datasets:[{data:cats.map(c=>mToH(catMap[c])),backgroundColor:cats.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},datalabels:{color:'#1e293b',font:{size:10,weight:'bold'},formatter:(v,ctx)=>{const p=Math.round(v/mToH(tot)*100);return p>5?`${cats[ctx.dataIndex]}\n${p}%`:'';},anchor:'end',align:'end'}}}});}
+function renderFocusBar(d){destroyChart('dpFocusBar');let fM=0,dM=0;d.forEach(r=>{fM+=r.min;});const t=fM+dM;CH.dpFocusBar=new Chart(document.getElementById('dpFocusBar').getContext('2d'),{type:'bar',data:{labels:[''],datasets:[{label:'집중업무',data:[100],backgroundColor:'#00428E'},{label:'분산업무',data:[0],backgroundColor:'#cbd5e1'}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,max:100,display:false},y:{stacked:true,display:false}},plugins:{legend:{display:false},datalabels:{color:'#fff',font:{weight:'bold'},formatter:v=>v>5?v.toFixed(1)+'%':''}}}});}
+function renderSwitchBar(d,mos){destroyChart('dpSwitchBar');let swMo={};let prv=null;d.forEach(r=>{const mo=r.date.slice(0,7);if(!swMo[mo])swMo[mo]=0;if(prv!==null&&prv!==r.sub)swMo[mo]++;prv=r.sub;});CH.dpSwitchBar=new Chart(document.getElementById('dpSwitchBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{label:'업무 전환',data:mos.map(m=>swMo[m]||0),backgroundColor:'#00428E',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{display:false},y:{display:false,beginAtZero:true}}}});}
+
+function renderContinuity(d){
+  const wrap=document.getElementById('dpContinuityWrap'); let res=[]; const dates=[...new Set(d.map(r=>r.date))].sort(); const subs=Object.keys(grpMin(d,'sub'));
+  subs.forEach(s=>{let maxS=0,curS=0,tmpStart='',curStart='',tmpEnd='';dates.forEach(dt=>{if(d.some(r=>r.date===dt&&r.sub===s)){if(curS===0)curStart=dt;curS++;if(curS>maxS){maxS=curS;tmpStart=curStart;tmpEnd=dt;}}else curS=0;});if(maxS>0)res.push({sub:s,streak:maxS,start:tmpStart,end:tmpEnd});});
+  res.sort((a,b)=>b.streak-a.streak);
+  // ✅ 수정: => 화살표 추가
+  wrap.innerHTML=`<div style="display:flex;flex-direction:column;gap:6px;">`+res.slice(0,3).map((c,i)=>`<div style="background:rgba(240,245,250,0.8);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px;"><div style="font-size:16px;">${['🥇','🥈','🥉'][i]}</div><div style="flex:1;"><div style="font-size:12px;font-weight:900;color:#1e293b;white-space:nowrap;overflow:hidden;">${c.sub}</div><div style="font-size:10px;color:#94a3b8;">${c.start} ~ ${c.end}</div></div><div style="font-size:14px;font-weight:900;color:#f59e0b;">${c.streak}일</div></div>`).join('')+`</div>`;
 }
-function renderWorkingTab(name) {
-  const isAll = (name === 'ALL'); const allData = filtered(); const d = isAll ? allData : allData.filter(r=>r.name===name);
-  const tot = d.reduce((s,r)=>s+r.min,0); const mos = getMos(d); const subMap = grpMin(d,'sub');
-  const pColor = isAll ? '#00428E' : MC[name]; const pName = isAll ? '전체 팀원 합산' : name; const pPos = isAll ? '-' : (RAW.find(r=>r.name===name)?.pos || '');
-  const top3 = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  document.getElementById('workingProfileCard').innerHTML = `
-    <div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor};"></div>
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
-        <div style="display:flex; align-items:center; gap:20px;">
-            ${getAvatar(name, 72, 24)}
-            <div><div style="font-size:24px; font-weight:900; color:#1e293b;">${pName}</div><div style="font-size:13px; color:#64748b; font-weight:600;">${pPos}</div></div>
-        </div>
-        <div style="text-align:right;">
-            <div style="font-size:13px; color:#64748b; font-weight:700;">선택 기간 총 투입</div>
-            <div style="font-size:38px; font-weight:900; color:${pColor}; line-height:1;">${formatHour(tot)}<span style="font-size:18px;">h</span></div>
-        </div>
-    </div>
-    <div class="ai-coach-box">${generateCoachingMessage(name, d, isAll)}</div>
-    <div style="display:grid; grid-template-columns:1fr 2fr; gap:20px; margin-top:20px; padding-top:20px; border-top:1px solid rgba(226,232,240,0.6);">
-        <div><div style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:10px;">${I_BULB} 참여 월수</div><div style="font-size:24px; font-weight:900;">${mos.length}개월 <span style="font-size:12px;color:#94a3b8;font-weight:normal;">(평균 ${mos.length>0?formatNum(mToH(tot)/mos.length):0}h/월)</span></div></div>
-        <div><div style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:10px;">${I_TROP} 주요 업무 TOP 3</div><div style="display:flex; gap:10px;">${top3.map((s,i)=>`<div style="flex:1; background:rgba(240,245,250,0.8); border-radius:8px; padding:10px; text-align:center;"><div style="font-size:14px; margin-bottom:4px;">${['🥇','🥈','🥉'][i]}</div><div style="font-size:11px; font-weight:800; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s[0]}</div></div>`).join('')}</div></div>
-    </div>
-  `;
-  const dates = [...new Set(d.map(r=>r.date))].sort();
-  renderShannonHhiCv(d, dates, pColor, 'dp'); renderGiniHurst(d, pColor); renderDpStacked(d, mos, subMap, pColor);
-  renderDpDonut(d, tot); renderFocusBar(d); renderSwitchBar(d, mos);
-  drawHeatmapList(d, mos, pColor); drawOvertimeWithList('dpOvertimeCardWrap', d); renderContinuity(d);
+
+function drawHeatmapList(d,mos,color){
+  const tYear=[...new Set(mos.map(m=>m.split('-')[0]))].sort().pop()||'2024'; document.getElementById('dpHeatTabs').innerHTML=`<button class="tab-btn-sm active">${tYear}년</button>`;
+  const dailyMap={}; d.filter(r=>r.date.startsWith(tYear+'-')).forEach(r=>dailyMap[r.date]=(dailyMap[r.date]||0)+r.min);
+  const mat=Array.from({length:5},()=>new Array(12).fill(0)); const hasMo=new Array(12).fill(false); let maxV=1;
+  for(let date in dailyMap){const sum=dailyMap[date];const p=date.split('-');const mo=parseInt(p[1])-1,day=parseInt(p[2]);const fd=new Date(parseInt(tYear),mo,1).getDay();const wk=Math.ceil((day+fd)/7)-1;if(wk>=0&&wk<5){mat[wk][mo]+=sum;hasMo[mo]=true;if(mat[wk][mo]>maxV)maxV=mat[wk][mo];}}
+  // ✅ 수정: th += 연산자 정상화
+  let th='<thead><tr><th style="width:30px;"></th>';
+  MONTH_KO.forEach((l,i)=>{ th+=`<th style="color:${hasMo[i]?color:'#cbd5e1'};">${l}</th>`; });
+  th+='</tr></thead>';
+  let tb='<tbody>';for(let w=0;w<5;w++){tb+=`<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">${w+1}주</td>`;for(let mo=0;mo<12;mo++){if(!hasMo[mo])tb+=`<td><div class="hm-cell" style="background:transparent;"></div></td>`;else if(mat[w][mo]<=0)tb+=`<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`;else tb+=`<td><div class="hm-cell" style="background:${hexRgba(color,0.2+(mat[w][mo]/maxV)*0.8)};color:${(mat[w][mo]/maxV)>0.4?'#fff':'#1e293b'};" title="${formatHour(mat[w][mo])}h">${formatHour(mat[w][mo])}</div></td>`;}tb+='</tr>';}
+  document.getElementById('dpHeatTable').innerHTML=th+tb+'</tbody>';
 }
-function renderGiniHurst(d, color) {
-    destroyChart('dpGiniChart'); destroyChart('dpHurstChart');
-    const dVals = Object.values(grpMin(d, 'date')).filter(v=>v>0).sort((a,b)=>a-b);
-    let gLorentz = [{x:0, y:0}]; let gVal = 0;
-    if(dVals.length > 0) { const n = dVals.length; const sum = dVals.reduce((a,b)=>a+b,0); let cum = 0; for(let i=0; i<n; i++) { cum += dVals[i]; gLorentz.push({x: (i+1)/n, y: cum/sum}); } gVal = (n+1)/n - (2/(n*sum)) * dVals.reduce((acc,v,i)=>acc+v*(n-i), 0); } // 오타 수정
-    document.getElementById('dpGiniTxt').innerText = `Gini: ${gVal.toFixed(2)}`;
-    CH.dpGiniChart = new Chart(document.getElementById('dpGiniChart').getContext('2d'), { data: { datasets: [{ type:'line', label:'로렌츠 곡선', data:gLorentz, borderColor:color, borderWidth:2, fill:true, backgroundColor:hexRgba(color,0.1), pointRadius:0 }, { type:'line', label:'완전평등선', data:[{x:0,y:0},{x:1,y:1}], borderColor:'#94a3b8', borderWidth:1.5, borderDash:[5,5], pointRadius:0 }]}, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, datalabels:{display:false}}, scales:{x:{min:0, max:1, title:{display:true, text:'누적 일수 비율'}}, y:{min:0, max:1, title:{display:true, text:'누적 시간 비율'}}} } });
-    let hVal = 0.5; let hText = "데이터 부족"; let hColor = "#94a3b8";
-    if(dVals.length >= 10) {
-        let rsVals = [], nVals = [];
-        for(let n=5; n<=Math.floor(dVals.length/2); n+=2) {
-            let rsSum=0, cnt=0;
-            for(let i=0; i<=dVals.length-n; i+=n) { let chunk=dVals.slice(i,i+n); let mean=chunk.reduce((a,b)=>a+b,0)/n; let cDev=[], sum=0; chunk.forEach(x=>{ sum+=(x-mean); cDev.push(sum); }); let R = Math.max(...cDev)-Math.min(...cDev); let S = Math.sqrt(chunk.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n); if(S>0) { rsSum+=R/S; cnt++; } }
-            if(cnt>0) { rsVals.push(Math.log(rsSum/cnt)); nVals.push(Math.log(n)); }
-        }
-        if(nVals.length>=2) { let sx=0, sy=0, sxy=0, sxx=0, len=nVals.length; for(let i=0; i<len; i++) { sx+=nVals[i]; sy+=rsVals[i]; sxy+=nVals[i]*rsVals[i]; sxx+=nVals[i]*nVals[i]; } hVal = Math.max(0, Math.min((len*sxy - sx*sy)/(len*sxx - sx*sx), 1)); }
-    }
-    if(hVal > 0.6) { hText = "추세 지속형"; hColor = "#ef4444"; } else if(hVal < 0.4) { hText = "평균 회귀형"; hColor = "#3b82f6"; } else { hText = "랜덤 패턴"; hColor = "#10b981"; }
-    document.getElementById('dpHurstTxt').innerHTML = `<div style="font-size:24px; font-weight:900; color:${hColor};">${hVal.toFixed(2)}</div><div style="font-size:12px; color:#64748b; font-weight:700;">${hText}</div>`;
-    CH.dpHurstChart = new Chart(document.getElementById('dpHurstChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Hurst', ''], datasets: [{ data: [hVal, 1-hVal], backgroundColor: [hColor, '#f1f5f9'], borderWidth: 0 }] }, options: { rotation: -90, circumference: 180, cutout: '75%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } } });
+
+function drawOvertimeWithList(wrapId,d){
+  const wrap=document.getElementById(wrapId); if(!wrap) return;
+  const dateMap={}; d.forEach(r=>dateMap[r.date]=(dateMap[r.date]||0)+r.min);
+  const otData=[]; for(let dt in dateMap)if(dateMap[dt]>=540)otData.push({date:dt,min:dateMap[dt]}); otData.sort((a,b)=>a.date.localeCompare(b.date));
+  let counts=[0,0,0,0]; otData.forEach(r=>{if(r.min<600)counts[0]++;else if(r.min<660)counts[1]++;else if(r.min<720)counts[2]++;else counts[3]++;});
+  wrap.innerHTML=`<div class="card-section-title">일별 초과근무 상세 <span style="font-size:11px;color:#64748b;font-weight:500;margin-left:8px;">(클릭 필터)</span></div><div style="height:120px;position:relative;"><canvas id="${wrapId}_canvas"></canvas></div><div class="scroll-list" id="${wrapId}_list" style="flex:1;overflow-y:auto;margin-top:10px;border-top:1px solid rgba(226,232,240,0.6);padding-top:10px;"></div>`;
+  const renderList=(idx)=>{
+    let fd=otData; if(idx===0)fd=otData.filter(r=>r.min<600);else if(idx===1)fd=otData.filter(r=>r.min>=600&&r.min<660);else if(idx===2)fd=otData.filter(r=>r.min>=660&&r.min<720);else if(idx===3)fd=otData.filter(r=>r.min>=720);
+    // ✅ 수정: getElementById() 괄호 정상화
+    document.getElementById(`${wrapId}_list`).innerHTML=fd.length?fd.map(r=>`<div style="display:flex;justify-content:space-between;padding:8px 10px;background:${r.min>=720?'#fef2f2':'transparent'};border-bottom:1px solid rgba(226,232,240,0.3);margin-bottom:4px;font-size:12px;"><span style="font-weight:800;color:#334155;">${r.date}</span><span style="color:${r.min>=720?'#dc2626':'#00428E'};font-weight:900;">${formatHour(r.min)}h</span></div>`).join(''):'<div style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">데이터 없음</div>';
+  }; renderList(-1);
+  destroyChart(wrapId);
+  // ✅ 수정: getElementById() 괄호 정상화
+  CH[wrapId]=new Chart(document.getElementById(`${wrapId}_canvas`).getContext('2d'),{type:'bar',data:{labels:['9~10h','10~11h','11~12h','12h 이상'],datasets:[{data:counts,backgroundColor:OT_COLORS,borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,anchor:'end',align:'right',font:{weight:'bold'},formatter:v=>v>0?v+'일':''}},scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:10,weight:'bold'}}}},onClick:(e,els)=>renderList(els.length?els[0].index:-1)}});
 }
-function renderDpStacked(d, mos, subMap, color) { destroyChart('dpStackedBar'); const subList = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,10); const moSubMap = {}; d.forEach(r => { moSubMap[r.date.slice(0,7)] = moSubMap[r.date.slice(0,7)] || {}; moSubMap[r.date.slice(0,7)][r.sub] = (moSubMap[r.date.slice(0,7)][r.sub] || 0) + r.min; }); document.getElementById('dpStackedLegend').innerHTML = subList.map((s, i) => `<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i]}"></div>${s}</div>`).join(''); CH.dpStackedBar = new Chart(document.getElementById('dpStackedBar').getContext('2d'), { data:{ labels: mos, datasets: subList.map((sub,i)=> ({ type: 'bar', label: sub, data: mos.map(m=>mToH(moSubMap[m]?.[sub] || 0)), backgroundColor: SUB_PAL[i], stack: 's' })) }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{display:false} }, scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{color:'rgba(226,232,240,0.5)'}} } } }); }
-function renderDpDonut(d, tot) { destroyChart('dpDonut'); const catMap=grpMin(d,'cat'); const cats=CAT_ORDER.filter(c=>catMap[c]>0); document.getElementById('dpDonutCenter').innerHTML = `<div style="font-size:16px;font-weight:900;color:#1e293b;">${formatHour(tot)}h</div>`; CH.dpDonut = new Chart(document.getElementById('dpDonut').getContext('2d'),{ type:'doughnut', data:{labels:cats, datasets:[{data:cats.map(c=>mToH(catMap[c])), backgroundColor:cats.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]), borderWidth:2, borderColor:'#fff'}]}, options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{ legend:{display:false}, datalabels:{ color:'#1e293b', font:{size:10, weight:'bold'}, formatter:(v,ctx)=>{ const p=Math.round(v/mToH(tot)*100); return p>5 ? `${cats[ctx.dataIndex]}\n${p}%` : ''; }, anchor:'end', align:'end' } } } }); } // 오타 수정 (p>5?)
-function isFocusedWork(cat, sub) { return true; /* 예시 데이터 처리를 위해 항상 true 반환 */ }
-function renderFocusBar(d) { destroyChart('dpFocusBar'); let fM=0, dM=0; d.forEach(r => { if(isFocusedWork(r.cat, r.sub)) fM+=r.min; else dM+=r.min; }); const t = fM+dM; CH.dpFocusBar = new Chart(document.getElementById('dpFocusBar').getContext('2d'), { type: 'bar', data: { labels: [''], datasets: [{ label: '집중업무', data: [t>0?fM/t*100:0], backgroundColor: '#00428E' }, { label: '분산업무', data: [t>0?dM/t*100:0], backgroundColor: '#cbd5e1' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, max: 100, display: false }, y: { stacked: true, display: false } }, plugins: { legend: { display:false }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v>5?v.toFixed(1)+'%':'' } } } }); }
-function renderSwitchBar(d, mos) { destroyChart('dpSwitchBar'); let swMo = {}; let prv = null; d.forEach(r => { const mo = r.date.slice(0,7); if(!swMo[mo]) swMo[mo] = 0; if(prv !== null && prv !== r.sub) swMo[mo]++; prv = r.sub; }); CH.dpSwitchBar = new Chart(document.getElementById('dpSwitchBar').getContext('2d'), { type: 'bar', data: { labels: mos, datasets: [ { label: '업무 전환', data: mos.map(m=>swMo[m]||0), backgroundColor: '#00428E', borderRadius: 4 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { display: false }, y: { display: false, beginAtZero: true } } } }); }
-function renderContinuity(d) { const wrap = document.getElementById('dpContinuityWrap'); let res = []; const dates = [...new Set(d.map(r=>r.date))].sort(); const subs = Object.keys(grpMin(d,'sub')); subs.forEach(s => { let maxS=0, curS=0, tmpStart='', curStart='', tmpEnd=''; dates.forEach(dt => { if(d.some(r=>r.date===dt&&r.sub===s)) { if(curS===0) curStart=dt; curS++; if(curS>maxS) { maxS=curS; tmpStart=curStart; tmpEnd=dt; } } else curS=0; }); if(maxS>0) res.push({sub:s, streak:maxS, start:tmpStart, end:tmpEnd}); }); res.sort((a,b)=>b.streak-a.streak); wrap.innerHTML = `<div style="display:flex; flex-direction:column; gap:6px;">` + res.slice(0,3).map((c,i)=`<div style="background:rgba(240,245,250,0.8); border-radius:8px; padding:8px 12px; display:flex; align-items:center; gap:10px;"><div style="font-size:16px;">${['🥇','🥈','🥉'][i]}</div><div style="flex:1;"><div style="font-size:12px; font-weight:900; color:#1e293b; white-space:nowrap; overflow:hidden;">${c.sub}</div><div style="font-size:10px; color:#94a3b8;">${c.start} ~ ${c.end}</div></div><div style="font-size:14px; font-weight:900; color:#f59e0b;">${c.streak}일</div></div>`).join('') + `</div>`; }
-function drawHeatmapList(d, mos, color) {
-  const tYear = [...new Set(mos.map(m=>m.split('-')[0]))].sort().pop() || '2024'; document.getElementById('dpHeatTabs').innerHTML = `<button class="tab-btn-sm active">${tYear}년</button>`;
-  const dailyMap = {}; d.filter(r=>r.date.startsWith(tYear+'-')).forEach(r => dailyMap[r.date] = (dailyMap[r.date] || 0) + r.min);
-  const mat = Array.from({length:5},()=>new Array(12).fill(0)); const hasMo = new Array(12).fill(false); let maxV = 1;
-  for (let date in dailyMap) { const sum = dailyMap[date]; const p = date.split('-'); const mo = parseInt(p[1])-1, day = parseInt(p[2]); const fd = new Date(parseInt(tYear), mo, 1).getDay(); const wk = Math.ceil((day+fd)/7)-1; if(wk>=0 && wk<5) { mat[wk][mo] += sum; hasMo[mo] = true; if(mat[wk][mo]>maxV) maxV=mat[wk][mo]; } }
-  let th = '<thead><tr><th style="width:30px;"></th>'; MONTH_KO.forEach((l,i) => th+`<th style="color:${hasMo[i]?color:'#cbd5e1'};">${l}</th>`); th+='</tr></thead>';
-  let tb = '<tbody>'; for(let w=0; w<5; w++){ tb += `<tr><td style="font-size:10px; font-weight:700; color:#94a3b8; text-align:right; padding-right:6px;">${w+1}주</td>`; for(let mo=0; mo<12; mo++){ if(!hasMo[mo]) tb += `<td><div class="hm-cell" style="background:transparent;"></div></td>`; else if(mat[w][mo]<=0) tb += `<td><div class="hm-cell" style="background:#F0F5FA;"></div></td>`; else tb += `<td><div class="hm-cell" style="background:${hexRgba(color, 0.2 + (mat[w][mo]/maxV)*0.8)}; color:${(mat[w][mo]/maxV)>0.4?'#fff':'#1e293b'};" title="${formatHour(mat[w][mo])}h">${formatHour(mat[w][mo])}</div></td>`; } tb += '</tr>'; }
-  document.getElementById('dpHeatTable').innerHTML = th + tb + '</tbody>';
+
+/* ═══════════════════════════════════════
+   3. Personal KPI 탭
+═══════════════════════════════════════ */
+function renderEvalTab(){
+  const isAll=(GLOBAL_MEMBER==='ALL'); const qs=filteredEvalQs();
+  renderEvalProfile(GLOBAL_MEMBER,qs,isAll); renderEvalTrendChart(GLOBAL_MEMBER,qs,isAll); renderEvalDonut(GLOBAL_MEMBER,isAll);
+  renderHighVsAvg(GLOBAL_MEMBER,qs,isAll); renderEvalRadarDual(GLOBAL_MEMBER,qs,isAll); renderEvalTrendTable(GLOBAL_MEMBER,qs,isAll);
+  drawOvertimeWithList('kpiOvertimeCardWrap',isAll?filtered():filtered().filter(r=>r.name===GLOBAL_MEMBER));
 }
-function drawOvertimeWithList(wrapId, d) {
-  const wrap = document.getElementById(wrapId); if(!wrap) return; const dateMap = {}; d.forEach(r => dateMap[r.date] = (dateMap[r.date] || 0) + r.min); const otData = []; for(let dt in dateMap) if(dateMap[dt] >= 540) otData.push({ date:dt, min:dateMap[dt] }); otData.sort((a,b) => a.date.localeCompare(b.date)); let counts = [0, 0, 0, 0]; otData.forEach(r => { if(r.min<600) counts[0]++; else if(r.min<660) counts[1]++; else if(r.min<720) counts[2]++; else counts[3]++; });
-  wrap.innerHTML = `<div class="card-section-title">일별 초과근무 상세 <span style="font-size:11px; color:#64748b; font-weight:500; margin-left:8px;">(클릭 필터)</span></div><div style="height:120px; position:relative;"><canvas id="${wrapId}_canvas"></canvas></div><div class="scroll-list" id="${wrapId}_list" style="flex:1; overflow-y:auto; margin-top:10px; border-top:1px solid rgba(226,232,240,0.6); padding-top:10px;"></div>`;
-  const renderList = (idx) => { let fd = otData; if(idx===0) fd = otData.filter(r=>r.min<600); else if(idx===1) fd = otData.filter(r=>r.min>=600&&r.min<660); else if(idx===2) fd = otData.filter(r=>r.min>=660&&r.min<720); else if(idx===3) fd = otData.filter(r=>r.min>=720); document.getElementById(`${wrapId}_list`).innerHTML = fd.length ? fd.map(r => `<div style="display:flex; justify-content:space-between; padding:8px 10px; background:${r.min>=720?'#fef2f2':'transparent'}; border-bottom:1px solid rgba(226,232,240,0.3); margin-bottom:4px; font-size:12px;"><span style="font-weight:800; color:#334155;">${r.date}</span><span style="color:${r.min>=720?'#dc2626':'#00428E'}; font-weight:900;">${formatHour(r.min)}h</span></div>`).join('') : '<div style="text-align:center; color:#94a3b8; padding:20px; font-size:12px;">데이터 없음</div>'; }; renderList(-1); // 오타 수정 `...`)
-  destroyChart(wrapId); CH[wrapId] = new Chart(document.getElementById(`${wrapId}_canvas`).getContext('2d'), { type: 'bar', data: { labels: ['9~10h', '10~11h', '11~12h', '12h 이상'], datasets: [{ data: counts, backgroundColor: OT_COLORS, borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'right', font:{weight:'bold'}, formatter: v=>v>0?v+'일':'' } }, scales: { x: { display: false, grace:'15%' }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } } }, onClick: (e, els) => renderList(els.length ? els[0].index : -1) } }); // 오타 수정 `...`)
+
+function renderEvalProfile(name,qs,isAll){
+  const card=document.getElementById('kpiProfileCard');
+  const fAvgs=RADAR_LABELS.map((lbl,i)=>{const vals=qs.map(q=>{const evs=isAll?EVAL_DATA.filter(e=>e.q===q):EVAL_DATA.filter(e=>e.q===q&&e.name===name);return evs.length?evs.reduce((a,x)=>a+x.vals[i],0)/evs.length:null;}).filter(v=>v!==null);return{lbl,avg:vals.length?parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)):0,idx:i};});
+  const oAvg=fAvgs.length?parseFloat((fAvgs.reduce((s,x)=>s+x.avg,0)/fAvgs.length).toFixed(1)):0;
+  const gd=oAvg>3.5?{g:'S',c:'#f59e0b',b:'#fef9ee'}:oAvg>3.2?{g:'A+',c:'#22c55e',b:'#f0fdf4'}:oAvg>2.8?{g:'A',c:'#00428E',b:'#F0F5FA'}:oAvg>=2.5?{g:'B',c:'#0ea5e9',b:'#eff6ff'}:{g:'C',c:'#f97316',b:'#fff7ed'};
+  const pColor=isAll?'#00428E':MC[name];
+  card.innerHTML=`<div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor};"></div><div style="text-align:center;padding-top:10px;margin-bottom:20px;"><div style="margin:0 auto 15px auto;width:72px;height:72px;">${getAvatar(name,72,24)}</div><div style="font-size:24px;font-weight:900;color:#1e293b;">${isAll?'전체 팀원 평균':name}</div></div><div style="text-align:center;margin-bottom:25px;"><div style="font-size:48px;font-weight:900;color:${pColor};line-height:1;">${oAvg.toFixed(1)}</div><div style="font-size:12px;color:#64748b;margin-top:8px;">종합 역량 점수 / 5.0점</div><span style="display:inline-block;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:800;margin-top:10px;background:${gd.b};color:${gd.c};">평균 등급 ${gd.g}</span></div><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">${fAvgs.map((item,i)=>`<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:#475569;width:60px;">${item.lbl}</span><div style="flex:1;height:8px;background:#F0F5FA;border-radius:6px;overflow:hidden;"><div style="height:100%;background:${RADAR_COLORS_ARR[i]};width:${item.avg/5*100}%"></div></div><span style="font-size:12px;font-weight:900;color:${item.avg>=3.5?'#00428E':'#ef4444'};">${item.avg.toFixed(1)}</span></div>`).join('')}</div><div style="font-size:11px;font-weight:800;color:#64748b;margin:15px 0 8px 0;display:flex;align-items:center;gap:4px;">${I_TROP} 상위 3 역량</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">${[...fAvgs].sort((a,b)=>b.avg-a.avg).slice(0,3).map((item,rank)=>`<div style="background:${['#fef9ee','#f8fafc','#fdf6f0'][rank]};border-radius:12px;padding:12px 8px;text-align:center;"><div style="font-size:18px;">${['🥇','🥈','🥉'][rank]}</div><div style="font-size:12px;font-weight:800;margin-top:4px;">${item.lbl}</div></div>`).join('')}</div>`;
 }
-/* =========================================================
-   3. [Personal KPI] 탭
-========================================================= */
-function renderEvalTab() {
-  const isAll = (GLOBAL_MEMBER === 'ALL'); const qs = filteredEvalQs();
-  renderEvalProfile(GLOBAL_MEMBER, qs, isAll); renderEvalTrendChart(GLOBAL_MEMBER, qs, isAll); renderEvalDonut(GLOBAL_MEMBER, isAll);
-  renderHighVsAvg(GLOBAL_MEMBER, qs, isAll); renderEvalRadarDual(GLOBAL_MEMBER, qs, isAll); renderEvalTrendTable(GLOBAL_MEMBER, qs, isAll);
-  drawOvertimeWithList('kpiOvertimeCardWrap', isAll ? filtered() : filtered().filter(r => r.name === GLOBAL_MEMBER));
+
+function renderEvalTrendChart(name,qs,isAll){
+  destroyChart('evalTrendChart');
+  const dss=RADAR_LABELS.map((lbl,i)=>({label:lbl,data:qs.map(q=>{const evs=isAll?EVAL_DATA.filter(e=>e.q===q):EVAL_DATA.filter(e=>e.q===q&&e.name===name);return evs.length?evs.reduce((a,x)=>a+x.vals[i],0)/evs.length:0;}),backgroundColor:RADAR_COLORS_ARR[i],borderRadius:4,barPercentage:0.6}));
+  const schData=qs.map(q=>SCHEDULE_DATA.some(s=>getQ(s.date)===q)?5.2:null);
+  dss.push({type:'line',label:'주요일정',data:schData,yAxisID:'ySch',showLine:false,pointStyle:'circle',pointBackgroundColor:'#ef4444',pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:6,pointHoverRadius:8});
+  document.getElementById('evalTrendLegend').innerHTML=RADAR_LABELS.map((l,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${RADAR_COLORS_ARR[i]}"></div>${l}</div>`).join('');
+  CH.evalTrendChart=new Chart(document.getElementById('evalTrendChart').getContext('2d'),{type:'bar',data:{labels:qs,datasets:dss},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#64748b',formatter:(v,ctx)=>ctx.dataset.label==='주요일정'?'':(v>0?v.toFixed(1):'')}},scales:{x:{grid:{display:false}},y:{min:0,max:5,grid:{color:'rgba(226,232,240,0.5)'},ticks:{stepSize:1}},ySch:{display:false,min:0,max:5.5,position:'right'}}}});
 }
-function renderEvalProfile(name, qs, isAll) {
-  const card = document.getElementById('kpiProfileCard'); const allQs = [...new Set(EVAL_DATA.map(d=>d.q))];
-  const fAvgs = RADAR_LABELS.map((lbl, i) => { const vals = qs.map(q => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===q) : EVAL_DATA.filter(e=>e.q===q&&e.name===name); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : null; }).filter(v=>v!==null); return { lbl, avg: vals.length?parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)):0, idx: i }; });
-  const oAvg = fAvgs.length ? parseFloat((fAvgs.reduce((s,x)=>s+x.avg,0)/fAvgs.length).toFixed(1)) : 0;
-  const gd = oAvg>3.5 ? {g:'S',c:'#f59e0b',b:'#fef9ee'} : oAvg>3.2 ? {g:'A+',c:'#22c55e',b:'#f0fdf4'} : oAvg>2.8 ? {g:'A',c:'#00428E',b:'#F0F5FA'} : oAvg>=2.5 ? {g:'B',c:'#0ea5e9',b:'#eff6ff'} : {g:'C',c:'#f97316',b:'#fff7ed'};
-  const pColor = isAll ? '#00428E' : MC[name];
-  card.innerHTML = `<div style="position:absolute;top:0;left:0;right:0;height:8px;background:${pColor};"></div><div style="text-align:center; padding-top:10px; margin-bottom:20px;"><div style="margin:0 auto 15px auto; width:72px; height:72px;">${getAvatar(name, 72, 24)}</div><div style="font-size:24px; font-weight:900; color:#1e293b;">${isAll ? '전체 팀원 평균' : name}</div></div><div style="text-align:center; margin-bottom:25px;"><div style="font-size:48px; font-weight:900; color:${pColor}; line-height:1;">${oAvg.toFixed(1)}</div><div style="font-size:12px; color:#64748b; margin-top:8px;">종합 역량 점수 / 5.0점</div><span style="display:inline-block; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:800; margin-top:10px; background:${gd.b}; color:${gd.c};">평균 등급 ${gd.g}</span></div><div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">${fAvgs.map((item,i)=>`<div style="display:flex; align-items:center; gap:10px;"><span style="font-size:12px; font-weight:700; color:#475569; width:60px;">${item.lbl}</span><div style="flex:1; height:8px; background:#F0F5FA; border-radius:6px; overflow:hidden;"><div style="height:100%; background:${RADAR_COLORS_ARR[i]}; width:${item.avg/5*100}%"></div></div><span style="font-size:12px; font-weight:900; color:${item.avg>=3.5?'#00428E':'#ef4444'};">${item.avg.toFixed(1)}</span></div>`).join('')}</div><div style="font-size:11px;font-weight:800;color:#64748b;margin:15px 0 8px 0;display:flex;align-items:center;gap:4px;">${I_TROP} 상위 3 역량</div><div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">${[...fAvgs].sort((a,b)=>b.avg-a.avg).slice(0,3).map((item,rank)=>`<div style="background:${['#fef9ee','#f8fafc','#fdf6f0'][rank]}; border-radius:12px; padding:12px 8px; text-align:center;"><div style="font-size:18px;">${['🥇','🥈','🥉'][rank]}</div><div style="font-size:12px; font-weight:800; margin-top:4px;">${item.lbl}</div></div>`).join('')}</div>`; // 오타 수정 (card.innerHTML =)
+
+function renderEvalDonut(name,isAll){
+  destroyChart('evalDonutChart');
+  const all=isAll?RAW:RAW.filter(r=>r.name===name); const subMap=grpMin(all,'sub'); const top=Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  document.getElementById('evalDonutCenter').innerText=formatHour(Object.values(subMap).reduce((a,b)=>a+b,0))+'h';
+  document.getElementById('evalTop2Row').innerHTML=top.map(([k,v],i)=>`<div style="background:#F0F5FA;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:16px;margin-bottom:4px;">${['🥇','🥈','🥉'][i]}</div><div style="font-size:11px;font-weight:700;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k}</div></div>`).join('');
+  CH.evalDonutChart=new Chart(document.getElementById('evalDonutChart').getContext('2d'),{type:'doughnut',data:{labels:top.map(x=>x[0]),datasets:[{data:top.map(x=>x[1]),backgroundColor:SUB_PAL,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},datalabels:{display:false}}}});
 }
-function renderEvalTrendChart(name, qs, isAll) {
-  destroyChart('evalTrendChart'); const dss = RADAR_LABELS.map((lbl, i) => ({ label: lbl, data: qs.map(q => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===q) : EVAL_DATA.filter(e=>e.q===q&&e.name===name); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : 0; }), backgroundColor: RADAR_COLORS_ARR[i], borderRadius: 4, barPercentage: 0.6 })); const schData = qs.map(q => SCHEDULE_DATA.some(s => getQ(s.date) === q) ? 5.2 : null); dss.push({ type: 'line', label: '주요일정', data: schData, yAxisID: 'ySch', showLine: false, pointStyle: 'circle', pointBackgroundColor: '#ef4444', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6, pointHoverRadius: 8 });
-  document.getElementById('evalTrendLegend').innerHTML = RADAR_LABELS.map((l, i) => `<div class="legend-item"><div class="legend-dot" style="background:${RADAR_COLORS_ARR[i]}"></div>${l}</div>`).join('');
-  CH.evalTrendChart = new Chart(document.getElementById('evalTrendChart').getContext('2d'), { type: 'bar', data: { labels: qs, datasets: dss }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'end', font:{size:10, weight:'bold'}, color:'#64748b', formatter: (v, ctx) => ctx.dataset.label==='주요일정' ? '' : (v>0 ? v.toFixed(1) : '') } }, scales: { x: { grid: { display: false } }, y: { min: 0, max: 5, grid: { color: 'rgba(226,232,240,0.5)' }, ticks:{stepSize:1} }, ySch: { display: false, min: 0, max: 5.5, position: 'right' } } } });
+
+function renderHighVsAvg(name,qs,isAll){
+  destroyChart('chartHighQ'); destroyChart('chartAvgQ');
+  const wrap=document.getElementById('highVsAvgChartsWrap'); const lg=document.getElementById('highVsAvgLegend');
+  if(qs.length<2){wrap.innerHTML=`<div style="text-align:center;padding:50px;color:#94a3b8;font-weight:700;width:100%;">비교를 위한 분기 데이터 부족</div>`;lg.innerHTML='';return;}
+  let qScores=qs.map(q=>{const evs=isAll?EVAL_DATA.filter(e=>e.q===q):EVAL_DATA.filter(e=>e.q===q&&e.name===name);return{q,avg:evs.length?evs.reduce((a,x)=>a+x.vals.reduce((c,d)=>c+d,0)/5,0)/evs.length:0};}).sort((a,b)=>b.avg-a.avg);
+  const top2Qs=qScores.slice(0,2).map(x=>x.q); const restQs=qScores.slice(2).map(x=>x.q);
+  const allData=isAll?RAW:RAW.filter(r=>r.name===name); const top2Map=grpMin(allData.filter(r=>top2Qs.includes(getQ(r.date))),'sub'); const restMap=grpMin(allData.filter(r=>restQs.includes(getQ(r.date))),'sub');
+  const topSubs=Object.entries({...top2Map,...restMap}).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x[0]);
+  wrap.innerHTML=`<div style="flex:1;position:relative;background:rgba(240,245,250,0.8);border-radius:12px;padding:15px;"><div style="text-align:center;font-size:13px;font-weight:800;color:#00428E;margin-bottom:10px;">🏆 TOP 2</div><div style="height:140px;position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1;position:relative;background:rgba(241,245,249,0.8);border-radius:12px;padding:15px;"><div style="text-align:center;font-size:13px;font-weight:800;color:#64748b;margin-bottom:10px;">📊 평균 분기</div><div style="height:140px;position:relative;"><canvas id="chartAvgQ"></canvas></div></div>`;
+  const drawDoughnut=(id,map)=>new Chart(document.getElementById(id).getContext('2d'),{type:'doughnut',data:{labels:topSubs,datasets:[{data:topSubs.map(s=>map[s]||0),backgroundColor:SUB_PAL.slice(0,5),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'bold'},formatter:(v,ctx)=>{const sum=ctx.dataset.data.reduce((a,b)=>a+b,0);return sum>0&&Math.round(v/sum*100)>8?Math.round(v/sum*100)+'%':'';}}}}});
+  CH.chartHighQ=drawDoughnut('chartHighQ',top2Map); CH.chartAvgQ=drawDoughnut('chartAvgQ',restMap);
+  lg.innerHTML=topSubs.map((s,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i]}"></div>${s}</div>`).join('');
 }
-function renderEvalDonut(name, isAll) {
-   destroyChart('evalDonutChart'); const all = isAll ? RAW : RAW.filter(r => r.name === name); const subMap = grpMin(all, 'sub'); const top = Object.entries(subMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
-   document.getElementById('evalDonutCenter').innerText = formatHour(Object.values(subMap).reduce((a,b)=>a+b,0)) + 'h'; document.getElementById('evalTop2Row').innerHTML = top.map(([k,v], i) => `<div style="background:#F0F5FA; border-radius:8px; padding:10px; text-align:center;"><div style="font-size:16px; margin-bottom:4px;">${['🥇','🥈','🥉'][i]}</div><div style="font-size:11px; font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${k}</div></div>`).join('');
-   CH.evalDonutChart = new Chart(document.getElementById('evalDonutChart').getContext('2d'), { type: 'doughnut', data: { labels: top.map(x=>x[0]), datasets: [{ data: top.map(x=>x[1]), backgroundColor: SUB_PAL, borderWidth: 2, borderColor:'#fff' }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false }, datalabels: { display: false } } } });
+
+function renderEvalRadarDual(name,qs,isAll){
+  destroyChart('evalRadarYear'); destroyChart('evalRadarQtr');
+  const allQs=[...new Set(EVAL_DATA.map(d=>d.q))];
+  const yearAvgs=RADAR_LABELS.map((_,i)=>{const vals=allQs.map(q=>{const evs=EVAL_DATA.filter(e=>e.q===q);return evs.length?evs.reduce((a,x)=>a+x.vals[i],0)/evs.length:null;}).filter(v=>v!==null);return vals.length>0?parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)):0;});
+  const latestQ=qs[qs.length-1]||''; const qtrVals=RADAR_LABELS.map((_,i)=>{const evs=isAll?EVAL_DATA.filter(e=>e.q===latestQ):EVAL_DATA.filter(e=>e.q===latestQ&&e.name===name);return evs.length?evs.reduce((a,x)=>a+x.vals[i],0)/evs.length:0;});
+  document.getElementById('evalRadarYearScore').innerHTML=`<span style="font-size:20px;font-weight:900;color:#334155;">${yearAvgs.length?(yearAvgs.reduce((a,b)=>a+b,0)/5).toFixed(1):0}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`;
+  document.getElementById('evalRadarQtrScore').innerHTML=`<span style="font-size:20px;font-weight:900;color:#00428E;">${qtrVals.length?(qtrVals.reduce((a,b)=>a+b,0)/5).toFixed(1):0}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`;
+  const radarOpts=(data,color)=>({type:'radar',data:{labels:RADAR_LABELS,datasets:[{data,backgroundColor:hexRgba(color,0.2),borderColor:color,borderWidth:2.5,pointBackgroundColor:color,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:10},scales:{r:{min:0,max:5,ticks:{display:false,stepSize:1},pointLabels:{font:{size:11,weight:'bold'},color:'#475569'},grid:{color:'rgba(226,232,240,0.5)'},angleLines:{color:'rgba(226,232,240,0.5)'}}},plugins:{legend:{display:false},datalabels:{display:true,color:color,font:{weight:'900'},formatter:v=>v>0?v.toFixed(1):'',anchor:'end',align:'end'}}}});
+  CH.evalRadarYear=new Chart(document.getElementById('evalRadarYear').getContext('2d'),radarOpts(yearAvgs,'#94a3b8'));
+  CH.evalRadarQtr=new Chart(document.getElementById('evalRadarQtr').getContext('2d'),radarOpts(qtrVals,'#00428E'));
 }
-function renderHighVsAvg(name, qs, isAll) {
-    destroyChart('chartHighQ'); destroyChart('chartAvgQ'); const wrap = document.getElementById('highVsAvgChartsWrap'); const lg = document.getElementById('highVsAvgLegend');
-    if(qs.length < 2) { wrap.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; font-weight:700; width:100%;">비교를 위한 분기 데이터 부족</div>`; lg.innerHTML=''; return; }
-    let qScores = qs.map(q => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===q) : EVAL_DATA.filter(e=>e.q===q&&e.name===name); return { q, avg: evs.length ? evs.reduce((a,x)=>a+x.vals.reduce((c,d)=>c+d,0)/5,0)/evs.length : 0 }; }).sort((a,b) => b.avg - a.avg); const top2Qs = qScores.slice(0, 2).map(x=>x.q); const restQs = qScores.slice(2).map(x=>x.q); const allData = isAll ? RAW : RAW.filter(r => r.name === name); const top2Map = grpMin(allData.filter(r => top2Qs.includes(getQ(r.date))), 'sub'); const restMap = grpMin(allData.filter(r => restQs.includes(getQ(r.date))), 'sub'); const topSubs = Object.entries({...top2Map, ...restMap}).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x[0]);
-    wrap.innerHTML = `<div style="flex:1; position:relative; background:rgba(240,245,250,0.8); border-radius:12px; padding:15px;"><div style="text-align:center; font-size:13px; font-weight:800; color:#00428E; margin-bottom:10px;">🏆 TOP 2</div><div style="height: 140px; position:relative;"><canvas id="chartHighQ"></canvas></div></div><div style="flex:1; position:relative; background:rgba(241,245,249,0.8); border-radius:12px; padding:15px;"><div style="text-align:center; font-size:13px; font-weight:800; color:#64748b; margin-bottom:10px;">📊 평균 분기</div><div style="height: 140px; position:relative;"><canvas id="chartAvgQ"></canvas></div></div>`;
-    const drawDoughnut = (id, map) => new Chart(document.getElementById(id).getContext('2d'), { type: 'doughnut', data: { labels: topSubs, datasets: [{ data: topSubs.map(s=>map[s]||0), backgroundColor: SUB_PAL.slice(0,5), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: { legend: { display: false }, datalabels: { display: true, color: '#1e293b', font: { size: 10, weight: 'bold' }, formatter: (v, ctx) => { const sum = ctx.dataset.data.reduce((a,b)=>a+b,0); return sum>0&&Math.round(v/sum*100)>8 ? Math.round(v/sum*100)+'%' : ''; } } } } });
-    CH.chartHighQ = drawDoughnut('chartHighQ', top2Map); CH.chartAvgQ = drawDoughnut('chartAvgQ', restMap); lg.innerHTML = topSubs.map((s, i) => `<div class="legend-item"><div class="legend-dot" style="background:${SUB_PAL[i]}"></div>${s}</div>`).join('');
+
+function renderEvalTrendTable(name,qs,isAll){
+  const rQs=[...qs].reverse();
+  let html=`<table style="width:100%;border-collapse:collapse;font-size:12px;text-align:center;"><thead><tr style="background:#F0F5FA;color:#00428E;font-weight:900;"><th style="padding:10px;border-radius:8px 0 0 8px;">분기</th>`+RADAR_LABELS.map(l=>`<th style="padding:10px;">${l}</th>`).join('')+`<th style="padding:10px;border-radius:0 8px 8px 0;">평균</th></tr></thead><tbody>`;
+  rQs.forEach((q,idx)=>{
+    const getVals=(qtr)=>{const evs=isAll?EVAL_DATA.filter(e=>e.q===qtr):EVAL_DATA.filter(e=>e.q===qtr&&e.name===name);return evs.length?RADAR_LABELS.map((_,i)=>evs.reduce((a,x)=>a+x.vals[i],0)/evs.length):null;};
+    const curVals=getVals(q); const prevVals=rQs[idx+1]?getVals(rQs[idx+1]):null;
+    html+=`<tr style="border-bottom:1px solid rgba(226,232,240,0.6);${idx===0?'background:#f8fafc;':''}"><td style="padding:12px 10px;font-weight:800;color:${idx===0?'#00428E':'#64748b'};">${q}</td>`;
+    if(!curVals){html+=`<td colspan="6" style="padding:12px;color:#94a3b8;">데이터 없음</td></tr>`;return;}
+    const avg=curVals.reduce((a,b)=>a+b,0)/5;
+    curVals.forEach((v,i)=>{let diffStr='';if(idx===0&&prevVals){const diff=v-prevVals[i];if(diff>0)diffStr=`<span style="color:#22c55e;font-size:10px;display:block;">▲${diff.toFixed(1)}</span>`;else if(diff<0)diffStr=`<span style="color:#ef4444;font-size:10px;display:block;">▼${Math.abs(diff).toFixed(1)}</span>`;}html+=`<td style="padding:12px 10px;"><div style="font-weight:800;color:#334155;">${v.toFixed(1)}</div>${diffStr}</td>`;});
+    let aDiff='';if(idx===0&&prevVals){const diff=avg-(prevVals.reduce((a,b)=>a+b,0)/5);if(diff>0)aDiff=`<span style="color:#22c55e;font-size:10px;display:block;">▲${diff.toFixed(1)}</span>`;else if(diff<0)aDiff=`<span style="color:#ef4444;font-size:10px;display:block;">▼${Math.abs(diff).toFixed(1)}</span>`;}
+    html+=`<td style="padding:12px 10px;"><div style="font-weight:900;color:#00428E;font-size:14px;">${avg.toFixed(1)}</div>${aDiff}</td></tr>`;
+  });
+  document.getElementById('evalTrendTableWrap').innerHTML=html+`</tbody></table>`;
 }
-function renderEvalRadarDual(name, qs, isAll) {
-    destroyChart('evalRadarYear'); destroyChart('evalRadarQtr'); const allQs = [...new Set(EVAL_DATA.map(d=>d.q))]; const yearAvgs = RADAR_LABELS.map((_,i) => { const vals = allQs.map(q => { const evs=EVAL_DATA.filter(e=>e.q===q); return evs.length?evs.reduce((a,x)=>a+x.vals[i],0)/evs.length:null; }).filter(v=>v!==null); return vals.length>0 ? parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) : 0; }); const latestQ = qs[qs.length-1] || ''; const qtrVals = RADAR_LABELS.map((_,i) => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===latestQ) : EVAL_DATA.filter(e=>e.q===latestQ&&e.name===name); return evs.length ? evs.reduce((a,x)=>a+x.vals[i],0)/evs.length : 0; });
-    document.getElementById('evalRadarYearScore').innerHTML = `<span style="font-size:20px;font-weight:900;color:#334155;">${yearAvgs.length?(yearAvgs.reduce((a,b)=>a+b,0)/5).toFixed(1):0}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`; document.getElementById('evalRadarQtrScore').innerHTML = `<span style="font-size:20px;font-weight:900;color:#00428E;">${qtrVals.length?(qtrVals.reduce((a,b)=>a+b,0)/5).toFixed(1):0}</span><span style="font-size:12px;color:#94a3b8;"> / 5.0</span>`;
-    const radarOpts = (data, color) => ({ type:'radar', data:{labels:RADAR_LABELS, datasets:[{data, backgroundColor:hexRgba(color,0.2), borderColor:color, borderWidth:2.5, pointBackgroundColor:color, pointRadius:4}]}, options:{ responsive:true, maintainAspectRatio:false, layout:{padding:10}, scales:{ r:{ min:0, max:5, ticks:{display:false, stepSize:1}, pointLabels:{font:{size:11, weight:'bold'}, color:'#475569'}, grid:{color:'rgba(226,232,240,0.5)'}, angleLines:{color:'rgba(226,232,240,0.5)'} } }, plugins:{ legend:{display:false}, datalabels:{display:true, color:color, font:{weight:'900'}, formatter:v=>v>0?v.toFixed(1):'', anchor:'end', align:'end'} } } });
-    CH.evalRadarYear = new Chart(document.getElementById('evalRadarYear').getContext('2d'), radarOpts(yearAvgs, '#94a3b8')); CH.evalRadarQtr = new Chart(document.getElementById('evalRadarQtr').getContext('2d'), radarOpts(qtrVals, '#00428E'));
-}
-function renderEvalTrendTable(name, qs, isAll) {
-    const rQs = [...qs].reverse(); let html = `<table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center;"><thead><tr style="background:#F0F5FA; color:#00428E; font-weight:900;"><th style="padding:10px; border-radius:8px 0 0 8px;">분기</th>` + RADAR_LABELS.map(l => `<th style="padding:10px;">${l}</th>`).join('') + `<th style="padding:10px; border-radius:0 8px 8px 0;">평균</th></tr></thead><tbody>`; // 오타 수정 (l =>)
-    rQs.forEach((q, idx) => {
-        const getVals = (qtr) => { const evs = isAll ? EVAL_DATA.filter(e=>e.q===qtr) : EVAL_DATA.filter(e=>e.q===qtr&&e.name===name); return evs.length ? RADAR_LABELS.map((_,i)=>evs.reduce((a,x)=>a+x.vals[i],0)/evs.length) : null; };
-        const curVals = getVals(q); const prevVals = rQs[idx+1] ? getVals(rQs[idx+1]) : null; html += `<tr style="border-bottom:1px solid rgba(226,232,240,0.6); ${idx===0?'background:#f8fafc;':''}"><td style="padding:12px 10px; font-weight:800; color:${idx===0?'#00428E':'#64748b'};">${q}</td>`;
-        if(!curVals) { html += `<td colspan="6" style="padding:12px; color:#94a3b8;">데이터 없음</td></tr>`; return; }
-        const avg = curVals.reduce((a,b)=>a+b,0)/5;
-        curVals.forEach((v, i) => { let diffStr = ''; if(idx===0 && prevVals) { const diff = v - prevVals[i]; if(diff>0) diffStr = `<span style="color:#22c55e; font-size:10px; display:block;">▲${diff.toFixed(1)}</span>`; else if(diff<0) diffStr = `<span style="color:#ef4444; font-size:10px; display:block;">▼${Math.abs(diff).toFixed(1)}</span>`; } html += `<td style="padding:12px 10px;"><div style="font-weight:800; color:#334155;">${v.toFixed(1)}</div>${diffStr}</td>`; }); // 오타 수정 (diffStr =)
-        let aDiff = ''; if(idx===0 && prevVals) { const diff = avg - (prevVals.reduce((a,b)=>a+b,0)/5); if(diff>0) aDiff = `<span style="color:#22c55e; font-size:10px; display:block;">▲${diff.toFixed(1)}</span>`; else if(diff<0) aDiff = `<span style="color:#ef4444; font-size:10px; display:block;">▼${Math.abs(diff).toFixed(1)}</span>`; } html += `<td style="padding:12px 10px;"><div style="font-weight:900; color:#00428E; font-size:14px;">${avg.toFixed(1)}</div>${aDiff}</td></tr>`; // 오타 수정 (aDiff =)
-    });
-    document.getElementById('evalTrendTableWrap').innerHTML = html + `</tbody></table>`;
-}
+
 window.addEventListener('DOMContentLoaded', loadDataFromSheets);
 </script>
 </body>
