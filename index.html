@@ -8,41 +8,65 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
-/* 기본 설정: 폰트 Pretendard 통일, body 상단 패딩 증가(75px 탑바에 맞춤) */
+/* 기본 설정: 폰트 통일 및 상단 패딩 */
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Pretendard Variable', Pretendard, sans-serif !important; }
 body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px; font-weight: 600; color: #334155; background-color: #f4f7f9; }
 
-/* 배경 구슬 애니메이션 (먼지 제거, 작은 구슬 빠르게 여러 개) */
+/* ✨ 배경 구슬 애니메이션 (빠른 속도, 작고 많은 구슬) */
 .background-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; background-color: #f4f7f9; }
-.orb { position: absolute; border-radius: 50%; filter: blur(30px); opacity: 0.4; will-change: transform; }
-.orb-1 { width: 120px; height: 120px; background: rgba(59, 130, 246, 0.6); top: 15%; left: 10%; animation: floatS 8s infinite alternate ease-in-out; }
-.orb-2 { width: 90px; height: 90px; background: rgba(99, 102, 241, 0.5); top: 35%; right: 15%; animation: floatM 10s infinite alternate-reverse ease-in-out; }
-.orb-3 { width: 150px; height: 150px; background: rgba(14, 165, 233, 0.6); bottom: 15%; left: 20%; animation: floatL 12s infinite alternate ease-in-out; }
-.orb-4 { width: 110px; height: 110px; background: rgba(139, 92, 246, 0.5); top: 5%; right: 30%; animation: floatS 9s infinite alternate-reverse ease-in-out; }
-.orb-5 { width: 130px; height: 130px; background: rgba(56, 189, 248, 0.6); bottom: 25%; right: 25%; animation: floatM 11s infinite alternate ease-in-out; }
-.orb-6 { width: 80px; height: 80px; background: rgba(59, 130, 246, 0.5); top: 50%; left: 30%; animation: floatL 13s infinite alternate-reverse ease-in-out; }
-.orb-7 { width: 140px; height: 140px; background: rgba(14, 165, 233, 0.5); bottom: 5%; right: 40%; animation: floatS 7s infinite alternate ease-in-out; }
-.orb-8 { width: 100px; height: 100px; background: rgba(99, 102, 241, 0.5); top: 25%; left: 45%; animation: floatM 9s infinite alternate-reverse ease-in-out; }
+.orb { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.45; will-change: transform; }
+.orb-1 { width: 140px; height: 140px; background: rgba(59, 130, 246, 0.7); top: 10%; left: 10%; animation: floatS 6s infinite alternate ease-in-out; }
+.orb-2 { width: 120px; height: 120px; background: rgba(99, 102, 241, 0.6); top: 30%; right: 20%; animation: floatM 8s infinite alternate-reverse ease-in-out; }
+.orb-3 { width: 180px; height: 180px; background: rgba(14, 165, 233, 0.7); bottom: 15%; left: 15%; animation: floatL 9s infinite alternate ease-in-out; }
+.orb-4 { width: 100px; height: 100px; background: rgba(139, 92, 246, 0.6); top: 5%; right: 35%; animation: floatS 7s infinite alternate-reverse ease-in-out; }
+.orb-5 { width: 160px; height: 160px; background: rgba(56, 189, 248, 0.7); bottom: 30%; right: 10%; animation: floatM 10s infinite alternate ease-in-out; }
+.orb-6 { width: 110px; height: 110px; background: rgba(59, 130, 246, 0.6); top: 60%; left: 35%; animation: floatL 8s infinite alternate-reverse ease-in-out; }
+.orb-7 { width: 150px; height: 150px; background: rgba(14, 165, 233, 0.6); bottom: 5%; right: 45%; animation: floatS 6s infinite alternate ease-in-out; }
+.orb-8 { width: 130px; height: 130px; background: rgba(99, 102, 241, 0.5); top: 20%; left: 50%; animation: floatM 9s infinite alternate-reverse ease-in-out; }
+.orb-9 { width: 90px; height: 90px; background: rgba(56, 189, 248, 0.7); top: 40%; left: 5%; animation: floatS 5s infinite alternate ease-in-out; }
+.orb-10{ width: 140px; height: 140px; background: rgba(139, 92, 246, 0.5); bottom: 40%; right: 30%; animation: floatL 7s infinite alternate-reverse ease-in-out; }
 
-@keyframes floatS { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(60px, 80px, 0) scale(1.1); } }
-@keyframes floatM { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(-70px, 50px, 0) scale(0.9); } }
-@keyframes floatL { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(80px, -60px, 0) scale(1.15); } }
+@keyframes floatS { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(50px, 60px, 0) scale(1.1); } }
+@keyframes floatM { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(-60px, 40px, 0) scale(0.9); } }
+@keyframes floatL { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(70px, -50px, 0) scale(1.15); } }
 
-/* 로딩 오버레이 */
-#loadingOverlay { position:fixed; inset:0; background:linear-gradient(135deg,#00428E,#4A90E2); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; color:#fff; transition:opacity .5s ease; }
-.ov-sub { font-size:13px; opacity:.8; margin-bottom:28px; }
-.ov-spinner { width:44px; height:44px; border:4px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:16px; }
+/* ✨ 로딩 오버레이 (글라스모피즘 & 레이아웃 고정) */
+#loadingOverlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0, 66, 142, 0.7); /* 투명도 있는 블루톤 */
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); /* 글라스모피즘 블러 */
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; transition: opacity 0.5s ease;
+}
+/* 로고 박스 (위치 고정용) */
+.loading-logo-box {
+    background: #fff; padding: 20px 35px; border-radius: 20px;
+    display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+/* 로딩 상태 텍스트, 스피너, 바를 담는 고정 높이 컨테이너 */
+.loading-status-area {
+    height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+}
+.ov-sub { font-size:13px; opacity:.9; margin-bottom:20px; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+.ov-spinner { width:40px; height:40px; border:4px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:10px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.ov-progress { width:260px; height:5px; background:rgba(255,255,255,.2); border-radius:10px; margin-top:12px; }
+.ov-progress { width:260px; height:5px; background:rgba(255,255,255,.2); border-radius:10px; margin-top:8px; }
 .ov-progress-fill { height:100%; background:#fff; border-radius:10px; transition:width .4s ease; width:0%; }
-/* ✨ 로딩 버튼 레이아웃 고정 (화면 흔들림 방지) */
-.ov-enter-btn { background:#fff; color:#00428E; border:none; border-radius:12px; padding:14px 40px; font-size:16px; font-weight:800; cursor:pointer; margin-top:20px; display:block; visibility: hidden; opacity: 0; transition: opacity 0.5s ease; }
-.ov-enter-btn.show { visibility: visible; opacity: 1; }
+/* 버튼을 이 컨테이너 안에 고정 (visibility로만 토글) */
+.loading-btn-area {
+    height: 60px; display: flex; align-items: center; justify-content: center;
+}
+.ov-enter-btn { 
+    background:#fff; color:#00428E; border:none; border-radius:30px; 
+    padding:16px 45px; font-size:16px; font-weight:800; cursor:pointer; 
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    visibility: hidden; opacity: 0; transform: translateY(10px); transition: all 0.5s ease; 
+}
+.ov-enter-btn.show { visibility: visible; opacity: 1; transform: translateY(0); }
 
-/* 탑 바 네비게이션 (높이 75px, 글래스모피즘) */
+/* 탑 바 네비게이션 */
 .topbar { position: fixed; top: 0; left: 0; right: 0; height: 75px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 4px 20px rgba(31, 38, 135, 0.05); }
-
-/* 로고 디자인 컨테이너 */
 .logo-container { display:flex; align-items:center; gap:15px; cursor: default; }
 .logo-left-block { display:flex; flex-direction:column; justify-content:center; }
 .logo-title { font-size: 29px; font-weight: 900; letter-spacing: -0.05em; line-height: 1; }
@@ -58,7 +82,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .nav-item.active { color: #fff; }
 .topbar-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 15px; }
 
-/* Custom Dropdown */
+/* Custom Dropdown & Slider */
 .custom-select-wrap { position: relative; }
 .custom-select-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(255,255,255,0.9); border: 1.5px solid #E1EDF7; border-radius: 24px; padding: 4px 8px 4px 4px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s; height: 38px; min-width: 60px; }
 .custom-select-trigger:hover { border-color: #00428E; }
@@ -68,7 +92,6 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .custom-option:hover { background: #F0F5FA; color: #00428E; }
 @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
 
-/* 슬라이더 필터 */
 .top-filter-wrap { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 20px; border: 1.5px solid #E1EDF7; height: 38px; }
 .timeline-container { position: relative; width: 140px; height: 34px; padding: 0 8px; flex-shrink: 0; }
 .year-row { position: relative; height: 12px; margin-bottom: 6px; }
@@ -91,21 +114,25 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .main { flex: 1; padding: 25px 30px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 1500px; margin: 0 auto; position: relative; z-index: 10; }
 .dash-row-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+/* ✨ 2x2 레이아웃을 위한 클래스 추가 */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
 .card, .eval-trend-card, .eval-table-card, .eval-profile-card { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 16px; padding: 25px; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); position: relative; display: flex; flex-direction: column; overflow: visible; }
 .eval-trend-card, .eval-table-card { height: 350px; }
 .eval-table-card { height: auto; min-height: 350px; }
 .card-section-title, .eval-trend-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; z-index: 10; }
 .card-title-left { display: flex; align-items: center; gap: 6px; }
 
-/* 팀원 카드 및 툴팁 */
+/* 팀원 카드 및 툴팁 (잘림 방지) */
 .kpi-card { overflow: hidden; padding: 20px 25px; display: flex; flex-direction: column; justify-content: center; }
 .mini-stat-card { background: rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.7); }
 .info-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; cursor: help; z-index: 9999; }
 .info-icon { width: 16px; height: 16px; background: rgba(148, 163, 184, 0.8); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .info-wrap:hover .info-icon { background: #00428E; }
-.info-tooltip { position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%); width: auto; min-width: 280px; background: rgba(30,41,59,0.98); color: #f8fafc; font-size: 12px; line-height: 1.6; padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 9999; pointer-events: none; font-weight: 500; text-align: left; }
-.info-tooltip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border-width:6px; border-style:solid; border-color: rgba(30,41,59,0.98) transparent transparent transparent; }
-.info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; bottom: 160%; }
+/* ✨ 툴팁이 밑으로 뜨도록 속성 변경 */
+.info-tooltip { position: absolute; top: 140%; bottom: auto; left: 50%; transform: translateX(-50%); width: auto; min-width: 280px; background: rgba(30,41,59,0.98); color: #f8fafc; font-size: 12px; line-height: 1.6; padding: 16px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); visibility: hidden; opacity: 0; transition: all 0.2s; z-index: 9999; pointer-events: none; font-weight: 500; text-align: left; }
+.info-tooltip::after { content:''; position:absolute; bottom:100%; top:auto; left:50%; transform:translateX(-50%); border-width:6px; border-style:solid; border-color: transparent transparent rgba(30,41,59,0.98) transparent; }
+.info-wrap:hover .info-tooltip { visibility: visible; opacity: 1; top: 160%; }
 
 /* 리스트 및 히트맵 */
 .scroll-list::-webkit-scrollbar { width: 6px; }
@@ -120,10 +147,10 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 .top5-rank-badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .top5-rank-name { flex: 1; font-size: 13px !important; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* ✨ 히트맵 내부 글자 조정 및 트랜지션 연장 */
+/* ✨ 히트맵 글자 크기 조정(12px) 및 애니메이션(0.4s) */
 .heat-table { border-collapse: separate; border-spacing: 2px; width: 100%; height: 100%; table-layout: fixed; }
 .heat-table th { font-size: 11px; color: #94a3b8; font-weight: 700; text-align: center; padding: 2px; }
-.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor:pointer; transition: all 0.2s; }
+.hm-cell { width: 100%; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor:pointer; transition: all 0.4s ease; }
 .hm-cell:hover { transform: scale(1.4); z-index: 10; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
 .tab-btn-sm { padding: 4px 10px; border-radius: 20px; border: none; font-size: 11px; font-weight: 600; background: #00428E; color: #fff; cursor: pointer; }
@@ -148,6 +175,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 @media(max-width:1200px){
   .dash-row-1 { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
   .working-top-row { grid-template-columns: 1fr !important; }
   .overall-wrap { flex-direction: column !important; height: auto !important; }
   .chart-area-65 { flex: 0 0 100%; max-width: 100%; }
@@ -156,13 +184,16 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 </style>
 </head>
 <body>
+<!-- 배경 구슬 -->
 <div class="background-container">
-  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div>
-  <div class="orb orb-5"></div><div class="orb orb-6"></div><div class="orb orb-7"></div><div class="orb orb-8"></div>
+  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
+  <div class="orb orb-6"></div><div class="orb orb-7"></div><div class="orb orb-8"></div><div class="orb orb-9"></div><div class="orb orb-10"></div>
 </div>
 
+<!-- ✨ 고정 레이아웃 로딩 화면 -->
 <div id="loadingOverlay">
-  <div style="background:#fff; padding:15px 25px; border-radius:16px; margin-bottom:20px; display:flex; align-items:center; gap:15px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+  <!-- 로고 박스 -->
+  <div class="loading-logo-box">
     <div style="display:flex; flex-direction:column; justify-content:center;">
       <div style="font-size: 29px; font-weight: 900; letter-spacing: -0.05em; line-height: 1;">
         <span style="color:#00428E;">GNW</span><span style="color:#7dd3fc;">MC</span>
@@ -178,13 +209,20 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
     </div>
   </div>
 
-  <div class="ov-sub">구글 시트에서 데이터를 수집하고 분석하는 중입니다...</div>
-  <div class="ov-spinner" id="ovSpinner"></div>
-  <div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
-  <div class="ov-progress" id="ovProgressWrap"><div class="ov-progress-fill" id="ovProgress"></div></div>
-  <button class="ov-enter-btn" id="ovEnterBtn" onclick="hideLoadingOverlay()">대시보드 입장하기</button>
+  <!-- 상태 정보 (높이 고정) -->
+  <div class="loading-status-area" id="loadingStatusArea">
+    <div class="ov-sub" id="ovMsg">구글 시트에서 데이터를 수집하고 분석하는 중입니다...</div>
+    <div class="ov-spinner" id="ovSpinner"></div>
+    <div class="ov-progress" id="ovProgressWrap"><div class="ov-progress-fill" id="ovProgress"></div></div>
+  </div>
+
+  <!-- 입장 버튼 (높이 고정) -->
+  <div class="loading-btn-area">
+      <button class="ov-enter-btn" id="ovEnterBtn" onclick="hideLoadingOverlay()">대시보드 입장하기</button>
+  </div>
 </div>
 
+<!-- 탑 바 -->
 <nav class="topbar">
   <div class="logo-container" style="flex: 1 1 0;">
     <div class="logo-left-block">
@@ -204,6 +242,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
     <div class="nav-item" onclick="showView('members',this)">Working</div>
     <div class="nav-item" onclick="showView('kpieval',this)">Personal KPI</div>
   </div>
+  
   <div class="topbar-right">
     <div class="top-filter-wrap">
       <div class="timeline-container">
@@ -231,6 +270,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
 <div class="main">
   <!-- 1. Project 탭 -->
   <div id="view-dashboard" class="view-section active">
+    <!-- OVERALL -->
     <div class="overall-wrap" style="display:flex; gap:15px; margin-bottom:5px; min-height:450px; height:auto; align-items:stretch;">
       <div class="card" style="flex:1.4; display:flex; flex-direction:column; gap:20px;">
         <div class="card-section-title" style="margin-bottom:0;">
@@ -276,7 +316,7 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         </div>
       </div>
       <div class="card" style="height:350px;">
-        <!-- ✨ 범례 복구 -->
+        <!-- 범례 원복 완료 -->
         <div class="card-section-title">
           <span class="card-title-left">설계단계별 투입시간 <span style="font-size:11px; color:#94a3b8; font-weight:600;">(단계 연동 하이라이트)</span></span>
           <div id="dashCompareLegendWrap" style="display:flex; gap:6px;"></div>
@@ -307,35 +347,19 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
       </div>
     </div>
 
-    <!-- ✨ Working Hours Analysis (경남 서부의료원 기준) -->
+    <!-- ✨ Working Hours Analysis (순서 변경 및 연동 설정 완료) -->
     <div class="section-divider">
       <h2>Working Hours Analysis <span style="font-size:13px; color:#00428E; font-weight:800; margin-left:10px;">(경남 서부의료원 데이터 전용)</span></h2>
     </div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:5px;">
+      
+      <!-- 1. 일별 초과근무 일수 -->
       <div class="card" style="height:320px;">
-        <div class="card-section-title">일별 초과근무 일수 <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:8px;">(클릭 시 우측 도넛 연동)</span></div>
+        <div class="card-section-title">일별 초과근무 일수 <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:8px;">(클릭 시 우측 막대 연동)</span></div>
         <div style="flex:1; min-height:0; position:relative; margin-top:10px;"><canvas id="dashOvertimeBarChart"></canvas></div>
       </div>
-      
-      <!-- 팀원별 초과근무 도넛 차트 -->
-      <div class="card" style="height:320px;">
-        <div class="card-section-title" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:flex-start;">
-          <span class="card-title-left">팀원별 초과근무 발생 비율</span>
-          <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; max-width:200px;"></div>
-        </div>
-        <div style="display:flex; flex:1; min-height:0; gap:10px; margin-top:5px;">
-          <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
-            <div id="donutTitle9" style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">9h 이상 비율</div>
-            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
-          </div>
-          <div id="donutDivider" style="width:1px; background:rgba(226,232,240,0.6); margin:10px 0;"></div>
-          <div id="donutWrap12" style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
-            <div id="donutTitle12" style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">12h 이상 비율</div>
-            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart12"></canvas></div>
-          </div>
-        </div>
-      </div>
 
+      <!-- 2. 월별 9h 이상 발생 건수 (연동 대상) -->
       <div class="card" style="height:320px;">
         <div class="card-section-title">
           <span class="card-title-left">월별 9h 이상 초과근무 발생 건수</span>
@@ -343,27 +367,53 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
         </div>
         <div style="flex:1; min-height:0; margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div>
       </div>
+      
+      <!-- 3. 팀원별 초과근무 도넛 (연동 해제, 타이틀 폰트 조절) -->
+      <div class="card" style="height:320px;">
+        <div class="card-section-title" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:flex-start;">
+          <span class="card-title-left">팀원별 초과근무 발생 비율</span>
+          <div id="dashOvertimeDonutLegendWrap" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;"></div>
+        </div>
+        <div style="display:flex; flex:1; min-height:0; gap:10px; margin-top:5px;">
+          <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
+            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart9"></canvas></div>
+            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:8px;">9h 이상 비율</div>
+          </div>
+          <div style="width:1px; background:rgba(226,232,240,0.6); margin:10px 0;"></div>
+          <div style="flex:1; position:relative; display:flex; flex-direction:column; align-items:center;">
+            <div style="flex:1; width:100%; position:relative;"><canvas id="dashOvertimeDonutChart12"></canvas></div>
+            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:8px;">12h 이상 비율</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 월별 근무 밀도 (히트맵 폰트, 여백, 애니메이션 수정) -->
       <div class="card" style="height:320px;">
         <div class="card-section-title" style="margin-bottom:0;">
-          <span class="card-title-left">월별 근무 밀도</span>
-          <div id="heatYearTabs" class="tab-btns-sm" style="margin-left:auto;"></div>
+          <span class="card-title-left">월별 근무 밀도 <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:8px;">(클릭 동일 밀도 연동)</span></span>
+          <div id="heatYearTabs" style="display:flex; gap:3px; margin-left:auto;"></div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; margin-top:15px; padding:4px;"><table class="heat-table" id="heatTable"></table></div>
       </div>
     </div>
     
-    <div class="grid-3" style="margin-top:15px;">
+    <!-- ✨ 고급분석 3종 세트 (2x2 레이아웃, 툴팁 방향 수정, 주요일정 롤오버 추가) -->
+    <div class="grid-2" style="margin-top:15px;">
       <div class="eval-trend-card" style="min-height:350px;">
-        <div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다.</div></div></div>
+        <div class="eval-trend-title" style="justify-content:space-between;">업무 균등 분산 (섀넌 엔트로피)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 여러 종류의 업무를 골고루 분산하여 수행하고 있음을 의미합니다. 🔴표시는 주요 일정입니다.</div></div></div>
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjShannonChart"></canvas></div>
       </div>
       <div class="eval-trend-card" style="min-height:350px;">
-        <div class="eval-trend-title" style="justify-content:space-between;">업무 쏠림도 (HHI 지수)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (위험)</div></div></div>
+        <div class="eval-trend-title" style="justify-content:space-between;">업무 쏠림도 (HHI 지수)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">높을수록 특정 업무 하나에만 과도하게 집중되어 있음을 의미합니다. (위험) 🔴표시는 주요 일정입니다.</div></div></div>
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjHhiChart"></canvas></div>
       </div>
       <div class="eval-trend-card" style="min-height:350px;">
-        <div class="eval-trend-title" style="justify-content:space-between;">전체 업무 변동성 (CV 추이)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">그래프가 높게 치솟을수록 평소보다 업무가 갑자기 몰려 과부하가 왔음을 의미합니다.</div></div></div>
+        <div class="eval-trend-title" style="justify-content:space-between;">전체 업무 변동성 (CV 추이)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip">그래프가 높게 치솟을수록 평소보다 업무가 갑자기 몰려 과부하가 왔음을 의미합니다. 🔴표시는 주요 일정입니다.</div></div></div>
         <div style="flex:1; min-height:150px; margin-top:5px; position:relative;"><canvas id="pjCvChart"></canvas></div>
+      </div>
+      <!-- 빈 공간 1개 -->
+      <div class="card" style="min-height:350px; background:rgba(255,255,255,0.2); border: 1px dashed rgba(203,213,225,0.6); display:flex; align-items:center; justify-content:center;">
+          <div style="color:#94a3b8; font-weight:700; font-size:14px;">분석 지표 준비 중</div>
       </div>
     </div>
   </div>
@@ -427,8 +477,8 @@ let MEMBERS = [], MC = {}, INITIALS = {};
 let SCHEDULE_DATA = [], EVAL_DATA = [], RAW = [];
 let CH = {}, GLOBAL_MEMBER = 'ALL';
 let hlCompare=null, hlTimeline=null, hlStage=null, hlOvertimeDonut=null, hlMonthlyOt=null, hlDonutWork=null, hlPjRatio=null;
-let hlOvertimeRange=null; // ✨ 초과근무 막대 클릭 상태
-let hlHeatBin=null; // ✨ 히트맵 클릭 상태 (0~5 구간)
+let hlOvertimeRange=null; // ✨ 초과근무 막대/누적막대 연동 상태 (0,1,2,3)
+let hlHeatBin=null; // ✨ 히트맵 색상 단계 연동 상태
 
 const OVERTIME_RANGES = ['9~10h', '10~11h', '11~12h', '12h 이상'];
 
@@ -441,7 +491,7 @@ Chart.defaults.animation.duration = 400;
 Chart.defaults.font.family = "'Pretendard Variable', Pretendard, sans-serif";
 Chart.register(ChartDataLabels);
 
-// ✨ 툴팁을 마우스 커서 위치에 띄우도록 설정
+// ✨ 툴팁 마우스 커서 따라다니기 설정
 Chart.Tooltip.positioners.cursor = function(elements, eventPosition) { return { x: eventPosition.x, y: eventPosition.y }; };
 Chart.defaults.plugins.tooltip.position = 'cursor';
 
@@ -501,10 +551,7 @@ async function loadDataFromSheets() {
     document.getElementById('ovProgress').style.width = '100%';
     initSlider(); renderCustomDropdown(); updateNavSlider(); renderAllViews();
     setTimeout(()=>{
-      document.getElementById('ovSpinner').style.display='none';
-      document.getElementById('ovProgressWrap').style.display='none';
-      document.getElementById('ovMsg').style.display='none';
-      // ✨ 버튼을 visible로 변경 (레이아웃 유지)
+      document.getElementById('loadingStatusArea').style.display='none';
       document.getElementById('ovEnterBtn').classList.add('show');
     }, 500);
   } catch(err) {
@@ -605,7 +652,6 @@ function renderOvProjectRatio(all){
 }
 function ovTogglePjRatio(b){ hlPjRatio=hlPjRatio===b?null:b; renderOvProjectRatio(filtered()); }
 
-// ✨ 단계 도넛 차트
 function renderDashStage(all){
   destroyChart('stageChart');
   const catMap=grpMin(all,'cat'); const tot=Object.values(catMap).reduce((a,b)=>a+b,0); if(tot===0) return;
@@ -651,7 +697,7 @@ function renderDashTimeline(all,mos){
 }
 function dashToggleTimeline(name){ hlTimeline=hlTimeline===name?null:name; renderDashTimeline(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
 
-// ✨ 히트맵 클릭 시 구간 하이라이트 연동 (전역 변수 hlHeatBin 사용)
+// ✨ 히트맵 클릭 시 구간 하이라이트 연동 로직
 window.toggleHeatBin = function(bin, year) {
   hlHeatBin = (hlHeatBin === bin) ? null : bin;
   renderHeatmapOnly(year);
@@ -660,18 +706,19 @@ window.toggleHeatBin = function(bin, year) {
 function renderDashHeat(all){
   let targetYear=[...new Set(all.map(r=>r.date.slice(0,4)))].sort().pop()||'2024';
   const allYears=[...new Set(all.map(r=>r.date.slice(0,4)))].sort();
-  document.getElementById('heatYearTabs').innerHTML=allYears.map(y=>`<button class="tab-btn-sm ${y===targetYear?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}년</button>`).join('');
+  document.getElementById('heatYearTabs').innerHTML=allYears.map(y=>`<button class="tab-btn-sm ${y===targetYear?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}</button>`).join('');
   renderHeatmapOnly(targetYear);
 }
 window.renderHeatmapOnly=function(year){
   const pjData = filtered().filter(r => r.project === '경남 서부의료원');
-  document.getElementById('heatYearTabs').innerHTML=[...new Set(pjData.map(r=>r.date.slice(0,4)))].sort().map(y=>`<button class="tab-btn-sm ${y===year?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}년</button>`).join('');
+  document.getElementById('heatYearTabs').innerHTML=[...new Set(pjData.map(r=>r.date.slice(0,4)))].sort().map(y=>`<button class="tab-btn-sm ${y===year?'active':''}" onclick="renderHeatmapOnly('${y}')">${y}</button>`).join('');
   const dailyMap={}; pjData.filter(r=>r.date.startsWith(year+'-')).forEach(r=>dailyMap[r.date]=(dailyMap[r.date]||0)+r.min);
   const mat=Array.from({length:5},()=>new Array(12).fill(0)); const hasMo=new Array(12).fill(false); let maxV=1;
   for(let d in dailyMap){ const sum=dailyMap[d]; const p=d.split('-'); const mo=parseInt(p[1])-1,day=parseInt(p[2]); const fd=new Date(parseInt(year),mo,1).getDay(); const wk=Math.ceil((day+fd)/7)-1; if(wk>=0&&wk<5){ mat[wk][mo]+=sum; hasMo[mo]=true; if(mat[wk][mo]>maxV) maxV=mat[wk][mo]; } }
   let th='<thead><tr><th style="width:30px;"></th>';
   MONTH_KO.forEach((l,i)=>{ th+=`<th style="color:${hasMo[i]?'#00428E':'#cbd5e1'};font-weight:${hasMo[i]?'800':'500'};">${l}</th>`; });
   th+='</tr></thead>';
+  
   let tb='<tbody>'; 
   for(let w=0;w<5;w++){ 
     tb+=`<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">${w+1}주</td>`; 
@@ -686,7 +733,9 @@ window.renderHeatmapOnly=function(year){
           const ratio = val / maxV;
           const bin = Math.ceil(ratio * 5); // 1~5 단계
           const isDim = hlHeatBin !== null && hlHeatBin !== bin;
-          tb+=`<td><div class="hm-cell" onclick="toggleHeatBin(${bin}, '${year}')" style="background:${hexRgba('#00428E',0.2+ratio*0.8)};color:${ratio>0.4?'#fff':'#1e293b'}; opacity:${isDim?0.2:1};" title="${formatHour(val)}h">${formatHour(val)}</div></td>`; 
+          // 색상을 뚜렷하게 구분
+          const alpha = 0.2 + (bin - 1) * 0.2; 
+          tb+=`<td><div class="hm-cell" onclick="toggleHeatBin(${bin}, '${year}')" style="background:${hexRgba('#00428E', alpha)};color:${alpha>=0.6?'#fff':'#1e293b'}; opacity:${isDim?0.2:1};" title="${formatHour(val)}h">${formatHour(val)}</div></td>`; 
       }
     } 
     tb+='</tr>'; 
@@ -694,7 +743,7 @@ window.renderHeatmapOnly=function(year){
   document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
 
-// ✨ [팀원별 그룹화] 데이터 검증 및 연동 로직
+// ✨ [일별 초과근무 일수] & [월별 9h 건수] 100% 동기화 및 연동
 function renderDashOvertimeBars(all){
   destroyChart('dashOvertimeBarChart'); 
   const pDates={}; 
@@ -723,53 +772,23 @@ function renderDashOvertimeBars(all){
         else hlOvertimeRange = null;
         const pjData = filtered().filter(r=>r.project==='경남 서부의료원');
         renderDashOvertimeBars(pjData);
-        renderDashOvertimeDonut(pjData);
+        renderDashMonthlyOvertime(pjData, getMos(pjData));
       }
     } 
   });
 }
 
+// ✨ [팀원별 초과근무 비율 도넛] 독립 및 디자인 조정
 function renderDashOvertimeDonut(all){
   destroyChart('dashOvertimeDonutChart9'); destroyChart('dashOvertimeDonutChart12');
   
-  const title9 = document.getElementById('donutTitle9');
-  const title12 = document.getElementById('donutTitle12');
-  const wrap12 = document.getElementById('donutWrap12');
-  const divider = document.getElementById('donutDivider');
-  
   let dMain = [], dSub = [];
-  
-  if (hlOvertimeRange !== null) {
-      title9.innerText = OVERTIME_RANGES[hlOvertimeRange] + ' 비율';
-      wrap12.style.display = 'none';
-      divider.style.display = 'none';
-      
-      MEMBERS.forEach(n => {
-          const pDates = {}; all.filter(r=>r.name===n).forEach(r => pDates[r.date] = (pDates[r.date]||0) + r.min);
-          let cnt = 0;
-          for(let d in pDates) { 
-              const m = pDates[d];
-              if (hlOvertimeRange === 0 && m >= 540 && m < 600) cnt++;
-              else if (hlOvertimeRange === 1 && m >= 600 && m < 660) cnt++;
-              else if (hlOvertimeRange === 2 && m >= 660 && m < 720) cnt++;
-              else if (hlOvertimeRange === 3 && m >= 720) cnt++;
-          }
-          if(cnt > 0) dMain.push({ name: n, days: cnt });
-      });
-      dMain.sort((a,b)=>b.days-a.days);
-  } else {
-      title9.innerText = '9h 이상 비율';
-      title12.innerText = '12h 이상 비율';
-      wrap12.style.display = 'flex';
-      divider.style.display = 'block';
-      
-      MEMBERS.forEach(n=>{ 
-        const pDates={}; all.filter(r=>r.name===n).forEach(r=>pDates[r.date]=(pDates[r.date]||0)+r.min); 
-        let ot9=0,ot12=0; for(let d in pDates){if(pDates[d]>=540) ot9++; if(pDates[d]>=720) ot12++;} 
-        if(ot9>0) dMain.push({name:n,days:ot9}); if(ot12>0) dSub.push({name:n,days:ot12}); 
-      });
-      dMain.sort((a,b)=>b.days-a.days); dSub.sort((a,b)=>b.days-a.days);
-  }
+  MEMBERS.forEach(n=>{ 
+    const pDates={}; all.filter(r=>r.name===n).forEach(r=>pDates[r.date]=(pDates[r.date]||0)+r.min); 
+    let ot9=0,ot12=0; for(let d in pDates){if(pDates[d]>=540) ot9++; if(pDates[d]>=720) ot12++;} 
+    if(ot9>0) dMain.push({name:n,days:ot9}); if(ot12>0) dSub.push({name:n,days:ot12}); 
+  });
+  dMain.sort((a,b)=>b.days-a.days); dSub.sort((a,b)=>b.days-a.days);
 
   document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(n=>{ const isDim=hlOvertimeDonut!==null&&hlOvertimeDonut!==n; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleOvertimeDonut('${n}')"><div class="legend-dot" style="background:${MC[n]}"></div>${n}</div>`; }).join('');
   
@@ -781,9 +800,7 @@ function renderDashOvertimeDonut(all){
       data:{labels:dataArr.map(d=>d.name),datasets:[{data:dataArr.map(d=>d.days),backgroundColor:bgColors,borderWidth:2,borderColor:'#fff'}]}, 
       options:{ 
         responsive:true, maintainAspectRatio:false, 
-        cutout:'70%', 
-        radius:'75%', 
-        layout:{padding:25}, 
+        cutout:'70%', radius:'75%', layout:{padding:25}, 
         plugins:{ 
           legend:{display:false}, 
           datalabels:{
@@ -804,36 +821,77 @@ function renderDashOvertimeDonut(all){
     }); 
   };
   CH.dashOvertimeDonutChart9=drawHalfDonut('dashOvertimeDonutChart9',dMain);
-  if (hlOvertimeRange === null) {
-      CH.dashOvertimeDonutChart12=drawHalfDonut('dashOvertimeDonutChart12',dSub);
-  }
+  CH.dashOvertimeDonutChart12=drawHalfDonut('dashOvertimeDonutChart12',dSub);
 }
 function dashToggleOvertimeDonut(name){ hlOvertimeDonut=hlOvertimeDonut===name?null:name; renderDashOvertimeDonut(filtered().filter(r=>r.project==='경남 서부의료원')); }
 
 function renderDashMonthlyOvertime(all,mos){
   destroyChart('dashMonthlyOvertimeChart');
   const bands=['9~10h','10~11h','11~12h','12h 이상']; let bandData=[[],[],[],[]];
-  mos.forEach(m=>{ const mData=all.filter(r=>r.date.startsWith(m)); const pDates={}; mData.forEach(r=>pDates[r.name+'|'+r.date]=(pDates[r.name+'|'+r.date]||0)+r.min); let c=[0,0,0,0]; for(let k in pDates){const min=pDates[k];if(min>=540&&min<600)c[0]++;else if(min>=600&&min<660)c[1]++;else if(min>=660&&min<720)c[2]++;else if(min>=720)c[3]++;} c.forEach((v,i)=>bandData[i].push(v)); });
+  
+  const pDates={}; all.forEach(r=>{ pDates[r.name+'|'+r.date] = (pDates[r.name+'|'+r.date]||0) + r.min; }); 
+
+  mos.forEach(m=>{ 
+      let c=[0,0,0,0]; 
+      for(let k in pDates){
+          if(k.split('|')[1].startsWith(m)){
+              const min=pDates[k];
+              if(min>=540&&min<600)c[0]++;else if(min>=600&&min<660)c[1]++;else if(min>=660&&min<720)c[2]++;else if(min>=720)c[3]++;
+          }
+      } 
+      c.forEach((v,i)=>bandData[i].push(v)); 
+  });
   
   document.getElementById('dashMonthlyOtLegendWrap').innerHTML=bands.map((b,i)=>{ const isDim=hlMonthlyOt!==null&&hlMonthlyOt!==b; return `<div class="legend-item ${isDim?'dimmed':''}" onclick="dashToggleMonthlyOt('${b}')"><div class="legend-dot" style="background:${OT_COLORS[i]}"></div><span style="font-size:12px;">${b}</span></div>`; }).join('');
-  const datasets=bands.map((b,i)=>({ label:b, data:bandData[i], backgroundColor:(hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0', stack:'Stack 0', borderRadius:2 }));
+  
+  const datasets=bands.map((b,i)=>({ 
+      label:b, data:bandData[i], 
+      backgroundColor:(hlOvertimeRange===null || hlOvertimeRange===i) ? ((hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0') : '#e2e8f0', 
+      stack:'Stack 0', borderRadius:2 
+  }));
+  
   CH.dashMonthlyOvertimeChart=new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'),{ type:'bar', data:{labels:mos,datasets}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, datalabels:{ display:function(ctx){ if(hlMonthlyOt!==null) return ctx.dataset.label===hlMonthlyOt&&ctx.dataset.data[ctx.dataIndex]>0; return ctx.datasetIndex===3&&ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)>0; }, color:'#475569', font:{weight:'bold',size:11}, anchor:'end', align:'end', offset:2, formatter:(v,ctx)=>{ if(hlMonthlyOt!==null) return v+'건'; return ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0)+'건'; } } }, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}, onClick:(e,els)=>{ if(els.length) dashToggleMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label); else{hlMonthlyOt=null;renderDashMonthlyOvertime(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원')));} } } });
 }
 function dashToggleMonthlyOt(b){ hlMonthlyOt=hlMonthlyOt===b?null:b; renderDashMonthlyOvertime(filtered().filter(r=>r.project==='경남 서부의료원'),getMos(filtered().filter(r=>r.project==='경남 서부의료원'))); }
 
+// ✨ 고급분석 3종 세트 주요일정 연동 및 레이아웃 수정
 function renderShannonHhiCv(d,datesArr,color,prefix){
   destroyChart(prefix+'ShannonChart'); destroyChart(prefix+'HhiChart'); destroyChart(prefix+'CvChart');
   const sData=[],hData=[],cvData=[];
-  datesArr.forEach(dt=>{ const dDay=d.filter(r=>r.date===dt); if(!dDay.length) return; const tot=dDay.reduce((s,r)=>s+r.min,0); const sMap=grpMin(dDay,'sub'); let hhi=0,shan=0; Object.values(sMap).forEach(v=>{const p=v/tot;hhi+=p*p;if(p>0)shan-=p*Math.log(p);}); sData.push({x:dt,y:shan}); hData.push({x:dt,y:hhi}); let wVals=[]; for(let i=0;i<7;i++){let pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);let m=d.filter(r=>r.date===pDt).reduce((a,b)=>a+b.min,0);wVals.push(m);} const m=wVals.reduce((a,b)=>a+b,0)/7; const cv=m===0?0:Math.sqrt(wVals.reduce((a,b)=>a+Math.pow(b-m,2),0)/7)/m; cvData.push({x:dt,y:cv}); });
+  const schS=[], schH=[], schC=[];
+
+  datesArr.forEach(dt=>{ 
+      const dDay=d.filter(r=>r.date===dt); if(!dDay.length) return; 
+      const tot=dDay.reduce((s,r)=>s+r.min,0); const sMap=grpMin(dDay,'sub'); 
+      let hhi=0,shan=0; Object.values(sMap).forEach(v=>{const p=v/tot;hhi+=p*p;if(p>0)shan-=p*Math.log(p);}); 
+      
+      let wVals=[]; for(let i=0;i<7;i++){let pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);let m=d.filter(r=>r.date===pDt).reduce((a,b)=>a+b.min,0);wVals.push(m);} 
+      const m=wVals.reduce((a,b)=>a+b,0)/7; const cv=m===0?0:Math.sqrt(wVals.reduce((a,b)=>a+Math.pow(b-m,2),0)/7)/m; 
+      
+      sData.push({x:dt,y:shan}); hData.push({x:dt,y:hhi}); cvData.push({x:dt,y:cv}); 
+
+      // 주요일정 데이터(SCHEDULE_DATA)에 해당 날짜가 있으면 포인트 생성
+      if(SCHEDULE_DATA.some(s => s.date && s.date.slice(0,10) === dt)) {
+          schS.push({x:dt,y:shan}); schH.push({x:dt,y:hhi}); schC.push({x:dt,y:cv});
+      }
+  });
+
   if(prefix==='pj'&&document.getElementById('ovAvgShan')){
     const avgS=sData.length?sData.reduce((a,b)=>a+b.y,0)/sData.length:0; const avgH=hData.length?hData.reduce((a,b)=>a+b.y,0)/hData.length:0; const avgC=cvData.length?cvData.reduce((a,b)=>a+b.y,0)/cvData.length:0;
     document.getElementById('ovAvgShan').innerText=avgS.toFixed(2); document.getElementById('ovAvgHhi').innerText=avgH.toFixed(2); document.getElementById('ovAvgCv').innerText=avgC.toFixed(2);
   }
+
+  const schConfig = (dataArr) => ({
+      type: 'scatter', label: '주요 일정', data: dataArr,
+      backgroundColor: '#ef4444', pointRadius: 5, pointHoverRadius: 8, pointBorderColor:'#fff', pointBorderWidth: 1
+  });
+
   const opts=(yTitle,maxVal)=>{ const config={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{title:{display:true,text:yTitle},grid:{color:'rgba(226,232,240,0.5)'},min:0}}}; if(maxVal!==undefined) config.scales.y.max=maxVal; return config; };
+  
   if(document.getElementById(prefix+'ShannonChart')){
-    CH[prefix+'ShannonChart']=new Chart(document.getElementById(prefix+'ShannonChart').getContext('2d'),{type:'line',data:{datasets:[{data:sData,borderColor:'#14b8a6',backgroundColor:hexRgba('#14b8a6',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:opts('다양성 지수')});
-    CH[prefix+'HhiChart']=new Chart(document.getElementById(prefix+'HhiChart').getContext('2d'),{type:'line',data:{datasets:[{data:hData,borderColor:'#f59e0b',backgroundColor:hexRgba('#f59e0b',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:opts('집중도 지수',1.0)});
-    CH[prefix+'CvChart']=new Chart(document.getElementById(prefix+'CvChart').getContext('2d'),{type:'line',data:{datasets:[{data:cvData,borderColor:color,backgroundColor:hexRgba(color,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:opts('변동성 (CV)')});
+    CH[prefix+'ShannonChart']=new Chart(document.getElementById(prefix+'ShannonChart').getContext('2d'),{type:'line',data:{datasets:[{data:sData,label:'지수',borderColor:'#14b8a6',backgroundColor:hexRgba('#14b8a6',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schConfig(schS)]},options:opts('다양성 지수')});
+    CH[prefix+'HhiChart']=new Chart(document.getElementById(prefix+'HhiChart').getContext('2d'),{type:'line',data:{datasets:[{data:hData,label:'지수',borderColor:'#f59e0b',backgroundColor:hexRgba('#f59e0b',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schConfig(schH)]},options:opts('집중도 지수',1.0)});
+    CH[prefix+'CvChart']=new Chart(document.getElementById(prefix+'CvChart').getContext('2d'),{type:'line',data:{datasets:[{data:cvData,label:'지수',borderColor:color,backgroundColor:hexRgba(color,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schConfig(schC)]},options:opts('변동성 (CV)')});
   }
 }
 
@@ -899,7 +957,7 @@ function renderContinuity(d){
 }
 
 function drawHeatmapList(d,mos,color){
-  const tYear=[...new Set(mos.map(m=>m.split('-')[0]))].sort().pop()||'2024'; document.getElementById('dpHeatTabs').innerHTML=`<button class="tab-btn-sm active">${tYear}년</button>`;
+  const tYear=[...new Set(mos.map(m=>m.split('-')[0]))].sort().pop()||'2024'; document.getElementById('dpHeatTabs').innerHTML=`<button class="tab-btn-sm active">${tYear}</button>`;
   const dailyMap={}; d.filter(r=>r.date.startsWith(tYear+'-')).forEach(r=>dailyMap[r.date]=(dailyMap[r.date]||0)+r.min);
   const mat=Array.from({length:5},()=>new Array(12).fill(0)); const hasMo=new Array(12).fill(false); let maxV=1;
   for(let date in dailyMap){const sum=dailyMap[date];const p=date.split('-');const mo=parseInt(p[1])-1,day=parseInt(p[2]);const fd=new Date(parseInt(tYear),mo,1).getDay();const wk=Math.ceil((day+fd)/7)-1;if(wk>=0&&wk<5){mat[wk][mo]+=sum;hasMo[mo]=true;if(mat[wk][mo]>maxV)maxV=mat[wk][mo];}}
