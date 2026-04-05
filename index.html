@@ -719,8 +719,11 @@ body { display:flex; min-height:100vh; flex-direction: column; padding-top: 75px
       ticking = true;
     }
   }
-  window.addEventListener('scroll', onScroll, {passive:true});
-})();
+  window.addEventListener('DOMContentLoaded',()=>{
+  updateNavSlider();
+  window.addEventListener('resize', updateNavSlider);
+  loadDataFromSheets();
+});
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 const PROFILE_IMG = { '윤진관':'./jk.yoon.jpg','김효언':'./he.kim.jpg','정인태':'./intae.jeoung.jpg','이혜인B':'./hi.lee2.jpg' };
@@ -826,11 +829,20 @@ async function loadDataFromSheets(){
       return {
         q:`${r['연도']}-${qF}`,
         name:String(r['성명']).trim(),
-        vals:[parseFloat(r['적극성'])||0,parseFloat(r['생산성'])||0,parseFloat(r['전문성'])||0,parseFloat(r['창의성'])||0,parseFloat(r['협업능력'])||0]
+        vals:[
+          parseFloat(r['적극성'])||0,
+          parseFloat(r['생산성'])||0,
+          parseFloat(r['전문성'])||0,
+          parseFloat(r['창의성'])||0,
+          parseFloat(r['협업능력'])||0
+        ]
       };
     }).filter(d=>d.name&&d.q);
     RAW = (json.work||[]).filter(r=>r.name&&r.date&&r.min>0).map(r=>{
-      const rawPj=String(r.project||r['프로젝트']||r['PJ Code']||r['PJ_CODE']||r['pj code']||r['pj_code']||r.pjCode||'').trim();
+      const rawPj=String(
+        r.project||r['프로젝트']||r['PJ Code']||r['PJ_CODE']||
+        r['pj code']||r['pj_code']||r.pjCode||''
+      ).trim();
       let pjType='공통업무';
       if(rawPj.includes('24188')||rawPj.includes('서부의료원')) pjType='경남 서부의료원';
       else if(/^[0-9]+$/.test(rawPj)&&rawPj!=='') pjType='타 프로젝트';
@@ -843,29 +855,46 @@ async function loadDataFromSheets(){
         project:pjType,
         min:parseInt(r.min)||0,
         week:(function(){
-          const d=new Date(r.date);d.setHours(0,0,0,0);
+          const d=new Date(r.date);
+          d.setHours(0,0,0,0);
           d.setDate(d.getDate()+3-(d.getDay()||7));
-          return d.getFullYear()+'-W'+Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7).toString().padStart(2,'0');
+          return d.getFullYear()+'-W'+
+            Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7)
+            .toString().padStart(2,'0');
         })()
       };
     });
     const targetOrder=['윤진관','이혜인B','정인태','김효언'];
-    MEMBERS=Array.from(new Set([...RAW.map(r=>r.name),...EVAL_DATA.map(e=>e.name)]))
-      .filter(n=>n&&n!=='undefined'&&n.trim()!=='')
-      .sort((a,b)=>{const iA=targetOrder.indexOf(a),iB=targetOrder.indexOf(b);return(iA!==-1?iA:99)-(iB!==-1?iB:99);});
-    MEMBERS.forEach((name,idx)=>{MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length];INITIALS[name]=name.length>=3?name.substring(1,3):name;});
+    MEMBERS=Array.from(new Set([
+      ...RAW.map(r=>r.name),
+      ...EVAL_DATA.map(e=>e.name)
+    ]))
+    .filter(n=>n&&n!=='undefined'&&n.trim()!=='')
+    .sort((a,b)=>{
+      const iA=targetOrder.indexOf(a),iB=targetOrder.indexOf(b);
+      return(iA!==-1?iA:99)-(iB!==-1?iB:99);
+    });
+    MEMBERS.forEach((name,idx)=>{
+      MC[name]=DYNAMIC_COLORS[idx%DYNAMIC_COLORS.length];
+      INITIALS[name]=name.length>=3?name.substring(1,3):name;
+    });
     WP_MEMBER=MEMBERS[0]||null;
     document.getElementById('ovProgress').style.width='100%';
-    initSlider(); renderCustomDropdown(); updateNavSlider(); renderAllViews();
+    initSlider();
+    renderCustomDropdown();
+    updateNavSlider();
+    renderAllViews();
     setTimeout(()=>{
       document.getElementById('loadingStatusArea').style.opacity='0';
       document.getElementById('loadingStatusArea').style.pointerEvents='none';
       const ld=document.getElementById('loadingDescText');
-      ld.style.color='#2563eb'; ld.textContent='데이터 분석 완료';
+      ld.style.color='#2563eb';
+      ld.textContent='데이터 분석 완료';
       document.getElementById('ovEnterBtnWrap').classList.add('show');
     },500);
   }catch(err){
-    document.getElementById('ovMsg').innerHTML=`<span style="color:#ef4444;font-weight:700;">❌ 연결 실패: ${err.message}</span>`;
+    document.getElementById('ovMsg').innerHTML=
+      `<span style="color:#ef4444;font-weight:700;">❌ 연결 실패: ${err.message}</span>`;
     document.getElementById('ovSpinner').style.display='none';
     document.getElementById('ovEnterBtnWrap').classList.add('show');
   }
