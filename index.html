@@ -21,7 +21,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 @keyframes floatM{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(-60px,40px,0) scale(0.9);}}
 @keyframes floatL{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(70px,-50px,0) scale(1.15);}}
 
-/* ✨ 로딩 오버레이 (투명 구슬 복구 & 글자 흔들림 방지) */
+/* 로딩 오버레이 */
 #loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;overflow:hidden;}
 .ld-orb{position:absolute;border-radius:50%;will-change:transform;}
 .ld-orb-1{width:280px;height:280px;background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%);top:-60px;right:60px;filter:blur(25px) saturate(.7);opacity:.6;animation:ldFloat1 3.5s infinite alternate ease-in-out;}
@@ -49,8 +49,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .loading-main-title{font-size:90px;font-weight:900;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,#bfdbfe 0%,#60a5fa 30%,#3b82f6 60%,#1d4ed8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
 .loading-sub-title{font-size:22px;font-weight:700;color:#1e40af;margin-bottom:12px;}
 .loading-desc{font-size:15px;font-weight:500;color:#64748b;margin-bottom:6px;}
-
-/* ✨ 고정된 하단 영역 (이 안에서 스피너와 버튼이 교차됨) */
 #loadingBottomArea { position:relative; width:100%; height:120px; margin-top:20px; display:flex; justify-content:center; align-items:center; }
 #loadingStatusArea { position:absolute; display:flex; flex-direction:column; align-items:center; transition:opacity .5s ease, visibility .5s; }
 .ov-progress{width:240px;height:4px;background:rgba(59,130,246,.15);border-radius:10px;margin-bottom:16px;}
@@ -58,14 +56,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .ov-spinner{width:36px;height:36px;border:3px solid rgba(59,130,246,.2);border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:10px;}
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 .ov-msg{font-size:13px;color:#64748b;font-weight:500;}
-
-/* ✨ 버튼 영역 */
 #ovEnterBtnWrap { position:absolute; opacity:0; visibility:hidden; transform:translateY(15px); transition:all .5s ease; }
 #ovEnterBtnWrap.show { opacity:1; visibility:visible; transform:translateY(0); }
 .ov-enter-btn{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:50px;padding:16px 50px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(59,130,246,.5);transition:all .3s ease;}
 .ov-enter-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(59,130,246,.6);}
 
-/* 탑바 */
+/* 탑바 & 레이아웃 */
 .topbar{position:fixed;top:0;left:0;right:0;height:75px;z-index:2000;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(244,247,249,0.5);backdrop-filter:blur(4px);border-bottom:1px solid transparent;transition:all .4s ease;}
 .topbar.scrolled{background:rgba(255,255,255,0.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,0.6);box-shadow:0 2px 24px rgba(99,102,241,0.06);}
 .logo-container{display:flex;align-items:center;gap:15px;flex:1;}
@@ -103,6 +99,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .custom-select-options.open{display:flex;}
 .custom-option{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#334155;transition:background .2s;}
 .custom-option:hover{background:#F0F5FA;color:#00428E;}
+
 .main{flex:1;padding:25px 30px;display:flex;flex-direction:column;gap:15px;width:100%;max-width:1500px;margin:0 auto;position:relative;z-index:10;}
 .view-section{display:none;animation:fadeIn .4s ease forwards;}
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
@@ -134,9 +131,11 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .tab-btn-sm.active{background:#00428E;color:#fff;}
 .chart-area-65{flex:0 0 65%;max-width:65%;position:relative;height:100%;padding-left:10px;}
 .list-area-35{flex:0 0 35%;max-width:35%;display:flex;flex-direction:column;justify-content:center;border-left:1px solid rgba(226,232,240,.6);padding-left:20px;overflow:hidden;}
-.member-kpi-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.member-kpi-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;position:relative;z-index:2;}
 .scroll-list::-webkit-scrollbar{width:6px;}
 .scroll-list::-webkit-scrollbar-thumb{background:rgba(203,213,225,.6);border-radius:4px;}
+
+/* 인포 툴팁 */
 .info-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;cursor:help;z-index:9999;}
 .info-icon{width:16px;height:16px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .info-wrap:hover .info-icon{background:#00428E;}
@@ -146,54 +145,69 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .info-tooltip ul{padding-left:18px;margin-top:8px;}
 .info-tooltip li{word-break:keep-all;margin-bottom:4px;}
 .info-tooltip b{color:#fff;font-weight:800;}
-/* 워킹 히어로 */
-.wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);min-height:210px;}
-.wp-hero-inner{display:grid;grid-template-columns:280px 1fr 260px;height:100%;position:relative;z-index:2;}
-.wp-hero-profile{padding:24px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid rgba(147,197,253,.25);}
+
+/* ✨ 워킹탭 히어로 (높이 증가 및 프로필 이미지 배경화) */
+.wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);min-height:400px;display:flex;}
+.wp-hero-inner{display:grid;grid-template-columns:300px 1fr 320px;width:100%;position:relative;z-index:2;}
+
+/* 프로필을 사각 배경으로 덮는 설정 */
+.wp-hero-profile { position: relative; overflow: hidden; border-right: 1px solid rgba(147,197,253,0.25); display: flex; flex-direction: column; }
+.wp-hero-profile-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.15; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%); }
+.wp-hero-profile-content { position: relative; z-index: 1; padding: 24px 20px; flex: 1; display: flex; flex-direction: column; }
+
 .wp-hero-tabs{width:100%;display:flex;overflow-x:auto;gap:4px;padding-bottom:16px;scrollbar-width:none;}
 .wp-hero-tabs::-webkit-scrollbar{display:none;}
 .wp-tab-btn{flex-shrink:0;padding:5px 12px;border:1px solid rgba(203,213,225,.4);border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.5);color:#64748b;transition:all .2s;}
 .wp-tab-btn.active{background:#00428E;color:#fff;border-color:transparent;}
 .wp-tab-btn:hover:not(.active){background:rgba(255,255,255,.8);color:#00428E;}
-.wp-profile-photo{width:96px;height:96px;border-radius:50%;border:3px solid rgba(255,255,255,.8);box-shadow:0 4px 20px rgba(59,130,246,.2);background:#dbeafe;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;overflow:hidden;}
-.wp-profile-name{font-size:20px;font-weight:900;color:#1e293b;margin-top:12px;text-align:center;}
-.wp-profile-pos{font-size:12px;color:#64748b;font-weight:600;margin-top:2px;text-align:center;}
-.wp-contrib-bar-wrap{width:100%;margin-top:14px;background:rgba(255,255,255,.55);border-radius:10px;padding:10px 12px;border:1px solid rgba(147,197,253,.2);}
-.wp-contrib-label{font-size:10px;color:#64748b;font-weight:600;margin-bottom:5px;}
-.wp-contrib-bar{height:6px;background:rgba(203,213,225,.4);border-radius:3px;overflow:hidden;}
-.wp-contrib-bar-fill{height:100%;border-radius:3px;transition:width .8s ease;background:linear-gradient(90deg,#00428E,#38bdf8);}
-.wp-contrib-pct{font-size:11px;font-weight:800;color:#00428E;margin-top:4px;}
-.wp-hero-center{padding:24px;display:flex;flex-direction:column;gap:14px;}
-.wp-ai-box{flex:1;background:rgba(255,255,255,.55);border:1px solid rgba(147,197,253,.3);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;}
-.wp-ai-header{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;}
-.wp-ai-gem-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;}
-.wp-ai-content{font-size:13px;line-height:1.65;color:#334155;font-weight:500;}
+
+.wp-profile-name{font-size:26px;font-weight:900;color:#1e293b;text-align:center;letter-spacing:-.03em;}
+.wp-profile-pos{font-size:14px;color:#64748b;font-weight:700;margin-top:2px;text-align:center;}
+
+.wp-contrib-bar-wrap{width:100%;margin-top:20px;background:rgba(255,255,255,.6);border-radius:10px;padding:12px;border:1px solid rgba(147,197,253,.25);display:flex;flex-direction:column;gap:6px;}
+.wp-contrib-label{font-size:11px;color:#475569;font-weight:700;}
+.wp-contrib-bar{height:8px;background:rgba(203,213,225,.4);border-radius:4px;overflow:hidden;}
+.wp-contrib-bar-fill{height:100%;border-radius:4px;transition:width .8s ease;background:linear-gradient(90deg,#00428E,#38bdf8);}
+.wp-contrib-bar-fill.second{background:linear-gradient(90deg,#ec4899,#f43f5e);}
+.wp-contrib-pct{font-size:11px;font-weight:800;color:#00428E;}
+
+.wp-hero-center{padding:30px;display:flex;flex-direction:column;gap:20px;}
+.wp-ai-box{flex:1;background:rgba(255,255,255,.55);border:1px solid rgba(147,197,253,.3);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;}
+.wp-ai-header{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.06em;}
+.wp-ai-gem-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;}
+.wp-ai-content{font-size:14px;line-height:1.7;color:#334155;font-weight:500;}
 .wp-ai-content strong{color:#1d4ed8;font-weight:800;}
 .wp-ai-content .hl-warn{color:#f59e0b;font-weight:700;}
 .wp-ai-content .hl-good{color:#22c55e;font-weight:700;}
 .wp-ai-content .hl-danger{color:#ef4444;font-weight:700;}
-.wp-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.wp-stat-mini{background:rgba(255,255,255,.55);border:1px solid rgba(147,197,253,.25);border-radius:12px;padding:12px 10px;text-align:center;}
-.wp-stat-mini .label{font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:4px;}
-.wp-stat-mini .value{font-size:20px;font-weight:900;line-height:1;}
-.wp-stat-mini .unit{font-size:11px;font-weight:600;color:#64748b;margin-left:1px;}
-.wp-stat-mini .sub{font-size:10px;color:#94a3b8;margin-top:3px;}
-.wp-hero-right{padding:24px 18px;display:flex;flex-direction:column;gap:16px;border-left:1px solid rgba(147,197,253,.25);}
-.wp-right-title{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;}
-.wp-donut-row{display:flex;gap:12px;align-items:center;flex:1;}
-.wp-donut-canvas-wrap{width:90px;height:90px;position:relative;flex-shrink:0;}
-.wp-top3-list{flex:1;display:flex;flex-direction:column;gap:5px;}
-.wp-top3-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#475569;}
-.wp-top3-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-.wp-top3-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.wp-top3-pct{color:#94a3b8;font-size:10px;}
-.wp-metrics-badges{display:flex;flex-direction:column;gap:6px;}
-.wp-metric-badge{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.5);border:1px solid rgba(147,197,253,.2);border-radius:8px;padding:6px 10px;font-size:11px;}
-.wp-metric-badge .name{color:#64748b;font-weight:600;}
-.wp-metric-badge .val{font-weight:800;}
+
+/* ✨ 통계 카드 4개 */
+.wp-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.wp-stat-mini{background:rgba(255,255,255,.6);border:1px solid rgba(147,197,253,.3);border-radius:14px;padding:16px 12px;text-align:center;display:flex;flex-direction:column;justify-content:center;}
+.wp-stat-mini .label{font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px;}
+.wp-stat-mini .value{font-size:24px;font-weight:900;line-height:1;}
+.wp-stat-mini .unit{font-size:12px;font-weight:700;color:#94a3b8;margin-left:2px;}
+.wp-stat-mini .sub{font-size:11px;color:#94a3b8;margin-top:5px;font-weight:600;}
+
+.wp-hero-right{padding:30px 20px;display:flex;flex-direction:column;gap:20px;border-left:1px solid rgba(147,197,253,.25);}
+.wp-right-title{font-size:12px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.05em;}
+.wp-donut-row{display:flex;flex-direction:column;align-items:center;gap:15px;flex:1;}
+.wp-donut-canvas-wrap{width:120px;height:120px;position:relative;flex-shrink:0;}
+.wp-top5-list{width:100%;display:flex;flex-direction:column;gap:5px;}
+.wp-top5-item{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:#334155;background:rgba(255,255,255,0.4);padding:4px 8px;border-radius:6px;}
+.wp-top5-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.wp-top5-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wp-top5-pct{color:#64748b;font-size:11px;font-weight:800;}
+
+/* 3대 지표 2x2 */
+.wp-metrics-badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wp-metric-badge{display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,.5);border:1px solid rgba(147,197,253,.25);border-radius:10px;padding:10px;text-align:center;}
+.wp-metric-badge .name{color:#64748b;font-size:10px;font-weight:700;margin-bottom:4px;}
+.wp-metric-badge .val{font-size:16px;font-weight:900;}
 .wp-metric-badge.good .val{color:#22c55e;}
 .wp-metric-badge.warn .val{color:#f59e0b;}
 .wp-metric-badge.danger .val{color:#ef4444;}
+
 @media(max-width:1200px){
   .wp-hero-inner{grid-template-columns:1fr;}
   .chart-area-65{flex:0 0 100%;max-width:100%;}
@@ -208,19 +222,14 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
 </div>
 
-<!-- ✨ 투명 구슬/먼지가 돌아온 로딩 오버레이 -->
+<!-- 로딩 오버레이 -->
 <div id="loadingOverlay">
   <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
   <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
   <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
-  <div class="ld-dust" style="width:4px;height:4px;top:10%;right:40%;opacity:.2;animation:ldFloatDust1 8s infinite alternate-reverse;"></div>
-  <div class="ld-dust" style="width:7px;height:7px;bottom:20%;right:30%;opacity:.3;animation:ldFloatDust2 5s infinite alternate;"></div>
-  <div class="ld-dust" style="width:5px;height:5px;bottom:10%;left:40%;opacity:.25;animation:ldFloatDust3 9s infinite alternate-reverse;"></div>
-  <div class="ld-dust" style="width:9px;height:9px;top:50%;left:50%;opacity:.35;animation:ldFloatDust1 6s infinite alternate;"></div>
   
   <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div>
   <div class="ld-orb ld-orb-4"></div><div class="ld-orb ld-orb-5"></div><div class="ld-orb ld-orb-6"></div>
-  <div class="ld-orb ld-orb-7"></div><div class="ld-orb ld-orb-8"></div><div class="ld-orb ld-orb-9"></div>
   <div class="ld-orb ld-orb-white-1"></div><div class="ld-orb ld-orb-white-2"></div>
 
   <div class="loading-content">
@@ -229,7 +238,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     <div class="loading-sub-title">경상남도 서부의료원</div>
     <div class="loading-desc" id="loadingDescText">데이터를 수집하고 분석 중입니다...</div>
     
-    <!-- ✨ 글자 안 흔들리게 고정된 하단 영역 -->
     <div id="loadingBottomArea">
       <div id="loadingStatusArea">
         <div class="ov-progress"><div class="ov-progress-fill" id="ovProgress"></div></div>
@@ -284,20 +292,36 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </nav>
+
 <div class="main">
   <!-- PROJECT 탭 -->
   <div id="view-dashboard" class="view-section active">
     <div style="display:flex;gap:15px;margin-bottom:5px;min-height:450px;align-items:stretch;">
       <div class="card" style="flex:1.4;display:flex;flex-direction:column;gap:20px;">
         <div class="card-section-title" style="margin-bottom:0;"><span style="font-size:20px;color:#00428E;font-weight:900;">PROJECT OVERALL</span></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.8);padding:20px 25px;border-radius:12px;">
-          <div><div style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:6px;">선택 기간 총 투입</div><div style="font-size:30px;font-weight:800;color:#00428E;" id="ovTotalHour">0h</div></div>
-          <div><div style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:6px;">참여 인원</div><div style="font-size:30px;font-weight:800;color:#1e293b;" id="ovTotalMember">0명</div></div>
-          <div><div style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:6px;">참여 개월 수</div><div style="font-size:30px;font-weight:800;color:#1e293b;" id="ovTotalMonth">0개월</div></div>
+        <!-- ✨ 4분할 및 구분선 추가 -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:20px 0;">
+          <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);">
+            <div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">선택 기간 총 투입</div>
+            <div style="font-size:26px;font-weight:900;color:#00428E;" id="ovTotalHour">0h</div>
+          </div>
+          <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);">
+            <div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">참여 인원</div>
+            <div style="font-size:26px;font-weight:900;color:#1e293b;" id="ovTotalMember">0명</div>
+          </div>
+          <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);">
+            <div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">참여 개월 수</div>
+            <div style="font-size:26px;font-weight:900;color:#1e293b;" id="ovTotalMonth">0개월</div>
+          </div>
+          <div style="padding:0 20px;">
+            <div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">업무일지 작성 일수</div>
+            <div style="font-size:26px;font-weight:900;color:#7c3aed;" id="ovActiveDays">0일</div>
+          </div>
         </div>
         <div>
           <div style="font-size:14px;font-weight:700;color:#475569;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">경남 서부의료원 vs 타 프로젝트<div id="ovPjRatioLegendWrap" style="display:flex;gap:6px;"></div></div>
-          <div style="height:80px;position:relative;"><canvas id="ovPjRatioBar"></canvas></div>
+          <!-- ✨ 둥근 차트 적용을 위해 높이 조정 -->
+          <div style="height:60px;position:relative;"><canvas id="ovPjRatioBar"></canvas></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:auto;padding-top:10px;">
           <div class="mini-stat-card"><div style="font-size:12px;color:#94a3b8;font-weight:600;">섀넌 엔트로피 평균</div><div style="font-size:24px;font-weight:800;color:#14b8a6;margin-top:6px;" id="ovAvgShan">0.00</div></div>
@@ -349,30 +373,44 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px;">
-      <div class="eval-trend-card" style="min-height:350px;"><div class="eval-trend-title">섀넌 엔트로피<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>0.0~0.5</b> : Deep Work</li><li><b>0.5~1.5</b> : 일반적 상태</li><li><b>1.5~2.5</b> : 파편화 가능성</li><li><b>2.5이상</b> : 번아웃 위험</li></ul></div></div></div><div style="flex:1;min-height:150px;position:relative;"><canvas id="pjShannonChart"></canvas></div></div>
-      <div class="eval-trend-card" style="min-height:350px;"><div class="eval-trend-title">HHI 지수<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>0.15 미만</b> : 저집중</li><li><b>0.15~0.25</b> : 적정 집중</li><li><b>0.40 초과</b> : 병목 위험</li></ul></div></div></div><div style="flex:1;min-height:150px;position:relative;"><canvas id="pjHhiChart"></canvas></div></div>
-      <div class="eval-trend-card" style="min-height:350px;"><div class="eval-trend-title">CV 추이<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>0.3 미만</b> : 일정한 루틴</li><li><b>1.0 이상</b> : 불규칙 패턴</li></ul></div></div></div><div style="flex:1;min-height:150px;position:relative;"><canvas id="pjCvChart"></canvas></div></div>
+      <!-- ✨ 주요 일정 복구됨 -->
+      <div class="eval-trend-card" style="min-height:350px;"><div class="eval-trend-title">섀넌 엔트로피 <span style="font-size:10px;color:#ef4444;margin-left:8px;">(🔴 주요일정)</span><div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>0.0~0.5</b> : Deep Work</li><li><b>0.5~1.5</b> : 일반적 상태</li><li><b>1.5~2.5</b> : 파편화 가능성</li><li><b>2.5이상</b> : 번아웃 위험</li></ul></div></div></div><div style="flex:1;min-height:150px;position:relative;"><canvas id="pjShannonChart"></canvas></div></div>
+      <div class="eval-trend-card" style="min-height:350px;"><div class="eval-trend-title">HHI 지수 <span style="font-size:10px;color:#ef4444;margin-left:8px;">(🔴 주요일정)</span><div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>0.15 미만</b> : 저집중</li><li><b>0.15~0.25</b> : 적정 집중</li><li><b>0.40 초과</b> : 병목 위험</li></ul></div></div></div><div style="flex:1;min-height:150px;position:relative;"><canvas id="pjHhiChart"></canvas></div></div>
+      <div class="eval-trend-card" style="min-height:350px;"><div class="eval-trend-title">CV 추이 <span style="font-size:10px;color:#ef4444;margin-left:8px;">(🔴 주요일정)</span><div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>0.3 미만</b> : 일정한 루틴</li><li><b>1.0 이상</b> : 불규칙 패턴</li></ul></div></div></div><div style="flex:1;min-height:150px;position:relative;"><canvas id="pjCvChart"></canvas></div></div>
       <div class="card" style="min-height:350px;background:rgba(255,255,255,.2);border:1px dashed rgba(203,213,225,.6);display:flex;align-items:center;justify-content:center;"><div style="color:#94a3b8;font-weight:700;font-size:14px;">분석 지표 준비 중</div></div>
     </div>
   </div>
+  
   <!-- WORKING 탭 -->
   <div id="view-members" class="view-section">
     <div class="wp-hero">
       <div class="wp-hero-inner">
+        <!-- ✨ 프로필 전체 이미지 화 -->
         <div class="wp-hero-profile">
-          <div class="wp-hero-tabs" id="wpMemberTabs"></div>
-          <div class="wp-profile-photo" id="wpProfilePhoto">
-            <span id="wpProfileInitial" style="font-size:28px;font-weight:900;color:#1d4ed8;z-index:1;"></span>
-            <img id="wpProfileImg" src="" alt="" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:50%;z-index:2;">
-          </div>
-          <div class="wp-profile-name" id="wpProfileName"></div>
-          <div class="wp-profile-pos" id="wpProfilePos"></div>
-          <div class="wp-contrib-bar-wrap">
-            <div class="wp-contrib-label">서부의료원 기여도</div>
-            <div class="wp-contrib-bar"><div class="wp-contrib-bar-fill" id="wpContribFill" style="width:0%"></div></div>
-            <div class="wp-contrib-pct" id="wpContribPct">0%</div>
+          <img id="wpProfileImgBg" class="wp-hero-profile-bg" src="" onerror="this.style.display='none'">
+          <div class="wp-hero-profile-content">
+            <div class="wp-hero-tabs" id="wpMemberTabs"></div>
+            <div style="flex:1;"></div>
+            <div class="wp-profile-name" id="wpProfileName"></div>
+            <div class="wp-profile-pos" id="wpProfilePos"></div>
+            
+            <div class="wp-contrib-bar-wrap">
+              <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                <div class="wp-contrib-label">전체시간 대비 서부의료원 비율</div>
+                <div class="wp-contrib-pct" id="wpContribPct">0%</div>
+              </div>
+              <div class="wp-contrib-bar"><div class="wp-contrib-bar-fill" id="wpContribFill" style="width:0%"></div></div>
+              
+              <!-- 두번째 바 추가 -->
+              <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
+                <div class="wp-contrib-label">서부의료원 업무 중 나의 비율</div>
+                <div class="wp-contrib-pct" id="wpContribPct2" style="color:#e11d48;">0%</div>
+              </div>
+              <div class="wp-contrib-bar"><div class="wp-contrib-bar-fill second" id="wpContribFill2" style="width:0%"></div></div>
+            </div>
           </div>
         </div>
+
         <div class="wp-hero-center">
           <div class="wp-ai-box">
             <div class="wp-ai-header">
@@ -381,30 +419,59 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
             </div>
             <div class="wp-ai-content"><span id="wpAiText">팀원을 선택하세요.</span></div>
           </div>
+          
+          <!-- ✨ 순서 변경 및 크기 조정 -->
           <div class="wp-stats-row">
-            <div class="wp-stat-mini"><div class="label">총 투입</div><div><span class="value" id="wpStatTotal" style="color:#00428E;">0.0</span><span class="unit">h</span></div><div class="sub" id="wpStatAvgMo">월평균 -</div></div>
-            <div class="wp-stat-mini"><div class="label">참여 기간</div><div><span class="value" id="wpStatMonths" style="color:#1e293b;">0</span><span class="unit">개월</span></div><div class="sub" id="wpStatDateRange">-</div></div>
-            <div class="wp-stat-mini"><div class="label">초과근무</div><div style="display:flex;justify-content:center;gap:10px;margin-top:4px;"><div><div class="value" id="wpStat9h" style="color:#f59e0b;">0</div><div class="sub">9h+</div></div><div style="width:1px;background:#e2e8f0;"></div><div><div class="value" id="wpStat12h" style="color:#ef4444;">0</div><div class="sub">12h+</div></div></div></div>
-            <div class="wp-stat-mini"><div class="label">일평균</div><div><span class="value" id="wpStatDayAvg" style="color:#7c3aed;">0.0</span><span class="unit">h</span></div><div class="sub" id="wpStatActiveDays">작업일 0일</div></div>
+            <div class="wp-stat-mini">
+              <div class="label">참여 기간</div>
+              <div><span class="value" id="wpStatMonths" style="color:#1e293b;">0</span><span class="unit">개월</span></div>
+              <div class="sub" id="wpStatActiveDays">(0일)</div>
+            </div>
+            <div class="wp-stat-mini">
+              <div class="label">투입 시간</div>
+              <div><span class="value" id="wpStatTotal" style="color:#00428E;">0.0</span><span class="unit">h</span></div>
+              <div class="sub" id="wpStatAvgMo">-</div>
+            </div>
+            <div class="wp-stat-mini">
+              <div class="label">평균 근무시간</div>
+              <div><span class="value" id="wpStatDayAvg" style="color:#7c3aed;">0.0</span><span class="unit">h/일</span></div>
+              <div class="sub" id="wpStatMonthAvg">- h/월</div>
+            </div>
+            <div class="wp-stat-mini">
+              <div class="label">초과근무일</div>
+              <div style="display:flex;justify-content:center;gap:6px;margin-top:4px;">
+                <div><div class="value" id="wpStatOt1" style="color:#f59e0b;font-size:16px;">0</div><div class="sub">9~11h</div></div>
+                <div style="width:1px;background:#e2e8f0;"></div>
+                <div><div class="value" id="wpStatOt2" style="color:#f97316;font-size:16px;">0</div><div class="sub">11~12h</div></div>
+                <div style="width:1px;background:#e2e8f0;"></div>
+                <div><div class="value" id="wpStatOt3" style="color:#ef4444;font-size:16px;">0</div><div class="sub">12h+</div></div>
+              </div>
+            </div>
           </div>
         </div>
+
         <div class="wp-hero-right">
-          <div class="wp-right-title">업무유형 TOP 3</div>
+          <div class="wp-right-title">업무유형 TOP 5</div>
           <div class="wp-donut-row">
             <div class="wp-donut-canvas-wrap"><canvas id="wpHeroDonut"></canvas></div>
-            <div class="wp-top3-list" id="wpTop3List"></div>
+            <div class="wp-top5-list" id="wpTop3List"></div> <!-- TOP5 표시될 곳 -->
           </div>
-          <div>
-            <div class="wp-right-title" style="margin-bottom:6px;">분석 3대 지표</div>
+          <div style="margin-top:auto;">
+            <!-- ✨ 3대 지표 2x2 및 툴팁 -->
+            <div class="wp-right-title" style="margin-bottom:8px;display:flex;align-items:center;">
+              분석 3대 지표
+              <div class="info-wrap" style="margin-left:4px;"><div class="info-icon" style="width:14px;height:14px;font-size:9px;">?</div><div class="info-tooltip"><ul><li><b>섀넌 엔트로피</b> : 업무 다양성과 분산(번아웃 위험)</li><li><b>HHI 지수</b> : 특정 업무 쏠림 현상(병목 위험)</li><li><b>CV 변동성</b> : 일일 업무량의 일관성/루틴</li></ul></div></div>
+            </div>
             <div class="wp-metrics-badges">
               <div class="wp-metric-badge"><span class="name">섀넌 엔트로피</span><span class="val" id="wmShan">-</span></div>
               <div class="wp-metric-badge"><span class="name">HHI 지수</span><span class="val" id="wmHhi">-</span></div>
-              <div class="wp-metric-badge"><span class="name">CV 변동성</span><span class="val" id="wmCv">-</span></div>
+              <div class="wp-metric-badge" style="grid-column:1/-1;flex-direction:row;justify-content:space-between;padding:12px 16px;"><span class="name" style="margin:0;">CV 변동성</span><span class="val" id="wmCv">-</span></div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    
     <div class="section-divider"><h2>📂 업무유형 분석</h2></div>
     <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:15px;margin-top:8px;">
       <div class="card" style="height:300px;"><div class="card-section-title"><span>월별 업무 유형</span><div id="wpStackLegend" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:60%;"></div></div><div style="flex:1;min-height:0;"><canvas id="wpStackedBar"></canvas></div></div>
@@ -415,11 +482,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="card" style="height:300px;"><div class="card-section-title">설계단계별 비중</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpDonutCat"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;" id="wpCatCenter"></div></div></div>
       <div class="card" style="height:300px;"><div class="card-section-title">업무 전환 횟수</div><div style="flex:1;min-height:0;margin-top:5px;"><canvas id="wpSwitchBar"></canvas></div></div>
     </div>
+    
     <div class="section-divider"><h2>⏱️ 업무시간 분석</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:8px;">
-      <div class="card" style="height:260px;"><div class="card-section-title">섀넌 엔트로피</div><div style="flex:1;min-height:0;"><canvas id="wpShannonChart"></canvas></div></div>
-      <div class="card" style="height:260px;"><div class="card-section-title">HHI 지수</div><div style="flex:1;min-height:0;"><canvas id="wpHhiChart"></canvas></div></div>
-      <div class="card" style="height:260px;"><div class="card-section-title">CV 변동성</div><div style="flex:1;min-height:0;"><canvas id="wpCvChart"></canvas></div></div>
+      <div class="card" style="height:260px;"><div class="card-section-title">섀넌 엔트로피</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpShannonChart"></canvas></div></div>
+      <div class="card" style="height:260px;"><div class="card-section-title">HHI 지수</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpHhiChart"></canvas></div></div>
+      <div class="card" style="height:260px;"><div class="card-section-title">CV 변동성</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpCvChart"></canvas></div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:15px;margin-top:15px;">
       <div class="card" style="height:300px;"><div class="card-section-title">집중 vs 분산 업무</div><div style="flex:1;min-height:0;"><canvas id="wpFocusBar"></canvas></div></div>
@@ -432,6 +500,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       </div>
     </div>
   </div>
+  
   <!-- PERSONAL KPI 탭 -->
   <div id="view-kpieval" class="view-section">
     <div class="eval-profile-card" id="kpiProfileCard" style="margin-bottom:0;"></div>
@@ -446,11 +515,11 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </div>
+
 <script>
 // ── 전역 상수 ──
 var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
-// ★ 이미지 절대경로 (GitHub Pages)
-var GITHUB_BASE = './';
+var GITHUB_BASE = 'https://jinkwanuri-droid.github.io/KPI_GNS/';
 var PROFILE_IMG = {
   '윤진관':  GITHUB_BASE + 'jk.yoon.jpg',
   '김효언':  GITHUB_BASE + 'he.kim.jpg',
@@ -459,7 +528,7 @@ var PROFILE_IMG = {
 };
 var DYNAMIC_COLORS = ['#00428E','#7545fb','#14b8a6','#eb5f8c','#f59e0b','#f97316','#ec4899','#8b5cf6'];
 var CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
-var CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
+var CAT_COLORS = ['#3b82f6','#0ea5e9','#0284c7','#0369a1']; // ✨ 예쁜 블루톤 스펙트럼으로 변경
 var SUB_PAL = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f7','#f43f5e','#f97316','#facc15','#4ade80','#14b8a6'];
 var OT_COLORS = ['#818cf8','#6366f1','#4A90E2','#00428E'];
 var RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력'];
@@ -472,6 +541,7 @@ var AI_COMMENTS = {
   '정인태':'CV 변동성 <strong>1.14</strong>로 <span class="hl-danger">업무 편차가 큰 편</span>입니다. 월별 업무 계획 세분화를 권장합니다.',
   '김효언':'섀넌 엔트로피 <strong>0.92</strong>로 <span class="hl-good">주업무 집중도가 높고 안정적</span>입니다. Deep Work 패턴이 유지되고 있습니다.'
 };
+
 // ── 전역 변수 ──
 var MEMBERS=[], MC={}, INITIALS={};
 var SCHEDULE_DATA=[], EVAL_DATA=[], RAW=[];
@@ -482,10 +552,27 @@ window.filterStartIndex=0; window.filterEndIndex=11; window.lastClickedIndex=0;
 var filterYears=[2024,2025,2026], filterQuarters=['Q1','Q2','Q3','Q4'];
 var totalNodes=filterYears.length*4;
 var percentPositions=[];
-// ── Chart.js 설정 ──
+
+// ── Chart.js 커스텀 플러그인 (주요일정 수직선) ──
+Chart.register({
+  id: 'verticalLine',
+  beforeDatasetsDraw(chart){
+    var ctx=chart.ctx;
+    chart.data.datasets.forEach(function(ds,i){
+      if(ds.isSchedule){
+        var meta=chart.getDatasetMeta(i);
+        meta.data.forEach(function(pt){
+          ctx.save();ctx.beginPath();ctx.moveTo(pt.x,pt.y);ctx.lineTo(pt.x,chart.scales.y.bottom);
+          ctx.lineWidth=0.5;ctx.strokeStyle='rgba(239, 68, 68, 0.5)';ctx.stroke();ctx.restore();
+        });
+      }
+    });
+  }
+});
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
 Chart.register(ChartDataLabels);
+
 // ── 유틸 ──
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
@@ -495,6 +582,7 @@ function getMos(d){return Array.from(new Set(d.map(function(r){return r.date.sli
 function getQ(ds){var y=ds.slice(0,4);var m=parseInt(ds.slice(5,7));return y+'-Q'+Math.ceil(m/3);}
 function dC(id){if(CH[id]){try{CH[id].destroy();}catch(e){}delete CH[id];}}
 function hRgba(hex,a){try{var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+a+')';}catch(e){return hex;}}
+
 function filtered(){
   return RAW.filter(function(r){
     var q=getQ(r.date),y=parseInt(q.slice(0,4)),qN=parseInt(q.slice(6,7))-1;
@@ -511,14 +599,12 @@ function filteredEvalQs(){
 }
 function getAvatar(name,size,fontSize){
   size=size||46; fontSize=fontSize||14;
-  var c=MC[name]||'#00428E';
-  var init=INITIALS[name]||'A';
+  var c=MC[name]||'#00428E', init=INITIALS[name]||'A';
   if(name==='ALL') return '<div class="avatar-base" style="width:'+size+'px;height:'+size+'px;font-size:'+fontSize+'px;background:'+c+';border:2px solid '+c+';">A</div>';
   if(PROFILE_IMG[name]){
     return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0;border-radius:50%;border:2.5px solid '+c+';overflow:hidden;background:'+c+';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:'+fontSize+'px;">'
       +'<span style="z-index:1;">'+init+'</span>'
-      +'<img src="'+PROFILE_IMG[name]+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:50%;z-index:2;" onerror="this.style.display=\'none\'" loading="lazy">'
-      +'</div>';
+      +'<img src="'+PROFILE_IMG[name]+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:50%;z-index:2;" onerror="this.style.display=\'none\'" loading="lazy"></div>';
   }
   return '<div class="avatar-base" style="width:'+size+'px;height:'+size+'px;font-size:'+fontSize+'px;background:'+c+';border:2px solid '+c+';">'+init+'</div>';
 }
@@ -528,31 +614,22 @@ function hideLoadingOverlay(){
   var el=document.getElementById('loadingOverlay');
   if(el){el.style.opacity='0';setTimeout(function(){el.style.display='none';},600);}
 }
-
-// ✨ 버튼 표시할 때 글자 밀림 방지되도록 opacity/visibility로만 변경
 function showEnterBtn(){
   var statusArea = document.getElementById('loadingStatusArea');
-  if(statusArea) {
-    statusArea.style.opacity = '0';
-    statusArea.style.visibility = 'hidden';
-  }
+  if(statusArea) { statusArea.style.opacity = '0'; statusArea.style.visibility = 'hidden'; }
   var btnWrap = document.getElementById('ovEnterBtnWrap');
-  if(btnWrap) {
-    btnWrap.classList.add('show');
-  }
+  if(btnWrap) { btnWrap.classList.add('show'); }
 }
-
 function setProgress(pct,msg){
   document.getElementById('ovProgress').style.width=pct+'%';
   if(msg) document.getElementById('ovMsg').textContent=msg;
 }
 
-// ── 탑바 ──
+// ── 네비게이션 및 슬라이더 ──
 window.addEventListener('scroll',function(){
   if(window.scrollY>20) document.getElementById('topbar').classList.add('scrolled');
   else document.getElementById('topbar').classList.remove('scrolled');
 },{passive:true});
-// ── Nav ──
 function updateNavSlider(){
   var a=document.querySelector('.nav-item.active');
   var s=document.getElementById('navSlider');
@@ -567,29 +644,22 @@ function showView(view,el){
   else if(view==='kpieval') renderEvalTab();
   else renderDashboardTab();
 }
-// ── 드롭다운 ──
 function renderCustomDropdown(){
   var html='<div class="custom-option" onclick="selectGlobalMember(\'ALL\')">'+getAvatar('ALL',24,11)+' 전체 보기</div>';
   MEMBERS.forEach(function(name){html+='<div class="custom-option" onclick="selectGlobalMember(\''+name+'\')">'+getAvatar(name,24,11)+' '+name+'</div>';});
-  document.getElementById('customSelectOptions').innerHTML=html;
-  updateCustomSelectTrigger();
+  document.getElementById('customSelectOptions').innerHTML=html; updateCustomSelectTrigger();
 }
 function toggleDropdown(){document.getElementById('customSelectOptions').classList.toggle('open');}
 function selectGlobalMember(val){
-  GLOBAL_MEMBER=val;
-  document.getElementById('customSelectOptions').classList.remove('open');
+  GLOBAL_MEMBER=val; document.getElementById('customSelectOptions').classList.remove('open');
   updateCustomSelectTrigger();
-  var aid=document.querySelector('.view-section.active').id;
-  if(aid==='view-kpieval') renderEvalTab();
+  if(document.querySelector('.view-section.active').id==='view-kpieval') renderEvalTab();
 }
 function updateCustomSelectTrigger(){
   document.getElementById('customSelectTrigger').innerHTML=getAvatar(GLOBAL_MEMBER,28,12)+' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
 }
-document.addEventListener('click',function(e){
-  if(!document.getElementById('globalMemberSelectWrap').contains(e.target))
-    document.getElementById('customSelectOptions').classList.remove('open');
-});
-// ── 슬라이더 ──
+document.addEventListener('click',function(e){if(!document.getElementById('globalMemberSelectWrap').contains(e.target))document.getElementById('customSelectOptions').classList.remove('open');});
+
 function initSlider(){
   var nc=document.getElementById('nodesContainer'),yr=document.getElementById('yearRow');
   nc.innerHTML='';yr.innerHTML='';
@@ -597,12 +667,9 @@ function initSlider(){
   for(var i=0;i<totalNodes;i++){posArr.push(cPos);if(i<totalNodes-1)cPos+=(i%4===3?1.6:1);}
   percentPositions=posArr.map(function(p){return (p/cPos)*100;});
   filterYears.forEach(function(y,i){
-    var el=document.createElement('div');
-    el.className='year-label';el.innerText=y;
-    var idx=i;
-    el.onclick=function(){window.filterStartIndex=idx*4;window.filterEndIndex=idx*4+3;updateFilterUI();};
-    el.style.left=((percentPositions[i*4]+percentPositions[i*4+3])/2)+'%';
-    yr.appendChild(el);
+    var el=document.createElement('div');el.className='year-label';el.innerText=y;
+    var idx=i; el.onclick=function(){window.filterStartIndex=idx*4;window.filterEndIndex=idx*4+3;updateFilterUI();};
+    el.style.left=((percentPositions[i*4]+percentPositions[i*4+3])/2)+'%'; yr.appendChild(el);
   });
   for(var i=0;i<totalNodes;i++){
     (function(idx){
@@ -611,8 +678,7 @@ function initSlider(){
         if(e.shiftKey){window.filterStartIndex=Math.min(window.lastClickedIndex,idx);window.filterEndIndex=Math.max(window.lastClickedIndex,idx);}
         else{window.filterStartIndex=window.filterEndIndex=window.lastClickedIndex=idx;}
         updateFilterUI();
-      };
-      nc.appendChild(n);
+      }; nc.appendChild(n);
     })(i);
   }
   updateFilterUI();
@@ -622,8 +688,7 @@ function updateFilterUI(){
   document.querySelectorAll('.node').forEach(function(n,i){
     n.className='node';
     if(i>=window.filterStartIndex&&i<=window.filterEndIndex){
-      n.classList.add('active');
-      if(i===window.filterStartIndex||i===window.filterEndIndex) n.classList.add('endpoint');
+      n.classList.add('active'); if(i===window.filterStartIndex||i===window.filterEndIndex) n.classList.add('endpoint');
     }
   });
   if(percentPositions.length>0){
@@ -641,25 +706,21 @@ function renderAllViews(){
   if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(WP_MEMBER);
   if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab();
 }
+
 // ── 데이터 로드 ──
 function loadDataFromSheets(){
   setProgress(20,'서버 연결 중...');
   fetch(APPS_SCRIPT_URL+'?action=all&t='+Date.now())
-  .then(function(res){
-    setProgress(50,'데이터 파싱 중...');
-    return res.json();
-  })
+  .then(function(res){ setProgress(50,'데이터 파싱 중...'); return res.json(); })
   .then(function(json){
     setProgress(75,'차트 렌더링 중...');
     SCHEDULE_DATA=json.schedule||[];
     EVAL_DATA=(json.eval||[]).map(function(r){
-      var qtr=String(r['분기']||'').trim();
-      var qF=qtr.startsWith('Q')?qtr:'Q'+qtr;
+      var qtr=String(r['분기']||'').trim(), qF=qtr.startsWith('Q')?qtr:'Q'+qtr;
       return {q:String(r['연도']||'')+'-'+qF,name:String(r['성명']||'').trim(),vals:[parseFloat(r['적극성'])||0,parseFloat(r['생산성'])||0,parseFloat(r['전문성'])||0,parseFloat(r['창의성'])||0,parseFloat(r['협업능력'])||0]};
     }).filter(function(d){return d.name&&d.q&&d.q.length>3;});
     RAW=(json.work||[]).filter(function(r){return r.name&&r.date&&r.min>0;}).map(function(r){
-      var rawPj=String(r.project||r['프로젝트']||r['PJ Code']||r['PJ_CODE']||r['pj code']||r['pj_code']||r.pjCode||'').trim();
-      var pjType='공통업무';
+      var rawPj=String(r.project||r['프로젝트']||r['PJ Code']||r['PJ_CODE']||r['pj code']||r['pj_code']||r.pjCode||'').trim(), pjType='공통업무';
       if(rawPj.includes('24188')||rawPj.includes('서부의료원')) pjType='경남 서부의료원';
       else if(/^[0-9]+$/.test(rawPj)&&rawPj!=='') pjType='타 프로젝트';
       return {name:String(r.name).trim(),pos:String(r.pos||'').trim(),date:String(r.date).slice(0,10),cat:String(r.cat||'미분류').trim(),sub:String(r.sub||'기타').trim(),project:pjType,min:parseInt(r.min)||0};
@@ -674,10 +735,7 @@ function loadDataFromSheets(){
     });
     WP_MEMBER=MEMBERS[0]||null;
     setProgress(100,'완료!');
-    initSlider();
-    renderCustomDropdown();
-    updateNavSlider();
-    renderDashboardTab();
+    initSlider(); renderCustomDropdown(); updateNavSlider(); renderDashboardTab();
     document.getElementById('loadingDescText').textContent='데이터 분석 완료';
     document.getElementById('loadingDescText').style.color='#2563eb';
     showEnterBtn();
@@ -687,36 +745,55 @@ function loadDataFromSheets(){
     showEnterBtn();
   });
 }
+
 // ════════ PROJECT 탭 ════════
 function renderDashboardTab(){
   var all=filtered();if(!all.length)return;
-  var totalMin=all.reduce(function(s,r){return s+r.min;},0);
-  var mos=getMos(all);
-  var pjData=all.filter(function(r){return r.project==='경남 서부의료원';});
-  var pjMos=getMos(pjData);
+  var totalMin=all.reduce(function(s,r){return s+r.min;},0), mos=getMos(all);
+  var pjData=all.filter(function(r){return r.project==='경남 서부의료원';}), pjMos=getMos(pjData);
+  var activeDaysTotal = new Set(all.map(function(r){return r.date;})).size; // ✨ 업무일지 작성 일수
+  
   document.getElementById('ovTotalHour').innerText=fH(totalMin)+'h';
   document.getElementById('ovTotalMember').innerText=MEMBERS.length+'명';
   document.getElementById('ovTotalMonth').innerText=mos.length+'개월';
+  document.getElementById('ovActiveDays').innerText=activeDaysTotal+'일'; // 추가됨
+
   renderOvProjectRatio(all);
+  
   var grid=document.getElementById('topKpiGrid');grid.innerHTML='';
   var gnwmcTotalMin=pjData.reduce(function(s,r){return s+r.min;},0);
+  
   MEMBERS.forEach(function(name){
     var memData=all.filter(function(r){return r.name===name;});
     var tot=memData.reduce(function(s,r){return s+r.min;},0);
-    var posFound=memData.find(function(r){return r.name===name;});
-    var pos=posFound?posFound.pos:'';
+    var posFound=memData.find(function(r){return r.name===name;}), pos=posFound?posFound.pos:'';
     var mPj=0,oPj=0,cPj=0;
     memData.forEach(function(r){if(r.project==='경남 서부의료원')mPj+=r.min;else if(r.project==='타 프로젝트')oPj+=r.min;else cPj+=r.min;});
     var pct=gnwmcTotalMin>0?Math.round(mPj/gnwmcTotalMin*100):0;
     var p1=tot>0?(mPj/tot*100):0,p2=tot>0?(oPj/tot*100):0,p3=tot>0?(cPj/tot*100):0;
+    
     var mc=document.createElement('div');mc.className='card kpi-card';
     mc.style.border='1px solid '+hRgba(MC[name]||'#00428E',0.5);
-    mc.innerHTML='<div class="member-kpi-header"><div><div style="font-size:18px;font-weight:900;color:#1e293b;">'+name+'</div><div style="font-size:11px;color:#94a3b8;">'+pos+'</div></div>'+getAvatar(name,46,14)+'</div>'
-      +'<div style="color:'+MC[name]+';font-size:28px;font-weight:800;">'+fH(tot)+'h <span style="font-size:14px;color:#64748b;">| '+fH(mPj)+'h</span></div>'
-      +'<div style="margin-top:8px;"><div style="font-size:11px;display:flex;justify-content:space-between;"><span>GNWMC 기여도</span><span>'+pct+'%</span></div><div style="height:8px;background:#f1f5f9;border-radius:4px;margin-top:4px;overflow:hidden;"><div style="height:100%;background:'+MC[name]+';width:'+pct+'%;border-radius:4px;"></div></div></div>'
-      +'<div style="margin-top:4px;display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:12px;"><div style="width:'+p1+'%;background:#00428E;"></div><div style="width:'+p2+'%;background:#3b82f6;"></div><div style="width:'+p3+'%;background:#cbd5e1;"></div></div>';
+    mc.style.position='relative'; mc.style.overflow='hidden';
+    
+    // ✨ 팀원 카드 배경 이미지 삽입
+    var bgImgHtml = PROFILE_IMG[name] ? '<img src="'+PROFILE_IMG[name]+'" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.08; z-index:0; filter:grayscale(100%);">' : '';
+    
+    mc.innerHTML = bgImgHtml + '<div style="position:relative; z-index:1; display:flex; flex-direction:column; height:100%; justify-content:center;">'
+      +'<div class="member-kpi-header"><div><div style="font-size:18px;font-weight:900;color:#1e293b;">'+name+'</div><div style="font-size:11px;color:#94a3b8;">'+pos+'</div></div></div>'
+      // ✨ 시간 스왑: 서부의료원 큼 | 총작음
+      +'<div style="color:'+MC[name]+';font-size:28px;font-weight:800;margin-top:4px;">'+fH(mPj)+'h <span style="font-size:13px;color:#64748b;font-weight:600;">| 총 '+fH(tot)+'h</span></div>'
+      // ✨ 가로선 추가
+      +'<div style="height:1px;background:rgba(226,232,240,0.8);margin:10px 0;"></div>'
+      +'<div style="font-size:11px;color:#64748b;font-weight:600;">GNWMC 팀원 내 기여도</div>'
+      +'<div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;"><div style="height:100%;background:'+MC[name]+';width:'+pct+'%;border-radius:4px;"></div></div><span style="font-size:11px;font-weight:700;color:'+MC[name]+';">'+pct+'%</span></div>'
+      // ✨ 전체시간 대비 서부의료원 비율 (제목 및 수치)
+      +'<div style="margin-top:12px;font-size:11px;color:#64748b;font-weight:600;">전체시간 대비 서부의료원 투입 비율</div>'
+      +'<div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;display:flex;height:8px;border-radius:4px;overflow:hidden;"><div style="width:'+p1+'%;background:#00428E;"></div><div style="width:'+p2+'%;background:#3b82f6;"></div><div style="width:'+p3+'%;background:#cbd5e1;"></div></div><span style="font-size:11px;font-weight:700;color:#64748b;">'+p1.toFixed(0)+'%</span></div>'
+      +'</div>';
     grid.appendChild(mc);
   });
+
   if(pjData.length>0){
     renderDashStage(pjData);renderDashCompare(pjData);
     renderDashDonut(pjData);renderDashTimeline(pjData,pjMos);
@@ -726,6 +803,7 @@ function renderDashboardTab(){
     renderSHCV(pjData,dates,'#00428E','pj');
   }
 }
+
 function renderOvProjectRatio(all){
   dC('ovPjRatioBar');
   var mainPj=0,otherPj=0,commonPj=0;
@@ -735,20 +813,32 @@ function renderOvProjectRatio(all){
   document.getElementById('ovPjRatioLegendWrap').innerHTML=items.map(function(item){
     return '<div class="legend-item '+(hlPjRatio!==null&&hlPjRatio!==item.k?'dimmed':'')+'" onclick="ovTogglePjR(\''+item.k+'\')"><div class="legend-dot" style="background:'+item.c+'"></div><span style="font-size:11px;">'+item.k.replace('경남 ','')+'</span></div>';
   }).join('');
+  
   CH.ovPjRatioBar=new Chart(document.getElementById('ovPjRatioBar').getContext('2d'),{
     type:'bar',
     data:{labels:[''],datasets:[
-      {label:'경남 서부의료원',data:[mToH(mainPj)],backgroundColor:(hlPjRatio===null||hlPjRatio==='경남 서부의료원')?'#00428E':'#e2e8f0',barPercentage:0.9,categoryPercentage:1.0},
-      {label:'타 프로젝트',data:[mToH(otherPj)],backgroundColor:(hlPjRatio===null||hlPjRatio==='타 프로젝트')?'#3b82f6':'#e2e8f0',barPercentage:0.9,categoryPercentage:1.0},
-      {label:'공통업무',data:[mToH(commonPj)],backgroundColor:(hlPjRatio===null||hlPjRatio==='공통업무')?'#cbd5e1':'#e2e8f0',barPercentage:0.9,categoryPercentage:1.0}
+      // ✨ 두께 60px 얇게 조절, 모서리 둥글게(borderRadius)
+      {label:'경남 서부의료원',data:[mToH(mainPj)],backgroundColor:(hlPjRatio===null||hlPjRatio==='경남 서부의료원')?'#00428E':'#e2e8f0',barThickness:60,borderRadius:{topLeft:10, bottomLeft:10}},
+      {label:'타 프로젝트',data:[mToH(otherPj)],backgroundColor:(hlPjRatio===null||hlPjRatio==='타 프로젝트')?'#3b82f6':'#e2e8f0',barThickness:60},
+      {label:'공통업무',data:[mToH(commonPj)],backgroundColor:(hlPjRatio===null||hlPjRatio==='공통업무')?'#cbd5e1':'#e2e8f0',barThickness:60,borderRadius:{topRight:10, bottomRight:10}}
     ]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},datalabels:{display:true,color:'#fff',font:{weight:'bold',size:12},anchor:'center',align:'center',textAlign:'center',
-        formatter:function(v,ctx){if(v<=0)return'';var pct=(v/mToH(tot)*100).toFixed(1);return fmt(v)+'h\n('+pct+'%)';}
-      }},scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}}
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        datalabels:{display:true,
+          // ✨ 회색바(공통업무, index 2)일 때 글자색 어둡게
+          color:function(ctx){ return ctx.datasetIndex===2 ? '#334155' : '#fff'; },
+          font:{weight:'bold',size:12},anchor:'center',align:'center',textAlign:'center',
+          formatter:function(v,ctx){if(v<=0)return'';var pct=(v/mToH(tot)*100).toFixed(1);return fmt(v)+'h\n('+pct+'%)';}
+        }
+      },
+      scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}
+    }
   });
 }
 window.ovTogglePjR=function(b){hlPjRatio=hlPjRatio===b?null:b;renderOvProjectRatio(filtered());};
+
 function renderDashStage(all){
   dC('stageChart');
   var catMap=grp(all,'cat'),tot=Object.values(catMap).reduce(function(a,b){return a+b;},0);if(!tot)return;
@@ -758,7 +848,8 @@ function renderDashStage(all){
   CH.stageChart=new Chart(document.getElementById('stageChart').getContext('2d'),{
     type:'doughnut',
     data:{labels:CAT_ORDER,datasets:[{data:CAT_ORDER.map(function(c){return mToH(catMap[c]||0);}),backgroundColor:CAT_ORDER.map(function(c,i){return (hlStage===null||hlStage===c)?CAT_COLORS[i]:'#e2e8f0';}),borderWidth:2,borderColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',layout:{padding:25},
+    // ✨ 여백 조절하여 라벨 잘림 방지
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',layout:{padding:{top:25,bottom:25,left:35,right:35}},
       plugins:{legend:{display:false},datalabels:{display:function(ctx){return ctx.dataset.data[ctx.dataIndex]>0;},color:'#1e293b',font:{weight:'bold',size:10},anchor:'end',align:'end',textAlign:'center',
         formatter:function(v,ctx){var pct=(v/mToH(tot)*100).toFixed(1);return ctx.chart.data.labels[ctx.dataIndex]+'\n'+fmt(v)+'h ('+pct+'%)';}
       }},onClick:function(e,els){if(els.length)dTogStage(CAT_ORDER[els[0].index]);else{hlStage=null;var p=filtered().filter(function(r){return r.project==='경남 서부의료원';});renderDashStage(p);renderDashCompare(p);}}}
@@ -766,6 +857,7 @@ function renderDashStage(all){
   document.getElementById('stageCenter').innerText=fH(tot)+'h';
 }
 window.dTogStage=function(cat){hlStage=hlStage===cat?null:cat;var p=filtered().filter(function(r){return r.project==='경남 서부의료원';});renderDashStage(p);renderDashCompare(p);};
+
 function renderDashCompare(all){
   dC('compareChart');if(!all.length)return;
   var dss=MEMBERS.map(function(name){
@@ -774,9 +866,11 @@ function renderDashCompare(all){
   document.getElementById('dashCompareLegendWrap').innerHTML=MEMBERS.map(function(n){return '<div class="legend-item" style="font-size:11px;"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>';}).join('');
   CH.compareChart=new Chart(document.getElementById('compareChart').getContext('2d'),{
     type:'bar',data:{labels:CAT_ORDER,datasets:dss},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end',formatter:function(v){return v>0?v.toFixed(1):'';}}}  ,scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'10%'}}}
+    // ✨ 여백 조절
+    options:{responsive:true,maintainAspectRatio:false, layout:{padding:{top:15}}, plugins:{legend:{display:false},datalabels:{display:true,color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end',formatter:function(v){return v>0?v.toFixed(1):'';}}}  ,scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'10%'}}}
   });
 }
+
 function renderDashDonut(all){
   dC('donutChart');
   var subMap=grp(all,'sub'),tot=Object.values(subMap).reduce(function(a,b){return a+b;},0);
@@ -790,13 +884,15 @@ function renderDashDonut(all){
   var labels=topArr.slice(0,7).map(function(e){return e[0];}),data=topArr.slice(0,7).map(function(e){return mToH(e[1]);});
   CH.donutChart=new Chart(document.getElementById('donutChart').getContext('2d'),{
     type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:labels.map(function(l,i){return (hlDonutWork===null||hlDonutWork===l)?SUB_PAL[i]:'#e2e8f0';}),borderWidth:2,borderColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:30},
+    // ✨ 패딩 크게 주어 라벨 안잘리게
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:30,bottom:30,left:40,right:40}},
       plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'800'},textAlign:'center',
         formatter:function(v,ctx){var pct=(v/mToH(tot)*100).toFixed(1);return ctx.chart.data.labels[ctx.dataIndex]+'\n'+fmt(v)+'h ('+pct+'%)';},anchor:'end',align:'end'
       }},onClick:function(e,els){if(els.length)dTogDonut(labels[els[0].index]);else{hlDonutWork=null;renderDashDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));}}}
   });
 }
 window.dTogDonut=function(k){hlDonutWork=hlDonutWork===k?null:k;renderDashDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
+
 function renderDashTimeline(all,mos){
   dC('timelineChart');if(!mos.length)return;
   var ctx=document.getElementById('timelineChart').getContext('2d');
@@ -806,9 +902,10 @@ function renderDashTimeline(all,mos){
     return {label:name,data:mos.map(function(m){return mToH(moMap[m]||0);}),borderColor:isHl?c:'#e2e8f0',backgroundColor:isHl?hRgba(c,0.15):'transparent',borderWidth:2,tension:0.3,fill:true,pointRadius:2,pointHoverRadius:5};
   });
   document.getElementById('timelineLegendWrap').innerHTML=MEMBERS.map(function(n){return '<div class="legend-item '+(hlTimeline!==null&&hlTimeline!==n?'dimmed':'')+'" onclick="dTogTimeline(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>';}).join('');
-  CH.timelineChart=new Chart(ctx,{type:'line',data:{labels:mos,datasets:dss},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0}}}});
+  CH.timelineChart=new Chart(ctx,{type:'line',data:{labels:mos,datasets:dss},options:{responsive:true,maintainAspectRatio:false,layout:{padding:15},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0}}}});
 }
 window.dTogTimeline=function(name){hlTimeline=hlTimeline===name?null:name;var p=filtered().filter(function(r){return r.project==='경남 서부의료원';});renderDashTimeline(p,getMos(p));};
+
 function renderDashHeat(all){
   var allYears=Array.from(new Set(all.map(function(r){return r.date.slice(0,4);}))).sort();
   var targetYear=allYears[allYears.length-1]||'2024';
@@ -823,8 +920,7 @@ window.renderHeatmapOnly=function(year){
   pjData.filter(function(r){return r.date.startsWith(year+'-');}).forEach(function(r){dailyMap[r.date]=(dailyMap[r.date]||0)+r.min;});
   var mat=Array.from({length:5},function(){return new Array(12).fill(0);}),hasMo=new Array(12).fill(false),maxV=1;
   Object.keys(dailyMap).forEach(function(d){var sum=dailyMap[d],p=d.split('-'),mo=parseInt(p[1])-1,day=parseInt(p[2]),fd=new Date(parseInt(year),mo,1).getDay(),wk=Math.ceil((day+fd)/7)-1;if(wk>=0&&wk<5){mat[wk][mo]+=sum;hasMo[mo]=true;if(mat[wk][mo]>maxV)maxV=mat[wk][mo];}});
-  var th='<thead><tr><th style="width:30px;"></th>';
-  MONTH_KO.forEach(function(l,i){th+='<th style="color:'+(hasMo[i]?'#00428E':'#cbd5e1')+';font-weight:'+(hasMo[i]?'800':'500')+';">'+l+'</th>';});th+='</tr></thead>';
+  var th='<thead><tr><th style="width:30px;"></th>';MONTH_KO.forEach(function(l,i){th+='<th style="color:'+(hasMo[i]?'#00428E':'#cbd5e1')+';font-weight:'+(hasMo[i]?'800':'500')+';">'+l+'</th>';});th+='</tr></thead>';
   var tb='<tbody>';
   for(var w=0;w<5;w++){
     tb+='<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">'+(w+1)+'주</td>';
@@ -836,6 +932,7 @@ window.renderHeatmapOnly=function(year){
   }
   document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
+
 function renderDashOvertimeBars(all){
   dC('dashOvertimeBarChart');
   var dailyMap={};all.forEach(function(r){var k=r.name+'|'+r.date;dailyMap[k]=(dailyMap[k]||0)+r.min;});
@@ -843,9 +940,10 @@ function renderDashOvertimeBars(all){
   Object.values(dailyMap).forEach(function(m){if(m>=540&&m<600)counts[0]++;else if(m>=600&&m<660)counts[1]++;else if(m>=660&&m<720)counts[2]++;else if(m>=720)counts[3]++;});
   CH.dashOvertimeBarChart=new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'),{
     type:'bar',data:{labels:OVERTIME_RANGES,datasets:[{data:counts,backgroundColor:counts.map(function(_,i){return (hlOvertimeRange===null||hlOvertimeRange===i)?OT_COLORS[i]:'#e2e8f0';}),borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',formatter:function(v){return v>0?v+'일':'';}}}  ,scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}}
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:30}},plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',formatter:function(v){return v>0?v+'일':'';}}}  ,scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}}
   });
 }
+
 function renderDashMonthlyOt(all,mos){
   dC('dashMonthlyOvertimeChart');
   var bands=['9~10h','10~11h','11~12h','12h 이상'],bandData=[[],[],[],[]];
@@ -858,10 +956,11 @@ function renderDashMonthlyOt(all,mos){
   document.getElementById('dashMonthlyOtLegendWrap').innerHTML=bands.map(function(b,i){return '<div class="legend-item '+(hlMonthlyOt!==null&&hlMonthlyOt!==b?'dimmed':'')+'" onclick="dTogMonthlyOt(\''+b+'\')"><div class="legend-dot" style="background:'+OT_COLORS[i]+'"></div><span style="font-size:12px;">'+b+'</span></div>';}).join('');
   CH.dashMonthlyOvertimeChart=new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'),{
     type:'bar',data:{labels:mos,datasets:bands.map(function(b,i){return {label:b,data:bandData[i],backgroundColor:(hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0',stack:'S0',borderRadius:2};})},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}}
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}}
   });
 }
 window.dTogMonthlyOt=function(b){hlMonthlyOt=hlMonthlyOt===b?null:b;var p=filtered().filter(function(r){return r.project==='경남 서부의료원';});renderDashMonthlyOt(p,getMos(p));};
+
 function renderDashOvertimeDonut(all){
   dC('dashOvertimeDonutChart9');dC('dashOvertimeDonutChart12');
   var dMain=[],dSub=[];
@@ -875,15 +974,18 @@ function renderDashOvertimeDonut(all){
     if(!dataArr.length)return;
     CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
       type:'doughnut',data:{labels:dataArr.map(function(d){return d.name;}),datasets:[{data:dataArr.map(function(d){return d.days;}),backgroundColor:dataArr.map(function(d){return (hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0';}),borderWidth:2,borderColor:'#fff'}]},
-      options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},formatter:function(v,ctx){var sum=ctx.dataset.data.reduce(function(a,b){return a+b;},0),pct=sum>0?Math.round(v/sum*100):0;return v>0?ctx.chart.data.labels[ctx.dataIndex]+'\n'+v+'일 ('+pct+'%)':'';},anchor:'end',align:'end'}}}
+      options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:15,bottom:15,left:20,right:20}},plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},formatter:function(v,ctx){var sum=ctx.dataset.data.reduce(function(a,b){return a+b;},0),pct=sum>0?Math.round(v/sum*100):0;return v>0?ctx.chart.data.labels[ctx.dataIndex]+'\n'+v+'일 ('+pct+'%)':'';},anchor:'end',align:'end'}}}
     });
   }
   drawDonut('dashOvertimeDonutChart9',dMain);drawDonut('dashOvertimeDonutChart12',dSub);
 }
 window.dTogOtDonut=function(name){hlOvertimeDonut=hlOvertimeDonut===name?null:name;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
+
 function renderSHCV(d,datesArr,color,prefix){
   dC(prefix+'ShannonChart');dC(prefix+'HhiChart');dC(prefix+'CvChart');
   var sData=[],hData=[],cvData=[];
+  var schS=[],schH=[],schC=[]; // ✨ 주요 일정 배열
+  
   datesArr.forEach(function(dt){
     var dDay=d.filter(function(r){return r.date===dt;});if(!dDay.length)return;
     var tot=dDay.reduce(function(s,r){return s+r.min;},0),sMap=grp(dDay,'sub'),hhi=0,shan=0;
@@ -891,20 +993,47 @@ function renderSHCV(d,datesArr,color,prefix){
     var wVals=[];for(var i=0;i<7;i++){var pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);wVals.push(d.filter(function(r){return r.date===pDt;}).reduce(function(a,b){return a+b.min;},0));}
     var m=wVals.reduce(function(a,b){return a+b;},0)/7,cv=m===0?0:Math.sqrt(wVals.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/7)/m;
     sData.push({x:dt,y:shan});hData.push({x:dt,y:hhi});cvData.push({x:dt,y:cv});
+    
+    // ✨ 주요일정 데이터 세팅
+    if(SCHEDULE_DATA.some(function(s){return s.date&&s.date.slice(0,10)===dt;})){
+      var so=SCHEDULE_DATA.find(function(s){return s.date&&s.date.slice(0,10)===dt;});
+      var st=so.title||so.name||so['일정']||so['내용']||'주요일정';
+      schS.push({x:dt,y:1,schTitle:st});
+      schH.push({x:dt,y:1,schTitle:st});
+      schC.push({x:dt,y:1,schTitle:st});
+    }
   });
+  
   if(prefix==='pj'){
     document.getElementById('ovAvgShan').innerText=(sData.length?sData.reduce(function(a,b){return a+b.y;},0)/sData.length:0).toFixed(2);
     document.getElementById('ovAvgHhi').innerText=(hData.length?hData.reduce(function(a,b){return a+b.y;},0)/hData.length:0).toFixed(2);
     document.getElementById('ovAvgCv').innerText=(cvData.length?cvData.reduce(function(a,b){return a+b.y;},0)/cvData.length:0).toFixed(2);
   }
-  var baseOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0}}};
+  
+  // ✨ 주요일정 차트 설정
+  var schCfg = function(arr) { return {type:'scatter',label:'주요일정',data:arr,backgroundColor:'#ef4444',pointRadius:4,pointHoverRadius:6,pointBorderColor:'#fff',pointBorderWidth:1.5,yAxisID:'ySch',isSchedule:true}; };
+
+  var baseOpts={responsive:true,maintainAspectRatio:false,layout:{padding:{top:15}},interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},datalabels:{display:false},
+      tooltip:{displayColors:false,callbacks:{
+        title:function(){return null;},
+        label:function(ctx){
+          if(ctx.dataset.isSchedule) return ctx.raw.x+' 📌 '+ctx.raw.schTitle;
+          return ctx.raw.x+' | '+ctx.dataset.label+': '+ctx.raw.y.toFixed(2);
+        }
+      }}
+    },
+    scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0}, ySch:{display:false,min:0,max:1.1,position:'right'}}
+  };
+  
   var e1=document.getElementById(prefix+'ShannonChart'),e2=document.getElementById(prefix+'HhiChart'),e3=document.getElementById(prefix+'CvChart');
   if(e1){
-    CH[prefix+'ShannonChart']=new Chart(e1.getContext('2d'),{type:'line',data:{datasets:[{data:sData,label:'섀넌',borderColor:'#14b8a6',backgroundColor:hRgba('#14b8a6',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:JSON.parse(JSON.stringify(baseOpts))});
-    CH[prefix+'HhiChart']=new Chart(e2.getContext('2d'),{type:'line',data:{datasets:[{data:hData,label:'HHI',borderColor:'#f59e0b',backgroundColor:hRgba('#f59e0b',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:JSON.parse(JSON.stringify(baseOpts))});
-    CH[prefix+'CvChart']=new Chart(e3.getContext('2d'),{type:'line',data:{datasets:[{data:cvData,label:'CV',borderColor:color,backgroundColor:hRgba(color,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:JSON.parse(JSON.stringify(baseOpts))});
+    CH[prefix+'ShannonChart']=new Chart(e1.getContext('2d'),{type:'line',data:{datasets:[{data:sData,label:'섀넌',borderColor:'#14b8a6',backgroundColor:hRgba('#14b8a6',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schCfg(schS)]},options:JSON.parse(JSON.stringify(baseOpts))});
+    CH[prefix+'HhiChart']=new Chart(e2.getContext('2d'),{type:'line',data:{datasets:[{data:hData,label:'HHI',borderColor:'#f59e0b',backgroundColor:hRgba('#f59e0b',0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schCfg(schH)]},options:JSON.parse(JSON.stringify(baseOpts))});
+    CH[prefix+'CvChart']=new Chart(e3.getContext('2d'),{type:'line',data:{datasets:[{data:cvData,label:'CV',borderColor:color,backgroundColor:hRgba(color,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}, schCfg(schC)]},options:JSON.parse(JSON.stringify(baseOpts))});
   }
 }
+
 // ════════ WORKING 탭 ════════
 function renderWorkingTab(memberName){
   if(!memberName&&MEMBERS.length) memberName=MEMBERS[0];
@@ -912,56 +1041,60 @@ function renderWorkingTab(memberName){
   var all=filtered(),d=memberName?all.filter(function(r){return r.name===memberName;}):all;
   var c=MC[memberName]||'#00428E';
   var posFound=RAW.find(function(r){return r.name===memberName;}),pos=posFound?posFound.pos:'';
+  
   // 팀원 탭
   document.getElementById('wpMemberTabs').innerHTML=MEMBERS.map(function(name){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
-  // ★ 프로필 이미지 (핵심 수정 부분)
-  var photoEl=document.getElementById('wpProfilePhoto');
-  var initEl=document.getElementById('wpProfileInitial');
-  var imgEl=document.getElementById('wpProfileImg');
-  photoEl.style.borderColor=c;
-  // 이니셜 항상 먼저 표시
-  initEl.textContent=INITIALS[memberName]||memberName.slice(0,2);
-  initEl.style.display='flex';
-  imgEl.style.display='none';
-  imgEl.src='';
+  
+  // ✨ 프로필 이미지 (사각/배경 형태)
+  var bgImg = document.getElementById('wpProfileImgBg');
   if(PROFILE_IMG[memberName]){
-    var newImg=new Image();
-    newImg.onload=function(){
-      imgEl.src=PROFILE_IMG[memberName];
-      imgEl.style.display='block';
-      initEl.style.display='none';
-    };
-    newImg.onerror=function(){
-      imgEl.style.display='none';
-      initEl.style.display='flex';
-    };
-    newImg.src=PROFILE_IMG[memberName];
+    bgImg.src = PROFILE_IMG[memberName];
+    bgImg.style.display = 'block';
+  } else {
+    bgImg.style.display = 'none';
   }
   document.getElementById('wpProfileName').textContent=memberName;
   document.getElementById('wpProfilePos').textContent=pos;
-  // 기여도
+
+  // ✨ 기여도 2개 바 처리
   var tot=d.reduce(function(s,r){return s+r.min;},0);
   var pjMin=d.filter(function(r){return r.project==='경남 서부의료원';}).reduce(function(s,r){return s+r.min;},0);
   var pjPct=tot>0?Math.round(pjMin/tot*100):0;
+  
+  var allPjData = filtered().filter(function(r){return r.project==='경남 서부의료원';});
+  var gnwmcTotalMin = allPjData.reduce(function(s,r){return s+r.min;}, 0);
+  var myPjPct = gnwmcTotalMin>0 ? Math.round(pjMin/gnwmcTotalMin*100) : 0;
+
   document.getElementById('wpContribFill').style.width=pjPct+'%';
   document.getElementById('wpContribPct').textContent=pjPct+'% ('+fH(pjMin)+'h / '+fH(tot)+'h)';
+  document.getElementById('wpContribFill2').style.width=myPjPct+'%';
+  document.getElementById('wpContribPct2').textContent=myPjPct+'%';
+
   document.getElementById('wpAiText').innerHTML=AI_COMMENTS[memberName]||'팀원 데이터를 분석 중입니다.';
-  // 수치 카드
-  var mos=getMos(d),avgPerMo=mos.length>0?mToH(tot)/mos.length:0;
+
+  // ✨ 4개 수치 카드 (순서 재배치 및 데이터 로직)
+  var mos=getMos(d), avgPerMo=mos.length>0?mToH(tot)/mos.length:0;
   var dateMap={};d.forEach(function(r){dateMap[r.date]=(dateMap[r.date]||0)+r.min;});
-  var ot9Days=0,ot12Days=0;
-  Object.values(dateMap).forEach(function(m){if(m>=540)ot9Days++;if(m>=720)ot12Days++;});
-  var activeDays=Object.keys(dateMap).length,dayAvg=activeDays>0?mToH(tot)/activeDays:0;
+  var activeDays=Object.keys(dateMap).length, dayAvg=activeDays>0?mToH(tot)/activeDays:0;
+  var ot1=0, ot2=0, ot3=0;
+  Object.values(dateMap).forEach(function(m){
+    if(m>=540 && m<660) ot1++;
+    else if(m>=660 && m<720) ot2++;
+    else if(m>=720) ot3++;
+  });
+
+  document.getElementById('wpStatMonths').textContent=mos.length;
+  document.getElementById('wpStatActiveDays').textContent='('+activeDays+'일)';
   document.getElementById('wpStatTotal').textContent=fH(tot);
   document.getElementById('wpStatAvgMo').textContent='월평균 '+avgPerMo.toFixed(1)+'h';
-  document.getElementById('wpStatMonths').textContent=mos.length;
-  document.getElementById('wpStatDateRange').textContent=(mos[0]||'-')+' ~ '+(mos[mos.length-1]||'-');
-  document.getElementById('wpStat9h').textContent=ot9Days;
-  document.getElementById('wpStat12h').textContent=ot12Days;
   document.getElementById('wpStatDayAvg').textContent=dayAvg.toFixed(1);
-  document.getElementById('wpStatActiveDays').textContent='작업일 '+activeDays+'일';
+  document.getElementById('wpStatMonthAvg').textContent=avgPerMo.toFixed(1)+'h/월';
+  document.getElementById('wpStatOt1').textContent=ot1;
+  document.getElementById('wpStatOt2').textContent=ot2;
+  document.getElementById('wpStatOt3').textContent=ot3;
+
   renderWpHeroDonut(d,tot,c);
   renderWpMetricsBadges(d);
   renderWpStackedBar(d,mos);
@@ -975,13 +1108,36 @@ function renderWorkingTab(memberName){
   renderWpOvertimeDetail(d);
   renderWpGiniHurst(d,c);
 }
+
+// ✨ TOP 5 도넛 차트
 function renderWpHeroDonut(d,tot,c){
   dC('wpHeroDonut');
-  var subMap=grp(d,'sub'),top3=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];}).slice(0,3);
-  document.getElementById('wpTop3List').innerHTML=top3.map(function(entry,i){var k=entry[0],v=entry[1],pct=tot>0?(v/tot*100).toFixed(1):0;return '<div class="wp-top3-item"><div class="wp-top3-dot" style="background:'+SUB_PAL[i]+';"></div><span class="wp-top3-name">'+k+'</span><span class="wp-top3-pct">'+pct+'%</span></div>';}).join('');
-  if(!top3.length)return;
-  CH.wpHeroDonut=new Chart(document.getElementById('wpHeroDonut').getContext('2d'),{type:'doughnut',data:{labels:top3.map(function(e){return e[0];}),datasets:[{data:top3.map(function(e){return mToH(e[1]);}),backgroundColor:SUB_PAL.slice(0,3),borderWidth:3,borderColor:'rgba(255,255,255,0.8)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},datalabels:{display:false}}}});
+  var subMap=grp(d,'sub');
+  // 리스트용 (Top 5)
+  var top5List=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
+  document.getElementById('wpTop3List').innerHTML=top5List.map(function(entry,i){
+    var k=entry[0],v=entry[1],pct=tot>0?(v/tot*100).toFixed(1):0;
+    return '<div class="wp-top5-item"><div class="wp-top5-dot" style="background:'+SUB_PAL[i]+';"></div><span class="wp-top5-name">'+k+'</span><span class="wp-top5-pct">'+pct+'%</span></div>';
+  }).join('');
+  
+  if(!top5List.length) return;
+  
+  // 차트용 (전체)
+  var allEntries=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];});
+  var labels=[], data=[], bgC=[], otherMin=0;
+  allEntries.forEach(function(e, i){
+    if(i<5) { labels.push(e[0]); data.push(mToH(e[1])); bgC.push(SUB_PAL[i]); }
+    else { otherMin += e[1]; }
+  });
+  if(otherMin>0) { labels.push('기타'); data.push(mToH(otherMin)); bgC.push('#cbd5e1'); }
+
+  CH.wpHeroDonut=new Chart(document.getElementById('wpHeroDonut').getContext('2d'),{
+    type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:bgC,borderWidth:2,borderColor:'rgba(255,255,255,0.8)'}]},
+    // ✨ 두께 두껍게 (cutout 50%)
+    options:{responsive:true,maintainAspectRatio:false,cutout:'50%',plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:function(ctx){var p=(ctx.raw/mToH(tot)*100).toFixed(1);return ctx.label+': '+ctx.raw+'h ('+p+'%)';}}}}}
+  });
 }
+
 function renderWpMetricsBadges(d){
   var datesArr=Array.from(new Set(d.map(function(r){return r.date;}))).sort();
   var avgShan=0,avgHhi=0,avgCv=0,cnt=0;
@@ -1003,7 +1159,7 @@ function renderWpStackedBar(d,mos){
   var subMap=grp(d,'sub'),subList=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];}).map(function(x){return x[0];}).slice(0,8);
   var moSubMap={};d.forEach(function(r){if(!moSubMap[r.date.slice(0,7)])moSubMap[r.date.slice(0,7)]={};moSubMap[r.date.slice(0,7)][r.sub]=(moSubMap[r.date.slice(0,7)][r.sub]||0)+r.min;});
   document.getElementById('wpStackLegend').innerHTML=subList.map(function(s,i){return '<div class="legend-item" style="font-size:11px;padding:2px 5px;"><div class="legend-dot" style="background:'+SUB_PAL[i]+'"></div>'+s+'</div>';}).join('');
-  CH.wpStackedBar=new Chart(document.getElementById('wpStackedBar').getContext('2d'),{data:{labels:mos,datasets:subList.map(function(sub,i){return {type:'bar',label:sub,data:mos.map(function(m){return mToH((moSubMap[m]||{})[sub]||0);}),backgroundColor:SUB_PAL[i],stack:'s'};})},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(226,232,240,0.5)'}}}}});
+  CH.wpStackedBar=new Chart(document.getElementById('wpStackedBar').getContext('2d'),{data:{labels:mos,datasets:subList.map(function(sub,i){return {type:'bar',label:sub,data:mos.map(function(m){return mToH((moSubMap[m]||{})[sub]||0);}),backgroundColor:SUB_PAL[i],stack:'s'};})},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:15}},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(226,232,240,0.5)'}}}}});
 }
 function renderWpHeatmap(d,c){
   var allYears=Array.from(new Set(d.map(function(r){return r.date.slice(0,4);}))).sort();
@@ -1037,19 +1193,19 @@ function renderWpDonutSub(d,tot){
   document.getElementById('wpDonutSubCenter').innerText=fH(tot)+'h';
   if(!topArr.length){document.getElementById('wpSubRankList').innerHTML='';return;}
   document.getElementById('wpSubRankList').innerHTML=topArr.slice(0,7).map(function(entry,i){var k=entry[0],v=entry[1],pct=tot>0?(v/tot*100).toFixed(1):0;return '<li class="top5-rank-item" style="cursor:default;padding:2px 4px;"><div class="top5-rank-badge" style="background:'+SUB_PAL[i]+';width:18px;height:18px;font-size:9px;">'+(i+1)+'</div><span class="top5-rank-name" style="font-size:11px;">'+k+'</span><span style="font-size:10px;color:#94a3b8;white-space:nowrap;">'+pct+'%</span></li>';}).join('');
-  CH.wpDonutSub=new Chart(document.getElementById('wpDonutSub').getContext('2d'),{type:'doughnut',data:{labels:topArr.slice(0,7).map(function(e){return e[0];}),datasets:[{data:topArr.slice(0,7).map(function(e){return mToH(e[1]);}),backgroundColor:SUB_PAL.slice(0,7),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},datalabels:{display:false}}}});
+  CH.wpDonutSub=new Chart(document.getElementById('wpDonutSub').getContext('2d'),{type:'doughnut',data:{labels:topArr.slice(0,7).map(function(e){return e[0];}),datasets:[{data:topArr.slice(0,7).map(function(e){return mToH(e[1]);}),backgroundColor:SUB_PAL.slice(0,7),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:20,bottom:20,left:30,right:30}},plugins:{legend:{display:false},datalabels:{display:false}}}});
 }
 function renderWpDonutCat(d,tot){
   dC('wpDonutCat');
   var catMap=grp(d,'cat'),cats=CAT_ORDER.filter(function(c){return catMap[c]>0;});
   document.getElementById('wpCatCenter').innerHTML='<div style="font-size:14px;font-weight:900;color:#1e293b;">'+fH(tot)+'h</div>';
   if(!cats.length)return;
-  CH.wpDonutCat=new Chart(document.getElementById('wpDonutCat').getContext('2d'),{type:'doughnut',data:{labels:cats,datasets:[{data:cats.map(function(c){return mToH(catMap[c]);}),backgroundColor:cats.map(function(c){return CAT_COLORS[CAT_ORDER.indexOf(c)];}),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:20},plugins:{legend:{display:false},datalabels:{display:function(ctx){return ctx.dataset.data[ctx.dataIndex]>0;},color:'#1e293b',font:{size:10,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,ctx){var p=(v/mToH(tot)*100).toFixed(0);return cats[ctx.dataIndex]+'\n'+p+'%';}}}}});
+  CH.wpDonutCat=new Chart(document.getElementById('wpDonutCat').getContext('2d'),{type:'doughnut',data:{labels:cats,datasets:[{data:cats.map(function(c){return mToH(catMap[c]);}),backgroundColor:cats.map(function(c){return CAT_COLORS[CAT_ORDER.indexOf(c)];}),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:30,bottom:30,left:40,right:40}},plugins:{legend:{display:false},datalabels:{display:function(ctx){return ctx.dataset.data[ctx.dataIndex]>0;},color:'#1e293b',font:{size:10,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,ctx){var p=(v/mToH(tot)*100).toFixed(0);return cats[ctx.dataIndex]+'\n'+p+'%';}}}}});
 }
 function renderWpSwitchBar(d,mos,color){
   dC('wpSwitchBar');
   var swMo={},prv=null;d.forEach(function(r){var mo=r.date.slice(0,7);if(!swMo[mo])swMo[mo]=0;if(prv!==null&&prv!==r.sub)swMo[mo]++;prv=r.sub;});
-  CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{data:mos.map(function(m){return swMo[m]||0;}),backgroundColor:color+'88',borderColor:color,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,color:color,font:{weight:'bold',size:10},anchor:'end',align:'end',formatter:function(v){return v>0?v:'';}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}}}}});
+  CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{data:mos.map(function(m){return swMo[m]||0;}),backgroundColor:color+'88',borderColor:color,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:15}},plugins:{legend:{display:false},datalabels:{display:true,color:color,font:{weight:'bold',size:10},anchor:'end',align:'end',formatter:function(v){return v>0?v:'';}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}}}}});
 }
 function renderWpFocusBar(d,mos){
   dC('wpFocusBar');
@@ -1065,7 +1221,7 @@ function renderWpOvertimeDetail(d){
   var mos=Array.from(new Set(otDays.map(function(e){return e[0].slice(0,7);}))).sort();
   var moCount={};otDays.forEach(function(e){var m=e[0].slice(0,7);moCount[m]=(moCount[m]||0)+1;});
   var c=MC[WP_MEMBER]||'#00428E';
-  CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{data:mos.map(function(m){return moCount[m]||0;}),backgroundColor:c+'88',borderColor:c,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,color:c,font:{weight:'bold',size:10},anchor:'end',align:'end',formatter:function(v){return v>0?v+'일':'';}}}  ,scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{beginAtZero:true,display:false}}}});
+  CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{data:mos.map(function(m){return moCount[m]||0;}),backgroundColor:c+'88',borderColor:c,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{right:15}},plugins:{legend:{display:false},datalabels:{display:true,color:c,font:{weight:'bold',size:10},anchor:'end',align:'end',formatter:function(v){return v>0?v+'일':'';}}}  ,scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{beginAtZero:true,display:false}}}});
   var listEl=document.getElementById('wpOtList');
   if(!otDays.length){listEl.innerHTML='<div style="color:#94a3b8;font-size:12px;text-align:center;padding:10px;">초과근무 없음</div>';return;}
   listEl.innerHTML=otDays.slice(0,10).map(function(entry){var dt=entry[0],min=entry[1],h=mToH(min),level=min>=720?'#ef4444':min>=660?'#f97316':min>=600?'#f59e0b':'#818cf8';return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.5);"><span style="font-size:11px;color:#475569;font-weight:600;">'+dt+'</span><span style="font-size:12px;font-weight:800;color:'+level+';">'+fmt(h)+'h</span></div>';}).join('');
@@ -1124,7 +1280,7 @@ function renderEvalDonut(workData,member){
   document.getElementById('evalDonutCenter').innerText=fH(tot)+'h';
   document.getElementById('evalTop2Row').innerHTML=topArr.slice(0,3).map(function(entry,i){var k=entry[0],v=entry[1],pct=tot>0?(v/tot*100).toFixed(1):0;return '<div style="background:'+hRgba(SUB_PAL[i],0.12)+';border:1px solid '+hRgba(SUB_PAL[i],0.3)+';border-radius:10px;padding:10px;text-align:center;"><div style="font-size:10px;color:'+SUB_PAL[i]+';font-weight:700;margin-bottom:4px;">'+(i+1)+'위</div><div style="font-size:11px;font-weight:800;color:#1e293b;">'+k+'</div><div style="font-size:14px;font-weight:900;color:'+SUB_PAL[i]+';margin-top:4px;">'+fH(v)+'h</div><div style="font-size:10px;color:#94a3b8;">'+pct+'%</div></div>';}).join('');
   if(!topArr.length)return;
-  CH.evalDonutChart=new Chart(document.getElementById('evalDonutChart').getContext('2d'),{type:'doughnut',data:{labels:topArr.map(function(e){return e[0];}),datasets:[{data:topArr.map(function(e){return mToH(e[1]);}),backgroundColor:SUB_PAL.slice(0,7),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},datalabels:{display:false}}}});
+  CH.evalDonutChart=new Chart(document.getElementById('evalDonutChart').getContext('2d'),{type:'doughnut',data:{labels:topArr.map(function(e){return e[0];}),datasets:[{data:topArr.map(function(e){return mToH(e[1]);}),backgroundColor:SUB_PAL.slice(0,7),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:20,bottom:20,left:25,right:25}},plugins:{legend:{display:false},datalabels:{display:false}}}});
 }
 function renderHighVsAvg(fEData,eData,member){
   var wrap=document.getElementById('highVsAvgChartsWrap'),lgd=document.getElementById('highVsAvgLegend');
