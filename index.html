@@ -20,21 +20,52 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 @keyframes floatS{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(50px,60px,0) scale(1.1);}}
 @keyframes floatM{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(-60px,40px,0) scale(0.9);}}
 @keyframes floatL{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(70px,-50px,0) scale(1.15);}}
-#loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;}
+
+/* ✨ 로딩 오버레이 (투명 구슬 복구 & 글자 흔들림 방지) */
+#loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;overflow:hidden;}
+.ld-orb{position:absolute;border-radius:50%;will-change:transform;}
+.ld-orb-1{width:280px;height:280px;background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%);top:-60px;right:60px;filter:blur(25px) saturate(.7);opacity:.6;animation:ldFloat1 3.5s infinite alternate ease-in-out;}
+.ld-orb-2{width:360px;height:360px;background:radial-gradient(circle at 40% 35%,rgba(186,230,253,.9),rgba(147,197,253,.6) 50%,rgba(96,165,250,.3) 100%);top:-100px;right:-60px;filter:blur(35px) saturate(.7);opacity:.5;animation:ldFloat2 4.5s infinite alternate-reverse ease-in-out;}
+.ld-orb-3{width:140px;height:140px;background:radial-gradient(circle at 35% 30%,#7dd3fc,#38bdf8 50%,#0ea5e9 100%);bottom:80px;left:80px;filter:blur(15px) saturate(.7);opacity:.7;animation:ldFloat3 3s infinite alternate ease-in-out;}
+.ld-orb-4{width:280px;height:280px;background:radial-gradient(circle at 40% 30%,rgba(186,230,253,.8),rgba(147,197,253,.4) 60%,rgba(96,165,250,.1) 100%);bottom:-80px;left:-60px;filter:blur(40px) saturate(.7);opacity:.6;animation:ldFloat1 5.5s infinite alternate-reverse ease-in-out;}
+.ld-orb-5{width:90px;height:90px;background:rgba(59,130,246,.8);top:30%;left:15%;filter:blur(12px) saturate(.7);opacity:.6;animation:ldFloat2 4s infinite alternate ease-in-out;}
+.ld-orb-6{width:70px;height:70px;background:rgba(14,165,233,.7);bottom:25%;right:25%;filter:blur(10px) saturate(.7);opacity:.7;animation:ldFloat3 5s infinite alternate-reverse ease-in-out;}
+.ld-orb-7{width:180px;height:180px;background:rgba(139,92,246,.6);top:40%;right:10%;filter:blur(25px) saturate(.7);opacity:.6;animation:ldFloat1 3s infinite alternate ease-in-out;}
+.ld-orb-8{width:110px;height:110px;background:rgba(56,189,248,.8);bottom:45%;left:25%;filter:blur(15px) saturate(.7);opacity:.7;animation:ldFloat2 3.5s infinite alternate-reverse ease-in-out;}
+.ld-orb-9{width:220px;height:220px;background:rgba(99,102,241,.5);top:5%;left:40%;filter:blur(35px) saturate(.7);opacity:.5;animation:ldFloat3 4.5s infinite alternate ease-in-out;}
+.ld-orb-white-1{width:1200px;height:1200px;background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.5),rgba(255,255,255,.4) 40%,rgba(255,255,255,0) 80%);bottom:-600px;right:-500px;filter:blur(6px);opacity:1;animation:ldFloat1 7.5s infinite alternate ease-in-out;z-index:1;}
+.ld-orb-white-2{width:800px;height:800px;background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.6),rgba(255,255,255,0) 80%);top:-400px;left:-300px;filter:blur(15px);opacity:1;animation:ldFloat2 6s infinite alternate-reverse ease-in-out;z-index:1;}
+@keyframes ldFloat1{0%{transform:translate(0,0) scale(1);}100%{transform:translate(-30px,40px) scale(1.05);}}
+@keyframes ldFloat2{0%{transform:translate(0,0) scale(1);}100%{transform:translate(25px,-35px) scale(.95);}}
+@keyframes ldFloat3{0%{transform:translate(0,0) scale(1);}100%{transform:translate(20px,-25px) scale(1.08);}}
+.ld-dust{position:absolute;border-radius:50%;background:#fff;filter:blur(1px);will-change:transform;z-index:2;}
+@keyframes ldFloatDust1{0%{transform:translate(0,0);}100%{transform:translate(150px,-150px);}}
+@keyframes ldFloatDust2{0%{transform:translate(0,0);}100%{transform:translate(-100px,120px);}}
+@keyframes ldFloatDust3{0%{transform:translate(0,0);}100%{transform:translate(100px,100px);}}
+
 .loading-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;}
 .loading-brand{font-size:15px;font-weight:600;color:#64748b;letter-spacing:.15em;margin-bottom:28px;}
 .loading-brand b{color:#1e3a5f;font-weight:900;}
 .loading-main-title{font-size:90px;font-weight:900;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,#bfdbfe 0%,#60a5fa 30%,#3b82f6 60%,#1d4ed8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
 .loading-sub-title{font-size:22px;font-weight:700;color:#1e40af;margin-bottom:12px;}
 .loading-desc{font-size:15px;font-weight:500;color:#64748b;margin-bottom:6px;}
-.ov-progress{width:240px;height:4px;background:rgba(59,130,246,.15);border-radius:10px;margin:20px 0 12px;}
+
+/* ✨ 고정된 하단 영역 (이 안에서 스피너와 버튼이 교차됨) */
+#loadingBottomArea { position:relative; width:100%; height:120px; margin-top:20px; display:flex; justify-content:center; align-items:center; }
+#loadingStatusArea { position:absolute; display:flex; flex-direction:column; align-items:center; transition:opacity .5s ease, visibility .5s; }
+.ov-progress{width:240px;height:4px;background:rgba(59,130,246,.15);border-radius:10px;margin-bottom:16px;}
 .ov-progress-fill{height:100%;background:linear-gradient(90deg,#60a5fa,#3b82f6,#1d4ed8);border-radius:10px;transition:width .4s ease;width:0%;}
 .ov-spinner{width:36px;height:36px;border:3px solid rgba(59,130,246,.2);border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:10px;}
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 .ov-msg{font-size:13px;color:#64748b;font-weight:500;}
-#ovEnterBtnWrap{margin-top:24px;display:none;}
+
+/* ✨ 버튼 영역 */
+#ovEnterBtnWrap { position:absolute; opacity:0; visibility:hidden; transform:translateY(15px); transition:all .5s ease; }
+#ovEnterBtnWrap.show { opacity:1; visibility:visible; transform:translateY(0); }
 .ov-enter-btn{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:50px;padding:16px 50px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(59,130,246,.5);transition:all .3s ease;}
-.ov-enter-btn:hover{transform:translateY(-3px);}
+.ov-enter-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(59,130,246,.6);}
+
+/* 탑바 */
 .topbar{position:fixed;top:0;left:0;right:0;height:75px;z-index:2000;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(244,247,249,0.5);backdrop-filter:blur(4px);border-bottom:1px solid transparent;transition:all .4s ease;}
 .topbar.scrolled{background:rgba(255,255,255,0.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,0.6);box-shadow:0 2px 24px rgba(99,102,241,0.06);}
 .logo-container{display:flex;align-items:center;gap:15px;flex:1;}
@@ -176,20 +207,42 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div class="orb orb-1"></div><div class="orb orb-2"></div>
   <div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
 </div>
+
+<!-- ✨ 투명 구슬/먼지가 돌아온 로딩 오버레이 -->
 <div id="loadingOverlay">
+  <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
+  <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
+  <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
+  <div class="ld-dust" style="width:4px;height:4px;top:10%;right:40%;opacity:.2;animation:ldFloatDust1 8s infinite alternate-reverse;"></div>
+  <div class="ld-dust" style="width:7px;height:7px;bottom:20%;right:30%;opacity:.3;animation:ldFloatDust2 5s infinite alternate;"></div>
+  <div class="ld-dust" style="width:5px;height:5px;bottom:10%;left:40%;opacity:.25;animation:ldFloatDust3 9s infinite alternate-reverse;"></div>
+  <div class="ld-dust" style="width:9px;height:9px;top:50%;left:50%;opacity:.35;animation:ldFloatDust1 6s infinite alternate;"></div>
+  
+  <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div>
+  <div class="ld-orb ld-orb-4"></div><div class="ld-orb ld-orb-5"></div><div class="ld-orb ld-orb-6"></div>
+  <div class="ld-orb ld-orb-7"></div><div class="ld-orb ld-orb-8"></div><div class="ld-orb ld-orb-9"></div>
+  <div class="ld-orb ld-orb-white-1"></div><div class="ld-orb ld-orb-white-2"></div>
+
   <div class="loading-content">
     <div class="loading-brand"><b>GNWMC</b> · PATH REFLECTION</div>
     <div class="loading-main-title">GNWMC</div>
     <div class="loading-sub-title">경상남도 서부의료원</div>
     <div class="loading-desc" id="loadingDescText">데이터를 수집하고 분석 중입니다...</div>
-    <div class="ov-progress"><div class="ov-progress-fill" id="ovProgress"></div></div>
-    <div class="ov-spinner" id="ovSpinner"></div>
-    <div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
-    <div id="ovEnterBtnWrap">
-      <button class="ov-enter-btn" onclick="hideLoadingOverlay()">대시보드 입장하기</button>
+    
+    <!-- ✨ 글자 안 흔들리게 고정된 하단 영역 -->
+    <div id="loadingBottomArea">
+      <div id="loadingStatusArea">
+        <div class="ov-progress"><div class="ov-progress-fill" id="ovProgress"></div></div>
+        <div class="ov-spinner" id="ovSpinner"></div>
+        <div class="ov-msg" id="ovMsg">데이터 연결 중...</div>
+      </div>
+      <div id="ovEnterBtnWrap">
+        <button class="ov-enter-btn" onclick="hideLoadingOverlay()">대시보드 입장하기</button>
+      </div>
     </div>
   </div>
 </div>
+
 <nav class="topbar" id="topbar">
   <div class="logo-container">
     <div>
@@ -396,7 +449,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 <script>
 // ── 전역 상수 ──
 var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
-
 // ★ 이미지 절대경로 (GitHub Pages)
 var GITHUB_BASE = 'https://jinkwanuri-droid.github.io/KPI_GNS/';
 var PROFILE_IMG = {
@@ -405,7 +457,6 @@ var PROFILE_IMG = {
   '정인태':  GITHUB_BASE + 'intae.jeoung.jpg',
   '이혜인B': GITHUB_BASE + 'hi.lee2.jpg'
 };
-
 var DYNAMIC_COLORS = ['#00428E','#7545fb','#14b8a6','#eb5f8c','#f59e0b','#f97316','#ec4899','#8b5cf6'];
 var CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
 var CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
@@ -421,7 +472,6 @@ var AI_COMMENTS = {
   '정인태':'CV 변동성 <strong>1.14</strong>로 <span class="hl-danger">업무 편차가 큰 편</span>입니다. 월별 업무 계획 세분화를 권장합니다.',
   '김효언':'섀넌 엔트로피 <strong>0.92</strong>로 <span class="hl-good">주업무 집중도가 높고 안정적</span>입니다. Deep Work 패턴이 유지되고 있습니다.'
 };
-
 // ── 전역 변수 ──
 var MEMBERS=[], MC={}, INITIALS={};
 var SCHEDULE_DATA=[], EVAL_DATA=[], RAW=[];
@@ -432,12 +482,10 @@ window.filterStartIndex=0; window.filterEndIndex=11; window.lastClickedIndex=0;
 var filterYears=[2024,2025,2026], filterQuarters=['Q1','Q2','Q3','Q4'];
 var totalNodes=filterYears.length*4;
 var percentPositions=[];
-
 // ── Chart.js 설정 ──
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
 Chart.register(ChartDataLabels);
-
 // ── 유틸 ──
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
@@ -447,7 +495,6 @@ function getMos(d){return Array.from(new Set(d.map(function(r){return r.date.sli
 function getQ(ds){var y=ds.slice(0,4);var m=parseInt(ds.slice(5,7));return y+'-Q'+Math.ceil(m/3);}
 function dC(id){if(CH[id]){try{CH[id].destroy();}catch(e){}delete CH[id];}}
 function hRgba(hex,a){try{var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+a+')';}catch(e){return hex;}}
-
 function filtered(){
   return RAW.filter(function(r){
     var q=getQ(r.date),y=parseInt(q.slice(0,4)),qN=parseInt(q.slice(6,7))-1;
@@ -481,10 +528,20 @@ function hideLoadingOverlay(){
   var el=document.getElementById('loadingOverlay');
   if(el){el.style.opacity='0';setTimeout(function(){el.style.display='none';},600);}
 }
+
+// ✨ 버튼 표시할 때 글자 밀림 방지되도록 opacity/visibility로만 변경
 function showEnterBtn(){
-  document.getElementById('ovSpinner').style.display='none';
-  document.getElementById('ovEnterBtnWrap').style.display='block';
+  var statusArea = document.getElementById('loadingStatusArea');
+  if(statusArea) {
+    statusArea.style.opacity = '0';
+    statusArea.style.visibility = 'hidden';
+  }
+  var btnWrap = document.getElementById('ovEnterBtnWrap');
+  if(btnWrap) {
+    btnWrap.classList.add('show');
+  }
 }
+
 function setProgress(pct,msg){
   document.getElementById('ovProgress').style.width=pct+'%';
   if(msg) document.getElementById('ovMsg').textContent=msg;
@@ -495,7 +552,6 @@ window.addEventListener('scroll',function(){
   if(window.scrollY>20) document.getElementById('topbar').classList.add('scrolled');
   else document.getElementById('topbar').classList.remove('scrolled');
 },{passive:true});
-
 // ── Nav ──
 function updateNavSlider(){
   var a=document.querySelector('.nav-item.active');
@@ -511,7 +567,6 @@ function showView(view,el){
   else if(view==='kpieval') renderEvalTab();
   else renderDashboardTab();
 }
-
 // ── 드롭다운 ──
 function renderCustomDropdown(){
   var html='<div class="custom-option" onclick="selectGlobalMember(\'ALL\')">'+getAvatar('ALL',24,11)+' 전체 보기</div>';
@@ -534,7 +589,6 @@ document.addEventListener('click',function(e){
   if(!document.getElementById('globalMemberSelectWrap').contains(e.target))
     document.getElementById('customSelectOptions').classList.remove('open');
 });
-
 // ── 슬라이더 ──
 function initSlider(){
   var nc=document.getElementById('nodesContainer'),yr=document.getElementById('yearRow');
@@ -587,7 +641,6 @@ function renderAllViews(){
   if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(WP_MEMBER);
   if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab();
 }
-
 // ── 데이터 로드 ──
 function loadDataFromSheets(){
   setProgress(20,'서버 연결 중...');
@@ -634,7 +687,6 @@ function loadDataFromSheets(){
     showEnterBtn();
   });
 }
-
 // ════════ PROJECT 탭 ════════
 function renderDashboardTab(){
   var all=filtered();if(!all.length)return;
@@ -853,7 +905,6 @@ function renderSHCV(d,datesArr,color,prefix){
     CH[prefix+'CvChart']=new Chart(e3.getContext('2d'),{type:'line',data:{datasets:[{data:cvData,label:'CV',borderColor:color,backgroundColor:hRgba(color,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0}]},options:JSON.parse(JSON.stringify(baseOpts))});
   }
 }
-
 // ════════ WORKING 탭 ════════
 function renderWorkingTab(memberName){
   if(!memberName&&MEMBERS.length) memberName=MEMBERS[0];
@@ -861,12 +912,10 @@ function renderWorkingTab(memberName){
   var all=filtered(),d=memberName?all.filter(function(r){return r.name===memberName;}):all;
   var c=MC[memberName]||'#00428E';
   var posFound=RAW.find(function(r){return r.name===memberName;}),pos=posFound?posFound.pos:'';
-
   // 팀원 탭
   document.getElementById('wpMemberTabs').innerHTML=MEMBERS.map(function(name){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
-
   // ★ 프로필 이미지 (핵심 수정 부분)
   var photoEl=document.getElementById('wpProfilePhoto');
   var initEl=document.getElementById('wpProfileInitial');
@@ -890,10 +939,8 @@ function renderWorkingTab(memberName){
     };
     newImg.src=PROFILE_IMG[memberName];
   }
-
   document.getElementById('wpProfileName').textContent=memberName;
   document.getElementById('wpProfilePos').textContent=pos;
-
   // 기여도
   var tot=d.reduce(function(s,r){return s+r.min;},0);
   var pjMin=d.filter(function(r){return r.project==='경남 서부의료원';}).reduce(function(s,r){return s+r.min;},0);
@@ -901,7 +948,6 @@ function renderWorkingTab(memberName){
   document.getElementById('wpContribFill').style.width=pjPct+'%';
   document.getElementById('wpContribPct').textContent=pjPct+'% ('+fH(pjMin)+'h / '+fH(tot)+'h)';
   document.getElementById('wpAiText').innerHTML=AI_COMMENTS[memberName]||'팀원 데이터를 분석 중입니다.';
-
   // 수치 카드
   var mos=getMos(d),avgPerMo=mos.length>0?mToH(tot)/mos.length:0;
   var dateMap={};d.forEach(function(r){dateMap[r.date]=(dateMap[r.date]||0)+r.min;});
@@ -916,7 +962,6 @@ function renderWorkingTab(memberName){
   document.getElementById('wpStat12h').textContent=ot12Days;
   document.getElementById('wpStatDayAvg').textContent=dayAvg.toFixed(1);
   document.getElementById('wpStatActiveDays').textContent='작업일 '+activeDays+'일';
-
   renderWpHeroDonut(d,tot,c);
   renderWpMetricsBadges(d);
   renderWpStackedBar(d,mos);
@@ -1041,7 +1086,6 @@ function renderWpGiniHurst(d,color){
   CH.wpHurstChart=new Chart(document.getElementById('wpHurstChart').getContext('2d'),{type:'doughnut',data:{labels:['허스트','여백'],datasets:[{data:[hurst,1-hurst],backgroundColor:[hColor,'#f1f5f9'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'78%',rotation:-90,circumference:180,plugins:{legend:{display:false},datalabels:{display:false}}}});
   document.getElementById('wpHurstTxt').innerHTML='<span style="font-size:18px;font-weight:900;color:'+hColor+';">'+hurst.toFixed(2)+'</span><br><span style="font-size:10px;color:#94a3b8;">'+hLabel+'</span>';
 }
-
 // ════════ PERSONAL KPI 탭 ════════
 function renderEvalTab(){
   var member=GLOBAL_MEMBER==='ALL'?MEMBERS[0]:GLOBAL_MEMBER;if(!member)return;
@@ -1136,7 +1180,6 @@ function renderEvalTrendTable(fEData,member){
   html+='<tr style="background:'+hRgba(c,0.06)+';border-top:2px solid '+hRgba(c,0.2)+';"><td style="padding:10px 14px;font-weight:900;color:#475569;text-align:center;">평균</td>'+avgVals.map(function(v){return '<td style="padding:10px 14px;text-align:center;font-weight:800;color:#475569;">'+v.toFixed(2)+'</td>';}).join('')+'<td style="padding:10px 14px;text-align:center;font-weight:900;color:'+c+';">'+avgTot.toFixed(2)+'</td></tr>';
   wrap.innerHTML=html+'</tbody></table>';
 }
-
 // ── 시작 ──
 document.addEventListener('DOMContentLoaded',function(){
   updateNavSlider();
