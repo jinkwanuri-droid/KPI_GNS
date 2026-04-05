@@ -338,10 +338,10 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="wp-hero-inner">
         <div class="wp-hero-profile">
           <div class="wp-hero-tabs" id="wpMemberTabs"></div>
-          <div class="wp-profile-photo" id="wpProfilePhoto">
-            <span id="wpProfileInitial"></span>
-            <img id="wpProfileImg" src="" alt="" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">
-          </div>
+          <div class="wp-profile-photo" id="wpProfilePhoto" style="position:relative;">
+            <span id="wpProfileInitial" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;font-weight:900;color:#1d4ed8;display:flex;align-items:center;justify-content:center;"></span>
+            <img id="wpProfileImg" src="" alt="" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            </div>
           <div class="wp-profile-name" id="wpProfileName"></div>
           <div class="wp-profile-pos" id="wpProfilePos"></div>
           <div class="wp-contrib-bar-wrap">
@@ -428,7 +428,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 <script>
 // ── 전역 상수 ──
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
-const PROFILE_IMG = {'윤진관':'./jk.yoon.jpg','김효언':'./he.kim.jpg','정인태':'./intae.jeoung.jpg','이혜인B':'./hi.lee2.jpg'};
+const PROFILE_IMG = {
+  '윤진관':'./jk.yoon.jpg',
+  '김효언':'./he.kim.jpg',
+  '정인태':'./intae.jeoung.jpg',
+  '이혜인B':'./hi.lee2.jpg'
+};
 const DYNAMIC_COLORS = ['#00428E','#7545fb','#14b8a6','#eb5f8c','#f59e0b','#f97316','#ec4899','#8b5cf6'];
 const CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
 const CAT_COLORS = ['#3b82f6','#00428E','#f59e0b','#10b981'];
@@ -1012,20 +1017,42 @@ function renderWorkingTab(memberName){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
 
-  var photoEl=document.getElementById('wpProfilePhoto');
-  var initEl=document.getElementById('wpProfileInitial');
-  var imgEl=document.getElementById('wpProfileImg');
-  photoEl.style.borderColor=c;
-  initEl.textContent=INITIALS[memberName]||memberName.slice(0,2);
-  initEl.style.display='flex';
-  if(PROFILE_IMG[memberName]){
-    imgEl.src=PROFILE_IMG[memberName];
+var photoEl=document.getElementById('wpProfilePhoto');
+var initEl=document.getElementById('wpProfileInitial');
+var imgEl=document.getElementById('wpProfileImg');
+
+// 컬러 테두리 적용
+photoEl.style.borderColor=c;
+
+// 이니셜 세팅
+initEl.textContent=INITIALS[memberName]||memberName.slice(0,2);
+
+if(PROFILE_IMG[memberName]){
+  // 이미지 있으면: 이니셜 숨기고 이미지 표시
+  imgEl.onload=function(){
+    initEl.style.display='none';
     imgEl.style.display='block';
-    imgEl.onerror=function(){imgEl.style.display='none';};
-    imgEl.onload=function(){initEl.style.display='none';};
-  } else {
+  };
+  imgEl.onerror=function(){
+    // 이미지 로드 실패시 이니셜 표시
     imgEl.style.display='none';
-  }
+    initEl.style.display='flex';
+    initEl.style.alignItems='center';
+    initEl.style.justifyContent='center';
+  };
+  // src 설정 (onload/onerror 등록 후에 해야 함)
+  imgEl.style.display='none';
+  initEl.style.display='flex';
+  initEl.style.alignItems='center';
+  initEl.style.justifyContent='center';
+  imgEl.src=PROFILE_IMG[memberName]+'?v='+Date.now();
+} else {
+  // 이미지 없으면 이니셜만
+  imgEl.style.display='none';
+  initEl.style.display='flex';
+  initEl.style.alignItems='center';
+  initEl.style.justifyContent='center';
+}
   document.getElementById('wpProfileName').textContent=memberName;
   document.getElementById('wpProfilePos').textContent=pos;
 
