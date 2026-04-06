@@ -21,6 +21,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 @keyframes floatM{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(-60px,40px,0) scale(0.9);}}
 @keyframes floatL{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(70px,-50px,0) scale(1.15);}}
 
+/* ✨ 로딩 오버레이 */
 #loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;overflow:hidden;}
 .ld-orb{position:absolute;border-radius:50%;will-change:transform;}
 .ld-orb-1{width:280px;height:280px;background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%);top:-60px;right:60px;filter:blur(25px) saturate(.7);opacity:.6;animation:ldFloat1 3.5s infinite alternate ease-in-out;}
@@ -50,6 +51,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .ov-enter-btn{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:50px;padding:16px 50px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(59,130,246,.5);transition:all .3s ease;}
 .ov-enter-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(59,130,246,.6);}
 
+/* 탑바 & 레이아웃 */
 .topbar{position:fixed;top:0;left:0;right:0;height:75px;z-index:2000;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(244,247,249,0.5);backdrop-filter:blur(4px);border-bottom:1px solid transparent;transition:all .4s ease;}
 .topbar.scrolled{background:rgba(255,255,255,0.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,0.6);box-shadow:0 2px 24px rgba(99,102,241,0.06);}
 .logo-container{display:flex;align-items:center;gap:15px;flex:1;}
@@ -92,6 +94,8 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .view-section{display:none;animation:fadeIn .4s ease forwards;}
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ✨ 카드 스타일 및 Z-index 오버플로우 제어 */
 .card,.eval-trend-card,.eval-table-card,.eval-profile-card{
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(16px);
@@ -106,11 +110,11 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   overflow:visible;
   z-index: 1;
 }
-.card:hover, .eval-trend-card:hover, .eval-table-card:hover, .eval-profile-card:hover { z-index: 100 !important; }
+.card:hover, .eval-trend-card:hover, .eval-table-card:hover, .eval-profile-card:hover {
+  z-index: 100 !important;
+}
 
-/* Tooltip 부모 오버플로우 방지 */
-.eval-trend-card { overflow: visible !important; }
-/* 차트 높이 최소 350px 고정 */
+/* ✨ 차트 높이 350px 이상 고정 */
 .eval-trend-card, .eval-table-card { height:350px; min-height:350px; }
 
 .card-section-title,.eval-trend-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:10;}
@@ -141,7 +145,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .scroll-list::-webkit-scrollbar{width:6px;}
 .scroll-list::-webkit-scrollbar-thumb{background:rgba(203,213,225,.6);border-radius:4px;}
 
-/* 인포 툴팁 */
+/* ✨ 인포 툴팁 */
 .info-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;cursor:help;z-index:999999;}
 .info-icon{width:14px;height:14px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .info-wrap:hover .info-icon{background:#00428E;}
@@ -156,9 +160,9 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);height:480px;min-height:480px;max-height:480px;display:flex;}
 .wp-hero-inner{display:grid;grid-template-columns:300px 1fr 400px;width:100%;height:100%;position:relative;z-index:2;}
 
-/* ✨ 워킹 탭 프로필 사진: 왼쪽 정렬 및 진하게 */
+/* ✨ 프로필 사진 좌측 정렬 & 마스크 블러 처리 (진하게) */
 .wp-hero-profile { position: relative; overflow: hidden; border-right: 1px solid rgba(147,197,253,0.25); display: flex; flex-direction: column; }
-.wp-hero-profile-bg { position: absolute; top: 15%; left: -5%; width: 220px; height: 280px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.8; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
+.wp-hero-profile-bg { position: absolute; top: 10%; left: -5%; width: 220px; height: 280px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.8; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
 .wp-hero-profile-content { position: relative; z-index: 1; padding: 24px 20px; flex: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; }
 
 .wp-hero-tabs{width:100%;display:flex;overflow-x:auto;gap:4px;padding-bottom:16px;scrollbar-width:none;}
@@ -167,10 +171,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-tab-btn.active{background:#00428E;color:#fff;border-color:transparent;}
 .wp-tab-btn:hover:not(.active){background:rgba(255,255,255,.8);color:#00428E;}
 
+/* ✨ 이름/직급 1줄 우측 정렬 */
 .wp-profile-info { display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; margin-top: auto; margin-bottom: 10px; }
 .wp-profile-name{font-size:24px;font-weight:900;color:#1e293b;letter-spacing:-.03em;}
 .wp-profile-pos{font-size:13px;color:#64748b;font-weight:700;}
 
+/* 하단 게이지 바 */
 .wp-contrib-bar-wrap{width:100%;background:rgba(255,255,255,.6);border-radius:10px;padding:12px;border:1px solid rgba(147,197,253,.25);display:flex;flex-direction:column;gap:6px;}
 .wp-contrib-label{font-size:11px;color:#475569;font-weight:700;white-space:nowrap;}
 .wp-contrib-bar{height:8px;background:rgba(203,213,225,.4);border-radius:4px;overflow:hidden;}
@@ -188,6 +194,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-ai-content .hl-good{color:#22c55e;font-weight:700;}
 .wp-ai-content .hl-danger{color:#ef4444;font-weight:700;}
 
+/* 통계 카드 4분할 (비율 1:1:1:2) */
 .wp-stats-row{display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:12px;}
 .wp-stat-mini{background:rgba(255,255,255,.6);border:1px solid rgba(147,197,253,.3);border-radius:14px;padding:16px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;}
 .wp-stat-mini .label{font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px;}
@@ -207,6 +214,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-top5-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .wp-top5-pct{color:#64748b;font-size:11px;font-weight:800;}
 
+/* 3대 지표 2x2 */
 .wp-metrics-badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .wp-metric-badge{display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,.5);border:1px solid rgba(147,197,253,.25);border-radius:10px;padding:10px;text-align:center;}
 .wp-metric-badge .name{color:#64748b;font-size:10px;font-weight:700;margin-bottom:4px;}
@@ -382,14 +390,15 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       </div>
     </div>
     
+    <!-- ✨ 분석 6대 지표 (Project Tab) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
-      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 파편화도 (Shannon Entropy)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 정보 이론의 엔트로피 개념을 활용한 업무 복잡도 측정.</li><li><b>로직</b> : -∑p_i*ln(p_i)를 최대 엔트로피로 정규화. 1에 가까울수록 업무가 잘게 쪼개짐.</li><li><b>목적</b> : 맥락 전환(Context Switching) 비용을 파악하여 몰입 방해 요소를 진단.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjShannonChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">핵심 업무 집중도 (HHI)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 허핀달-히르슈만 지수를 응용한 업무 점유율 분석.</li><li><b>로직</b> : 각 업무 비중의 제곱합. 1에 가까울수록 특정 과업에 몰입함.</li><li><b>목적</b> : 잡무를 제외하고 실제 '선택과 집중'이 일어난 핵심 성과 영역을 추출.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjHhiChart"></canvas></div></div>
+      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 안정성 (CV)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 투입 시간의 변동계수(CV=σ/μ)를 활용한 성실도 지표.</li><li><b>로직</b> : 1 - (CV / Max_CV)로 정규화하여 1에 가까울수록 기복이 적음을 의미.</li><li><b>목적</b> : 매일 정해진 페이스를 유지하는 '에너지 공급의 균일성'을 평가.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjCvChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 리듬 주도성 (Hurst Exponent)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 시계열 데이터의 장기 의존성을 측정하는 지수.</li><li><b>로직</b> : 0.5를 기준으로 1에 가까울수록 강한 추세(안정적 리듬), 0에 가까울수록 무작위성(혼돈).</li><li><b>목적</b> : 돌발 상황에 휘둘리지 않고 스스로 업무 리듬을 통제하는 자기 주도성 측정.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjHurstChart"></canvas></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
+      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
     </div>
   </div>
   
@@ -397,7 +406,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div id="view-members" class="view-section">
     <div class="wp-hero">
       <div class="wp-hero-inner">
-        <!-- ✨ 프로필 사진 좌측 배치 및 크기/투명도 보정 -->
+        <!-- ✨ 프로필 좌측 배경 및 우측 정렬 텍스트 -->
         <div class="wp-hero-profile">
           <img id="wpProfileImgBg" class="wp-hero-profile-bg" src="" onerror="this.style.display='none'">
           <div class="wp-hero-profile-content">
@@ -509,6 +518,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:15px;margin-top:15px;">
       <div class="card" style="height:300px;"><div class="card-section-title">집중 vs 분산 업무</div><div style="flex:1;min-height:0;"><canvas id="wpFocusBar"></canvas></div></div>
       <div class="card" style="height:300px;"><div class="card-section-title">초과근무 상세</div><div style="height:130px;position:relative;margin-bottom:8px;"><canvas id="wpOtBar"></canvas></div><div class="scroll-list" id="wpOtList" style="flex:1;overflow-y:auto;border-top:1px solid rgba(226,232,240,.5);padding-top:8px;"></div></div>
+      <!-- ✨ 지니계수 전용 카드로 리팩토링 -->
       <div class="card" style="height:300px;">
         <div style="display:flex;flex-direction:column;height:100%;gap:12px;">
           <div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div>
@@ -623,6 +633,7 @@ Chart.register({
 });
 
 // ── 유틸 ──
+// ✨ 에러가 나도 다음 차트가 무사히 렌더링되도록 돕는 함수
 function safeRender(fn) { try { fn(); } catch(e) { console.error('Chart Render Error:', e); } }
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
@@ -819,7 +830,7 @@ function renderDashboardTab(){
     mc.style.border='1px solid '+hRgba(MC[name]||'#00428E',0.5);
     mc.style.position='relative'; mc.style.overflow='hidden';
     
-    // ✨ 팀원 카드 배경 이미지 (롤백 및 20px 상승)
+    // ✨ 팀원 카드 배경 이미지 (이전 버전으로 롤백, 위로 20px 올림)
     var bgImgHtml = PROFILE_IMG[name] ? '<img src="'+PROFILE_IMG[name]+'" style="position:absolute; right:5%; top:-20px; width:110px; height:150px; object-fit:cover; object-position:center top; opacity:0.35; z-index:0; filter:grayscale(100%); -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%);">' : '';
     
     mc.innerHTML = bgImgHtml + '<div style="position:relative; z-index:1; display:flex; flex-direction:column; height:100%; justify-content:center;">'
@@ -981,7 +992,7 @@ window.renderHeatmapOnly=function(year){
       }
       else{
         var val=mat[w][mo],ratio=val/maxV,bin=Math.ceil(ratio*5),isDim=hlHeatBin!==null&&hlHeatBin!==bin,alpha=0.2+(bin-1)*0.2;
-        tb+='<td><div class="hm-cell" onclick="toggleHeatBin('+bin+',\''+year+'\')" style="background:'+hRgba('#00428E',alpha)+';color:'+(alpha>=0.55?'#fff':'#1e293b')+';opacity:'+(isDim?0.2:1)+';" title="'+fH(val)+'h">'+fH(val)+'</div></td>';
+        tb+='<td><div class="hm-cell" onclick="toggleHeatBin('+bin+',\''+year+'\')" style="background:'+hRgba(c,alpha)+';color:'+(alpha>=0.55?'#fff':'#1e293b')+';opacity:'+(isDim?0.2:1)+';" title="'+fH(val)+'h">'+fH(val)+'</div></td>';
       }
     }tb+='</tr>';
   }
@@ -1061,6 +1072,7 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
   var weeklyMap = {};
   var biWeeklyMap = {};
   
+  // 그룹핑
   d.forEach(function(r){
       var wInfo = getWeekInfo(r.date);
       if(!weeklyMap[wInfo.key1]) weeklyMap[wInfo.key1] = { label: wInfo.label1, records: [], days: new Set() };
@@ -1082,6 +1094,9 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
   var cvData=[], huData=[], jData=[]; // 2-week
   var schS=[], schH=[], schOt=[], schCv=[], schHu=[], schJ=[];
   
+  // ✨ 이모지 완벽 제거 정규식
+  var emojiRegex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+
   // --- 1-Week Metrics Calculation ---
   wKeys.forEach(function(k){
       var group = weeklyMap[k];
@@ -1112,10 +1127,19 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
       hData.push(hhi);
       otData.push(otIndex);
       
-      // Schedules for 1-Week
-      var wSchedules = SCHEDULE_DATA.filter(function(s){ return s.date && getWeekInfo(s.date.slice(0,10)).key1 === k; });
+      // 일주일 내 스케줄 병합
+      var wSchedules = [];
+      Array.from(group.days).forEach(function(dt) {
+          var found = SCHEDULE_DATA.filter(function(s){ return s.date && s.date.slice(0,10) === dt; });
+          wSchedules = wSchedules.concat(found);
+      });
+      
       if(wSchedules.length > 0) {
-          var st = wSchedules.map(function(s){return s.date.slice(2,10) + ' ' + (s.title||s.name||s['일정']||s['내용']||'일정');}).join('\n');
+          var st = wSchedules.map(function(s){
+             var dateStr = s.date.slice(2,10).replace(/-/g, '.') + '.'; 
+             var title = (s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex, '').trim();
+             return dateStr + ' ' + title;
+          }).join('\n');
           schS.push({x: currentIdx, y: 1, schTitle: st});
           schH.push({x: currentIdx, y: 1, schTitle: st});
           schOt.push({x: currentIdx, y: 1, schTitle: st});
@@ -1156,10 +1180,18 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
       huData.push(hurst);
       jData.push(jaccard);
       
-      // Schedules for 2-Week
-      var bwSchedules = SCHEDULE_DATA.filter(function(s){ return s.date && getWeekInfo(s.date.slice(0,10)).key2 === k; });
+      var bwSchedules = [];
+      Array.from(group.days).forEach(function(dt) {
+          var found = SCHEDULE_DATA.filter(function(s){ return s.date && s.date.slice(0,10) === dt; });
+          bwSchedules = bwSchedules.concat(found);
+      });
+      
       if(bwSchedules.length > 0) {
-          var st = bwSchedules.map(function(s){return s.date.slice(2,10) + ' ' + (s.title||s.name||s['일정']||s['내용']||'일정');}).join('\n');
+          var st = bwSchedules.map(function(s){
+             var dateStr = s.date.slice(2,10).replace(/-/g, '.') + '.'; 
+             var title = (s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex, '').trim();
+             return dateStr + ' ' + title;
+          }).join('\n');
           schCv.push({x: currentIdx, y: 1, schTitle: st});
           schHu.push({x: currentIdx, y: 1, schTitle: st});
           schJ.push({x: currentIdx, y: 1, schTitle: st});
@@ -1172,50 +1204,69 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
     document.getElementById('ovAvgCv').innerText=(cvData.length?cvData.reduce(function(a,b){return a+b;},0)/cvData.length:0).toFixed(2);
   }
   
+  // ✨ 차트 그리기 헬퍼 함수
   function drawMetricChart(id, label, xLabels, dataArr, schArr, cHex) {
     if(!document.getElementById(id)) return;
     var maxY = dataArr.length ? Math.max.apply(null, dataArr) : 1;
+    if(maxY < 0.1) maxY = 1.0; 
 
-    // Map schedule Y values to the top of the chart
+    // 주요일정 Y좌표를 차트 상단(1.05배)으로 맞춤
     var sArr = [];
-    schArr.forEach(function(s){ sArr.push({x:s.x, y:maxY*1.05, schTitle:s.schTitle}); });
+    schArr.forEach(function(s){ sArr.push({x: s.x, y: maxY*1.05, schTitle: s.schTitle}); });
 
-    var schCfg = {type:'scatter',label:'주요일정',data:sArr,backgroundColor:'transparent',pointRadius:0,pointHoverRadius:0,isSchedule:true,order:0};
+    var schCfg = {
+      type:'scatter', label:'주요일정', data:sArr, 
+      backgroundColor:'transparent', borderColor:'transparent', pointBackgroundColor:'transparent', pointBorderColor:'transparent',
+      pointRadius:10, pointHoverRadius:10, isSchedule:true, order:0
+    };
     
     CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
       type:'line',
       data:{
-        labels: xLabels, // ✨ 배열 형태의 라벨 주입
+        labels: xLabels,
         datasets:[{data:dataArr,label:label,borderColor:cHex,backgroundColor:hRgba(cHex,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,order:1}, schCfg]
       },
-      options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}},interaction:{mode:'index',intersect:false},
-        plugins:{legend:{display:false},datalabels:{display:false},
+      options:{
+        responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}},
+        interaction:{mode:'index',intersect:false},
+        plugins:{
+          legend:{display:false},datalabels:{display:false},
           tooltip:{
             displayColors:false,
             titleFont: { size: 11, weight: 'normal', color: '#94a3b8' },
             bodyFont: { size: 13, weight: 'bold' },
             callbacks:{
-              title:function(ctxs){ return ctxs[0].raw.x ? ctxs[0].raw.x.join(' ') : ctxs[0].label; },
+              title:function(ctxs){ 
+                return ctxs[0].raw.x ? ctxs[0].raw.x.join(' ') : (Array.isArray(ctxs[0].label) ? ctxs[0].label.join(' ') : ctxs[0].label); 
+              },
               label:function(ctx){
                 if(ctx.dataset.isSchedule) return ctx.raw.schTitle;
-                return ctx.dataset.label+': '+(ctx.raw.y !== undefined ? ctx.raw.y.toFixed(2) : ctx.raw.toFixed(2));
+                return ctx.dataset.label+': '+(ctx.raw.y !== undefined ? ctx.raw.y.toFixed(2) : (ctx.raw ? ctx.raw.toFixed(2) : 0));
               }
             },
-            itemSort:function(a,b){return b.datasetIndex-a.datasetIndex;}
+            // ✨ 주요일정 최우선 노출 (itemSort)
+            itemSort:function(a,b){
+               if(a.dataset.isSchedule) return -1;
+               if(b.dataset.isSchedule) return 1;
+               return 0;
+            }
           }
         },
-        scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0,max:maxY*1.15}}
+        scales:{
+          x:{grid:{display:false},ticks:{maxTicksLimit:10, font:{size:9}}},
+          y:{grid:{color:'rgba(226,232,240,0.5)'},min:0,max:maxY*1.15}
+        }
       }
     });
   }
 
+  drawMetricChart(prefix+'OtChart', 'OT Index', wLabels, otData, schOt, '#ef4444');
   drawMetricChart(prefix+'ShannonChart', 'Shannon', wLabels, sData, schS, '#14b8a6');
   drawMetricChart(prefix+'HhiChart', 'HHI', wLabels, hData, schH, '#f59e0b');
-  drawMetricChart(prefix+'OtChart', 'OT Index', wLabels, otData, schOt, '#ef4444');
   
-  drawMetricChart(prefix+'JaccardChart', 'Jaccard', bwLabels, jData, schJ, '#3b82f6');
   drawMetricChart(prefix+'CvChart', 'CV(Norm)', bwLabels, cvData, schCv, '#8b5cf6');
   drawMetricChart(prefix+'HurstChart', 'Hurst', bwLabels, huData, schHu, '#ec4899');
+  drawMetricChart(prefix+'JaccardChart', 'Jaccard', bwLabels, jData, schJ, '#3b82f6');
 }
 
 // ════════ WORKING 탭 ════════
@@ -1310,7 +1361,7 @@ function renderWorkingTab(memberName){
   document.getElementById('wpStatOt2').textContent=ot2;
   document.getElementById('wpStatOt3').textContent=ot3;
 
-  // ✨ try-catch 보호
+  // ✨ try-catch 보호막으로 중간에 에러나도 나머지 차트가 멈추지 않음
   safeRender(function(){ renderWpHeroDonut(d,tot,c); });
   safeRender(function(){ renderWpMetricsBadges(d); });
   safeRender(function(){ renderWpStackedBar(d,mos); });
