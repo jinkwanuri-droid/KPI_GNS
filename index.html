@@ -95,7 +95,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-/* 카드 스타일 및 Z-index 오버플로우 제어 */
+/* 카드 공통 스타일 */
 .card,.eval-trend-card,.eval-table-card,.eval-profile-card{
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(16px);
@@ -110,12 +110,8 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   overflow:visible;
   z-index: 1;
 }
-.card:hover, .eval-trend-card:hover, .eval-table-card:hover, .eval-profile-card:hover {
-  z-index: 100 !important;
-}
-
-/* Tooltip 부모 오버플로우 방지 */
-.eval-trend-card { overflow: visible !important; }
+.card:hover, .eval-trend-card:hover, .eval-table-card:hover, .eval-profile-card:hover { z-index: 100 !important; }
+.eval-trend-card { overflow: visible !important; } /* 툴팁 잘림 방지 */
 .eval-trend-card, .eval-table-card { height:350px; min-height:350px; }
 
 .card-section-title,.eval-trend-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:10;}
@@ -146,7 +142,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .scroll-list::-webkit-scrollbar{width:6px;}
 .scroll-list::-webkit-scrollbar-thumb{background:rgba(203,213,225,.6);border-radius:4px;}
 
-/* 인포 툴팁 최상단 노출 */
+/* 툴팁 마크 */
 .info-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;cursor:help;z-index:999999;}
 .info-icon{width:14px;height:14px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .info-wrap:hover .info-icon{background:#00428E;}
@@ -157,13 +153,13 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .info-tooltip li{word-break:keep-all;margin-bottom:4px;}
 .info-tooltip b{color:#fff;font-weight:800;}
 
-/* 워킹 히어로 (높이 480px 고정) */
+/* ✨ 워킹 히어로 (높이 480px 고정) */
 .wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);height:480px;min-height:480px;max-height:480px;display:flex;}
 .wp-hero-inner{display:grid;grid-template-columns:300px 1fr 400px;width:100%;height:100%;position:relative;z-index:2;}
 
-/* ✨ 프로필 사진 좌측 정렬, 사이즈 조절 및 마스크 처리 */
+/* 프로필 사진 마스크 효과 */
 .wp-hero-profile { position: relative; overflow: hidden; border-right: 1px solid rgba(147,197,253,0.25); display: flex; flex-direction: column; }
-.wp-hero-profile-bg { position: absolute; top: 12%; left: -5%; width: 220px; height: 280px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.8; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
+.wp-hero-profile-bg { position: absolute; top: 12%; left: 0%; width: 180px; height: 230px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.55; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
 .wp-hero-profile-content { position: relative; z-index: 1; padding: 24px 20px; flex: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; }
 
 .wp-hero-tabs{width:100%;display:flex;overflow-x:auto;gap:4px;padding-bottom:16px;scrollbar-width:none;}
@@ -242,7 +238,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
   <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
   <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
-  
   <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div>
   <div class="ld-orb ld-orb-4"></div><div class="ld-orb ld-orb-5"></div><div class="ld-orb ld-orb-6"></div>
   <div class="ld-orb ld-orb-white-1"></div><div class="ld-orb ld-orb-white-2"></div>
@@ -390,7 +385,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       </div>
     </div>
     
-    <!-- ✨ 분석 6대 지표 (Project Tab) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
       <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
@@ -406,7 +400,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div id="view-members" class="view-section">
     <div class="wp-hero">
       <div class="wp-hero-inner">
-        <!-- ✨ 프로필 (은은한 배경 효과) -->
         <div class="wp-hero-profile">
           <img id="wpProfileImgBg" class="wp-hero-profile-bg" src="" onerror="this.style.display='none'">
           <div class="wp-hero-profile-content">
@@ -504,7 +497,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="card" style="height:320px;"><div class="card-section-title"><span>근무 밀도</span><div id="wpHeatTabs" style="display:flex;gap:3px;margin-left:auto;"></div></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:2px;"><table class="heat-table" id="wpHeatTable"></table></div></div>
     </div>
 
-    <!-- ✨ 분석 6대 지표 (Working Tab) 2x3 레이아웃 (3열) -->
+    <!-- ✨ 분석 6대 지표 (Working Tab) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
       <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpOtChart"></canvas></div></div>
@@ -518,7 +511,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:15px;margin-top:15px;">
       <div class="card" style="height:300px;"><div class="card-section-title">집중 vs 분산 업무</div><div style="flex:1;min-height:0;"><canvas id="wpFocusBar"></canvas></div></div>
       <div class="card" style="height:300px;"><div class="card-section-title">초과근무 상세</div><div style="height:130px;position:relative;margin-bottom:8px;"><canvas id="wpOtBar"></canvas></div><div class="scroll-list" id="wpOtList" style="flex:1;overflow-y:auto;border-top:1px solid rgba(226,232,240,.5);padding-top:8px;"></div></div>
-      <!-- ✨ 지니계수 전용 카드로 리팩토링 -->
       <div class="card" style="height:300px;">
         <div style="display:flex;flex-direction:column;height:100%;gap:12px;">
           <div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div>
@@ -554,15 +546,12 @@ var PROFILE_IMG = {
 };
 var DYNAMIC_COLORS = ['#00428E','#7545fb','#14b8a6','#eb5f8c','#f59e0b','#f97316','#ec4899','#8b5cf6'];
 var CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
-var CAT_COLORS = ['#3b82f6','#0ea5e9','#0284c7','#0369a1']; // 블루톤
+var CAT_COLORS = ['#3b82f6','#0ea5e9','#0284c7','#0369a1'];
 var SUB_PAL = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f7','#f43f5e','#f97316','#facc15','#4ade80','#14b8a6'];
 var OT_COLORS = ['#818cf8','#6366f1','#4A90E2','#00428E'];
 var RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력'];
 var RADAR_COLORS_ARR = ['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
-var MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-var OVERTIME_RANGES = ['9~10h','10~11h','11~12h','12h 이상'];
 
-// ── 전역 변수 ──
 var MEMBERS=[], MC={}, INITIALS={};
 var SCHEDULE_DATA=[], EVAL_DATA=[], RAW=[];
 var CH={}, GLOBAL_MEMBER='ALL', WP_MEMBER=null;
@@ -573,19 +562,51 @@ var filterYears=[2024,2025,2026], filterQuarters=['Q1','Q2','Q3','Q4'];
 var totalNodes=filterYears.length*4;
 var percentPositions=[];
 
-// ✨ 날짜 → 주차 변환기
+// ── 수학/통계 유틸리티 ──
+var MathUtils = {
+  shannonHhi: function(records, totalMin) {
+    if(!totalMin || totalMin<=0) return {s:0, h:0};
+    var sMap = grp(records, 'sub'), h=0, s=0, keys=Object.keys(sMap), N=keys.length;
+    keys.forEach(function(k){ var p=sMap[k]/totalMin; h+=p*p; if(p>0) s-=p*Math.log(p); });
+    if(N>1) s = s/Math.log(N); else s=0;
+    return {s:s, h:h};
+  },
+  cvHurst: function(dailyArr) {
+    var n = dailyArr.length;
+    if(n===0) return {cv:0, hurst:0.5};
+    var m = dailyArr.reduce(function(a,b){return a+b;},0)/n;
+    var cv = m===0 ? 0 : Math.sqrt(dailyArr.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/n)/m;
+    var cvNorm = Math.max(0, 1-(cv/2.0));
+    var hurst = 0.5;
+    if(n>=3 && m>0){
+      var dev=dailyArr.map(function(v){return v-m;}), cumDev=[], cSum=0;
+      dev.forEach(function(v){cSum+=v; cumDev.push(cSum);});
+      var R = Math.max.apply(null, cumDev) - Math.min.apply(null, cumDev);
+      var S = Math.sqrt(dailyArr.reduce(function(a,v){return a+Math.pow(v-m,2);},0)/n) || 1;
+      if(R>0) hurst = Math.min(Math.max(Math.log(R/S)/Math.log(n/2), 0.01), 0.99);
+    }
+    return {cv: cvNorm, hurst: hurst};
+  }
+};
+
+// ✨ 날짜 → 1/2주차 변환 로직 강화
 function getWeekInfo(dateStr) {
   var d = new Date(dateStr);
   var y = d.getFullYear(), m = d.getMonth() + 1, date = d.getDate();
   var weekNum = Math.ceil(date / 7);
   var ym = y + '-' + String(m).padStart(2, '0');
   var wStr = 'W' + String(weekNum).padStart(2, '0');
-  var bwNum = Math.ceil(weekNum / 2);
+  
+  var biWeekStr;
+  if(weekNum <= 2) biWeekStr = 'W1-2';
+  else if(weekNum <= 4) biWeekStr = 'W3-4';
+  else biWeekStr = 'W5-6';
+  
   return {
     label1: [ym, wStr],
     key1: ym + '-' + wStr,
-    label2: [ym, 'W' + (bwNum*2-1) + '~' + (bwNum*2)],
-    key2: ym + '-B' + bwNum
+    label2: [ym, biWeekStr],
+    key2: ym + '-' + biWeekStr
   };
 }
 
@@ -593,17 +614,15 @@ function getWeekInfo(dateStr) {
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
 Chart.register(ChartDataLabels);
-
-// ✨ 툴팁 마우스 따라다니게 (안전코드 적용)
 Chart.Tooltip.positioners.cursor = function(elements, eventPosition) {
   if (!eventPosition) return false;
   return { x: eventPosition.x, y: eventPosition.y };
 };
 Chart.defaults.plugins.tooltip.position = 'cursor';
-Chart.defaults.interaction.mode = 'index'; // 인덱스 단위로 모아서 처리
+Chart.defaults.interaction.mode = 'index'; 
 Chart.defaults.interaction.intersect = false;
 
-// ✨ 주요일정 플러그인 (빈 데이터 방지 & 선명한 Dot & 이모지 제거 매핑)
+// ✨ 커스텀 스케줄 플러그인 (빈 데이터 스킵, 선명한 빨간 점 설정)
 Chart.register({
   id: 'verticalLine',
   beforeDatasetsDraw: function(chart){
@@ -612,20 +631,19 @@ Chart.register({
       if(ds.isSchedule){
         var meta=chart.getDatasetMeta(i);
         if(meta && meta.data) {
-          meta.data.forEach(function(pt){
+          meta.data.forEach(function(pt, index){
+            // 차트 data 배열 내의 실제 값이 null이면 그리지 않음
+            if(ds.data[index] === null) return; 
             if(!pt || isNaN(pt.x) || isNaN(pt.y)) return;
+            
             ctx.save();
-            // 수직선
             ctx.beginPath();ctx.moveTo(pt.x,pt.y);ctx.lineTo(pt.x,chart.scales.y.bottom);
             ctx.lineWidth=1;ctx.strokeStyle='rgba(203, 213, 225, 0.8)';ctx.stroke();
             
-            // 선명한 빨간 점 (그림자 제거)
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 4, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ef4444';
-            ctx.fill();
+            ctx.arc(pt.x, pt.y, 4.5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ef4444'; ctx.fill();
             ctx.lineWidth=1; ctx.strokeStyle='#fff'; ctx.stroke();
-            
             ctx.restore();
           });
         }
@@ -814,7 +832,6 @@ function renderDashboardTab(){
   document.getElementById('ovActiveDays').innerText=activeDaysTotal+'일'; 
 
   safeRender(function(){ renderOvProjectRatio(all); });
-  
   var grid=document.getElementById('topKpiGrid');grid.innerHTML='';
   var gnwmcTotalMin=pjData.reduce(function(s,r){return s+r.min;},0);
   
@@ -831,7 +848,6 @@ function renderDashboardTab(){
     mc.style.border='1px solid '+hRgba(MC[name]||'#00428E',0.5);
     mc.style.position='relative'; mc.style.overflow='hidden';
     
-    // ✨ 팀원 카드 배경 이미지 복구 (크기 축소 및 위치 상승)
     var bgImgHtml = PROFILE_IMG[name] ? '<img src="'+PROFILE_IMG[name]+'" style="position:absolute; right:5%; top:-20px; width:110px; height:150px; object-fit:cover; object-position:center top; opacity:0.35; z-index:0; filter:grayscale(100%); -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%);">' : '';
     
     mc.innerHTML = bgImgHtml + '<div style="position:relative; z-index:1; display:flex; flex-direction:column; height:100%; justify-content:center;">'
@@ -856,7 +872,7 @@ function renderDashboardTab(){
     safeRender(function(){ renderDashOvertimeDonut(pjData); });
     safeRender(function(){ renderDashMonthlyOt(pjData,pjMos); });
     var dates=Array.from(new Set(pjData.map(function(r){return r.date;}))).sort();
-    safeRender(function(){ renderAdvancedMetrics(pjData,dates,'#00428E','pj'); }); // ✨ 고급 6대 지표 (Project)
+    safeRender(function(){ renderAdvancedMetrics(pjData,dates,'#00428E','pj'); }); 
   }
 }
 
@@ -993,7 +1009,7 @@ window.renderHeatmapOnly=function(year){
       }
       else{
         var val=mat[w][mo],ratio=val/maxV,bin=Math.ceil(ratio*5),isDim=hlHeatBin!==null&&hlHeatBin!==bin,alpha=0.2+(bin-1)*0.2;
-        tb+='<td><div class="hm-cell" onclick="toggleHeatBin('+bin+',\''+year+'\')" style="background:'+hRgba(c,alpha)+';color:'+(alpha>=0.55?'#fff':'#1e293b')+';opacity:'+(isDim?0.2:1)+';" title="'+fH(val)+'h">'+fH(val)+'</div></td>';
+        tb+='<td><div class="hm-cell" onclick="toggleHeatBin('+bin+',\''+year+'\')" style="background:'+hRgba('#00428E',alpha)+';color:'+(alpha>=0.55?'#fff':'#1e293b')+';opacity:'+(isDim?0.2:1)+';" title="'+fH(val)+'h">'+fH(val)+'</div></td>';
       }
     }tb+='</tr>';
   }
@@ -1063,7 +1079,7 @@ function renderDashOvertimeDonut(all){
 }
 window.dTogOtDonut=function(name){hlOvertimeDonut=hlOvertimeDonut===name?null:name;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
 
-// ✨ 고급 6대 지표 (Project & Working 공통) - 1주, 2주 분석 포함
+// ✨ 고급 6대 지표 (Project & Working 공통) 완벽한 X축 배열 병합 및 정렬 매핑
 function renderAdvancedMetrics(d,datesArr,color,prefix){
   dC(prefix+'ShannonChart');dC(prefix+'HhiChart');dC(prefix+'JaccardChart');
   dC(prefix+'CvChart');dC(prefix+'HurstChart');dC(prefix+'OtChart');
@@ -1073,7 +1089,6 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
   var weeklyMap = {};
   var biWeeklyMap = {};
   
-  // 그룹핑
   d.forEach(function(r){
       var wInfo = getWeekInfo(r.date);
       if(!weeklyMap[wInfo.key1]) weeklyMap[wInfo.key1] = { label: wInfo.label1, records: [], days: new Set() };
@@ -1088,82 +1103,63 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
   var wKeys = Object.keys(weeklyMap).sort();
   var bwKeys = Object.keys(biWeeklyMap).sort();
   
-  var wLabels = [];
-  var bwLabels = [];
+  var wLabels=[], bwLabels=[];
+  var sData=[], hData=[], otData=[]; 
+  var cvData=[], huData=[], jData=[];
+  // ✨ Scatter 차트의 x값을 숫자가 아닌 카테고리 배열로 정확히 매칭하기 위해 null 배열 구성
+  var schS=new Array(wKeys.length).fill(null), schH=new Array(wKeys.length).fill(null), schOt=new Array(wKeys.length).fill(null);
+  var schCv=new Array(bwKeys.length).fill(null), schHu=new Array(bwKeys.length).fill(null), schJ=new Array(bwKeys.length).fill(null);
   
-  var sData=[], hData=[], otData=[]; // 1-week
-  var cvData=[], huData=[], jData=[]; // 2-week
-  var schS=[], schH=[], schOt=[], schCv=[], schHu=[], schJ=[];
-  
-  // ✨ 이모지 완벽 제거 정규식
-  var emojiRegex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+  var emojiRegex = /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g;
 
-  // --- 1-Week Metrics Calculation ---
-  wKeys.forEach(function(k){
+  // 1-Week
+  wKeys.forEach(function(k, idx){
       var group = weeklyMap[k];
       wLabels.push(group.label); 
-      var currentIdx = wLabels.length - 1;
       
       var tot = group.records.reduce(function(s,r){return s+r.min;}, 0);
-      var sMap = grp(group.records, 'sub');
-      
-      var hhi=0, shan=0, keys=Object.keys(sMap), N=keys.length;
-      keys.forEach(function(subK){
-          var p = sMap[subK]/tot;
-          hhi += p*p;
-          if(p>0) shan -= p*Math.log(p);
-      });
+      var sMap = grp(group.records, 'sub'), hhi=0, shan=0, keys=Object.keys(sMap), N=keys.length;
+      keys.forEach(function(subK){ var p = sMap[subK]/tot; hhi += p*p; if(p>0) shan -= p*Math.log(p); });
       if(N>1) shan = shan/Math.log(N); else shan=0;
       
-      var otSum = 0;
-      var dailyTot = grp(group.records, 'date');
-      Object.values(dailyTot).forEach(function(m){
-          if(m>=600) otSum+=1.0; 
-          else if(m>=540) otSum+=0.75; 
-          else if(m>=480) otSum+=0.5;
-      });
+      var otSum = 0, dailyTot = grp(group.records, 'date');
+      Object.values(dailyTot).forEach(function(m){ if(m>=600) otSum+=1.0; else if(m>=540) otSum+=0.75; else if(m>=480) otSum+=0.5; });
       var otIndex = group.days.size > 0 ? otSum / group.days.size : 0;
       
-      sData.push(shan);
-      hData.push(hhi);
-      otData.push(otIndex);
+      sData.push(shan); hData.push(hhi); otData.push(otIndex);
       
-      // 일주일 내 스케줄 병합
       var wSchedules = [];
       Array.from(group.days).forEach(function(dt) {
           var found = SCHEDULE_DATA.filter(function(s){ return s.date && s.date.slice(0,10) === dt; });
           wSchedules = wSchedules.concat(found);
       });
-      
       if(wSchedules.length > 0) {
           var st = wSchedules.map(function(s){
              var dateStr = s.date.slice(2,10).replace(/-/g, '.') + '.'; 
              var title = (s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex, '').trim();
              return dateStr + ' ' + title;
           }).join('\n');
-          schS.push({x: currentIdx, y: 1, schTitle: st});
-          schH.push({x: currentIdx, y: 1, schTitle: st});
-          schOt.push({x: currentIdx, y: 1, schTitle: st});
+          // 배열 자리에 객체 주입
+          schS[idx] = { schTitle: st };
+          schH[idx] = { schTitle: st };
+          schOt[idx] = { schTitle: st };
       }
   });
   
-  // --- 2-Week Metrics Calculation ---
+  // 2-Week
   var prevSubSet = new Set();
-  bwKeys.forEach(function(k){
+  bwKeys.forEach(function(k, idx){
       var group = biWeeklyMap[k];
       bwLabels.push(group.label);
-      var currentIdx = bwLabels.length - 1;
       
-      var dailyTot = grp(group.records, 'date');
-      var vals = Object.values(dailyTot);
+      var dailyTot = grp(group.records, 'date'), vals = Object.values(dailyTot);
       var m = vals.length>0 ? vals.reduce(function(a,b){return a+b;},0)/vals.length : 0;
       var cv = m===0 ? 0 : Math.sqrt(vals.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/vals.length)/m;
       var cvNorm = Math.max(0, 1-(cv/2.0)); 
       
       var hurst = 0.5, nH = vals.length;
       if(nH >= 3 && m > 0){
-          var dev = vals.map(function(v){return v-m;});
-          var cumDev=[], cSum=0;
+          var dev = vals.map(function(v){return v-m;}), cumDev=[], cSum=0;
           dev.forEach(function(v){cSum+=v; cumDev.push(cSum);});
           var R = Math.max.apply(null, cumDev) - Math.min.apply(null, cumDev);
           var S = Math.sqrt(vals.reduce(function(a,v){return a+Math.pow(v-m,2);},0)/nH) || 1;
@@ -1177,25 +1173,22 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
       var jaccard = union===0 ? 0 : intersection/union;
       prevSubSet = currSubSet; 
       
-      cvData.push(cvNorm);
-      huData.push(hurst);
-      jData.push(jaccard);
+      cvData.push(cvNorm); huData.push(hurst); jData.push(jaccard);
       
       var bwSchedules = [];
       Array.from(group.days).forEach(function(dt) {
           var found = SCHEDULE_DATA.filter(function(s){ return s.date && s.date.slice(0,10) === dt; });
           bwSchedules = bwSchedules.concat(found);
       });
-      
       if(bwSchedules.length > 0) {
           var st = bwSchedules.map(function(s){
              var dateStr = s.date.slice(2,10).replace(/-/g, '.') + '.'; 
              var title = (s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex, '').trim();
              return dateStr + ' ' + title;
           }).join('\n');
-          schCv.push({x: currentIdx, y: 1, schTitle: st});
-          schHu.push({x: currentIdx, y: 1, schTitle: st});
-          schJ.push({x: currentIdx, y: 1, schTitle: st});
+          schCv[idx] = { schTitle: st };
+          schHu[idx] = { schTitle: st };
+          schJ[idx] = { schTitle: st };
       }
   });
 
@@ -1205,26 +1198,30 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
     document.getElementById('ovAvgCv').innerText=(cvData.length?cvData.reduce(function(a,b){return a+b;},0)/cvData.length:0).toFixed(2);
   }
   
-  // ✨ 차트 그리기 헬퍼 함수
+  // ✨ 라인 차트에 더미 라인으로 스케줄 추가 (X축 어긋남 원천 봉쇄)
   function drawMetricChart(id, label, xLabels, dataArr, schArr, cHex) {
     if(!document.getElementById(id)) return;
     var maxY = dataArr.length ? Math.max.apply(null, dataArr) : 1;
     if(maxY < 0.1) maxY = 1.0; 
 
-    // 주요일정 Y좌표를 차트 상단(1.05배)으로 맞춤
-    var sArr = [];
-    schArr.forEach(function(s){ sArr.push({x: s.x, y: maxY*1.05, schTitle: s.schTitle}); });
+    // 스케줄 배열 Y좌표 매핑 (null은 그대로 둠)
+    var processedSchArr = schArr.map(function(item){
+       if(item === null) return null;
+       return { y: maxY*1.05, schTitle: item.schTitle };
+    });
 
     var schCfg = {
-      type:'scatter', label:'주요일정', data:sArr, 
-      backgroundColor:'transparent', borderColor:'transparent', pointBackgroundColor:'transparent', pointBorderColor:'transparent',
-      pointRadius:10, pointHoverRadius:10, isSchedule:true, order:0
+      type:'line', label:'주요일정', data:processedSchArr, 
+      backgroundColor:'transparent', borderColor:'transparent', showLine:false,
+      pointRadius: function(ctx) { return ctx.raw ? 4.5 : 0; },
+      pointBackgroundColor: '#ef4444', pointBorderColor: '#fff', pointBorderWidth: 1.5,
+      isSchedule:true, order:0, spanGaps: false
     };
     
     CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
       type:'line',
       data:{
-        labels: xLabels, // ✨ 배열 형태의 라벨 주입
+        labels: xLabels,
         datasets:[{data:dataArr,label:label,borderColor:cHex,backgroundColor:hRgba(cHex,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,order:1}, schCfg]
       },
       options:{
@@ -1236,24 +1233,22 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
             displayColors:false,
             titleFont: { size: 11, weight: 'normal', color: '#94a3b8' },
             bodyFont: { size: 13, weight: 'bold' },
-            // ✨ 주요일정 툴팁 우선순위 및 커스텀 필터링
             filter: function(tooltipItem, currentIndex, tooltipItems) {
-               var hasSchedule = tooltipItems.some(function(item){ return item.dataset.isSchedule; });
-               if(hasSchedule) {
-                   return tooltipItem.dataset.isSchedule; // 스케줄 있으면 스케줄만 띄움
-               }
-               return true; // 없으면 차트 값 띄움
+               var hasSchedule = tooltipItems.some(function(item){ return item.dataset.isSchedule && item.raw; });
+               if(hasSchedule) return tooltipItem.dataset.isSchedule;
+               return !tooltipItem.dataset.isSchedule;
             },
             callbacks:{
               title:function(ctxs){ 
-                if(ctxs[0].dataset.isSchedule) return null; // 스케줄일 때는 타이틀(날짜 라벨) 생략
-                return ctxs[0].raw.x ? ctxs[0].raw.x.join(' ') : (Array.isArray(ctxs[0].label) ? ctxs[0].label.join(' ') : ctxs[0].label); 
+                if(ctxs[0].dataset.isSchedule) return null;
+                return Array.isArray(ctxs[0].label) ? ctxs[0].label.join(' ') : ctxs[0].label; 
               },
               label:function(ctx){
                 if(ctx.dataset.isSchedule) return ctx.raw.schTitle;
-                return ctx.dataset.label+': '+(ctx.raw.y !== undefined ? ctx.raw.y.toFixed(2) : (ctx.raw ? ctx.raw.toFixed(2) : 0));
+                return ctx.dataset.label+': '+(ctx.raw ? ctx.raw.toFixed(2) : 0);
               }
-            }
+            },
+            itemSort:function(a,b){return b.datasetIndex-a.datasetIndex;}
           }
         },
         scales:{
@@ -1285,7 +1280,7 @@ function renderWorkingTab(memberName){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
   
-  // ✨ 프로필 이미지 (투명도 0.7 진하게, 크기 240px 확대)
+  // ✨ 프로필 이미지 (투명도 0.8, 가로폭 늘리고 정렬 최적화)
   var bgImg = document.getElementById('wpProfileImgBg');
   if(PROFILE_IMG[memberName]){
     bgImg.src = PROFILE_IMG[memberName];
@@ -1309,7 +1304,6 @@ function renderWorkingTab(memberName){
   document.getElementById('wpContribFill2').style.width=myPjPct+'%';
   document.getElementById('wpContribPct2').textContent=myPjPct+'%';
 
-  // ✨ 동적 AI 코멘트 로직
   var aiText = "";
   var subMap = grp(d, 'sub');
   var topArr = Object.entries(subMap).sort(function(a,b){return b[1]-a[1];});
@@ -1365,7 +1359,6 @@ function renderWorkingTab(memberName){
   document.getElementById('wpStatOt2').textContent=ot2;
   document.getElementById('wpStatOt3').textContent=ot3;
 
-  // ✨ try-catch 보호
   safeRender(function(){ renderWpHeroDonut(d,tot,c); });
   safeRender(function(){ renderWpMetricsBadges(d); });
   safeRender(function(){ renderWpStackedBar(d,mos); });
@@ -1375,17 +1368,16 @@ function renderWorkingTab(memberName){
   safeRender(function(){ renderWpSwitchBar(d,mos,c); });
   
   var dates=Array.from(new Set(d.map(function(r){return r.date;}))).sort();
-  safeRender(function(){ renderAdvancedMetrics(d,dates,c,'wp'); }); // ✨ 고급 6대 지표
+  safeRender(function(){ renderAdvancedMetrics(d,dates,c,'wp'); }); // ✨ 6대 지표 차트
   safeRender(function(){ renderWpFocusBar(d,mos); });
   safeRender(function(){ renderWpOvertimeDetail(d); });
-  safeRender(function(){ renderWpGini(d,c); }); // 지니 전용 렌더
+  safeRender(function(){ renderWpGini(d,c); });
 }
 
 function renderWpHeroDonut(d,tot,c){
   dC('wpHeroDonut');
   var subMap=grp(d,'sub');
   var top5List=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
-  // ✨ 클릭 연동
   document.getElementById('wpTop3List').innerHTML=top5List.map(function(entry,i){
     var k=String(entry[0]),v=entry[1],pct=tot>0?(v/tot*100).toFixed(1):0;
     var isDim=hlHeroDonut!==null&&hlHeroDonut!==k;
@@ -1553,7 +1545,6 @@ function renderWpOvertimeDetail(d){
   listEl.innerHTML=otDays.slice(0,10).map(function(entry){var dt=entry[0],min=entry[1],h=mToH(min),level=min>=720?'#ef4444':min>=660?'#f97316':min>=600?'#f59e0b':'#818cf8';return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.5);"><span style="font-size:11px;color:#475569;font-weight:600;">'+dt+'</span><span style="font-size:12px;font-weight:800;color:'+level+';">'+fmt(h)+'h</span></div>';}).join('');
 }
 
-// ✨ 지니계수 전용
 function renderWpGini(d,color){
   dC('wpGiniChart');
   var dateMap={};d.forEach(function(r){dateMap[r.date]=(dateMap[r.date]||0)+r.min;});
