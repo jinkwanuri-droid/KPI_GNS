@@ -21,7 +21,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 @keyframes floatM{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(-60px,40px,0) scale(0.9);}}
 @keyframes floatL{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(70px,-50px,0) scale(1.15);}}
 
-/* ✨ 로딩 오버레이 */
+/* 로딩 오버레이 */
 #loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;overflow:hidden;}
 .ld-orb{position:absolute;border-radius:50%;will-change:transform;}
 .ld-orb-1{width:280px;height:280px;background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%);top:-60px;right:60px;filter:blur(25px) saturate(.7);opacity:.6;animation:ldFloat1 3.5s infinite alternate ease-in-out;}
@@ -95,7 +95,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-/* ✨ 카드 스타일 및 Z-index 오버플로우 제어 */
+/* 카드 스타일 및 Z-index 오버플로우 제어 */
 .card,.eval-trend-card,.eval-table-card,.eval-profile-card{
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(16px);
@@ -114,7 +114,8 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   z-index: 100 !important;
 }
 
-/* ✨ 차트 높이 350px 이상 고정 */
+/* Tooltip 부모 오버플로우 방지 */
+.eval-trend-card { overflow: visible !important; }
 .eval-trend-card, .eval-table-card { height:350px; min-height:350px; }
 
 .card-section-title,.eval-trend-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:10;}
@@ -145,7 +146,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .scroll-list::-webkit-scrollbar{width:6px;}
 .scroll-list::-webkit-scrollbar-thumb{background:rgba(203,213,225,.6);border-radius:4px;}
 
-/* ✨ 인포 툴팁 */
+/* 인포 툴팁 최상단 노출 */
 .info-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;cursor:help;z-index:999999;}
 .info-icon{width:14px;height:14px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .info-wrap:hover .info-icon{background:#00428E;}
@@ -153,16 +154,16 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .info-tooltip::after{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border-width:6px;border-style:solid;border-color:transparent transparent rgba(30,41,59,.98) transparent;}
 .info-wrap:hover .info-tooltip{visibility:visible;opacity:1;}
 .info-tooltip ul{padding-left:18px;margin-top:8px;}
-.info-tooltip li{word-break:keep-all;margin-bottom:6px;}
+.info-tooltip li{word-break:keep-all;margin-bottom:4px;}
 .info-tooltip b{color:#fff;font-weight:800;}
 
-/* ✨ 워킹 히어로 (높이 480px 고정) */
+/* 워킹 히어로 (높이 480px 고정) */
 .wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);height:480px;min-height:480px;max-height:480px;display:flex;}
 .wp-hero-inner{display:grid;grid-template-columns:300px 1fr 400px;width:100%;height:100%;position:relative;z-index:2;}
 
-/* ✨ 프로필 사진 좌측 정렬 & 마스크 블러 처리 (진하게) */
+/* ✨ 프로필 사진 좌측 정렬, 사이즈 조절 및 마스크 처리 */
 .wp-hero-profile { position: relative; overflow: hidden; border-right: 1px solid rgba(147,197,253,0.25); display: flex; flex-direction: column; }
-.wp-hero-profile-bg { position: absolute; top: 10%; left: -5%; width: 220px; height: 280px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.8; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
+.wp-hero-profile-bg { position: absolute; top: 12%; left: -5%; width: 220px; height: 280px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.8; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
 .wp-hero-profile-content { position: relative; z-index: 1; padding: 24px 20px; flex: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; }
 
 .wp-hero-tabs{width:100%;display:flex;overflow-x:auto;gap:4px;padding-bottom:16px;scrollbar-width:none;}
@@ -171,7 +172,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-tab-btn.active{background:#00428E;color:#fff;border-color:transparent;}
 .wp-tab-btn:hover:not(.active){background:rgba(255,255,255,.8);color:#00428E;}
 
-/* ✨ 이름/직급 1줄 우측 정렬 */
 .wp-profile-info { display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; margin-top: auto; margin-bottom: 10px; }
 .wp-profile-name{font-size:24px;font-weight:900;color:#1e293b;letter-spacing:-.03em;}
 .wp-profile-pos{font-size:13px;color:#64748b;font-weight:700;}
@@ -393,12 +393,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     <!-- ✨ 분석 6대 지표 (Project Tab) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
+      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 파편화도 (Shannon Entropy)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 정보 이론의 엔트로피 개념을 활용한 업무 복잡도 측정.</li><li><b>로직</b> : -∑p_i*ln(p_i)를 최대 엔트로피로 정규화. 1에 가까울수록 업무가 잘게 쪼개짐.</li><li><b>목적</b> : 맥락 전환(Context Switching) 비용을 파악하여 몰입 방해 요소를 진단.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjShannonChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">핵심 업무 집중도 (HHI)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 허핀달-히르슈만 지수를 응용한 업무 점유율 분석.</li><li><b>로직</b> : 각 업무 비중의 제곱합. 1에 가까울수록 특정 과업에 몰입함.</li><li><b>목적</b> : 잡무를 제외하고 실제 '선택과 집중'이 일어난 핵심 성과 영역을 추출.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjHhiChart"></canvas></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 안정성 (CV)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 투입 시간의 변동계수(CV=σ/μ)를 활용한 성실도 지표.</li><li><b>로직</b> : 1 - (CV / Max_CV)로 정규화하여 1에 가까울수록 기복이 적음을 의미.</li><li><b>목적</b> : 매일 정해진 페이스를 유지하는 '에너지 공급의 균일성'을 평가.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjCvChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 리듬 주도성 (Hurst Exponent)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 시계열 데이터의 장기 의존성을 측정하는 지수.</li><li><b>로직</b> : 0.5를 기준으로 1에 가까울수록 강한 추세(안정적 리듬), 0에 가까울수록 무작위성(혼돈).</li><li><b>목적</b> : 돌발 상황에 휘둘리지 않고 스스로 업무 리듬을 통제하는 자기 주도성 측정.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjHurstChart"></canvas></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
+      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
     </div>
   </div>
   
@@ -406,7 +406,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div id="view-members" class="view-section">
     <div class="wp-hero">
       <div class="wp-hero-inner">
-        <!-- ✨ 프로필 좌측 배경 및 우측 정렬 텍스트 -->
+        <!-- ✨ 프로필 (은은한 배경 효과) -->
         <div class="wp-hero-profile">
           <img id="wpProfileImgBg" class="wp-hero-profile-bg" src="" onerror="this.style.display='none'">
           <div class="wp-hero-profile-content">
@@ -600,10 +600,10 @@ Chart.Tooltip.positioners.cursor = function(elements, eventPosition) {
   return { x: eventPosition.x, y: eventPosition.y };
 };
 Chart.defaults.plugins.tooltip.position = 'cursor';
-Chart.defaults.interaction.mode = 'nearest';
+Chart.defaults.interaction.mode = 'index'; // 인덱스 단위로 모아서 처리
 Chart.defaults.interaction.intersect = false;
 
-// ✨ 주요일정 플러그인 (안전코드 적용 및 디자인 개선)
+// ✨ 주요일정 플러그인 (빈 데이터 방지 & 선명한 Dot & 이모지 제거 매핑)
 Chart.register({
   id: 'verticalLine',
   beforeDatasetsDraw: function(chart){
@@ -615,14 +615,16 @@ Chart.register({
           meta.data.forEach(function(pt){
             if(!pt || isNaN(pt.x) || isNaN(pt.y)) return;
             ctx.save();
+            // 수직선
             ctx.beginPath();ctx.moveTo(pt.x,pt.y);ctx.lineTo(pt.x,chart.scales.y.bottom);
             ctx.lineWidth=1;ctx.strokeStyle='rgba(203, 213, 225, 0.8)';ctx.stroke();
             
+            // 선명한 빨간 점 (그림자 제거)
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 4.5, 0, 2 * Math.PI);
+            ctx.arc(pt.x, pt.y, 4, 0, 2 * Math.PI);
             ctx.fillStyle = '#ef4444';
             ctx.fill();
-            ctx.lineWidth=1.5; ctx.strokeStyle='#fff'; ctx.stroke();
+            ctx.lineWidth=1; ctx.strokeStyle='#fff'; ctx.stroke();
             
             ctx.restore();
           });
@@ -633,7 +635,6 @@ Chart.register({
 });
 
 // ── 유틸 ──
-// ✨ 에러가 나도 다음 차트가 무사히 렌더링되도록 돕는 함수
 function safeRender(fn) { try { fn(); } catch(e) { console.error('Chart Render Error:', e); } }
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
@@ -830,7 +831,7 @@ function renderDashboardTab(){
     mc.style.border='1px solid '+hRgba(MC[name]||'#00428E',0.5);
     mc.style.position='relative'; mc.style.overflow='hidden';
     
-    // ✨ 팀원 카드 배경 이미지 (이전 버전으로 롤백, 위로 20px 올림)
+    // ✨ 팀원 카드 배경 이미지 복구 (크기 축소 및 위치 상승)
     var bgImgHtml = PROFILE_IMG[name] ? '<img src="'+PROFILE_IMG[name]+'" style="position:absolute; right:5%; top:-20px; width:110px; height:150px; object-fit:cover; object-position:center top; opacity:0.35; z-index:0; filter:grayscale(100%); -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%);">' : '';
     
     mc.innerHTML = bgImgHtml + '<div style="position:relative; z-index:1; display:flex; flex-direction:column; height:100%; justify-content:center;">'
@@ -1223,7 +1224,7 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
     CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
       type:'line',
       data:{
-        labels: xLabels,
+        labels: xLabels, // ✨ 배열 형태의 라벨 주입
         datasets:[{data:dataArr,label:label,borderColor:cHex,backgroundColor:hRgba(cHex,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,order:1}, schCfg]
       },
       options:{
@@ -1235,20 +1236,23 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
             displayColors:false,
             titleFont: { size: 11, weight: 'normal', color: '#94a3b8' },
             bodyFont: { size: 13, weight: 'bold' },
+            // ✨ 주요일정 툴팁 우선순위 및 커스텀 필터링
+            filter: function(tooltipItem, currentIndex, tooltipItems) {
+               var hasSchedule = tooltipItems.some(function(item){ return item.dataset.isSchedule; });
+               if(hasSchedule) {
+                   return tooltipItem.dataset.isSchedule; // 스케줄 있으면 스케줄만 띄움
+               }
+               return true; // 없으면 차트 값 띄움
+            },
             callbacks:{
               title:function(ctxs){ 
+                if(ctxs[0].dataset.isSchedule) return null; // 스케줄일 때는 타이틀(날짜 라벨) 생략
                 return ctxs[0].raw.x ? ctxs[0].raw.x.join(' ') : (Array.isArray(ctxs[0].label) ? ctxs[0].label.join(' ') : ctxs[0].label); 
               },
               label:function(ctx){
                 if(ctx.dataset.isSchedule) return ctx.raw.schTitle;
                 return ctx.dataset.label+': '+(ctx.raw.y !== undefined ? ctx.raw.y.toFixed(2) : (ctx.raw ? ctx.raw.toFixed(2) : 0));
               }
-            },
-            // ✨ 주요일정 최우선 노출 (itemSort)
-            itemSort:function(a,b){
-               if(a.dataset.isSchedule) return -1;
-               if(b.dataset.isSchedule) return 1;
-               return 0;
             }
           }
         },
@@ -1281,7 +1285,7 @@ function renderWorkingTab(memberName){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
   
-  // ✨ 사진 배경으로 은은하게 적용 (크기 키우고 좌측정렬, 투명도 0.8로 진하게)
+  // ✨ 프로필 이미지 (투명도 0.7 진하게, 크기 240px 확대)
   var bgImg = document.getElementById('wpProfileImgBg');
   if(PROFILE_IMG[memberName]){
     bgImg.src = PROFILE_IMG[memberName];
@@ -1361,7 +1365,7 @@ function renderWorkingTab(memberName){
   document.getElementById('wpStatOt2').textContent=ot2;
   document.getElementById('wpStatOt3').textContent=ot3;
 
-  // ✨ try-catch 보호막으로 중간에 에러나도 나머지 차트가 멈추지 않음
+  // ✨ try-catch 보호
   safeRender(function(){ renderWpHeroDonut(d,tot,c); });
   safeRender(function(){ renderWpMetricsBadges(d); });
   safeRender(function(){ renderWpStackedBar(d,mos); });
