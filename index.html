@@ -94,13 +94,31 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .view-section{display:none;animation:fadeIn .4s ease forwards;}
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.card,.eval-trend-card,.eval-table-card,.eval-profile-card{background:rgba(255,255,255,.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7);border-radius:16px;padding:25px;box-shadow:0 8px 32px rgba(31,38,135,.05);position:relative;display:flex;flex-direction:column;overflow:visible;}
 
-/* ✨ Tooltip 부모 오버플로우 방지 (필수) */
+/* ✨ 카드에 z-index 로직 적용 (툴팁 짤림 방지 완벽 해결) */
+.card,.eval-trend-card,.eval-table-card,.eval-profile-card{
+  background:rgba(255,255,255,.45);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 8px 32px rgba(31,38,135,.05);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  overflow:visible;
+  z-index: 1;
+}
+.card:hover, .eval-trend-card:hover, .eval-table-card:hover, .eval-profile-card:hover {
+  z-index: 100 !important;
+}
+
+/* Tooltip 부모 오버플로우 방지 */
 .eval-trend-card { overflow: visible !important; }
 
-/* ✨ 차트 높이 최소 350px 고정 */
-.eval-trend-card, .eval-table-card { height:350px; min-height:350px; }
+.eval-trend-card,.eval-table-card{height:350px;}
+.eval-table-card{height:auto;min-height:350px;}
 .card-section-title,.eval-trend-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:10;}
 .kpi-card{overflow:hidden;padding:20px 25px;display:flex;flex-direction:column;justify-content:center;}
 .mini-stat-card{background:rgba(255,255,255,.5);border-radius:12px;padding:15px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.02);display:flex;flex-direction:column;justify-content:center;border:1px solid rgba(255,255,255,.7);}
@@ -389,6 +407,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   
   <!-- ════════ WORKING 탭 ════════ -->
   <div id="view-members" class="view-section">
+    <!-- ✨ 480px 고정 히어로 섹션 -->
     <div class="wp-hero">
       <div class="wp-hero-inner">
         <!-- ✨ 프로필 좌측 배경 및 우측 정렬 텍스트 -->
@@ -404,14 +423,14 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
             
             <div class="wp-contrib-bar-wrap">
               <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div class="wp-contrib-label">전체 대비 서부의료원</div>
-                <div class="wp-contrib-pct" id="wpContribPct">0%</div>
+                <div class="wp-contrib-label" style="white-space:nowrap;">전체 대비 서부의료원</div>
+                <div class="wp-contrib-pct" id="wpContribPct" style="white-space:nowrap;">0%</div>
               </div>
               <div class="wp-contrib-bar"><div class="wp-contrib-bar-fill" id="wpContribFill" style="width:0%"></div></div>
               
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-                <div class="wp-contrib-label">서부의료원 중 나의 비율</div>
-                <div class="wp-contrib-pct" id="wpContribPct2" style="color:#e11d48;">0%</div>
+                <div class="wp-contrib-label" style="white-space:nowrap;">서부의료원 중 나의 비율</div>
+                <div class="wp-contrib-pct" id="wpContribPct2" style="color:#e11d48;white-space:nowrap;">0%</div>
               </div>
               <div class="wp-contrib-bar"><div class="wp-contrib-bar-fill second" id="wpContribFill2" style="width:0%"></div></div>
             </div>
@@ -629,12 +648,14 @@ function filteredEvalQs(){
   });
 }
 
+// ✨ 글로벌 멤버 선택 등 아바타 사이즈 작게 유지
 function getAvatar(name,size,fontSize){
   size=size||24; fontSize=fontSize||10;
   var c=MC[name]||'#00428E', init=INITIALS[name]||'A';
   return '<div class="avatar-base" style="width:'+size+'px;height:'+size+'px;font-size:'+fontSize+'px;background:'+c+';border:2px solid '+c+';">'+init+'</div>';
 }
 
+// ── 로딩 ──
 function hideLoadingOverlay(){
   var el=document.getElementById('loadingOverlay');
   if(el){el.style.opacity='0';setTimeout(function(){el.style.display='none';},600);}
@@ -650,6 +671,7 @@ function setProgress(pct,msg){
   if(msg) document.getElementById('ovMsg').textContent=msg;
 }
 
+// ── 네비게이션 및 슬라이더 ──
 window.addEventListener('scroll',function(){
   if(window.scrollY>20) document.getElementById('topbar').classList.add('scrolled');
   else document.getElementById('topbar').classList.remove('scrolled');
@@ -800,7 +822,7 @@ function renderDashboardTab(){
     mc.style.border='1px solid '+hRgba(MC[name]||'#00428E',0.5);
     mc.style.position='relative'; mc.style.overflow='hidden';
     
-    // ✨ 팀원 카드 배경 이미지 (작게, 위로 20px 올림)
+    // ✨ 팀원 카드 배경 이미지 (이전 버전으로 롤백, 위로 20px 올림)
     var bgImgHtml = PROFILE_IMG[name] ? '<img src="'+PROFILE_IMG[name]+'" style="position:absolute; right:5%; top:-20px; width:110px; height:150px; object-fit:cover; object-position:center top; opacity:0.35; z-index:0; filter:grayscale(100%); -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 70%);">' : '';
     
     mc.innerHTML = bgImgHtml + '<div style="position:relative; z-index:1; display:flex; flex-direction:column; height:100%; justify-content:center;">'
@@ -1032,7 +1054,7 @@ function renderDashOvertimeDonut(all){
 }
 window.dTogOtDonut=function(name){hlOvertimeDonut=hlOvertimeDonut===name?null:name;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
 
-// ✨ 6대 지표 전용 렌더 함수
+// ✨ 고급 6대 지표 (Project & Working 공통)
 function renderAdvancedMetrics(d,datesArr,color,prefix){
   dC(prefix+'ShannonChart');dC(prefix+'HhiChart');dC(prefix+'JaccardChart');
   dC(prefix+'CvChart');dC(prefix+'HurstChart');dC(prefix+'OtChart');
@@ -1143,7 +1165,7 @@ function renderWorkingTab(memberName){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
   
-  // ✨ 사진 배경으로 은은하게 적용 (투명도 0.8, 사이즈 200px 축소, 좌측정렬)
+  // ✨ 사진 배경으로 은은하게 적용 (크기 키우고 좌측정렬, 투명도 낮춤)
   var bgImg = document.getElementById('wpProfileImgBg');
   if(PROFILE_IMG[memberName]){
     bgImg.src = PROFILE_IMG[memberName];
@@ -1223,6 +1245,7 @@ function renderWorkingTab(memberName){
   document.getElementById('wpStatOt2').textContent=ot2;
   document.getElementById('wpStatOt3').textContent=ot3;
 
+  // ✨ try-catch 보호막으로 중간에 에러나도 나머지 차트가 멈추지 않음
   safeRender(function(){ renderWpHeroDonut(d,tot,c); });
   safeRender(function(){ renderWpMetricsBadges(d); });
   safeRender(function(){ renderWpStackedBar(d,mos); });
@@ -1230,6 +1253,7 @@ function renderWorkingTab(memberName){
   safeRender(function(){ renderWpDonutSub(d,tot); });
   safeRender(function(){ renderWpDonutCat(d,tot); });
   safeRender(function(){ renderWpSwitchBar(d,mos,c); });
+  
   var dates=Array.from(new Set(d.map(function(r){return r.date;}))).sort();
   safeRender(function(){ renderAdvancedMetrics(d,dates,c,'wp'); }); // ✨ 고급 6대 지표
   safeRender(function(){ renderWpFocusBar(d,mos); });
@@ -1241,6 +1265,7 @@ function renderWpHeroDonut(d,tot,c){
   dC('wpHeroDonut');
   var subMap=grp(d,'sub');
   var top5List=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
+  // ✨ 클릭 연동
   document.getElementById('wpTop3List').innerHTML=top5List.map(function(entry,i){
     var k=String(entry[0]),v=entry[1],pct=tot>0?(v/tot*100).toFixed(1):0;
     var isDim=hlHeroDonut!==null&&hlHeroDonut!==k;
@@ -1248,6 +1273,7 @@ function renderWpHeroDonut(d,tot,c){
   }).join('');
   
   if(!top5List.length) return;
+  
   var allEntries=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];});
   var labels=[], data=[], bgC=[], otherMin=0;
   allEntries.forEach(function(e, i){
@@ -1291,6 +1317,7 @@ function renderWpMetricsBadges(d){
   var cvEl=document.getElementById('wmCv');cvEl.textContent=avgCv.toFixed(2);cvEl.parentElement.className='wp-metric-badge '+(avgCv<0.5?'good':avgCv<1.0?'warn':'danger');
 }
 
+// ✨ 업무유형 연동
 function renderWpStackedBar(d,mos){
   dC('wpStackedBar');
   var subMap=grp(d,'sub'),subList=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];}).map(function(x){return String(x[0]);}).slice(0,8);
