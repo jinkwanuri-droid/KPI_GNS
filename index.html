@@ -95,7 +95,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-/* 카드 공통 스타일 */
+/* ✨ 카드 스타일 설정 및 Z-index 오버플로우 제어 */
 .card,.eval-trend-card,.eval-table-card,.eval-profile-card{
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(16px);
@@ -110,10 +110,15 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   overflow:visible;
   z-index: 1;
 }
-.card:hover, .eval-trend-card:hover, .eval-table-card:hover, .eval-profile-card:hover { z-index: 100 !important; }
-.eval-trend-card { overflow: visible !important; } /* 툴팁 잘림 방지 */
-.eval-trend-card, .eval-table-card { height:350px; min-height:350px; }
+.card:hover, .eval-trend-card:hover, .eval-table-card:hover, .eval-profile-card:hover {
+  z-index: 100 !important;
+}
 
+/* Tooltip 부모 오버플로우 방지 */
+.eval-trend-card { overflow: visible !important; }
+
+.eval-trend-card,.eval-table-card{height:350px;}
+.eval-table-card{height:auto;min-height:350px;}
 .card-section-title,.eval-trend-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:10;}
 .kpi-card{overflow:hidden;padding:20px 25px;display:flex;flex-direction:column;justify-content:center;}
 .mini-stat-card{background:rgba(255,255,255,.5);border-radius:12px;padding:15px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.02);display:flex;flex-direction:column;justify-content:center;border:1px solid rgba(255,255,255,.7);}
@@ -142,7 +147,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .scroll-list::-webkit-scrollbar{width:6px;}
 .scroll-list::-webkit-scrollbar-thumb{background:rgba(203,213,225,.6);border-radius:4px;}
 
-/* 툴팁 마크 */
+/* ✨ 인포 툴팁 (최상단 노출 및 내용 변경) */
 .info-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;cursor:help;z-index:999999;}
 .info-icon{width:14px;height:14px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .info-wrap:hover .info-icon{background:#00428E;}
@@ -157,9 +162,9 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);height:480px;min-height:480px;max-height:480px;display:flex;}
 .wp-hero-inner{display:grid;grid-template-columns:300px 1fr 400px;width:100%;height:100%;position:relative;z-index:2;}
 
-/* 프로필 사진 마스크 효과 */
+/* ✨ 프로필 사진 좌측 정렬 & 마스크 블러 처리 (진하게) */
 .wp-hero-profile { position: relative; overflow: hidden; border-right: 1px solid rgba(147,197,253,0.25); display: flex; flex-direction: column; }
-.wp-hero-profile-bg { position: absolute; top: 12%; left: 0%; width: 180px; height: 230px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.55; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
+.wp-hero-profile-bg { position: absolute; top: 10%; left: -5%; width: 220px; height: 280px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.8; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
 .wp-hero-profile-content { position: relative; z-index: 1; padding: 24px 20px; flex: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; }
 
 .wp-hero-tabs{width:100%;display:flex;overflow-x:auto;gap:4px;padding-bottom:16px;scrollbar-width:none;}
@@ -168,6 +173,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-tab-btn.active{background:#00428E;color:#fff;border-color:transparent;}
 .wp-tab-btn:hover:not(.active){background:rgba(255,255,255,.8);color:#00428E;}
 
+/* ✨ 이름/직급 1줄 우측 정렬 */
 .wp-profile-info { display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; margin-top: auto; margin-bottom: 10px; }
 .wp-profile-name{font-size:24px;font-weight:900;color:#1e293b;letter-spacing:-.03em;}
 .wp-profile-pos{font-size:13px;color:#64748b;font-weight:700;}
@@ -238,11 +244,13 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
   <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
   <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
+  
   <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div>
   <div class="ld-orb ld-orb-4"></div><div class="ld-orb ld-orb-5"></div><div class="ld-orb ld-orb-6"></div>
   <div class="ld-orb ld-orb-white-1"></div><div class="ld-orb ld-orb-white-2"></div>
 
   <div class="loading-content">
+    <!-- ✨ 로딩 문구 수정 -->
     <div class="loading-brand"><b>HUMAN INSIGHT</b> · DATA TRACED</div>
     <div class="loading-main-title">GNWMC</div>
     <div class="loading-sub-title">경상남도 서부의료원 KPI DASHBOARD</div>
@@ -385,6 +393,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       </div>
     </div>
     
+    <!-- ✨ 분석 6대 지표 (Project Tab) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
       <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
@@ -400,6 +409,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div id="view-members" class="view-section">
     <div class="wp-hero">
       <div class="wp-hero-inner">
+        <!-- ✨ 프로필 좌측 배경 및 우측 정렬 텍스트 -->
         <div class="wp-hero-profile">
           <img id="wpProfileImgBg" class="wp-hero-profile-bg" src="" onerror="this.style.display='none'">
           <div class="wp-hero-profile-content">
@@ -497,7 +507,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="card" style="height:320px;"><div class="card-section-title"><span>근무 밀도</span><div id="wpHeatTabs" style="display:flex;gap:3px;margin-left:auto;"></div></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:2px;"><table class="heat-table" id="wpHeatTable"></table></div></div>
     </div>
 
-    <!-- ✨ 분석 6대 지표 (Working Tab) -->
+    <!-- ✨ 분석 6대 지표 (Working Tab) 2x3 레이아웃 (3열) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
       <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpOtChart"></canvas></div></div>
@@ -511,6 +521,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:15px;margin-top:15px;">
       <div class="card" style="height:300px;"><div class="card-section-title">집중 vs 분산 업무</div><div style="flex:1;min-height:0;"><canvas id="wpFocusBar"></canvas></div></div>
       <div class="card" style="height:300px;"><div class="card-section-title">초과근무 상세</div><div style="height:130px;position:relative;margin-bottom:8px;"><canvas id="wpOtBar"></canvas></div><div class="scroll-list" id="wpOtList" style="flex:1;overflow-y:auto;border-top:1px solid rgba(226,232,240,.5);padding-top:8px;"></div></div>
+      <!-- ✨ 지니계수 전용 카드로 리팩토링 -->
       <div class="card" style="height:300px;">
         <div style="display:flex;flex-direction:column;height:100%;gap:12px;">
           <div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div>
@@ -546,12 +557,15 @@ var PROFILE_IMG = {
 };
 var DYNAMIC_COLORS = ['#00428E','#7545fb','#14b8a6','#eb5f8c','#f59e0b','#f97316','#ec4899','#8b5cf6'];
 var CAT_ORDER = ['기획설계','계획설계','기본설계','실시설계'];
-var CAT_COLORS = ['#3b82f6','#0ea5e9','#0284c7','#0369a1'];
+var CAT_COLORS = ['#3b82f6','#0ea5e9','#0284c7','#0369a1']; // 블루톤
 var SUB_PAL = ['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f7','#f43f5e','#f97316','#facc15','#4ade80','#14b8a6'];
 var OT_COLORS = ['#818cf8','#6366f1','#4A90E2','#00428E'];
 var RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능력'];
 var RADAR_COLORS_ARR = ['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
+var MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+var OVERTIME_RANGES = ['9~10h','10~11h','11~12h','12h 이상'];
 
+// ── 전역 변수 ──
 var MEMBERS=[], MC={}, INITIALS={};
 var SCHEDULE_DATA=[], EVAL_DATA=[], RAW=[];
 var CH={}, GLOBAL_MEMBER='ALL', WP_MEMBER=null;
@@ -562,51 +576,20 @@ var filterYears=[2024,2025,2026], filterQuarters=['Q1','Q2','Q3','Q4'];
 var totalNodes=filterYears.length*4;
 var percentPositions=[];
 
-// ── 수학/통계 유틸리티 ──
-var MathUtils = {
-  shannonHhi: function(records, totalMin) {
-    if(!totalMin || totalMin<=0) return {s:0, h:0};
-    var sMap = grp(records, 'sub'), h=0, s=0, keys=Object.keys(sMap), N=keys.length;
-    keys.forEach(function(k){ var p=sMap[k]/totalMin; h+=p*p; if(p>0) s-=p*Math.log(p); });
-    if(N>1) s = s/Math.log(N); else s=0;
-    return {s:s, h:h};
-  },
-  cvHurst: function(dailyArr) {
-    var n = dailyArr.length;
-    if(n===0) return {cv:0, hurst:0.5};
-    var m = dailyArr.reduce(function(a,b){return a+b;},0)/n;
-    var cv = m===0 ? 0 : Math.sqrt(dailyArr.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/n)/m;
-    var cvNorm = Math.max(0, 1-(cv/2.0));
-    var hurst = 0.5;
-    if(n>=3 && m>0){
-      var dev=dailyArr.map(function(v){return v-m;}), cumDev=[], cSum=0;
-      dev.forEach(function(v){cSum+=v; cumDev.push(cSum);});
-      var R = Math.max.apply(null, cumDev) - Math.min.apply(null, cumDev);
-      var S = Math.sqrt(dailyArr.reduce(function(a,v){return a+Math.pow(v-m,2);},0)/n) || 1;
-      if(R>0) hurst = Math.min(Math.max(Math.log(R/S)/Math.log(n/2), 0.01), 0.99);
-    }
-    return {cv: cvNorm, hurst: hurst};
-  }
-};
-
-// ✨ 날짜 → 1/2주차 변환 로직 강화
+// ✨ 날짜 → 주차 변환기
 function getWeekInfo(dateStr) {
   var d = new Date(dateStr);
   var y = d.getFullYear(), m = d.getMonth() + 1, date = d.getDate();
   var weekNum = Math.ceil(date / 7);
   var ym = y + '-' + String(m).padStart(2, '0');
   var wStr = 'W' + String(weekNum).padStart(2, '0');
-  
-  var biWeekStr;
-  if(weekNum <= 2) biWeekStr = 'W1-2';
-  else if(weekNum <= 4) biWeekStr = 'W3-4';
-  else biWeekStr = 'W5-6';
-  
+  var bwNum = Math.ceil(weekNum / 2);
+  var biWeekStr = (bwNum*2-1) + '-' + (bwNum*2);
   return {
     label1: [ym, wStr],
     key1: ym + '-' + wStr,
-    label2: [ym, biWeekStr],
-    key2: ym + '-' + biWeekStr
+    label2: [ym, 'W' + biWeekStr],
+    key2: ym + '-B' + bwNum
   };
 }
 
@@ -614,6 +597,8 @@ function getWeekInfo(dateStr) {
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
 Chart.register(ChartDataLabels);
+
+// ✨ 툴팁 마우스 따라다니게
 Chart.Tooltip.positioners.cursor = function(elements, eventPosition) {
   if (!eventPosition) return false;
   return { x: eventPosition.x, y: eventPosition.y };
@@ -622,7 +607,7 @@ Chart.defaults.plugins.tooltip.position = 'cursor';
 Chart.defaults.interaction.mode = 'index'; 
 Chart.defaults.interaction.intersect = false;
 
-// ✨ 커스텀 스케줄 플러그인 (빈 데이터 스킵, 선명한 빨간 점 설정)
+// ✨ 주요일정 플러그인 (빈 데이터 스킵, 선명한 빨간 점 설정)
 Chart.register({
   id: 'verticalLine',
   beforeDatasetsDraw: function(chart){
@@ -832,6 +817,7 @@ function renderDashboardTab(){
   document.getElementById('ovActiveDays').innerText=activeDaysTotal+'일'; 
 
   safeRender(function(){ renderOvProjectRatio(all); });
+  
   var grid=document.getElementById('topKpiGrid');grid.innerHTML='';
   var gnwmcTotalMin=pjData.reduce(function(s,r){return s+r.min;},0);
   
@@ -1009,7 +995,7 @@ window.renderHeatmapOnly=function(year){
       }
       else{
         var val=mat[w][mo],ratio=val/maxV,bin=Math.ceil(ratio*5),isDim=hlHeatBin!==null&&hlHeatBin!==bin,alpha=0.2+(bin-1)*0.2;
-        tb+='<td><div class="hm-cell" onclick="toggleHeatBin('+bin+',\''+year+'\')" style="background:'+hRgba('#00428E',alpha)+';color:'+(alpha>=0.55?'#fff':'#1e293b')+';opacity:'+(isDim?0.2:1)+';" title="'+fH(val)+'h">'+fH(val)+'</div></td>';
+        tb+='<td><div class="hm-cell" onclick="toggleHeatBin('+bin+',\''+year+'\')" style="background:'+hRgba(c,alpha)+';color:'+(alpha>=0.55?'#fff':'#1e293b')+';opacity:'+(isDim?0.2:1)+';" title="'+fH(val)+'h">'+fH(val)+'</div></td>';
       }
     }tb+='</tr>';
   }
@@ -1079,7 +1065,7 @@ function renderDashOvertimeDonut(all){
 }
 window.dTogOtDonut=function(name){hlOvertimeDonut=hlOvertimeDonut===name?null:name;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
 
-// ✨ 고급 6대 지표 (Project & Working 공통) 완벽한 X축 배열 병합 및 정렬 매핑
+// ✨ 고급 6대 지표 (Project & Working 공통) - 완벽한 X축 배열 매핑 및 이모지 제거 적용
 function renderAdvancedMetrics(d,datesArr,color,prefix){
   dC(prefix+'ShannonChart');dC(prefix+'HhiChart');dC(prefix+'JaccardChart');
   dC(prefix+'CvChart');dC(prefix+'HurstChart');dC(prefix+'OtChart');
@@ -1106,13 +1092,15 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
   var wLabels=[], bwLabels=[];
   var sData=[], hData=[], otData=[]; 
   var cvData=[], huData=[], jData=[];
-  // ✨ Scatter 차트의 x값을 숫자가 아닌 카테고리 배열로 정확히 매칭하기 위해 null 배열 구성
+  
+  // ✨ X축 라벨 인덱스와 1:1로 매핑되는 null 배열을 먼저 생성
   var schS=new Array(wKeys.length).fill(null), schH=new Array(wKeys.length).fill(null), schOt=new Array(wKeys.length).fill(null);
   var schCv=new Array(bwKeys.length).fill(null), schHu=new Array(bwKeys.length).fill(null), schJ=new Array(bwKeys.length).fill(null);
   
-  var emojiRegex = /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g;
+  // 이모지 완벽 제거 정규식
+  var emojiRegex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
 
-  // 1-Week
+  // --- 1-Week Metrics Calculation ---
   wKeys.forEach(function(k, idx){
       var group = weeklyMap[k];
       wLabels.push(group.label); 
@@ -1139,14 +1127,14 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
              var title = (s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex, '').trim();
              return dateStr + ' ' + title;
           }).join('\n');
-          // 배열 자리에 객체 주입
+          // ✨ null 배열의 해당 인덱스(idx)에 데이터 삽입
           schS[idx] = { schTitle: st };
           schH[idx] = { schTitle: st };
           schOt[idx] = { schTitle: st };
       }
   });
   
-  // 2-Week
+  // --- 2-Week Metrics Calculation ---
   var prevSubSet = new Set();
   bwKeys.forEach(function(k, idx){
       var group = biWeeklyMap[k];
@@ -1198,22 +1186,22 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
     document.getElementById('ovAvgCv').innerText=(cvData.length?cvData.reduce(function(a,b){return a+b;},0)/cvData.length:0).toFixed(2);
   }
   
-  // ✨ 라인 차트에 더미 라인으로 스케줄 추가 (X축 어긋남 원천 봉쇄)
+  // ✨ 차트 그리기 (완벽 매핑 알고리즘 적용)
   function drawMetricChart(id, label, xLabels, dataArr, schArr, cHex) {
     if(!document.getElementById(id)) return;
     var maxY = dataArr.length ? Math.max.apply(null, dataArr) : 1;
     if(maxY < 0.1) maxY = 1.0; 
 
-    // 스케줄 배열 Y좌표 매핑 (null은 그대로 둠)
-    var processedSchArr = schArr.map(function(item){
+    // null 배열에서 값 존재하는 것만 스칼라(y값)로 변환
+    var sArr = schArr.map(function(item){
        if(item === null) return null;
-       return { y: maxY*1.05, schTitle: item.schTitle };
+       return maxY * 1.05;
     });
 
     var schCfg = {
-      type:'line', label:'주요일정', data:processedSchArr, 
+      type:'line', label:'주요일정', data:sArr, 
       backgroundColor:'transparent', borderColor:'transparent', showLine:false,
-      pointRadius: function(ctx) { return ctx.raw ? 4.5 : 0; },
+      pointRadius: function(ctx) { return ctx.raw !== null ? 4.5 : 0; },
       pointBackgroundColor: '#ef4444', pointBorderColor: '#fff', pointBorderWidth: 1.5,
       isSchedule:true, order:0, spanGaps: false
     };
@@ -1233,8 +1221,9 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
             displayColors:false,
             titleFont: { size: 11, weight: 'normal', color: '#94a3b8' },
             bodyFont: { size: 13, weight: 'bold' },
+            // ✨ 주요일정 툴팁 최우선 노출 필터링
             filter: function(tooltipItem, currentIndex, tooltipItems) {
-               var hasSchedule = tooltipItems.some(function(item){ return item.dataset.isSchedule && item.raw; });
+               var hasSchedule = tooltipItems.some(function(item){ return item.dataset.isSchedule && item.raw !== null; });
                if(hasSchedule) return tooltipItem.dataset.isSchedule;
                return !tooltipItem.dataset.isSchedule;
             },
@@ -1244,8 +1233,8 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
                 return Array.isArray(ctxs[0].label) ? ctxs[0].label.join(' ') : ctxs[0].label; 
               },
               label:function(ctx){
-                if(ctx.dataset.isSchedule) return ctx.raw.schTitle;
-                return ctx.dataset.label+': '+(ctx.raw ? ctx.raw.toFixed(2) : 0);
+                if(ctx.dataset.isSchedule) return schArr[ctx.dataIndex].schTitle; // 원본 배열에서 텍스트 조회
+                return ctx.dataset.label+': '+(ctx.raw !== null && ctx.raw !== undefined ? ctx.raw.toFixed(2) : 0);
               }
             },
             itemSort:function(a,b){return b.datasetIndex-a.datasetIndex;}
@@ -1280,7 +1269,6 @@ function renderWorkingTab(memberName){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
   
-  // ✨ 프로필 이미지 (투명도 0.8, 가로폭 늘리고 정렬 최적화)
   var bgImg = document.getElementById('wpProfileImgBg');
   if(PROFILE_IMG[memberName]){
     bgImg.src = PROFILE_IMG[memberName];
@@ -1486,7 +1474,7 @@ window.renderWpHeatmapYear=function(year){
       }
     }tb+='</tr>';
   }
-  document.getElementById('wpHeatTable').innerHTML=th+tb+'</tbody>';
+  document.getElementById('heatTable').innerHTML=th+tb+'</tbody>';
 };
 window.toggleHeatBin=function(bin,year){hlHeatBin=(hlHeatBin===bin)?null:bin;renderHeatmapOnly(year);};
 
