@@ -21,7 +21,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 @keyframes floatM{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(-60px,40px,0) scale(0.9);}}
 @keyframes floatL{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(70px,-50px,0) scale(1.15);}}
 
-/* ✨ 로딩 오버레이 */
 #loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;overflow:hidden;}
 .ld-orb{position:absolute;border-radius:50%;will-change:transform;}
 .ld-orb-1{width:280px;height:280px;background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%);top:-60px;right:60px;filter:blur(25px) saturate(.7);opacity:.6;animation:ldFloat1 3.5s infinite alternate ease-in-out;}
@@ -51,7 +50,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .ov-enter-btn{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:50px;padding:16px 50px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(59,130,246,.5);transition:all .3s ease;}
 .ov-enter-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(59,130,246,.6);}
 
-/* 탑바 & 레이아웃 */
 .topbar{position:fixed;top:0;left:0;right:0;height:75px;z-index:2000;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(244,247,249,0.5);backdrop-filter:blur(4px);border-bottom:1px solid transparent;transition:all .4s ease;}
 .topbar.scrolled{background:rgba(255,255,255,0.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,0.6);box-shadow:0 2px 24px rgba(99,102,241,0.06);}
 .logo-container{display:flex;align-items:center;gap:15px;flex:1;}
@@ -95,7 +93,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-/* ✨ 카드에 z-index 로직 적용 (툴팁 짤림 방지 완벽 해결) */
+/* ✨ 카드 스타일 설정 및 Z-index 오버플로우 제어 */
 .card,.eval-trend-card,.eval-table-card,.eval-profile-card{
   background:rgba(255,255,255,.45);
   backdrop-filter:blur(16px);
@@ -114,11 +112,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   z-index: 100 !important;
 }
 
-/* Tooltip 부모 오버플로우 방지 */
-.eval-trend-card { overflow: visible !important; }
-
-.eval-trend-card,.eval-table-card{height:350px;}
-.eval-table-card{height:auto;min-height:350px;}
+.eval-trend-card, .eval-table-card { height:350px; min-height:350px; }
 .card-section-title,.eval-trend-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:10;}
 .kpi-card{overflow:hidden;padding:20px 25px;display:flex;flex-direction:column;justify-content:center;}
 .mini-stat-card{background:rgba(255,255,255,.5);border-radius:12px;padding:15px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.02);display:flex;flex-direction:column;justify-content:center;border:1px solid rgba(255,255,255,.7);}
@@ -147,24 +141,24 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .scroll-list::-webkit-scrollbar{width:6px;}
 .scroll-list::-webkit-scrollbar-thumb{background:rgba(203,213,225,.6);border-radius:4px;}
 
-/* ✨ 인포 툴팁 (최상단 노출 및 내용 변경) */
+/* ✨ 인포 툴팁 */
 .info-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;cursor:help;z-index:999999;}
 .info-icon{width:14px;height:14px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .info-wrap:hover .info-icon{background:#00428E;}
-.info-tooltip{position:absolute;top:160%;left:50%;transform:translateX(-50%);min-width:320px;background:rgba(30,41,59,.98);color:#f8fafc;font-size:12px;line-height:1.6;padding:16px 20px;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.25);visibility:hidden;opacity:0;transition:all .2s;pointer-events:none;font-weight:500;text-align:left;}
+.info-tooltip{position:absolute;top:160%;left:50%;transform:translateX(-50%);min-width:340px;background:rgba(30,41,59,.98);color:#f8fafc;font-size:12px;line-height:1.6;padding:16px 20px;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.25);visibility:hidden;opacity:0;transition:all .2s;pointer-events:none;font-weight:500;text-align:left;}
 .info-tooltip::after{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border-width:6px;border-style:solid;border-color:transparent transparent rgba(30,41,59,.98) transparent;}
 .info-wrap:hover .info-tooltip{visibility:visible;opacity:1;}
 .info-tooltip ul{padding-left:18px;margin-top:8px;}
-.info-tooltip li{word-break:keep-all;margin-bottom:4px;}
+.info-tooltip li{word-break:keep-all;margin-bottom:6px;}
 .info-tooltip b{color:#fff;font-weight:800;}
 
 /* ✨ 워킹 히어로 (높이 480px 고정) */
 .wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);height:480px;min-height:480px;max-height:480px;display:flex;}
 .wp-hero-inner{display:grid;grid-template-columns:300px 1fr 400px;width:100%;height:100%;position:relative;z-index:2;}
 
-/* ✨ 프로필 사진 좌측 정렬 & 10% 축소 & 투명도 0.55 */
+/* ✨ 프로필 사진 좌측 정렬 & 10% 축소 & 투명도 0.18 */
 .wp-hero-profile { position: relative; overflow: hidden; border-right: 1px solid rgba(147,197,253,0.25); display: flex; flex-direction: column; }
-.wp-hero-profile-bg { position: absolute; top: 12%; left: 0%; width: 180px; height: 230px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.55; border-radius: 20px; -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
+.wp-hero-profile-bg { position: absolute; top: 12%; left: 0%; width: 180px; height: 230px; object-fit: cover; object-position: center top; z-index: 0; opacity: 0.18; border-radius: 20px; filter: grayscale(100%); -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 80%); }
 .wp-hero-profile-content { position: relative; z-index: 1; padding: 24px 20px; flex: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; }
 
 .wp-hero-tabs{width:100%;display:flex;overflow-x:auto;gap:4px;padding-bottom:16px;scrollbar-width:none;}
@@ -250,7 +244,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   <div class="ld-orb ld-orb-white-1"></div><div class="ld-orb ld-orb-white-2"></div>
 
   <div class="loading-content">
-    <!-- ✨ 로딩 문구 수정 -->
     <div class="loading-brand"><b>HUMAN INSIGHT</b> · DATA TRACED</div>
     <div class="loading-main-title">GNWMC</div>
     <div class="loading-sub-title">경상남도 서부의료원 KPI DASHBOARD</div>
@@ -396,21 +389,20 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     <!-- ✨ 분석 6대 지표 (Project Tab) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
+      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 파편화도 (Shannon Entropy)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 정보 이론의 엔트로피 개념을 활용한 업무 복잡도 측정.</li><li><b>로직</b> : -∑p_i*ln(p_i)를 최대 엔트로피로 정규화. 1에 가까울수록 업무가 잘게 쪼개짐.</li><li><b>목적</b> : 맥락 전환(Context Switching) 비용을 파악하여 몰입 방해 요소를 진단.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjShannonChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">핵심 업무 집중도 (HHI)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 허핀달-히르슈만 지수를 응용한 업무 점유율 분석.</li><li><b>로직</b> : 각 업무 비중의 제곱합. 1에 가까울수록 특정 과업에 몰입함.</li><li><b>목적</b> : 잡무를 제외하고 실제 '선택과 집중'이 일어난 핵심 성과 영역을 추출.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjHhiChart"></canvas></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 안정성 (CV)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 투입 시간의 변동계수(CV=σ/μ)를 활용한 성실도 지표.</li><li><b>로직</b> : 1 - (CV / Max_CV)로 정규화하여 1에 가까울수록 기복이 적음을 의미.</li><li><b>목적</b> : 매일 정해진 페이스를 유지하는 '에너지 공급의 균일성'을 평가.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjCvChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 리듬 주도성 (Hurst Exponent)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 시계열 데이터의 장기 의존성을 측정하는 지수.</li><li><b>로직</b> : 0.5를 기준으로 1에 가까울수록 강한 추세(안정적 리듬), 0에 가까울수록 무작위성(혼돈).</li><li><b>목적</b> : 돌발 상황에 휘둘리지 않고 스스로 업무 리듬을 통제하는 자기 주도성 측정.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjHurstChart"></canvas></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjOtChart"></canvas></div></div>
+      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
     </div>
   </div>
   
   <!-- ════════ WORKING 탭 ════════ -->
   <div id="view-members" class="view-section">
-    <!-- ✨ 480px 고정 히어로 섹션 -->
     <div class="wp-hero">
       <div class="wp-hero-inner">
-        <!-- ✨ 프로필 좌측 배경 및 우측 정렬 텍스트 -->
+        <!-- ✨ 프로필 사진 크기 복구(width 110px, height 150px) 및 위치 위로 20px 이동 -->
         <div class="wp-hero-profile">
           <img id="wpProfileImgBg" class="wp-hero-profile-bg" src="" onerror="this.style.display='none'">
           <div class="wp-hero-profile-content">
@@ -511,12 +503,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     <!-- ✨ 분석 6대 지표 (Working Tab) 2x3 레이아웃 (3열) -->
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px;">
+      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpOtChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 파편화도 (Shannon Entropy)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 정보 이론의 엔트로피 개념을 활용한 업무 복잡도 측정.</li><li><b>로직</b> : -∑p_i*ln(p_i)를 최대 엔트로피로 정규화. 1에 가까울수록 업무가 잘게 쪼개짐.</li><li><b>목적</b> : 맥락 전환(Context Switching) 비용을 파악하여 몰입 방해 요소를 진단.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpShannonChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">핵심 업무 집중도 (HHI)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 허핀달-히르슈만 지수를 응용한 업무 점유율 분석.</li><li><b>로직</b> : 각 업무 비중의 제곱합. 1에 가까울수록 특정 과업에 몰입함.</li><li><b>목적</b> : 잡무를 제외하고 실제 '선택과 집중'이 일어난 핵심 성과 영역을 추출.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpHhiChart"></canvas></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpJaccardChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 안정성 (CV)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 투입 시간의 변동계수(CV=σ/μ)를 활용한 성실도 지표.</li><li><b>로직</b> : 1 - (CV / Max_CV)로 정규화하여 1에 가까울수록 기복이 적음을 의미.</li><li><b>목적</b> : 매일 정해진 페이스를 유지하는 '에너지 공급의 균일성'을 평가.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpCvChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">업무 리듬 주도성 (Hurst Exponent)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 시계열 데이터의 장기 의존성을 측정하는 지수.</li><li><b>로직</b> : 0.5를 기준으로 1에 가까울수록 강한 추세(안정적 리듬), 0에 가까울수록 무작위성(혼돈).</li><li><b>목적</b> : 돌발 상황에 휘둘리지 않고 스스로 업무 리듬을 통제하는 자기 주도성 측정.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpHurstChart"></canvas></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">업무 과부하 지수 (OT Index)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 일일 근무 시간의 가중치 합산 평균.</li><li><b>로직</b> : 8-9h(0.5), 9-10h(0.75), 10h+(1.0) 가중치 부여 후 업무일수로 나눔.</li><li><b>목적</b> : 단순 야근 횟수가 아닌 노동의 강도를 측정하여 번아웃 리스크 탐지.</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpOtChart"></canvas></div></div>
+      <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b> : 집합 간 유사도 측정을 통한 업무 도메인의 변화율 분석.</li><li><b>로직</b> : (과거 업무 집합 ∩ 현재) / (과거 ∪ 현재).</li><li><b>목적</b> : 1에 가까우면 숙련도 향상(전문가형), 0에 가까우면 새로운 도전(성장형).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpJaccardChart"></canvas></div></div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:15px;margin-top:15px;">
@@ -577,6 +569,22 @@ var filterYears=[2024,2025,2026], filterQuarters=['Q1','Q2','Q3','Q4'];
 var totalNodes=filterYears.length*4;
 var percentPositions=[];
 
+// ── 날짜 → 주차 계산 유틸 ──
+function getWeekInfo(dateStr) {
+  var d = new Date(dateStr);
+  var y = d.getFullYear(), m = d.getMonth() + 1, date = d.getDate();
+  var weekNum = Math.ceil(date / 7); // 간단한 월간 주차 (1~5)
+  var ym = y + '-' + String(m).padStart(2, '0');
+  var wStr = 'W' + String(weekNum).padStart(2, '0');
+  var bwNum = Math.ceil(weekNum / 2);
+  return {
+    label1: [ym, wStr],
+    key1: ym + '-' + wStr,
+    label2: [ym, 'W' + (bwNum*2-1) + '~' + (bwNum*2)],
+    key2: ym + '-B' + bwNum
+  };
+}
+
 // ── Chart.js 전역 설정 ──
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
@@ -607,11 +615,10 @@ Chart.register({
             ctx.lineWidth=1;ctx.strokeStyle='rgba(203, 213, 225, 0.8)';ctx.stroke();
             
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 4, 0, 2 * Math.PI);
-            ctx.shadowColor = 'rgba(239, 68, 68, 0.6)';
-            ctx.shadowBlur = 8;
+            ctx.arc(pt.x, pt.y, 4.5, 0, 2 * Math.PI);
             ctx.fillStyle = '#ef4444';
             ctx.fill();
+            ctx.lineWidth=1.5; ctx.strokeStyle='#fff'; ctx.stroke();
             
             ctx.restore();
           });
@@ -1054,78 +1061,119 @@ function renderDashOvertimeDonut(all){
 }
 window.dTogOtDonut=function(name){hlOvertimeDonut=hlOvertimeDonut===name?null:name;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
 
-// ✨ 고급 6대 지표 (Project & Working 공통)
+// ✨ 고급 6대 지표 (Project & Working 공통) - 1주, 2주 분석 포함
 function renderAdvancedMetrics(d,datesArr,color,prefix){
   dC(prefix+'ShannonChart');dC(prefix+'HhiChart');dC(prefix+'JaccardChart');
   dC(prefix+'CvChart');dC(prefix+'HurstChart');dC(prefix+'OtChart');
   
-  var sData=[],hData=[],jData=[],cvData=[],huData=[],otData=[];
-  var schData=[];
+  var weeklyMap = {};
+  var biWeeklyMap = {};
   
-  datesArr.forEach(function(dt){
-    var dDay=d.filter(function(r){return r.date===dt;});
-    var tot=dDay.reduce(function(s,r){return s+r.min;},0),sMap=grp(dDay,'sub');
-    
-    // 1. Shannon & HHI
-    var hhi=0,shan=0,keys=Object.keys(sMap),N=keys.length;
-    keys.forEach(function(k){var p=sMap[k]/tot;hhi+=p*p;if(p>0)shan-=p*Math.log(p);});
-    if(N>1) shan=shan/Math.log(N); else shan=0;
-
-    // 2. CV, OT, Hurst (Rolling 14 days)
-    var wVals=[], otSum=0;
-    for(var i=0;i<14;i++){
-      var pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);
-      var dayMins=d.filter(function(r){return r.date===pDt;}).reduce(function(a,b){return a+b.min;},0);
-      wVals.unshift(dayMins);
-      if(i<7){
-        if(dayMins>=600) otSum+=1.0; else if(dayMins>=540) otSum+=0.75; else if(dayMins>=480) otSum+=0.5;
-      }
-    }
-    var wVals7=wVals.slice(7), m=wVals7.reduce(function(a,b){return a+b;},0)/7;
-    var rawCv=m===0?0:Math.sqrt(wVals7.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/7)/m;
-    var cvNorm=Math.max(0, 1-(rawCv/2.0));
-    var otIndex=otSum/7;
-
-    var hurst=0.5, nH=14, meanH=wVals.reduce(function(a,b){return a+b;},0)/nH;
-    if(meanH>0){
-      var dev=wVals.map(function(v){return v-meanH;}), cumDev=[], cSum=0;
-      dev.forEach(function(v){cSum+=v;cumDev.push(cSum);});
-      var R=Math.max.apply(null,cumDev)-Math.min.apply(null,cumDev);
-      var S=Math.sqrt(wVals.reduce(function(a,v){return a+Math.pow(v-meanH,2);},0)/nH)||1;
-      if(R>0) hurst=Math.min(Math.max(Math.log(R/S)/Math.log(nH/2),0.01),0.99);
-    }
-
-    // 3. Jaccard
-    var setA=new Set(), setB=new Set();
-    for(var i=0;i<14;i++){
-      var pDt=new Date(new Date(dt).getTime()-i*86400000).toISOString().slice(0,10);
-      d.filter(function(r){return r.date===pDt;}).forEach(function(r){if(i<7)setB.add(r.sub);else setA.add(r.sub);});
-    }
-    var intersection=0;
-    setB.forEach(function(item){if(setA.has(item))intersection++;});
-    var union=new Set([...setA, ...setB]).size;
-    var jaccard=union===0?0:intersection/union;
-
-    sData.push({x:dt,y:shan}); hData.push({x:dt,y:hhi}); jData.push({x:dt,y:jaccard});
-    cvData.push({x:dt,y:cvNorm}); huData.push({x:dt,y:hurst}); otData.push({x:dt,y:otIndex});
-    
-    if(SCHEDULE_DATA.some(function(s){return s.date&&s.date.slice(0,10)===dt;})){
-      var so=SCHEDULE_DATA.find(function(s){return s.date&&s.date.slice(0,10)===dt;});
-      schData.push({x:dt,schTitle:(so.title||so.name||so['일정']||so['내용']||'주요일정')});
-    }
+  d.forEach(function(r){
+      var wInfo = getWeekInfo(r.date);
+      if(!weeklyMap[wInfo.key1]) weeklyMap[wInfo.key1] = { label: wInfo.label1, records: [], days: new Set() };
+      weeklyMap[wInfo.key1].records.push(r);
+      weeklyMap[wInfo.key1].days.add(r.date);
+      
+      if(!biWeeklyMap[wInfo.key2]) biWeeklyMap[wInfo.key2] = { label: wInfo.label2, records: [], days: new Set() };
+      biWeeklyMap[wInfo.key2].records.push(r);
+      biWeeklyMap[wInfo.key2].days.add(r.date);
   });
   
+  var wKeys = Object.keys(weeklyMap).sort();
+  var bwKeys = Object.keys(biWeeklyMap).sort();
+  
+  var sData=[], hData=[], otData=[]; // 1-week
+  var cvData=[], huData=[], jData=[]; // 2-week
+  var schS=[], schH=[], schOt=[], schCv=[], schHu=[], schJ=[];
+  
+  // --- 1-Week Metrics Calculation ---
+  wKeys.forEach(function(k){
+      var group = weeklyMap[k];
+      var tot = group.records.reduce(function(s,r){return s+r.min;}, 0);
+      var sMap = grp(group.records, 'sub');
+      
+      var hhi=0, shan=0, keys=Object.keys(sMap), N=keys.length;
+      keys.forEach(function(subK){
+          var p = sMap[subK]/tot;
+          hhi += p*p;
+          if(p>0) shan -= p*Math.log(p);
+      });
+      if(N>1) shan = shan/Math.log(N); else shan=0;
+      
+      var otSum = 0;
+      var dailyTot = grp(group.records, 'date');
+      Object.values(dailyTot).forEach(function(m){
+          if(m>=600) otSum+=1.0; 
+          else if(m>=540) otSum+=0.75; 
+          else if(m>=480) otSum+=0.5;
+      });
+      var otIndex = group.days.size > 0 ? otSum / group.days.size : 0;
+      
+      sData.push({x: group.label, y: shan, rawDate: k});
+      hData.push({x: group.label, y: hhi, rawDate: k});
+      otData.push({x: group.label, y: otIndex, rawDate: k});
+      
+      var wSchedules = SCHEDULE_DATA.filter(function(s){ return s.date && getWeekInfo(s.date.slice(0,10)).key1 === k; });
+      if(wSchedules.length > 0) {
+          var st = wSchedules.map(function(s){return s.date.slice(2,10) + ' ' + (s.title||s.name||s['일정']||s['내용']||'일정');}).join('\n');
+          schS.push({x: group.label, y: 1, schTitle: st});
+          schH.push({x: group.label, y: 1, schTitle: st});
+          schOt.push({x: group.label, y: 1, schTitle: st});
+      }
+  });
+  
+  // --- 2-Week Metrics Calculation ---
+  var prevSubSet = new Set();
+  bwKeys.forEach(function(k, idx){
+      var group = biWeeklyMap[k];
+      var dailyTot = grp(group.records, 'date');
+      var vals = Object.values(dailyTot);
+      var m = vals.length>0 ? vals.reduce(function(a,b){return a+b;},0)/vals.length : 0;
+      var cv = m===0 ? 0 : Math.sqrt(vals.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/vals.length)/m;
+      var cvNorm = Math.max(0, 1-(cv/2.0)); 
+      
+      var hurst = 0.5, nH = vals.length;
+      if(nH >= 3 && m > 0){
+          var dev = vals.map(function(v){return v-m;});
+          var cumDev=[], cSum=0;
+          dev.forEach(function(v){cSum+=v; cumDev.push(cSum);});
+          var R = Math.max.apply(null, cumDev) - Math.min.apply(null, cumDev);
+          var S = Math.sqrt(vals.reduce(function(a,v){return a+Math.pow(v-m,2);},0)/nH) || 1;
+          if(R>0) hurst = Math.min(Math.max(Math.log(R/S)/Math.log(nH/2), 0.01), 0.99);
+      }
+      
+      var currSubSet = new Set(Object.keys(grp(group.records, 'sub')));
+      var intersection = 0;
+      currSubSet.forEach(function(item){ if(prevSubSet.has(item)) intersection++; });
+      var union = new Set([...prevSubSet, ...currSubSet]).size;
+      var jaccard = union===0 ? 0 : intersection/union;
+      prevSubSet = currSubSet; 
+      
+      cvData.push({x: group.label, y: cvNorm, rawDate: k});
+      huData.push({x: group.label, y: hurst, rawDate: k});
+      jData.push({x: group.label, y: jaccard, rawDate: k});
+      
+      var bwSchedules = SCHEDULE_DATA.filter(function(s){ return s.date && getWeekInfo(s.date.slice(0,10)).key2 === k; });
+      if(bwSchedules.length > 0) {
+          var st = bwSchedules.map(function(s){return s.date.slice(2,10) + ' ' + (s.title||s.name||s['일정']||s['내용']||'일정');}).join('\n');
+          schCv.push({x: group.label, y: 1, schTitle: st});
+          schHu.push({x: group.label, y: 1, schTitle: st});
+          schJ.push({x: group.label, y: 1, schTitle: st});
+      }
+  });
+
   if(prefix==='pj'){
     document.getElementById('ovAvgShan').innerText=(sData.length?sData.reduce(function(a,b){return a+b.y;},0)/sData.length:0).toFixed(2);
     document.getElementById('ovAvgHhi').innerText=(hData.length?hData.reduce(function(a,b){return a+b.y;},0)/hData.length:0).toFixed(2);
     document.getElementById('ovAvgCv').innerText=(cvData.length?cvData.reduce(function(a,b){return a+b.y;},0)/cvData.length:0).toFixed(2);
   }
   
-  function drawMetricChart(id, label, dataArr, cHex) {
+  function drawMetricChart(id, label, dataArr, schArr, cHex) {
     if(!document.getElementById(id)) return;
     var maxY = dataArr.length ? Math.max.apply(null, dataArr.map(function(i){return i.y;})) : 1;
     var sArr = [];
-    schData.forEach(function(s){ sArr.push({x:s.x, y:maxY*1.05, schTitle:s.schTitle}); });
+    schArr.forEach(function(s){ sArr.push({x:s.x, y:maxY*1.05, schTitle:s.schTitle}); });
     var schCfg = {type:'scatter',label:'주요일정',data:sArr,backgroundColor:'transparent',pointRadius:0,pointHoverRadius:0,isSchedule:true,order:0};
     
     CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
@@ -1133,24 +1181,30 @@ function renderAdvancedMetrics(d,datesArr,color,prefix){
       data:{datasets:[{data:dataArr,label:label,borderColor:cHex,backgroundColor:hRgba(cHex,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,order:1}, schCfg]},
       options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}},interaction:{mode:'index',intersect:false},
         plugins:{legend:{display:false},datalabels:{display:false},
-          tooltip:{displayColors:false,callbacks:{
-            title:function(){return null;},
-            label:function(ctx){
-              if(ctx.dataset.isSchedule) return ctx.raw.x+' 📌 '+ctx.raw.schTitle;
-              return ctx.raw.x+' | '+ctx.dataset.label+': '+ctx.raw.y.toFixed(2);
-            }
-          },itemSort:function(a,b){return b.datasetIndex-a.datasetIndex;}}
+          tooltip:{
+            displayColors:false,
+            titleFont: { size: 11, weight: 'normal', color: '#94a3b8' },
+            bodyFont: { size: 13, weight: 'bold' },
+            callbacks:{
+              title:function(ctxs){ return ctxs[0].raw.x.join(' '); },
+              label:function(ctx){
+                if(ctx.dataset.isSchedule) return ctx.raw.schTitle;
+                return ctx.dataset.label+': '+ctx.raw.y.toFixed(2);
+              }
+            },
+            itemSort:function(a,b){return b.datasetIndex-a.datasetIndex;}
+          }
         },
         scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0,max:maxY*1.15}}
       }
     });
   }
-  drawMetricChart(prefix+'ShannonChart', 'Shannon', sData, '#14b8a6');
-  drawMetricChart(prefix+'HhiChart', 'HHI', hData, '#f59e0b');
-  drawMetricChart(prefix+'JaccardChart', 'Jaccard', jData, '#3b82f6');
-  drawMetricChart(prefix+'CvChart', 'CV(Norm)', cvData, '#8b5cf6');
-  drawMetricChart(prefix+'HurstChart', 'Hurst', huData, '#ec4899');
-  drawMetricChart(prefix+'OtChart', 'OT Index', otData, '#ef4444');
+  drawMetricChart(prefix+'ShannonChart', 'Shannon', sData, schS, '#14b8a6');
+  drawMetricChart(prefix+'HhiChart', 'HHI', hData, schH, '#f59e0b');
+  drawMetricChart(prefix+'JaccardChart', 'Jaccard', jData, schJ, '#3b82f6');
+  drawMetricChart(prefix+'CvChart', 'CV(Norm)', cvData, schCv, '#8b5cf6');
+  drawMetricChart(prefix+'HurstChart', 'Hurst', huData, schHu, '#ec4899');
+  drawMetricChart(prefix+'OtChart', 'OT Index', otData, schOt, '#ef4444');
 }
 
 // ════════ WORKING 탭 ════════
@@ -1165,7 +1219,7 @@ function renderWorkingTab(memberName){
     return '<button class="wp-tab-btn '+(name===memberName?'active':'')+'" onclick="renderWorkingTab(\''+name+'\')">'+name+'</button>';
   }).join('');
   
-  // ✨ 사진 배경으로 은은하게 적용 (크기 키우고 좌측정렬, 투명도 낮춤)
+  // ✨ 사진 배경으로 은은하게 적용
   var bgImg = document.getElementById('wpProfileImgBg');
   if(PROFILE_IMG[memberName]){
     bgImg.src = PROFILE_IMG[memberName];
@@ -1317,7 +1371,6 @@ function renderWpMetricsBadges(d){
   var cvEl=document.getElementById('wmCv');cvEl.textContent=avgCv.toFixed(2);cvEl.parentElement.className='wp-metric-badge '+(avgCv<0.5?'good':avgCv<1.0?'warn':'danger');
 }
 
-// ✨ 업무유형 연동
 function renderWpStackedBar(d,mos){
   dC('wpStackedBar');
   var subMap=grp(d,'sub'),subList=Object.entries(subMap).sort(function(a,b){return b[1]-a[1];}).map(function(x){return String(x[0]);}).slice(0,8);
@@ -1434,7 +1487,7 @@ function renderWpOvertimeDetail(d){
   listEl.innerHTML=otDays.slice(0,10).map(function(entry){var dt=entry[0],min=entry[1],h=mToH(min),level=min>=720?'#ef4444':min>=660?'#f97316':min>=600?'#f59e0b':'#818cf8';return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.5);"><span style="font-size:11px;color:#475569;font-weight:600;">'+dt+'</span><span style="font-size:12px;font-weight:800;color:'+level+';">'+fmt(h)+'h</span></div>';}).join('');
 }
 
-// ✨ 지니계수 전용 (허스트 분리됨)
+// ✨ 지니계수 전용
 function renderWpGini(d,color){
   dC('wpGiniChart');
   var dateMap={};d.forEach(function(r){dateMap[r.date]=(dateMap[r.date]||0)+r.min;});
