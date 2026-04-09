@@ -131,6 +131,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .insight-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:50px;border:1.5px solid rgba(99,102,241,0.4);background:linear-gradient(135deg,rgba(99,102,241,0.1) 0%,rgba(139,92,246,0.1) 100%);color:#6366f1;font-size:12px;font-weight:800;cursor:pointer;transition:all .3s ease;letter-spacing:.02em;white-space:nowrap;backdrop-filter:blur(8px);}
 .insight-btn:hover{background:linear-gradient(135deg,rgba(99,102,241,0.2) 0%,rgba(139,92,246,0.2) 100%);border-color:rgba(99,102,241,0.7);box-shadow:0 4px 20px rgba(99,102,241,0.25);transform:translateY(-1px);}
 .insight-btn svg{flex-shrink:0;}
+
 /* 인사이트 모달 CSS */
 #insightModal{position:fixed;inset:0;z-index:8000;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .35s ease;padding:20px;}
 #insightModal.open{opacity:1;visibility:visible;}
@@ -205,6 +206,32 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-metric-badge.good .val{color:#22c55e;}
 .wp-metric-badge.warn .val{color:#f59e0b;}
 .wp-metric-badge.danger .val{color:#ef4444;}
+
+/* KPI 리디자인 전용 CSS 추가 */
+.kpi-layout { display: grid; grid-template-columns: 320px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 700px; align-items: stretch; }
+.kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); overflow: hidden; position: relative; }
+.kpi-panel.center-panel { background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%); padding: 20px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); }
+
+/* 좌측 패널 구성요소 */
+.kpi-profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+.kpi-big-score { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(203,213,225,0.6); }
+.kpi-big-score .title { font-size: 13px; color: #64748b; font-weight: 700; margin-bottom: 5px; }
+.kpi-big-score .score { font-size: 54px; font-weight: 900; color: #00428E; line-height: 1; letter-spacing: -0.02em; }
+.kpi-big-score .sub { font-size: 14px; color: #94a3b8; font-weight: 600; margin-left: 5px; }
+
+/* 우측 패널 구성요소 */
+.kpi-detail-list { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+.kpi-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px solid rgba(226,232,240,0.6); }
+.kpi-detail-item .label { font-size: 13px; font-weight: 800; color: #334155; }
+.kpi-detail-item .values { display: flex; align-items: center; gap: 12px; }
+.kpi-detail-item .score { font-size: 16px; font-weight: 900; color: #1e293b; width: 35px; text-align: right; }
+.kpi-delta { font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 2px; width: 45px; justify-content: flex-end; }
+.kpi-delta.up { color: #10b981; }
+.kpi-delta.down { color: #ef4444; }
+.kpi-delta.flat { color: #94a3b8; }
+
+.kpi-section-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+
 @media(max-width:1200px){
   .wp-hero-inner{grid-template-columns:1fr;}
   .wp-hero{height:auto;max-height:none;}
@@ -212,6 +239,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   .list-area-35{flex:0 0 100%;max-width:100%;border-left:none;padding-left:0;margin-top:20px;}
   .wp-stats-row{grid-template-columns:repeat(2,1fr);}
   .modal-body{grid-template-columns:1fr;grid-template-rows:auto;}
+  .kpi-layout { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -442,16 +470,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
   </div>
   <!-- KPI Eval 뷰 -->
   <div id="view-kpieval" class="view-section">
-    <div class="eval-profile-card" id="kpiProfileCard" style="margin-bottom:0;"></div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;">
-      <div class="eval-trend-card"><div class="eval-trend-title">분기별 역량 점수 추이</div><div style="flex:1;min-height:0;"><canvas id="evalTrendChart"></canvas></div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px;" id="evalTrendLegend"></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">주력 업무 투입시간</div><div style="flex:1;position:relative;"><canvas id="evalDonutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:16px;font-weight:900;color:#1e293b;" id="evalDonutCenter">-</div></div></div><div id="evalTop2Row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;"></div></div>
-      <div class="eval-trend-card"><div class="eval-trend-title">고득점 분기 vs 평균</div><div style="display:flex;gap:10px;flex:1;" id="highVsAvgChartsWrap"></div><div id="highVsAvgLegend" style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px;"></div></div>
-      <div class="eval-table-card" style="text-align:center;"><div id="evalRadarYearLabel" style="font-size:14px;font-weight:900;color:#64748b;margin-bottom:10px;">PJ 전체 평균 역량</div><div style="flex:1;min-height:0;"><canvas id="evalRadarYear"></canvas></div><div id="evalRadarYearScore" style="margin-top:10px;"></div></div>
-      <div class="eval-table-card" style="text-align:center;"><div id="evalRadarQtrLabel" style="font-size:14px;font-weight:900;color:#00428E;margin-bottom:10px;">최근 분기 역량</div><div style="flex:1;min-height:0;"><canvas id="evalRadarQtr"></canvas></div><div id="evalRadarQtrScore" style="margin-top:10px;"></div></div>
-      <div class="eval-table-card" id="kpiOvertimeCardWrap"></div>
-      <div class="eval-table-card" style="grid-column:1/-1;height:auto;"><div class="card-section-title">분기별 역량평가 요약표</div><div style="overflow-x:auto;" id="evalTrendTableWrap"></div></div>
-    </div>
+      <!-- renderEvalTab()을 통해 내부가 덮어씌워집니다 -->
   </div>
 </div>
 <script>
@@ -837,18 +856,15 @@ function renderAdvancedMetrics(d,da,col,pf){
             sc[i]={schTitle:st};shu[i]={schTitle:st};sj[i]={schTitle:st};
         }
     });
-    
     if(pf==='pj'){
         var ao=function(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:0;};
         document.getElementById('ovAvgShan').innerText=ao(sd).toFixed(2);
         document.getElementById('ovAvgHhi').innerText=ao(hd).toFixed(2);
         document.getElementById('ovAvgCv').innerText=ao(cd).toFixed(2);
     }
-    
     function dmc(id,l,xl,da,sa,cx){
         if(!document.getElementById(id))return;
         var sa2=sa.map(function(x){return x===null?null: 1.1;});
-        
         var cfg={
             type:'line',
             label:'주요일정',
@@ -865,7 +881,6 @@ function renderAdvancedMetrics(d,da,col,pf){
             order:0,
             spanGaps:false
         };
-        
         CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
             type:'line',
             data:{labels:xl,datasets:[{data:da,label:l,borderColor:cx,backgroundColor:hRgba(cx,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,pointHoverRadius:4,order:1},cfg]},
@@ -951,15 +966,263 @@ function renderWpSwitchBar(d,mos,col){dC('wpSwitchBar');var sw={},pv=null;d.forE
 function renderWpFocusBar(d,mos){dC('wpFocusBar');var fk=['도면','설계','검토','계획','보고서','작성','분석'],mf={},md={};mos.forEach(function(m){mf[m]=0;md[m]=0;});d.forEach(function(r){var m=r.date.slice(0,7);if(mf[m]===undefined)return;var f=fk.some(function(k){return r.sub.includes(k)||r.cat.includes(k);});if(f)mf[m]+=r.min;else md[m]+=r.min;});CH.wpFocusBar=new Chart(document.getElementById('wpFocusBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{label:'집중업무',data:mos.map(function(m){return mToH(mf[m]||0);}),backgroundColor:'#00428E',stack:'S',borderRadius:3},{label:'분산업무',data:mos.map(function(m){return mToH(md[m]||0);}),backgroundColor:'#94a3b8',stack:'S',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11,weight:'bold'},usePointStyle:true}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});}
 function renderWpOvertimeDetail(d){dC('wpOtBar');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var od=Object.entries(dm).filter(function(e){return e[1]>=540;}).sort(function(a,b){return b[1]-a[1];}),mo=Array.from(new Set(od.map(function(e){return e[0].slice(0,7);}))).sort(),ct={'9~10h':[],'10~11h':[],'11~12h':[],'12h 이상':[]};mo.forEach(function(m){var c1=0,c2=0,c3=0,c4=0;od.forEach(function(e){if(!e[0].startsWith(m))return;var n=e[1];if(n<600)c1++;else if(n<660)c2++;else if(n<720)c3++;else c4++;});ct['9~10h'].push(c1);ct['10~11h'].push(c2);ct['11~12h'].push(c3);ct['12h 이상'].push(c4);});CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{type:'bar',data:{labels:mo,datasets:[{label:'9~10h',data:ct['9~10h'],backgroundColor:OT_COLORS[0],stack:'S',borderRadius:2},{label:'10~11h',data:ct['10~11h'],backgroundColor:OT_COLORS[1],stack:'S',borderRadius:2},{label:'11~12h',data:ct['11~12h'],backgroundColor:OT_COLORS[2],stack:'S',borderRadius:2},{label:'12h 이상',data:ct['12h 이상'],backgroundColor:OT_COLORS[3],stack:'S',borderRadius:2}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{right:15,top:10}},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,beginAtZero:true,display:false}}}});var le=document.getElementById('wpOtList');if(!od.length){le.innerHTML='<div style="color:#94a3b8;font-size:12px;text-align:center;padding:10px;">초과근무 없음</div>';return;}le.innerHTML=od.slice(0,10).map(function(e){var dt=e[0],mn=e[1],h=mToH(mn),lv=mn>=720?'#ef4444':mn>=660?'#f97316':mn>=600?'#f59e0b':'#818cf8';return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.5);"><span style="font-size:11px;color:#475569;font-weight:600;">'+dt+'</span><span style="font-size:12px;font-weight:800;color:'+lv+';">'+fmt(h)+'h</span></div>';}).join('');}
 function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
-function renderEvalTab(){var m=GLOBAL_MEMBER==='ALL'?MEMBERS[0]:GLOBAL_MEMBER;if(!m)return;var ed=EVAL_DATA.filter(function(d){return d.name===m;}),fq=filteredEvalQs(),fd=ed.filter(function(d){return fq.includes(d.q);}).sort(function(a,b){return a.q.localeCompare(b.q);}),fwd=filtered().filter(function(r){return r.name===m;});safeRender(function(){renderKpiProfileCard(m,fd,fwd);});safeRender(function(){renderEvalTrend(fd,m);});safeRender(function(){renderEvalDonut(fwd,m);});safeRender(function(){renderHighVsAvg(fd,ed,m);});safeRender(function(){renderEvalRadarYear(ed,m);});safeRender(function(){renderEvalRadarQtr(fd,m);});safeRender(function(){renderKpiOvertimeCard(fwd,m);});safeRender(function(){renderEvalTrendTable(fd,m);});}
-function renderKpiProfileCard(m,fd,wd){var pf=RAW.find(function(r){return r.name===m;}),po=pf?pf.pos:'',ag=fd.length?fd.reduce(function(s,d){return s+d.vals.reduce(function(a,b){return a+b;},0)/5;},0)/fd.length:0,t=wd.reduce(function(s,r){return s+r.min;},0),pm=wd.filter(function(r){return r.project==='경남 서부의료원';}).reduce(function(s,r){return s+r.min;},0),c=MC[m]||'#00428E';document.getElementById('kpiProfileCard').innerHTML='<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">'+getAvatar(m,32,10)+'<div style="flex:1;min-width:180px;"><div style="font-size:22px;font-weight:900;color:#1e293b;">'+m+' <span style="font-size:14px;color:#94a3b8;">'+po+'</span></div><div style="font-size:13px;color:#64748b;margin-top:4px;">평가 기간: '+(fd.length?fd[0].q+' ~ '+fd[fd.length-1].q:'없음')+' ('+fd.length+'분기)</div></div><div style="display:flex;gap:15px;flex-wrap:wrap;"><div class="mini-stat-card" style="min-width:100px;"><div style="font-size:11px;color:#94a3b8;">역량 평균</div><div style="font-size:26px;font-weight:900;color:'+c+';">'+ag.toFixed(1)+'</div><div style="font-size:10px;color:#94a3b8;">/ 5.0</div></div><div class="mini-stat-card" style="min-width:100px;"><div style="font-size:11px;color:#94a3b8;">총 투입(GNWMC)</div><div style="font-size:22px;font-weight:900;color:#00428E;">'+fH(pm)+'h</div><div style="font-size:10px;color:#94a3b8;">전체 '+fH(t)+'h</div></div><div class="mini-stat-card" style="min-width:100px;"><div style="font-size:11px;color:#94a3b8;">평가 분기</div><div style="font-size:26px;font-weight:900;color:#7c3aed;">'+fd.length+'</div></div></div></div>';}
-function renderEvalTrend(fd,m){dC('evalTrendChart');document.getElementById('evalTrendLegend').innerHTML='';if(!fd.length)return;var c=MC[m]||'#00428E',ads={label:'종합평균',data:fd.map(function(d){return +(d.vals.reduce(function(a,b){return a+b;},0)/5).toFixed(2);}),borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointHoverRadius:7},rds=RADAR_LABELS.map(function(l,i){return {label:l,data:fd.map(function(d){return d.vals[i];}),borderColor:RADAR_COLORS_ARR[i],borderWidth:1.5,borderDash:[4,3],fill:false,tension:0.3,pointRadius:2};});document.getElementById('evalTrendLegend').innerHTML=[{label:'종합평균',color:c}].concat(RADAR_LABELS.map(function(l,i){return {label:l,color:RADAR_COLORS_ARR[i]};})).map(function(it){return '<div class="legend-item"><div class="legend-dot" style="background:'+it.color+'"></div>'+it.label+'</div>';}).join('');CH.evalTrendChart=new Chart(document.getElementById('evalTrendChart').getContext('2d'),{type:'line',data:{labels:fd.map(function(d){return d.q;}),datasets:[ads].concat(rds)},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false}},y:{min:0,max:5.5}}}});}
-function renderEvalDonut(wd,m){dC('evalDonutChart');var sm=grp(wd,'sub'),t=Object.values(sm).reduce(function(a,b){return a+b;},0),ta=Object.entries(sm).sort(function(a,b){return b[1]-a[1];}).slice(0,7);document.getElementById('evalDonutCenter').innerText=fH(t)+'h';document.getElementById('evalTop2Row').innerHTML=ta.slice(0,3).map(function(e,i){var k=e[0],v=e[1],p=t>0?(v/t*100).toFixed(1):0;return '<div style="background:'+hRgba(SUB_PAL[i],0.12)+';border:1px solid '+hRgba(SUB_PAL[i],0.3)+';border-radius:10px;padding:10px;text-align:center;"><div style="font-size:10px;color:'+SUB_PAL[i]+';font-weight:700;margin-bottom:4px;">'+(i+1)+'위</div><div style="font-size:11px;font-weight:800;color:#1e293b;">'+k+'</div><div style="font-size:14px;font-weight:900;color:'+SUB_PAL[i]+';margin-top:4px;">'+fH(v)+'h</div><div style="font-size:10px;color:#94a3b8;">'+p+'%</div></div>';}).join('');if(!ta.length)return;CH.evalDonutChart=new Chart(document.getElementById('evalDonutChart').getContext('2d'),{type:'doughnut',data:{labels:ta.map(function(e){return e[0];}),datasets:[{data:ta.map(function(e){return mToH(e[1]);}),backgroundColor:SUB_PAL.slice(0,7),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:20,bottom:20,left:25,right:25}},plugins:{legend:{display:false},datalabels:{display:false}}}});}
-function renderHighVsAvg(fd,ed,m){var w=document.getElementById('highVsAvgChartsWrap'),l=document.getElementById('highVsAvgLegend');w.innerHTML='';l.innerHTML='';if(!fd.length)return;var sc=fd.map(function(d){return{q:d.q,ag:d.vals.reduce(function(a,b){return a+b;},0)/5,vl:d.vals};}),mq=sc.reduce(function(a,b){return a.ag>b.ag?a:b;}),av=RADAR_LABELS.map(function(_,i){return fd.reduce(function(s,d){return s+d.vals[i];},0)/fd.length;}),c=MC[m]||'#00428E';l.innerHTML='<div class="legend-item"><div class="legend-dot" style="background:'+c+'"></div>최고분기('+mq.q+')</div><div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>선택기간 평균</div>';[[mq.vl,'최고분기',c],[av,'평균','#94a3b8']].forEach(function(it){var v=it[0],lb=it[1],cl=it[2],cw=document.createElement('div');cw.style.cssText='flex:1;position:relative;';var cn=document.createElement('canvas');cw.appendChild(cn);w.appendChild(cw);new Chart(cn.getContext('2d'),{type:'radar',data:{labels:RADAR_LABELS,datasets:[{label:lb,data:v,borderColor:cl,backgroundColor:hRgba(cl,0.15),borderWidth:2,pointBackgroundColor:cl,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},pointLabels:{font:{size:10,weight:'700'}}}}}});});}
-function renderEvalRadarYear(ed,m){dC('evalRadarYear');var c=MC[m]||'#00428E';if(!ed.length){document.getElementById('evalRadarYearScore').innerHTML='';return;}var av=RADAR_LABELS.map(function(_,i){return ed.reduce(function(s,d){return s+d.vals[i];},0)/ed.length;}),ta=(av.reduce(function(a,b){return a+b;},0)/5).toFixed(2);document.getElementById('evalRadarYearScore').innerHTML='<span style="font-size:14px;font-weight:900;color:'+c+';">종합 '+ta+'</span> / 5.0';CH.evalRadarYear=new Chart(document.getElementById('evalRadarYear').getContext('2d'),{type:'radar',data:{labels:RADAR_LABELS,datasets:[{label:'PJ전체평균',data:av,borderColor:c,backgroundColor:hRgba(c,0.15),borderWidth:2,pointBackgroundColor:c,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},pointLabels:{font:{size:11,weight:'700'}}}}}});}
-function renderEvalRadarQtr(fd,m){dC('evalRadarQtr');var c=MC[m]||'#00428E';if(!fd.length){document.getElementById('evalRadarQtrScore').innerHTML='';return;}var lq=fd[fd.length-1],ta=(lq.vals.reduce(function(a,b){return a+b;},0)/5).toFixed(2);document.getElementById('evalRadarQtrLabel').innerText=lq.q+' 개인 역량';document.getElementById('evalRadarQtrScore').innerHTML='<span style="font-size:14px;font-weight:900;color:'+c+';">종합 '+ta+'</span> / 5.0';CH.evalRadarQtr=new Chart(document.getElementById('evalRadarQtr').getContext('2d'),{type:'radar',data:{labels:RADAR_LABELS,datasets:[{label:lq.q,data:lq.vals,borderColor:c,backgroundColor:hRgba(c,0.15),borderWidth:2,pointBackgroundColor:c,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},pointLabels:{font:{size:11,weight:'700'}}}}}});}
-function renderKpiOvertimeCard(wd,m){var c=MC[m]||'#00428E',dm={};wd.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var o9=0,o12=0;Object.values(dm).forEach(function(x){if(x>=540)o9++;if(x>=720)o12++;});var ad=Object.keys(dm).length,t=wd.reduce(function(s,r){return s+r.min;},0),da=ad>0?mToH(t)/ad:0;document.getElementById('kpiOvertimeCardWrap').innerHTML='<div class="card-section-title">근무 통계 요약</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;"><div class="mini-stat-card"><div style="font-size:11px;color:#94a3b8;">총 작업일</div><div style="font-size:26px;font-weight:900;color:'+c+';">'+ad+'<span style="font-size:13px;">일</span></div></div><div class="mini-stat-card"><div style="font-size:11px;color:#94a3b8;">일평균 투입</div><div style="font-size:26px;font-weight:900;color:'+c+';">'+da.toFixed(1)+'<span style="font-size:13px;">h</span></div></div><div class="mini-stat-card"><div style="font-size:11px;color:#94a3b8;">9h+ 초과</div><div style="font-size:26px;font-weight:900;color:#f59e0b;">'+o9+'<span style="font-size:13px;">일</span></div></div><div class="mini-stat-card"><div style="font-size:11px;color:#94a3b8;">12h+ 초과</div><div style="font-size:26px;font-weight:900;color:#ef4444;">'+o12+'<span style="font-size:13px;">일</span></div></div></div>';}
-function renderEvalTrendTable(fd,m){var w=document.getElementById('evalTrendTableWrap');if(!fd.length){w.innerHTML='<div style="color:#94a3b8;font-size:12px;text-align:center;padding:20px;">평가 데이터 없음</div>';return;}var c=MC[m]||'#00428E',av=RADAR_LABELS.map(function(_,i){return fd.reduce(function(s,d){return s+d.vals[i];},0)/fd.length;}),at=av.reduce(function(a,b){return a+b;},0)/5,h='<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr>'+['분기','적극성','생산성','전문성','창의성','협업능력','종합평균'].map(function(x){return '<th style="padding:10px 14px;background:'+hRgba(c,0.08)+';color:#475569;font-weight:700;text-align:center;border-bottom:2px solid '+hRgba(c,0.2)+';">'+x+'</th>';}).join('')+'</tr></thead><tbody>';fd.forEach(function(d,ri){var t=(d.vals.reduce(function(a,b){return a+b;},0)/5).toFixed(2);h+='<tr style="background:'+(ri%2===0?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.1)')+';"><td style="padding:8px 14px;font-weight:800;color:'+c+';text-align:center;">'+d.q+'</td>';d.vals.forEach(function(v){var cl=v>=4?'#22c55e':v>=3?'#f59e0b':'#ef4444';h+='<td style="padding:8px 14px;text-align:center;font-weight:700;color:'+cl+';">'+v.toFixed(1)+'</td>';});h+='<td style="padding:8px 14px;text-align:center;font-weight:900;color:'+(parseFloat(t)>=at?'#22c55e':'#ef4444')+';">'+t+'</td></tr>';});h+='<tr style="background:'+hRgba(c,0.06)+';border-top:2px solid '+hRgba(c,0.2)+';"><td style="padding:10px 14px;font-weight:900;color:#475569;text-align:center;">평균</td>'+av.map(function(v){return '<td style="padding:10px 14px;text-align:center;font-weight:800;color:#475569;">'+v.toFixed(2)+'</td>';}).join('')+'<td style="padding:10px 14px;text-align:center;font-weight:900;color:'+c+';">'+at.toFixed(2)+'</td></tr></tbody></table>';w.innerHTML=h;}
+
+function renderEvalTab() {
+    var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
+    if (!m) return;
+    
+    var view = document.getElementById('view-kpieval');
+    var ed = EVAL_DATA.filter(function(d){ return d.name === m; });
+    var fq = filteredEvalQs();
+    var fd = ed.filter(function(d){ return fq.includes(d.q); }).sort(function(a,b){ return a.q.localeCompare(b.q); });
+    var wd = filtered().filter(function(r){ return r.name === m; });
+    var pf = RAW.find(function(r){ return r.name === m; });
+    var po = pf ? pf.pos : '';
+    var c = MC[m] || '#00428E';
+
+    dC('newKpiTrendChart'); dC('newKpiRadarChart'); dC('newKpiDonutChart');
+
+    if (!fd.length) {
+        view.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:500px;color:#94a3b8;font-size:18px;font-weight:700;">해당 기간에 평가 데이터가 없습니다.</div>';
+        return;
+    }
+
+    var latestQ = fd[fd.length - 1];
+    var latestScore = latestQ.vals.reduce((a,b)=>a+b,0) / 5;
+    
+    var avgVals = RADAR_LABELS.map((_, i) => ed.reduce((s, d) => s + d.vals[i], 0) / ed.length);
+    var avgScore = avgVals.reduce((a,b)=>a+b,0) / 5;
+    
+    var t = wd.reduce((s, r) => s + r.min, 0);
+    var pm = wd.filter(r => r.project === '경남 서부의료원').reduce((s, r) => s + r.min, 0);
+    var dm = {}; wd.forEach(r => dm[r.date] = (dm[r.date] || 0) + r.min);
+    var ad = Object.keys(dm).length;
+    var o9 = 0; Object.values(dm).forEach(x => { if(x >= 540) o9++; });
+
+    var sm = grp(wd.filter(r => r.project === '경남 서부의료원'), 'sub');
+    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 4);
+
+    var html = `
+    <div class="kpi-layout">
+        <!-- 좌측 패널 (프로필 및 요약) -->
+        <div class="kpi-panel left-panel">
+            <div class="kpi-profile-header">
+                ${getAvatar(m, 50, 18)}
+                <div>
+                    <div style="font-size:24px;font-weight:900;color:#1e293b;line-height:1.2;">${m}</div>
+                    <div style="font-size:13px;color:#64748b;font-weight:600;">${po}</div>
+                </div>
+            </div>
+            
+            <div class="kpi-big-score">
+                <div class="title">최근 분기 종합 점수 (${latestQ.q})</div>
+                <div style="display:flex;align-items:baseline;">
+                    <div class="score">${latestScore.toFixed(2)}</div>
+                    <div class="sub">/ 5.0</div>
+                </div>
+                <div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">
+                    전체 평균(${avgScore.toFixed(2)}) 대비 ${latestScore >= avgScore ? `<span style="color:#10b981">▲ ${(latestScore - avgScore).toFixed(2)}</span>` : `<span style="color:#ef4444">▼ ${(avgScore - latestScore).toFixed(2)}</span>`}
+                </div>
+            </div>
+
+            <div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">역량 점수 트렌드</div>
+            <div style="height:120px; position:relative; margin-bottom:30px;">
+                <canvas id="newKpiTrendChart"></canvas>
+            </div>
+
+            <div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">총 투입 시간</div>
+                    <div style="font-size:18px;font-weight:900;color:#00428E;">${fH(pm)}h</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">9h+ 연장근무</div>
+                    <div style="font-size:18px;font-weight:900;color:#f59e0b;">${o9}일</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 중앙 패널 (메인 레이더) -->
+        <div class="kpi-panel center-panel">
+            <div style="text-align:center; margin-bottom:10px;">
+                <h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2>
+                <div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div>
+                <div style="display:flex; justify-content:center; gap:15px; margin-top:15px;">
+                    <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;">
+                        <div style="width:12px; height:3px; background:${c}; border-radius:2px;"></div> ${latestQ.q}
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;">
+                        <div style="width:12px; height:3px; background:#cbd5e1; border-radius:2px;"></div> 누적 평균
+                    </div>
+                </div>
+            </div>
+            <div style="flex:1; position:relative; min-height:400px; display:flex; align-items:center; justify-content:center;">
+                <canvas id="newKpiRadarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 우측 패널 (세부 데이터) -->
+        <div class="kpi-panel right-panel">
+            <div class="kpi-section-title">최근 분기 역량 분석</div>
+            <div class="kpi-detail-list">
+                ${RADAR_LABELS.map((label, i) => {
+                    var val = latestQ.vals[i];
+                    var avg = avgVals[i];
+                    var diff = val - avg;
+                    var arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '─';
+                    var cls = diff > 0.05 ? 'up' : diff < -0.05 ? 'down' : 'flat';
+                    return \`
+                    <div class="kpi-detail-item">
+                        <div class="label">\${label}</div>
+                        <div class="values">
+                            <div class="score">\${val.toFixed(1)}</div>
+                            <div class="kpi-delta \${cls}">\${arrow} \${Math.abs(diff).toFixed(1)}</div>
+                        </div>
+                    </div>\`;
+                }).join('')}
+            </div>
+
+            <div class="kpi-section-title" style="margin-top:30px;">주요 업무 비중</div>
+            <div style="display:flex; align-items:center; height:130px; gap:15px;">
+                <div style="width:110px; height:110px; position:relative; flex-shrink:0;">
+                    <canvas id="newKpiDonutChart"></canvas>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px; justify-content:center;">
+                    ${topTasks.length === 0 ? '<div style="color:#94a3b8;font-size:12px;">데이터 없음</div>' : 
+                      topTasks.map((t, i) => {
+                          var p = pm > 0 ? (t[1]/pm*100).toFixed(1) : 0;
+                          return \`
+                          <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                  <div style="width:8px; height:8px; border-radius:50%; background:\${SUB_PAL[i]}"></div>
+                                  <span style="font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px;">\${t[0]}</span>
+                              </div>
+                              <div style="font-weight:800; color:#64748b;">\${p}%</div>
+                          </div>\`;
+                      }).join('')
+                    }
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    view.innerHTML = html;
+
+    setTimeout(() => {
+        var trendLabels = fd.map(d => d.q);
+        var trendData = fd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
+        CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    data: trendData,
+                    borderColor: c,
+                    backgroundColor: hRgba(c, 0.15),
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: c,
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, datalabels: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false, min: Math.min(...trendData) - 0.5, max: 5.2 }
+                },
+                layout: { padding: { top: 10, bottom: 10, left: 10, right: 10 } }
+            }
+        });
+
+        CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
+            type: 'radar',
+            data: {
+                labels: RADAR_LABELS,
+                datasets: [
+                    {
+                        label: latestQ.q,
+                        data: latestQ.vals,
+                        borderColor: c,
+                        backgroundColor: hRgba(c, 0.2),
+                        borderWidth: 3,
+                        pointBackgroundColor: c,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    },
+                    {
+                        label: '누적 평균',
+                        data: avgVals,
+                        borderColor: '#cbd5e1',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointBackgroundColor: '#cbd5e1',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15,23,42,0.9)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 13, weight: 'bold' },
+                        padding: 12,
+                        callbacks: {
+                            label: function(cx) { return cx.dataset.label + ': ' + cx.raw.toFixed(2); }
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        min: 0, max: 5,
+                        grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 },
+                        angleLines: { display: false },
+                        ticks: { display: false, stepSize: 1 },
+                        pointLabels: {
+                            font: { size: 14, weight: '800' },
+                            color: '#475569',
+                            padding: 25
+                        }
+                    }
+                },
+                elements: { line: { tension: 0 } }
+            }
+        });
+
+        if(topTasks.length > 0) {
+            CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: topTasks.map(t => t[0]),
+                    datasets: [{
+                        data: topTasks.map(t => mToH(t[1])),
+                        backgroundColor: SUB_PAL.slice(0, topTasks.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: { legend: { display: false }, datalabels: { display: false } }
+                }
+            });
+        }
+    }, 50);
+}
+
 document.addEventListener('DOMContentLoaded',function(){updateNavSlider();window.addEventListener('resize',updateNavSlider);loadDataFromSheets();});
 </script>
 </body>
