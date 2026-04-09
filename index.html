@@ -208,9 +208,9 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-metric-badge.danger .val{color:#ef4444;}
 
 /* KPI 리디자인 전용 CSS 추가 */
-.kpi-layout { display: grid; grid-template-columns: 320px 1fr 360px; gap: 20px; width: 100%; height: 100%; min-height: 700px; align-items: stretch; }
+.kpi-layout { display: grid; grid-template-columns: 320px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 700px; align-items: stretch; }
 .kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); overflow: hidden; position: relative; }
-.kpi-panel.center-panel { background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%); padding: 20px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); }
+.kpi-panel.center-panel { padding: 20px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); }
 
 /* 좌측 패널 구성요소 */
 .kpi-profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
@@ -219,9 +219,10 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .kpi-big-score .score { font-size: 54px; font-weight: 900; color: #00428E; line-height: 1; letter-spacing: -0.02em; }
 .kpi-big-score .sub { font-size: 14px; color: #94a3b8; font-weight: 600; margin-left: 5px; }
 
-/* 우측 패널 구성요소 */
-.kpi-detail-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-.kpi-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px solid rgba(226,232,240,0.6); }
+/* 우측 패널 구성요소 (단일 박스 형태) */
+.kpi-detail-container { background: rgba(255,255,255,0.6); border: 1px solid rgba(226,232,240,0.8); border-radius: 16px; padding: 5px 16px; display: flex; flex-direction: column; margin-top: 10px;}
+.kpi-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed rgba(203,213,225,0.6); }
+.kpi-detail-item:last-child { border-bottom: none; }
 .kpi-detail-item .label { font-size: 13px; font-weight: 800; color: #334155; }
 .kpi-detail-item .values { display: flex; align-items: center; gap: 12px; }
 .kpi-detail-item .score { font-size: 16px; font-weight: 900; color: #1e293b; width: 35px; text-align: right; }
@@ -1197,16 +1198,22 @@ function renderWpOvertimeDetail(d){dC('wpOtBar');var dm={};d.forEach(function(r)
 function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
 
 // ==========================================
-// ★ KPI Eval 탭 렌더링 (예외 처리 및 다중 레이더 적용)
+// ★ KPI Eval 탭 렌더링 (리디자인 적용 및 예외 처리 완벽 반영)
 // ==========================================
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
     if (!m) return;
     
     var view = document.getElementById('view-kpieval');
+    // 개인의 모든 평가 데이터
     var ed = EVAL_DATA.filter(function(d){ return d.name === m; });
+    var sortedEd = ed.slice().sort(function(a,b){ return a.q.localeCompare(b.q); });
+    
+    // 현재 선택된 기간 필터에 해당하는 평가 데이터
     var fq = filteredEvalQs();
     var fd = ed.filter(function(d){ return fq.includes(d.q); }).sort(function(a,b){ return a.q.localeCompare(b.q); });
+    
+    // 근무 시간 데이터
     var wd = filtered().filter(function(r){ return r.name === m; });
     var pf = RAW.find(function(r){ return r.name === m; });
     var po = pf ? pf.pos : '';
@@ -1214,7 +1221,7 @@ function renderEvalTab() {
 
     dC('newKpiTrendChart'); dC('newKpiRadarChart'); dC('newKpiDonutChart'); dC('kpiInsightRadar');
 
-    // 🔥 평가 데이터가 없더라도 레이아웃이 붕괴되지 않도록 Fallback(기본값) 처리
+    // 🔥 평가 데이터가 없더라도 레이아웃이 붕괴되지 않도록 Fallback 처리
     var hasEval = fd.length > 0;
     var latestQ = hasEval ? fd[fd.length - 1] : { q: '평가 없음', vals: [0,0,0,0,0] };
     var latestScore = latestQ.vals.reduce((a,b)=>a+b,0) / 5;
@@ -1254,7 +1261,7 @@ function renderEvalTab() {
                      '</div>';
           }).join('');
 
-    var detailListHtml = RADAR_LABELS.map((label, i) => {
+    var detailListHtml = '<div class="kpi-detail-container">' + RADAR_LABELS.map((label, i) => {
         var val = latestQ.vals[i];
         var avg = avgVals[i];
         var diff = val - avg;
@@ -1267,7 +1274,7 @@ function renderEvalTab() {
                        '<div class="kpi-delta ' + cls + '">' + arrow + ' ' + (!hasEval ? '-' : Math.abs(diff).toFixed(1)) + '</div>' +
                    '</div>' +
                '</div>';
-    }).join('');
+    }).join('') + '</div>';
 
     // Insight (6대 지표) 데이터 계산
     var currData = RAW.filter(r => r.name === m && getQ(r.date) === latestQ.q);
@@ -1307,7 +1314,7 @@ function renderEvalTab() {
             '</div>' +
             '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">역량 점수 트렌드</div>' +
             '<div style="height:120px; position:relative; margin-bottom:30px;">' +
-                (hasEval ? '<canvas id="newKpiTrendChart"></canvas>' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;font-weight:600;">평가 데이터 없음</div>') +
+                (sortedEd.length > 0 ? '<canvas id="newKpiTrendChart"></canvas>' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;font-weight:600;">평가 데이터 없음</div>') +
             '</div>' +
             '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div>' +
             '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">' +
@@ -1343,12 +1350,12 @@ function renderEvalTab() {
             '</div>' +
         '</div>' +
         '<!-- 우측 패널 (세부 데이터 3분할) -->' +
-        '<div class="kpi-panel right-panel" style="padding:25px 20px; gap:15px;">' +
-            '<div style="flex:1; display:flex; flex-direction:column;">' +
+        '<div class="kpi-panel right-panel" style="padding:25px 20px; gap:25px;">' +
+            '<div style="flex:0 0 auto; display:flex; flex-direction:column;">' +
                 '<div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div>' +
                 '<div class="kpi-detail-list">' + detailListHtml + '</div>' +
             '</div>' +
-            '<div style="flex:1; display:flex; flex-direction:column;">' +
+            '<div style="flex:0 0 auto; display:flex; flex-direction:column;">' +
                 '<div class="kpi-section-title" style="margin-bottom:5px;">주요 업무 비중</div>' +
                 '<div style="display:flex; align-items:center; height:120px; gap:15px;">' +
                     '<div style="width:110px; height:110px; position:relative; flex-shrink:0;">' +
@@ -1357,7 +1364,7 @@ function renderEvalTab() {
                     '<div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">' + topTasksHtml + '</div>' +
                 '</div>' +
             '</div>' +
-            '<div style="flex:1.2; display:flex; flex-direction:column;">' +
+            '<div style="flex:1; display:flex; flex-direction:column;">' +
                 '<div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div>' +
                 '<div style="flex:1; position:relative; min-height:160px; display:flex; align-items:center; justify-content:center;">' +
                     '<canvas id="kpiInsightRadar"></canvas>' +
@@ -1369,9 +1376,17 @@ function renderEvalTab() {
     view.innerHTML = html;
 
     setTimeout(() => {
-        if(hasEval) {
-            var trendLabels = fd.map(d => d.q);
-            var trendData = fd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
+        // ★ 1. 좌측 트렌드 차트 (전체 기간 유지 & 필터 선택 시 하이라이트)
+        if(sortedEd.length > 0) {
+            var trendLabels = sortedEd.map(d => d.q);
+            var trendData = sortedEd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
+            var highlightIdx = trendLabels.indexOf(latestQ.q);
+            
+            var ptRadii = trendLabels.map((_, i) => i === highlightIdx ? 6 : 3);
+            var ptBgColors = trendLabels.map((_, i) => i === highlightIdx ? c : '#fff');
+            var ptBorders = trendLabels.map((_, i) => i === highlightIdx ? '#fff' : c);
+            var ptBorderWidths = trendLabels.map((_, i) => i === highlightIdx ? 2 : 1.5);
+
             CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), {
                 type: 'line',
                 data: {
@@ -1379,28 +1394,44 @@ function renderEvalTab() {
                     datasets: [{
                         data: trendData,
                         borderColor: c,
-                        backgroundColor: hRgba(c, 0.15),
-                        borderWidth: 3,
+                        backgroundColor: hRgba(c, 0.1),
+                        borderWidth: 2,
                         fill: true,
                         tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: c,
-                        pointBorderWidth: 2
+                        pointRadius: ptRadii,
+                        pointBackgroundColor: ptBgColors,
+                        pointBorderColor: ptBorders,
+                        pointBorderWidth: ptBorderWidths,
+                        pointHoverRadius: 7
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, datalabels: { display: false } },
+                    plugins: { 
+                        legend: { display: false }, 
+                        datalabels: { 
+                            display: true,
+                            align: 'top',
+                            anchor: 'end',
+                            offset: 4,
+                            color: (cx) => cx.dataIndex === highlightIdx ? c : '#94a3b8',
+                            font: (cx) => ({
+                                size: cx.dataIndex === highlightIdx ? 13 : 10,
+                                weight: cx.dataIndex === highlightIdx ? '900' : '600'
+                            }),
+                            formatter: (v) => v.toFixed(1)
+                        } 
+                    },
                     scales: {
                         x: { display: false },
-                        y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.2 }
+                        y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 }
                     },
-                    layout: { padding: { top: 10, bottom: 10, left: 10, right: 10 } }
+                    layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } }
                 }
             });
         }
 
+        // ★ 2. 중앙 메인 레이더 차트
         CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
             type: 'radar',
             data: {
@@ -1410,7 +1441,7 @@ function renderEvalTab() {
                         label: '선택 기간 (' + latestQ.q + ')',
                         data: latestQ.vals,
                         borderColor: c,
-                        backgroundColor: 'transparent',
+                        backgroundColor: hRgba(c, 0.15), // 선택 기간 투명도 높은 테마색 채움
                         borderWidth: 2.5,
                         pointBackgroundColor: c,
                         pointBorderColor: '#fff',
@@ -1423,9 +1454,9 @@ function renderEvalTab() {
                         label: '개인 평균',
                         data: avgVals,
                         borderColor: '#94a3b8',
-                        backgroundColor: 'rgba(148, 163, 184, 0.15)',
+                        backgroundColor: 'rgba(148, 163, 184, 0.08)', // 개인 평균 더 연한 회색 채움
                         borderWidth: 1.5,
-                        borderDash: [],
+                        borderDash: [], // 실선
                         pointBackgroundColor: '#94a3b8',
                         pointRadius: 2,
                         pointHoverRadius: 4,
@@ -1476,6 +1507,7 @@ function renderEvalTab() {
             }
         });
 
+        // 3. 우측 미니 도넛 차트
         if(topTasks.length > 0) {
             CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), {
                 type: 'doughnut',
@@ -1496,6 +1528,7 @@ function renderEvalTab() {
             });
         }
         
+        // 4. 우측 Work Insight (6대 지표 레이더)
         CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), {
             type: 'radar',
             data: {
