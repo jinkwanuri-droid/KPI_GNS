@@ -264,6 +264,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </div>
+
 <!-- 인사이트 모달 -->
 <div id="insightModal">
   <div class="modal-backdrop" onclick="closeInsightModal()"></div>
@@ -320,6 +321,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </div>
+
 <nav class="topbar" id="topbar">
   <div class="logo-container">
     <div><div class="logo-title"><span style="color:#00428E;">GNW</span><span style="color:#38bdf8;">MC</span></div><div class="logo-subtitle">PATH REFLECTION</div></div>
@@ -343,6 +345,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </nav>
+
 <div class="main">
   <!-- 대시보드 뷰 -->
   <div id="view-dashboard" class="view-section active">
@@ -403,6 +406,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b>: 집합 간 유사도.</li><li><b>로직</b>: (교집합)/(합집합).</li><li><b>목적</b>: 1이면 숙련(전문가), 0이면 변화(성장).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
     </div>
   </div>
+  
   <!-- 멤버 뷰 -->
   <div id="view-members" class="view-section">
     <div class="wp-hero">
@@ -468,11 +472,14 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="card" style="height:300px;"><div style="display:flex;flex-direction:column;height:100%;gap:12px;"><div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div></div></div>
     </div>
   </div>
-  <!-- KPI Eval 뷰 -->
+  
+  <!-- KPI Eval 뷰 (3단 레이아웃 전용 컨테이너) -->
   <div id="view-kpieval" class="view-section">
       <!-- renderEvalTab()을 통해 내부가 덮어씌워집니다 -->
   </div>
+  
 </div>
+
 <script>
 var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 var GITHUB_BASE='https://jinkwanuri-droid.github.io/KPI_GNS/';
@@ -545,6 +552,7 @@ var insightSelectedPeriod = '';
 var insightAvailableQ = [];
 var insightAvailableM = [];
 var insightAllData = [];
+
 window.openInsightModal = function(prefix){
     currentModalPrefix = prefix || 'pj';
     insightAllData = prefix === 'wp' && WP_MEMBER ? RAW.filter(r => r.name === WP_MEMBER) : RAW;
@@ -556,10 +564,12 @@ window.openInsightModal = function(prefix){
     document.body.style.overflow = 'hidden';
     updateInsightUI();
 };
+
 window.closeInsightModal = function(){
     document.getElementById('insightModal').classList.remove('open');
     document.body.style.overflow = '';
 };
+
 window.setInsightMode = function(mode){
     if(insightTimeMode === mode) return;
     insightTimeMode = mode;
@@ -567,10 +577,12 @@ window.setInsightMode = function(mode){
     insightSelectedPeriod = opts[opts.length-1] || '';
     updateInsightUI();
 };
+
 window.changeInsightPeriod = function(){
     insightSelectedPeriod = document.getElementById('insightPeriodSelect').value;
     updateInsightUI();
 };
+
 function calcStandaloneMetrics(currR, prevR) {
     if(!currR || currR.length === 0) return null;
     let t = currR.reduce((s,r)=>s+r.min,0) || 1;
@@ -617,6 +629,7 @@ function calcStandaloneMetrics(currR, prevR) {
     }
     return {ot: oi, shannon: sn, hhi: hi, cv: cn, hurst: hs, jaccard: jc};
 }
+
 function updateInsightUI() {
     document.getElementById('insightToggleQ').className = 'insight-t-btn ' + (insightTimeMode === 'Q' ? 'active' : '');
     document.getElementById('insightToggleM').className = 'insight-t-btn ' + (insightTimeMode === 'M' ? 'active' : '');
@@ -789,6 +802,7 @@ function updateInsightUI() {
         }
     }
 }
+
 function generateInsightComment(c, p, currentPeriodLabel){
     var t=[`<b style="color:#6366f1;">[${currentPeriodLabel}]</b>을 기준으로 분석한 결과입니다.`], pl='', pf=function(x,y){var s={g:'background:rgba(16,185,129,.1);color:#059669;border:1px solid rgba(16,185,129,.2);',w:'background:rgba(245,158,11,.1);color:#d97706;border:1px solid rgba(245,158,11,.2);',d:'background:rgba(239,68,68,.1);color:#dc2626;border:1px solid rgba(239,68,68,.2);'};return'<span style="'+s[y]+'border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;">'+x+'</span> ';};
     var ot=c.ot||0;
@@ -807,6 +821,7 @@ function generateInsightComment(c, p, currentPeriodLabel){
     else{t.push('허스트 지수(<strong style="color:#4f46e5;">'+hu.toFixed(2)+'</strong>)가 낮아 <span style="color:#f59e0b;font-weight:700;">외부 요인 변동</span>이 잦습니다.');pl+=pf('Hurst '+hu.toFixed(2),'w');}
     return {text:t.join(' '), pills:pl};
 }
+
 function renderAdvancedMetrics(d,da,col,pf){
     dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
     if(!d||d.length===0)return;
@@ -856,15 +871,18 @@ function renderAdvancedMetrics(d,da,col,pf){
             sc[i]={schTitle:st};shu[i]={schTitle:st};sj[i]={schTitle:st};
         }
     });
+    
     if(pf==='pj'){
         var ao=function(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:0;};
         document.getElementById('ovAvgShan').innerText=ao(sd).toFixed(2);
         document.getElementById('ovAvgHhi').innerText=ao(hd).toFixed(2);
         document.getElementById('ovAvgCv').innerText=ao(cd).toFixed(2);
     }
+    
     function dmc(id,l,xl,da,sa,cx){
         if(!document.getElementById(id))return;
         var sa2=sa.map(function(x){return x===null?null: 1.1;});
+        
         var cfg={
             type:'line',
             label:'주요일정',
@@ -881,6 +899,7 @@ function renderAdvancedMetrics(d,da,col,pf){
             order:0,
             spanGaps:false
         };
+        
         CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
             type:'line',
             data:{labels:xl,datasets:[{data:da,label:l,borderColor:cx,backgroundColor:hRgba(cx,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,pointHoverRadius:4,order:1},cfg]},
@@ -903,7 +922,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                                 return Array.isArray(cx[0].label)?cx[0].label.join(' '):cx[0].label;
                             },
                             label:function(cx){
-                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle;
+                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle; 
                                 return cx.dataset.label+': '+(cx.raw!=null?cx.raw.toFixed(3):0);
                             }
                         },
@@ -918,7 +937,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                         max: 1.2,
                         ticks: {
                             callback: function(val) {
-                                if(val > 1.01) return '';
+                                if(val > 1.0) return '';
                                 return val.toFixed(1);
                             }
                         }
@@ -1002,110 +1021,106 @@ function renderEvalTab() {
     var sm = grp(wd.filter(r => r.project === '경남 서부의료원'), 'sub');
     var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 4);
 
-    var html = `
-    <div class="kpi-layout">
-        <!-- 좌측 패널 (프로필 및 요약) -->
-        <div class="kpi-panel left-panel">
-            <div class="kpi-profile-header">
-                ${getAvatar(m, 50, 18)}
-                <div>
-                    <div style="font-size:24px;font-weight:900;color:#1e293b;line-height:1.2;">${m}</div>
-                    <div style="font-size:13px;color:#64748b;font-weight:600;">${po}</div>
-                </div>
-            </div>
-            
-            <div class="kpi-big-score">
-                <div class="title">최근 분기 종합 점수 (${latestQ.q})</div>
-                <div style="display:flex;align-items:baseline;">
-                    <div class="score">${latestScore.toFixed(2)}</div>
-                    <div class="sub">/ 5.0</div>
-                </div>
-                <div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">
-                    전체 평균(${avgScore.toFixed(2)}) 대비 ${latestScore >= avgScore ? `<span style="color:#10b981">▲ ${(latestScore - avgScore).toFixed(2)}</span>` : `<span style="color:#ef4444">▼ ${(avgScore - latestScore).toFixed(2)}</span>`}
-                </div>
-            </div>
+    var scoreDiff = latestScore - avgScore;
+    var scoreDiffHtml = scoreDiff >= 0 
+        ? '<span style="color:#10b981">▲ ' + scoreDiff.toFixed(2) + '</span>'
+        : '<span style="color:#ef4444">▼ ' + Math.abs(scoreDiff).toFixed(2) + '</span>';
 
-            <div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">역량 점수 트렌드</div>
-            <div style="height:120px; position:relative; margin-bottom:30px;">
-                <canvas id="newKpiTrendChart"></canvas>
-            </div>
+    var topTasksHtml = topTasks.length === 0 
+        ? '<div style="color:#94a3b8;font-size:12px;">데이터 없음</div>' 
+        : topTasks.map((tk, i) => {
+              var p = pm > 0 ? (tk[1]/pm*100).toFixed(1) : 0;
+              return '<div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">' +
+                         '<div style="display:flex; align-items:center; gap:6px;">' +
+                             '<div style="width:8px; height:8px; border-radius:50%; background:' + SUB_PAL[i] + '"></div>' +
+                             '<span style="font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px;">' + tk[0] + '</span>' +
+                         '</div>' +
+                         '<div style="font-weight:800; color:#64748b;">' + p + '%</div>' +
+                     '</div>';
+          }).join('');
 
-            <div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">
-                    <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">총 투입 시간</div>
-                    <div style="font-size:18px;font-weight:900;color:#00428E;">${fH(pm)}h</div>
-                </div>
-                <div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">
-                    <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">9h+ 연장근무</div>
-                    <div style="font-size:18px;font-weight:900;color:#f59e0b;">${o9}일</div>
-                </div>
-            </div>
-        </div>
+    var detailListHtml = RADAR_LABELS.map((label, i) => {
+        var val = latestQ.vals[i];
+        var avg = avgVals[i];
+        var diff = val - avg;
+        var arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '─';
+        var cls = diff > 0.05 ? 'up' : diff < -0.05 ? 'down' : 'flat';
+        return '<div class="kpi-detail-item">' +
+                   '<div class="label">' + label + '</div>' +
+                   '<div class="values">' +
+                       '<div class="score">' + val.toFixed(1) + '</div>' +
+                       '<div class="kpi-delta ' + cls + '">' + arrow + ' ' + Math.abs(diff).toFixed(1) + '</div>' +
+                   '</div>' +
+               '</div>';
+    }).join('');
 
-        <!-- 중앙 패널 (메인 레이더) -->
-        <div class="kpi-panel center-panel">
-            <div style="text-align:center; margin-bottom:10px;">
-                <h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2>
-                <div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div>
-                <div style="display:flex; justify-content:center; gap:15px; margin-top:15px;">
-                    <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;">
-                        <div style="width:12px; height:3px; background:${c}; border-radius:2px;"></div> ${latestQ.q}
-                    </div>
-                    <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;">
-                        <div style="width:12px; height:3px; background:#cbd5e1; border-radius:2px;"></div> 누적 평균
-                    </div>
-                </div>
-            </div>
-            <div style="flex:1; position:relative; min-height:400px; display:flex; align-items:center; justify-content:center;">
-                <canvas id="newKpiRadarChart"></canvas>
-            </div>
-        </div>
-
-        <!-- 우측 패널 (세부 데이터) -->
-        <div class="kpi-panel right-panel">
-            <div class="kpi-section-title">최근 분기 역량 분석</div>
-            <div class="kpi-detail-list">
-                ${RADAR_LABELS.map((label, i) => {
-                    var val = latestQ.vals[i];
-                    var avg = avgVals[i];
-                    var diff = val - avg;
-                    var arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '─';
-                    var cls = diff > 0.05 ? 'up' : diff < -0.05 ? 'down' : 'flat';
-                    return \`
-                    <div class="kpi-detail-item">
-                        <div class="label">\${label}</div>
-                        <div class="values">
-                            <div class="score">\${val.toFixed(1)}</div>
-                            <div class="kpi-delta \${cls}">\${arrow} \${Math.abs(diff).toFixed(1)}</div>
-                        </div>
-                    </div>\`;
-                }).join('')}
-            </div>
-
-            <div class="kpi-section-title" style="margin-top:30px;">주요 업무 비중</div>
-            <div style="display:flex; align-items:center; height:130px; gap:15px;">
-                <div style="width:110px; height:110px; position:relative; flex-shrink:0;">
-                    <canvas id="newKpiDonutChart"></canvas>
-                </div>
-                <div style="flex:1; display:flex; flex-direction:column; gap:6px; justify-content:center;">
-                    ${topTasks.length === 0 ? '<div style="color:#94a3b8;font-size:12px;">데이터 없음</div>' : 
-                      topTasks.map((t, i) => {
-                          var p = pm > 0 ? (t[1]/pm*100).toFixed(1) : 0;
-                          return \`
-                          <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
-                              <div style="display:flex; align-items:center; gap:6px;">
-                                  <div style="width:8px; height:8px; border-radius:50%; background:\${SUB_PAL[i]}"></div>
-                                  <span style="font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px;">\${t[0]}</span>
-                              </div>
-                              <div style="font-weight:800; color:#64748b;">\${p}%</div>
-                          </div>\`;
-                      }).join('')
-                    }
-                </div>
-            </div>
-        </div>
-    </div>`;
+    var html = '<div class="kpi-layout">' +
+        '<!-- 좌측 패널 (프로필 및 요약) -->' +
+        '<div class="kpi-panel left-panel">' +
+            '<div class="kpi-profile-header">' +
+                getAvatar(m, 50, 18) +
+                '<div>' +
+                    '<div style="font-size:24px;font-weight:900;color:#1e293b;line-height:1.2;">' + m + '</div>' +
+                    '<div style="font-size:13px;color:#64748b;font-weight:600;">' + po + '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="kpi-big-score">' +
+                '<div class="title">최근 분기 종합 점수 (' + latestQ.q + ')</div>' +
+                '<div style="display:flex;align-items:baseline;">' +
+                    '<div class="score">' + latestScore.toFixed(2) + '</div>' +
+                    '<div class="sub">/ 5.0</div>' +
+                '</div>' +
+                '<div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">' +
+                    '전체 평균(' + avgScore.toFixed(2) + ') 대비 ' + scoreDiffHtml +
+                '</div>' +
+            '</div>' +
+            '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">역량 점수 트렌드</div>' +
+            '<div style="height:120px; position:relative; margin-bottom:30px;">' +
+                '<canvas id="newKpiTrendChart"></canvas>' +
+            '</div>' +
+            '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div>' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">' +
+                '<div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">' +
+                    '<div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">총 투입 시간</div>' +
+                    '<div style="font-size:18px;font-weight:900;color:#00428E;">' + fH(pm) + 'h</div>' +
+                '</div>' +
+                '<div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">' +
+                    '<div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">9h+ 연장근무</div>' +
+                    '<div style="font-size:18px;font-weight:900;color:#f59e0b;">' + o9 + '일</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+        '<!-- 중앙 패널 (메인 레이더) -->' +
+        '<div class="kpi-panel center-panel">' +
+            '<div style="text-align:center; margin-bottom:10px;">' +
+                '<h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2>' +
+                '<div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div>' +
+                '<div style="display:flex; justify-content:center; gap:15px; margin-top:15px;">' +
+                    '<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;">' +
+                        '<div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> ' + latestQ.q +
+                    '</div>' +
+                    '<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;">' +
+                        '<div style="width:12px; height:3px; background:#cbd5e1; border-radius:2px;"></div> 누적 평균' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div style="flex:1; position:relative; min-height:400px; display:flex; align-items:center; justify-content:center;">' +
+                '<canvas id="newKpiRadarChart"></canvas>' +
+            '</div>' +
+        '</div>' +
+        '<!-- 우측 패널 (세부 데이터) -->' +
+        '<div class="kpi-panel right-panel">' +
+            '<div class="kpi-section-title">최근 분기 역량 분석</div>' +
+            '<div class="kpi-detail-list">' + detailListHtml + '</div>' +
+            '<div class="kpi-section-title" style="margin-top:30px;">주요 업무 비중</div>' +
+            '<div style="display:flex; align-items:center; height:130px; gap:15px;">' +
+                '<div style="width:110px; height:110px; position:relative; flex-shrink:0;">' +
+                    '<canvas id="newKpiDonutChart"></canvas>' +
+                '</div>' +
+                '<div style="flex:1; display:flex; flex-direction:column; gap:6px; justify-content:center;">' + topTasksHtml + '</div>' +
+            '</div>' +
+        '</div>' +
+    '</div>';
 
     view.innerHTML = html;
 
