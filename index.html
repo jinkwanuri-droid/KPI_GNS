@@ -683,7 +683,7 @@ function renderAllViews(){
 }
 
 // ==========================================
-// ★ 데이터 로딩 및 파싱 (예외처리 포함)
+// ★ 데이터 로딩 및 파싱 (완벽 일치 대응)
 // ==========================================
 function loadDataFromSheets(){
     setProgress(20,'서버 연결 중...');
@@ -696,14 +696,13 @@ function loadDataFromSheets(){
         
         var rawEval = j.eval || j['tb_평가'] || j.evaluation || j.data || [];
         
-        // ★ 파싱: Apps Script가 내려주는 JSON 키(영문 또는 한글)에 유연하게 대처
+        // ★ 파싱: Apps Script가 영문 키(year, qtr, name)로 파싱해준 값을 그대로 받아오도록 대응!
         EVAL_DATA = rawEval.map(function(r){
-            // Apps script가 'q', 'year', 'qtr' 등의 영문키로 줄 수도 있고, '연도', '분기'로 줄 수도 있음
-            var yStr = String(r.year || r['연도'] || r['# 연도'] || '').trim();
+            // Apps Script에서 넘긴 year, qtr, name을 직접 접근
+            var yStr = String(r.year || r['# 연도'] || r['연도'] || '').trim();
             var qStr = String(r.qtr || r['분기'] || '').trim();
-            // 합쳐서 2024-Q1 포맷 강제 변환
             var finalQ = r.q ? r.q : (yStr + '-' + (qStr.startsWith('Q') ? qStr : 'Q' + qStr));
-            var nameStr = String(r.name || r['성명'] || r['Tt 성명'] || '').trim();
+            var nameStr = String(r.name || r['성명'] || '').trim();
 
             return {
                 q: finalQ,
@@ -1131,7 +1130,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                                 return Array.isArray(cx[0].label)?cx[0].label.join(' '):cx[0].label;
                             },
                             label:function(cx){
-                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle; 
+                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle;
                                 return cx.dataset.label+': '+(cx.raw!=null?cx.raw.toFixed(3):0);
                             }
                         },
@@ -1163,9 +1162,6 @@ function renderAdvancedMetrics(d,da,col,pf){
     dmc(pf+'JaccardChart','Jaccard',bwl,jd,sj,'#3b82f6');
 }
 
-// ==========================================
-// Dashboard 탭 렌더링
-// ==========================================
 function renderDashboardTab(){var all=filtered();if(!all.length)return;var tm=all.reduce(function(s,r){return s+r.min;},0),mos=getMos(all),pd=all.filter(function(r){return r.project==='경남 서부의료원';}),pmos=getMos(pd),adt=new Set(all.map(function(r){return r.date;})).size;document.getElementById('ovTotalHour').innerText=fH(tm)+'h';document.getElementById('ovTotalMember').innerText=MEMBERS.length+'명';document.getElementById('ovTotalMonth').innerText=mos.length+'개월';document.getElementById('ovActiveDays').innerText=adt+'일';safeRender(function(){renderOvProjectRatio(all);});var gd=document.getElementById('topKpiGrid');gd.innerHTML='';var gtm=pd.reduce(function(s,r){return s+r.min;},0);MEMBERS.forEach(function(n){var md=all.filter(function(r){return r.name===n;}),tt=md.reduce(function(s,r){return s+r.min;},0),pf=md.find(function(r){return r.name===n;}),po=pf?pf.pos:'',mP=0,oP=0,cP=0;md.forEach(function(r){if(r.project==='경남 서부의료원')mP+=r.min;else if(r.project==='타 프로젝트')oP+=r.min;else cP+=r.min;});var pct=gtm>0?Math.round(mP/gtm*100):0,p1=tt>0?(mP/tt*100):0,p2=tt>0?(oP/tt*100):0,p3=tt>0?(cP/tt*100):0,mc=document.createElement('div');mc.className='card kpi-card';mc.style.border='1px solid '+hRgba(MC[n]||'#00428E',0.5);mc.style.position='relative';mc.style.overflow='hidden';var bg=PROFILE_IMG[n]?'<img src="'+PROFILE_IMG[n]+'" style="position:absolute;right:5%;top:-20px;width:110px;height:150px;object-fit:cover;object-position:center top;opacity:0.35;z-index:0;filter:grayscale(100%);-webkit-mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 40%,transparent 70%);mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 40%,transparent 70%);">':'';mc.innerHTML=bg+'<div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;justify-content:center;"><div class="member-kpi-header"><div><div style="font-size:18px;font-weight:900;color:#1e293b;">'+n+'</div><div style="font-size:11px;color:#94a3b8;">'+po+'</div></div></div><div style="color:'+MC[n]+';font-size:28px;font-weight:800;margin-top:4px;">'+fH(mP)+'h <span style="font-size:13px;color:#64748b;font-weight:600;">| 총 '+fH(tt)+'h</span></div><div style="height:1px;background:rgba(226,232,240,0.8);margin:10px 0;"></div><div style="font-size:11px;color:#64748b;font-weight:600;">GNWMC 팀원 내 기여도</div><div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;"><div style="height:100%;background:'+MC[n]+';width:'+pct+'%;border-radius:4px;"></div></div><span style="font-size:11px;font-weight:700;color:'+MC[n]+';">'+pct+'%</span></div><div style="margin-top:12px;font-size:11px;color:#64748b;font-weight:600;">전체시간 대비 서부의료원 비율</div><div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;display:flex;height:8px;border-radius:4px;overflow:hidden;"><div style="width:'+p1+'%;background:#00428E;"></div><div style="width:'+p2+'%;background:#3b82f6;"></div><div style="width:'+p3+'%;background:#cbd5e1;"></div></div><span style="font-size:11px;font-weight:700;color:#64748b;">'+p1.toFixed(0)+'%</span></div></div>';gd.appendChild(mc);});if(pd.length>0){safeRender(function(){renderDashStage(pd);});safeRender(function(){renderDashCompare(pd);});safeRender(function(){renderDashDonut(pd);});safeRender(function(){renderDashTimeline(pd,pmos);});safeRender(function(){renderHeatmapOnly('2024');});safeRender(function(){renderDashOvertimeBars(pd);});safeRender(function(){renderDashOvertimeDonut(pd);});safeRender(function(){renderDashMonthlyOt(pd,pmos);});var da=Array.from(new Set(pd.map(function(r){return r.date;}))).sort();safeRender(function(){renderAdvancedMetrics(pd,da,'#00428E','pj');});}}
 function renderOvProjectRatio(all){dC('ovPjRatioBar');var m=0,o=0,c=0;all.forEach(function(r){if(r.project==='경남 서부의료원')m+=r.min;else if(r.project==='타 프로젝트')o+=r.min;else c+=r.min;});var t=m+o+c,it=[{k:'경남 서부의료원',c:'#00428E'},{k:'타 프로젝트',c:'#3b82f6'},{k:'공통업무',c:'#cbd5e1'}];document.getElementById('ovPjRatioLegendWrap').innerHTML=it.map(function(i){return '<div class="legend-item '+(hlPjRatio!==null&&hlPjRatio!==i.k?'dimmed':'')+'" onclick="ovTogglePjR(\''+i.k+'\')"><div class="legend-dot" style="background:'+i.c+'"></div><span style="font-size:11px;">'+i.k.replace('경남 ','')+'</span></div>';}).join('');CH.ovPjRatioBar=new Chart(document.getElementById('ovPjRatioBar').getContext('2d'),{type:'bar',data:{labels:[''],datasets:[{label:'경남 서부의료원',data:[mToH(m)],backgroundColor:(hlPjRatio===null||hlPjRatio==='경남 서부의료원')?'#00428E':'#e2e8f0',barThickness:60,borderRadius:{topLeft:10,bottomLeft:10}},{label:'타 프로젝트',data:[mToH(o)],backgroundColor:(hlPjRatio===null||hlPjRatio==='타 프로젝트')?'#3b82f6':'#e2e8f0',barThickness:60},{label:'공통업무',data:[mToH(c)],backgroundColor:(hlPjRatio===null||hlPjRatio==='공통업무')?'#cbd5e1':'#e2e8f0',barThickness:60,borderRadius:{topRight:10,bottomRight:10}}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,color:function(cx){return cx.datasetIndex===2?'#334155':'#fff';},font:{weight:'bold',size:12},anchor:'center',align:'center',textAlign:'center',formatter:function(v,cx){if(v<=0)return'';return fmt(v)+'h\n('+((v/mToH(t)*100).toFixed(1))+'%)';}}},scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}}});}
 window.ovTogglePjR=function(b){hlPjRatio=hlPjRatio===b?null:b;renderOvProjectRatio(filtered());};
@@ -1203,7 +1199,7 @@ function renderWpOvertimeDetail(d){dC('wpOtBar');var dm={};d.forEach(function(r)
 function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
 
 // ==========================================
-// ★ KPI Eval 탭 렌더링 (리디자인 적용 및 예외 처리 완벽 반영)
+// ★ KPI Eval 탭 렌더링 (예외 처리 및 다중 레이더 적용)
 // ==========================================
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
@@ -1220,13 +1216,17 @@ function renderEvalTab() {
 
     dC('newKpiTrendChart'); dC('newKpiRadarChart'); dC('newKpiDonutChart');
 
-    // 🔥 평가 데이터가 없더라도 레이아웃이 붕괴되지 않도록 Fallback(기본값) 처리
     var hasEval = fd.length > 0;
     var latestQ = hasEval ? fd[fd.length - 1] : { q: '평가 없음', vals: [0,0,0,0,0] };
     var latestScore = latestQ.vals.reduce((a,b)=>a+b,0) / 5;
     
     var avgVals = ed.length > 0 ? RADAR_LABELS.map((_, i) => ed.reduce((s, d) => s + d.vals[i], 0) / ed.length) : [0,0,0,0,0];
     var avgScore = ed.length > 0 ? avgVals.reduce((a,b)=>a+b,0) / 5 : 0;
+    
+    // ★ 추가: 모든 팀원(EVAL_DATA 전체)의 항목별 평균 계산
+    var allEvalAvgVals = EVAL_DATA.length > 0 
+        ? RADAR_LABELS.map((_, i) => EVAL_DATA.reduce((s, d) => s + d.vals[i], 0) / EVAL_DATA.length) 
+        : [0,0,0,0,0];
     
     var t = wd.reduce((s, r) => s + r.min, 0);
     var pm = wd.filter(r => r.project === '경남 서부의료원').reduce((s, r) => s + r.min, 0);
@@ -1287,7 +1287,7 @@ function renderEvalTab() {
                     '<div class="sub">/ 5.0</div>' +
                 '</div>' +
                 '<div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">' +
-                    '전체 평균(' + avgScore.toFixed(2) + ') 대비 ' + scoreDiffHtml +
+                    '개인 평균(' + avgScore.toFixed(2) + ') 대비 ' + scoreDiffHtml +
                 '</div>' +
             '</div>' +
             '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">역량 점수 트렌드</div>' +
@@ -1313,10 +1313,13 @@ function renderEvalTab() {
                 '<div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div>' +
                 '<div style="display:flex; justify-content:center; gap:15px; margin-top:15px;">' +
                     '<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;">' +
-                        '<div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> ' + latestQ.q +
+                        '<div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> 선택 기간 (' + latestQ.q + ')' +
                     '</div>' +
-                    '<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;">' +
-                        '<div style="width:12px; height:3px; background:#cbd5e1; border-radius:2px;"></div> 누적 평균' +
+                    '<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#64748b;">' +
+                        '<div style="width:12px; height:3px; background:#94a3b8; border-radius:2px;"></div> 개인 평균' +
+                    '</div>' +
+                    '<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#64748b;">' +
+                        '<div style="width:12px; height:0; border-top:2px dashed #7dd3fc; border-radius:2px;"></div> 팀 전체 평균' +
                     '</div>' +
                 '</div>' +
             '</div>' +
@@ -1373,33 +1376,47 @@ function renderEvalTab() {
             });
         }
 
+        // ★ 3중 데이터셋 및 텐션(곡선) 적용 레이더 차트
         CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
             type: 'radar',
             data: {
                 labels: RADAR_LABELS,
                 datasets: [
                     {
-                        label: latestQ.q,
+                        label: '선택 기간 (' + latestQ.q + ')',
                         data: latestQ.vals,
                         borderColor: c,
                         backgroundColor: hRgba(c, 0.2),
-                        borderWidth: 3,
+                        borderWidth: 2.5,
                         pointBackgroundColor: c,
                         pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
+                        pointBorderWidth: 1.5,
+                        pointRadius: 4, // 사이즈 약간 작게
+                        pointHoverRadius: 6,
+                        order: 1
                     },
                     {
-                        label: '누적 평균',
+                        label: '개인 평균',
                         data: avgVals,
-                        borderColor: '#cbd5e1',
+                        borderColor: '#94a3b8',
+                        backgroundColor: 'rgba(148, 163, 184, 0.15)', // 투명도 높은 회색 채우기
+                        borderWidth: 1.5, // 얇게
+                        borderDash: [], // 실선
+                        pointBackgroundColor: '#94a3b8',
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        order: 2
+                    },
+                    {
+                        label: '팀 전체 평균',
+                        data: allEvalAvgVals,
+                        borderColor: '#7dd3fc', // 연하고 얇은 파란색 계열
                         backgroundColor: 'transparent',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        pointBackgroundColor: '#cbd5e1',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        borderWidth: 1.5,
+                        borderDash: [4, 4], // 점선
+                        pointRadius: 0, // 점 숨김
+                        pointHoverRadius: 0,
+                        order: 3
                     }
                 ]
             },
@@ -1431,7 +1448,8 @@ function renderEvalTab() {
                         }
                     }
                 },
-                elements: { line: { tension: 0 } }
+                // ★ 선에 텐션을 주어 자연스러운 곡선(엽상형) 구현
+                elements: { line: { tension: 0.35 } } 
             }
         });
 
