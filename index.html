@@ -208,7 +208,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-metric-badge.danger .val{color:#ef4444;}
 
 /* KPI 리디자인 전용 CSS 추가 */
-.kpi-layout { display: grid; grid-template-columns: 320px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 700px; align-items: stretch; }
+.kpi-layout { display: grid; grid-template-columns: 320px 1fr 360px; gap: 20px; width: 100%; height: 100%; min-height: 700px; align-items: stretch; }
 .kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); overflow: hidden; position: relative; }
 .kpi-panel.center-panel { background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%); padding: 20px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); }
 
@@ -220,8 +220,8 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .kpi-big-score .sub { font-size: 14px; color: #94a3b8; font-weight: 600; margin-left: 5px; }
 
 /* 우측 패널 구성요소 */
-.kpi-detail-list { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-.kpi-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px solid rgba(226,232,240,0.6); }
+.kpi-detail-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.kpi-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px solid rgba(226,232,240,0.6); }
 .kpi-detail-item .label { font-size: 13px; font-weight: 800; color: #334155; }
 .kpi-detail-item .values { display: flex; align-items: center; gap: 12px; }
 .kpi-detail-item .score { font-size: 16px; font-weight: 900; color: #1e293b; width: 35px; text-align: right; }
@@ -543,7 +543,8 @@ Chart.register({
 const customRadarBgPlugin = {
     id: 'customRadarBg',
     beforeDraw: (chart) => {
-        if (chart.config.type !== 'radar' || (chart.canvas.id !== 'modalRadarCurrent' && chart.canvas.id !== 'newKpiRadarChart')) return;
+        // ★ 변경: 모달에 있는 레이더 차트에만 플러그인 배경색 적용, 새로운 KPI탭 차트에는 투명하게 처리
+        if (chart.config.type !== 'radar' || chart.canvas.id !== 'modalRadarCurrent') return;
         const { ctx, scales: { r } } = chart;
         if (!r) return;
         const maxVal = r.max;
@@ -683,7 +684,7 @@ function renderAllViews(){
 }
 
 // ==========================================
-// ★ 데이터 로딩 및 파싱 (완벽 일치 대응)
+// ★ 데이터 로딩 및 파싱
 // ==========================================
 function loadDataFromSheets(){
     setProgress(20,'서버 연결 중...');
@@ -695,10 +696,7 @@ function loadDataFromSheets(){
         SCHEDULE_DATA = j.schedule || j['tb_일정'] || [];
         
         var rawEval = j.eval || j['tb_평가'] || j.evaluation || j.data || [];
-        
-        // ★ 파싱: Apps Script가 영문 키(year, qtr, name)로 파싱해준 값을 그대로 받아오도록 대응!
         EVAL_DATA = rawEval.map(function(r){
-            // Apps Script에서 넘긴 year, qtr, name을 직접 접근
             var yStr = String(r.year || r['# 연도'] || r['연도'] || '').trim();
             var qStr = String(r.qtr || r['분기'] || '').trim();
             var finalQ = r.q ? r.q : (yStr + '-' + (qStr.startsWith('Q') ? qStr : 'Q' + qStr));
@@ -1130,7 +1128,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                                 return Array.isArray(cx[0].label)?cx[0].label.join(' '):cx[0].label;
                             },
                             label:function(cx){
-                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle;
+                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle; 
                                 return cx.dataset.label+': '+(cx.raw!=null?cx.raw.toFixed(3):0);
                             }
                         },
@@ -1214,8 +1212,9 @@ function renderEvalTab() {
     var po = pf ? pf.pos : '';
     var c = MC[m] || '#00428E';
 
-    dC('newKpiTrendChart'); dC('newKpiRadarChart'); dC('newKpiDonutChart');
+    dC('newKpiTrendChart'); dC('newKpiRadarChart'); dC('newKpiDonutChart'); dC('kpiInsightRadar');
 
+    // 🔥 평가 데이터가 없더라도 레이아웃이 붕괴되지 않도록 Fallback(기본값) 처리
     var hasEval = fd.length > 0;
     var latestQ = hasEval ? fd[fd.length - 1] : { q: '평가 없음', vals: [0,0,0,0,0] };
     var latestScore = latestQ.vals.reduce((a,b)=>a+b,0) / 5;
@@ -1223,7 +1222,7 @@ function renderEvalTab() {
     var avgVals = ed.length > 0 ? RADAR_LABELS.map((_, i) => ed.reduce((s, d) => s + d.vals[i], 0) / ed.length) : [0,0,0,0,0];
     var avgScore = ed.length > 0 ? avgVals.reduce((a,b)=>a+b,0) / 5 : 0;
     
-    // ★ 추가: 모든 팀원(EVAL_DATA 전체)의 항목별 평균 계산
+    // 모든 팀원(EVAL_DATA 전체)의 항목별 평균 계산
     var allEvalAvgVals = EVAL_DATA.length > 0 
         ? RADAR_LABELS.map((_, i) => EVAL_DATA.reduce((s, d) => s + d.vals[i], 0) / EVAL_DATA.length) 
         : [0,0,0,0,0];
@@ -1235,7 +1234,7 @@ function renderEvalTab() {
     var o9 = 0; Object.values(dm).forEach(x => { if(x >= 540) o9++; });
 
     var sm = grp(wd.filter(r => r.project === '경남 서부의료원'), 'sub');
-    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 4);
+    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 5); // 5개로 늘림
 
     var scoreDiff = latestScore - avgScore;
     var scoreDiffHtml = !hasEval ? '<span style="color:#94a3b8">-</span>' : (scoreDiff >= 0 
@@ -1249,7 +1248,7 @@ function renderEvalTab() {
               return '<div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">' +
                          '<div style="display:flex; align-items:center; gap:6px;">' +
                              '<div style="width:8px; height:8px; border-radius:50%; background:' + SUB_PAL[i] + '"></div>' +
-                             '<span style="font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px;">' + tk[0] + '</span>' +
+                             '<span style="font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">' + tk[0] + '</span>' +
                          '</div>' +
                          '<div style="font-weight:800; color:#64748b;">' + p + '%</div>' +
                      '</div>';
@@ -1269,6 +1268,22 @@ function renderEvalTab() {
                    '</div>' +
                '</div>';
     }).join('');
+
+    // Insight (6대 지표) 데이터 계산
+    var currData = RAW.filter(r => r.name === m && getQ(r.date) === latestQ.q);
+    var prevQ = fd.length > 1 ? fd[fd.length - 2].q : null;
+    var prevData = prevQ ? RAW.filter(r => r.name === m && getQ(r.date) === prevQ) : [];
+    var teamCurrData = RAW.filter(r => getQ(r.date) === latestQ.q);
+
+    var cr = calcStandaloneMetrics(currData, prevData) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
+    var teamCr = calcStandaloneMetrics(teamCurrData, null) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
+    
+    var normOt = Math.max(0, 1 - Math.min((cr.ot||0)/0.5, 1));
+    var cvInsight = [normOt, (cr.cv||0), (cr.hurst||0), (cr.hhi||0), (cr.shannon||0), (cr.jaccard||0)];
+    var rawCvInsight = [Math.max(0, 1 - (cr.ot||0)), cr.cv||0, cr.hurst||0, cr.hhi||0, cr.shannon||0, cr.jaccard||0];
+    
+    var normTeamOt = Math.max(0, 1 - Math.min((teamCr.ot||0)/0.5, 1));
+    var teamCvInsight = [normTeamOt, (teamCr.cv||0), (teamCr.hurst||0), (teamCr.hhi||0), (teamCr.shannon||0), (teamCr.jaccard||0)];
 
     var html = '<div class="kpi-layout">' +
         '<!-- 좌측 패널 (프로필 및 요약) -->' +
@@ -1327,16 +1342,26 @@ function renderEvalTab() {
                 '<canvas id="newKpiRadarChart"></canvas>' +
             '</div>' +
         '</div>' +
-        '<!-- 우측 패널 (세부 데이터) -->' +
-        '<div class="kpi-panel right-panel">' +
-            '<div class="kpi-section-title">최근 분기 역량 분석</div>' +
-            '<div class="kpi-detail-list">' + detailListHtml + '</div>' +
-            '<div class="kpi-section-title" style="margin-top:30px;">주요 업무 비중</div>' +
-            '<div style="display:flex; align-items:center; height:130px; gap:15px;">' +
-                '<div style="width:110px; height:110px; position:relative; flex-shrink:0;">' +
-                    '<canvas id="newKpiDonutChart"></canvas>' +
+        '<!-- 우측 패널 (세부 데이터 3분할) -->' +
+        '<div class="kpi-panel right-panel" style="padding:25px 20px; gap:15px;">' +
+            '<div style="flex:1; display:flex; flex-direction:column;">' +
+                '<div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div>' +
+                '<div class="kpi-detail-list">' + detailListHtml + '</div>' +
+            '</div>' +
+            '<div style="flex:1; display:flex; flex-direction:column;">' +
+                '<div class="kpi-section-title" style="margin-bottom:5px;">주요 업무 비중</div>' +
+                '<div style="display:flex; align-items:center; height:120px; gap:15px;">' +
+                    '<div style="width:110px; height:110px; position:relative; flex-shrink:0;">' +
+                        '<canvas id="newKpiDonutChart"></canvas>' +
+                    '</div>' +
+                    '<div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">' + topTasksHtml + '</div>' +
                 '</div>' +
-                '<div style="flex:1; display:flex; flex-direction:column; gap:6px; justify-content:center;">' + topTasksHtml + '</div>' +
+            '</div>' +
+            '<div style="flex:1.2; display:flex; flex-direction:column;">' +
+                '<div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div>' +
+                '<div style="flex:1; position:relative; min-height:160px; display:flex; align-items:center; justify-content:center;">' +
+                    '<canvas id="kpiInsightRadar"></canvas>' +
+                '</div>' +
             '</div>' +
         '</div>' +
     '</div>';
@@ -1376,7 +1401,6 @@ function renderEvalTab() {
             });
         }
 
-        // ★ 3중 데이터셋 및 텐션(곡선) 적용 레이더 차트
         CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
             type: 'radar',
             data: {
@@ -1386,12 +1410,12 @@ function renderEvalTab() {
                         label: '선택 기간 (' + latestQ.q + ')',
                         data: latestQ.vals,
                         borderColor: c,
-                        backgroundColor: hRgba(c, 0.2),
+                        backgroundColor: 'transparent',
                         borderWidth: 2.5,
                         pointBackgroundColor: c,
                         pointBorderColor: '#fff',
                         pointBorderWidth: 1.5,
-                        pointRadius: 4, // 사이즈 약간 작게
+                        pointRadius: 4,
                         pointHoverRadius: 6,
                         order: 1
                     },
@@ -1399,9 +1423,9 @@ function renderEvalTab() {
                         label: '개인 평균',
                         data: avgVals,
                         borderColor: '#94a3b8',
-                        backgroundColor: 'rgba(148, 163, 184, 0.15)', // 투명도 높은 회색 채우기
-                        borderWidth: 1.5, // 얇게
-                        borderDash: [], // 실선
+                        backgroundColor: 'rgba(148, 163, 184, 0.15)',
+                        borderWidth: 1.5,
+                        borderDash: [],
                         pointBackgroundColor: '#94a3b8',
                         pointRadius: 2,
                         pointHoverRadius: 4,
@@ -1410,20 +1434,20 @@ function renderEvalTab() {
                     {
                         label: '팀 전체 평균',
                         data: allEvalAvgVals,
-                        borderColor: '#7dd3fc', // 연하고 얇은 파란색 계열
+                        borderColor: '#7dd3fc',
                         backgroundColor: 'transparent',
                         borderWidth: 1.5,
-                        borderDash: [4, 4], // 점선
-                        pointRadius: 0, // 점 숨김
+                        borderDash: [4, 4],
+                        pointRadius: 0,
                         pointHoverRadius: 0,
                         order: 3
                     }
                 ]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
+                responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 10 },
+                plugins:{
+                    legend:{ display:false },
                     datalabels: { display: false },
                     tooltip: {
                         backgroundColor: 'rgba(15,23,42,0.9)',
@@ -1448,7 +1472,6 @@ function renderEvalTab() {
                         }
                     }
                 },
-                // ★ 선에 텐션을 주어 자연스러운 곡선(엽상형) 구현
                 elements: { line: { tension: 0.35 } } 
             }
         });
@@ -1472,6 +1495,69 @@ function renderEvalTab() {
                 }
             });
         }
+        
+        CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), {
+            type: 'radar',
+            data: {
+                labels: INSIGHT_RADAR_LABELS,
+                datasets: [
+                    {
+                        label: latestQ.q,
+                        data: cvInsight,
+                        borderColor: c,
+                        backgroundColor: hRgba(c, 0.15),
+                        borderWidth: 2,
+                        pointBackgroundColor: c,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        order: 1
+                    },
+                    {
+                        label: '팀 전체 평균',
+                        data: teamCvInsight,
+                        borderColor: '#cbd5e1',
+                        backgroundColor: 'transparent',
+                        borderWidth: 1.5,
+                        borderDash: [4, 4],
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        order: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15,23,42,0.9)',
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 11, weight: 'bold' },
+                        padding: 10,
+                        callbacks: {
+                            label: function(cx) { return cx.dataset.label + ': ' + rawCvInsight[cx.dataIndex].toFixed(3); }
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        min: 0, max: 1,
+                        grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 },
+                        angleLines: { color: 'rgba(203,213,225,0.4)' },
+                        ticks: { display: false, stepSize: 0.25 },
+                        pointLabels: {
+                            font: { size: 9, weight: '800' },
+                            color: '#64748b',
+                            padding: 8
+                        }
+                    }
+                }
+            }
+        });
+
     }, 50);
 }
 
