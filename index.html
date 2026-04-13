@@ -131,7 +131,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .insight-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:50px;border:1.5px solid rgba(99,102,241,0.4);background:linear-gradient(135deg,rgba(99,102,241,0.1) 0%,rgba(139,92,246,0.1) 100%);color:#6366f1;font-size:12px;font-weight:800;cursor:pointer;transition:all .3s ease;letter-spacing:.02em;white-space:nowrap;backdrop-filter:blur(8px);}
 .insight-btn:hover{background:linear-gradient(135deg,rgba(99,102,241,0.2) 0%,rgba(139,92,246,0.2) 100%);border-color:rgba(99,102,241,0.7);box-shadow:0 4px 20px rgba(99,102,241,0.25);transform:translateY(-1px);}
 .insight-btn svg{flex-shrink:0;}
-
 /* 인사이트 모달 CSS */
 #insightModal{position:fixed;inset:0;z-index:8000;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .35s ease;padding:20px;}
 #insightModal.open{opacity:1;visibility:visible;}
@@ -206,21 +205,18 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .wp-metric-badge.good .val{color:#22c55e;}
 .wp-metric-badge.warn .val{color:#f59e0b;}
 .wp-metric-badge.danger .val{color:#ef4444;}
-
 /* KPI 리디자인 전용 CSS 추가 */
 .kpi-layout { display: grid; grid-template-columns: 340px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 700px; align-items: stretch; }
 .kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); position: relative; overflow-y: auto; }
 .kpi-panel::-webkit-scrollbar { width: 4px; }
 .kpi-panel::-webkit-scrollbar-thumb { background: rgba(203,213,225,0.6); border-radius: 4px; }
 .kpi-panel.center-panel { padding: 20px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); overflow: hidden;}
-
 /* 좌측 패널 구성요소 */
 .kpi-profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
 .kpi-big-score { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(203,213,225,0.6); }
 .kpi-big-score .title { font-size: 13px; color: #64748b; font-weight: 700; margin-bottom: 5px; }
 .kpi-big-score .score { font-size: 54px; font-weight: 900; color: #00428E; line-height: 1; letter-spacing: -0.02em; }
 .kpi-big-score .sub { font-size: 14px; color: #94a3b8; font-weight: 600; margin-left: 5px; }
-
 /* 우측/좌측 패널 공통 리스트 */
 .kpi-detail-container { background: rgba(255,255,255,0.6); border: 1px solid rgba(226,232,240,0.8); border-radius: 16px; padding: 5px 16px; display: flex; flex-direction: column; margin-top: 10px;}
 .kpi-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed rgba(203,213,225,0.6); }
@@ -232,9 +228,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .kpi-delta.up { color: #10b981; }
 .kpi-delta.down { color: #ef4444; }
 .kpi-delta.flat { color: #94a3b8; }
-
 .kpi-section-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-
 @media(max-width:1200px){
   .wp-hero-inner{grid-template-columns:1fr;}
   .wp-hero{height:auto;max-height:none;}
@@ -267,7 +261,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </div>
-
 <!-- 인사이트 모달 -->
 <div id="insightModal">
   <div class="modal-backdrop" onclick="closeInsightModal()"></div>
@@ -324,7 +317,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </div>
-
 <nav class="topbar" id="topbar">
   <div class="logo-container">
     <div><div class="logo-title"><span style="color:#00428E;">GNW</span><span style="color:#38bdf8;">MC</span></div><div class="logo-subtitle">PATH REFLECTION</div></div>
@@ -348,7 +340,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
     </div>
   </div>
 </nav>
-
 <div class="main">
   <!-- 대시보드 뷰 -->
   <div id="view-dashboard" class="view-section active">
@@ -409,7 +400,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip"><ul><li><b>정의</b>: 집합 간 유사도.</li><li><b>로직</b>: (교집합)/(합집합).</li><li><b>목적</b>: 1이면 숙련(전문가), 0이면 변화(성장).</li></ul></div></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
     </div>
   </div>
-  
   <!-- 멤버 뷰 -->
   <div id="view-members" class="view-section">
     <div class="wp-hero">
@@ -475,14 +465,11 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="card" style="height:300px;"><div style="display:flex;flex-direction:column;height:100%;gap:12px;"><div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div></div></div>
     </div>
   </div>
-  
   <!-- KPI Eval 뷰 (3단 레이아웃 전용 컨테이너) -->
   <div id="view-kpieval" class="view-section">
       <!-- renderEvalTab()을 통해 내부가 덮어씌워집니다 -->
   </div>
-  
 </div>
-
 <script>
 // ==========================================
 // 공통 변수 및 초기화 설정
@@ -496,13 +483,13 @@ var SUB_PAL=['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f
 var OT_COLORS=['#818cf8','#6366f1','#4A90E2','#00428E'];
 var RADAR_LABELS=['적극성','생산성','전문성','창의성','협업능력'],RADAR_COLORS_ARR=['#00428E','#3b82f6','#0ea5e9','#6366f1','#8b5cf6'];
 var MONTH_KO=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],OVERTIME_RANGES=['9~10h','10~11h','11~12h','12h 이상'];
-
+var INSIGHT_RADAR_LABELS=['정시업무(1-OT)','CV 안정성','Hurst(주도성)','HHI(몰입도)','Shannon(집중)','Jaccard(확장)'];
 var MEMBERS=[],MC={},INITIALS={},SCHEDULE_DATA=[],EVAL_DATA=[],RAW=[],CH={};
 var GLOBAL_MEMBER='ALL',WP_MEMBER=null,hlTimeline=null,hlStage=null,hlOvertimeDonut=null,hlMonthlyOt=null,hlDonutWork=null,hlPjRatio=null,hlWpSub=null,hlHeroDonut=null,hlHeatBin=null;
-
 window.filterStartIndex=0;window.filterEndIndex=11;window.lastClickedIndex=0;
 var filterYears=[2024,2025,2026],filterQuarters=['Q1','Q2','Q3','Q4'],totalNodes=12,percentPositions=[];
 var emojiRegex=/(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+var insightTimeMode = 'Q', insightSelectedPeriod = '', insightAllData = [], currentModalPrefix = 'pj', insightAvailableQ=[], insightAvailableM=[];
 
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
@@ -518,7 +505,6 @@ Chart.defaults.plugins.tooltip.cornerRadius=10;
 Chart.defaults.plugins.tooltip.padding=10;
 Chart.defaults.interaction.mode='index';
 Chart.defaults.interaction.intersect=false;
-
 Chart.register({
     id:'verticalLine',
     beforeDatasetsDraw:function(c){
@@ -542,7 +528,6 @@ Chart.register({
         });
     }
 });
-
 const customRadarBgPlugin = {
     id: 'customRadarBg',
     beforeDraw: (chart) => {
@@ -558,7 +543,7 @@ const customRadarBgPlugin = {
         ctx.closePath();
         ctx.fillStyle = 'rgba(59, 130, 246, 0.05)'; ctx.fill();
         if(pts.length > 3) {
-            ctx.beginPath(); ctx.moveTo(pts[3].x, pts[3].y); ctx.lineTo(pts[4].x, pts[4].y); 
+            ctx.beginPath(); ctx.moveTo(pts[3].x, pts[3].y); ctx.lineTo(pts[4].x, pts[4].y);
             if(pts.length > 5) ctx.lineTo(pts[5].x, pts[5].y);
             ctx.lineTo(pts[0].x, pts[0].y); ctx.closePath();
             ctx.fillStyle = 'rgba(236, 72, 153, 0.05)'; ctx.fill();
@@ -566,7 +551,6 @@ const customRadarBgPlugin = {
     }
 };
 Chart.register(customRadarBgPlugin);
-
 function safeRender(fn){try{fn();}catch(e){console.error(e);}}
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
@@ -588,12 +572,10 @@ function hideLoadingOverlay(){var el=document.getElementById('loadingOverlay');i
 function showEnterBtn(){var sa=document.getElementById('loadingStatusArea'),bw=document.getElementById('ovEnterBtnWrap');if(sa){sa.style.opacity='0';sa.style.visibility='hidden';}if(bw)bw.classList.add('show');}
 function setProgress(p,m){document.getElementById('ovProgress').style.width=p+'%';if(m)document.getElementById('ovMsg').textContent=m;}
 window.addEventListener('scroll',function(){var tb=document.getElementById('topbar');if(window.scrollY>20)tb.classList.add('scrolled');else tb.classList.remove('scrolled');},{passive:true});
-
 function updateNavSlider(){
     var a=document.querySelector('.nav-item.active'),s=document.getElementById('navSlider');
     if(a&&s){s.style.width=a.offsetWidth+'px';s.style.left=a.offsetLeft+'px';}
 }
-
 function showView(v,el){
     document.querySelectorAll('.view-section').forEach(function(s){s.classList.remove('active');});
     document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
@@ -604,29 +586,23 @@ function showView(v,el){
     else if(v==='kpieval') renderEvalTab();
     else renderDashboardTab();
 }
-
 function renderCustomDropdown(){
     var h='<div class="custom-option" onclick="selectGlobalMember(\'ALL\')">'+getAvatar('ALL',20,9)+' 전체 보기</div>';
     MEMBERS.forEach(function(n){h+='<div class="custom-option" onclick="selectGlobalMember(\''+n+'\')">'+getAvatar(n,20,9)+' '+n+'</div>';});
     document.getElementById('customSelectOptions').innerHTML=h;
     updateCustomSelectTrigger();
 }
-
 function toggleDropdown(){document.getElementById('customSelectOptions').classList.toggle('open');}
-
 function selectGlobalMember(v){
     GLOBAL_MEMBER=v;
     document.getElementById('customSelectOptions').classList.remove('open');
     updateCustomSelectTrigger();
     if(document.querySelector('.view-section.active').id==='view-kpieval') renderEvalTab();
 }
-
 function updateCustomSelectTrigger(){
     document.getElementById('customSelectTrigger').innerHTML=getAvatar(GLOBAL_MEMBER,24,10)+' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
 }
-
 document.addEventListener('click',function(e){var w=document.getElementById('globalMemberSelectWrap');if(w&&!w.contains(e.target))document.getElementById('customSelectOptions').classList.remove('open');});
-
 function initSlider(){
     var nc=document.getElementById('nodesContainer'),yr=document.getElementById('yearRow');
     nc.innerHTML='';yr.innerHTML='';
@@ -657,9 +633,7 @@ function initSlider(){
     }
     updateFilterUI();
 }
-
 function resetFilter(){window.filterStartIndex=0;window.filterEndIndex=totalNodes-1;updateFilterUI();}
-
 function updateFilterUI(){
     document.querySelectorAll('.node').forEach(function(n,i){
         n.className='node';
@@ -679,14 +653,12 @@ function updateFilterUI(){
     document.getElementById('summaryText').innerText=lbl;
     if(RAW.length>0) renderAllViews();
 }
-
-// ★ 현재 활성화된 탭만 선택적으로 업데이트 (불필요한 렌더링으로 인한 차트 크러시 방지)
+// ★ 현재 활성화된 탭만 선택적으로 업데이트
 function renderAllViews(){
     if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboardTab();
     else if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(WP_MEMBER);
     else if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab();
 }
-
 // ==========================================
 // 데이터 로딩 및 파싱
 // ==========================================
@@ -698,27 +670,24 @@ function loadDataFromSheets(){
     }).then(function(j){
         setProgress(75,'차트 렌더링 중...');
         SCHEDULE_DATA = j.schedule || j['tb_일정'] || [];
-        
         var rawEval = j.eval || j['tb_평가'] || j.evaluation || j.data || [];
         EVAL_DATA = rawEval.map(function(r){
             var yStr = String(r.year || r['# 연도'] || r['연도'] || '').trim();
             var qStr = String(r.qtr || r['분기'] || '').trim();
             var finalQ = r.q ? r.q : (yStr + '-' + (qStr.startsWith('Q') ? qStr : 'Q' + qStr));
             var nameStr = String(r.name || r['성명'] || '').trim();
-
             return {
                 q: finalQ,
                 name: nameStr,
                 vals: [
-                    parseFloat(r['적극성'])||0, 
-                    parseFloat(r['생산성'])||0, 
-                    parseFloat(r['전문성'])||0, 
-                    parseFloat(r['창의성'])||0, 
+                    parseFloat(r['적극성'])||0,
+                    parseFloat(r['생산성'])||0,
+                    parseFloat(r['전문성'])||0,
+                    parseFloat(r['창의성'])||0,
                     parseFloat(r['협업능력'])||0
                 ]
             };
         }).filter(function(d){ return d.name && d.q.length > 3 && d.q.indexOf('undefined') === -1; });
-
         var rawWork = j.work || j['tb_업무일지'] || j['tb_업무'] || [];
         RAW = rawWork.filter(function(r){ return r.name && r.date && r.min > 0; }).map(function(r){
             var p = String(r.project || r['프로젝트'] || r['PJ Code'] || r.pjCode || '').trim();
@@ -735,7 +704,6 @@ function loadDataFromSheets(){
                 min: parseInt(r.min) || 0
             };
         });
-
         var to=['윤진관','이혜인B','정인태','김효언'];
         MEMBERS=Array.from(new Set(RAW.map(function(r){return r.name;}).concat(EVAL_DATA.map(function(e){return e.name;}))))
             .filter(function(n){return n && n !== 'undefined' && n.trim() !== '';})
@@ -743,18 +711,15 @@ function loadDataFromSheets(){
                 var ia=to.indexOf(a),ib=to.indexOf(b);
                 return (ia!==-1?ia:99) - (ib!==-1?ib:99);
             });
-            
         MEMBERS.forEach(function(n,i){
             MC[n]=DYNAMIC_COLORS[i%DYNAMIC_COLORS.length];
             INITIALS[n]=n.length>=3?n.substring(1,3):n;
         });
-        
         WP_MEMBER=MEMBERS[0]||null;
         setProgress(100,'완료!');
-        initSlider(); // 이 안에서 renderAllViews()가 불려 활성화된 탭만 그림
+        initSlider(); 
         renderCustomDropdown();
         updateNavSlider();
-        
         document.getElementById('loadingDescText').textContent='데이터 분석 완료';
         document.getElementById('loadingDescText').style.color='#2563eb';
         showEnterBtn();
@@ -763,7 +728,6 @@ function loadDataFromSheets(){
         showEnterBtn();
     });
 }
-
 // ==========================================
 // Insight 모달 관련 함수
 // ==========================================
@@ -811,7 +775,6 @@ function calcStandaloneMetrics(currR, prevR) {
     }
     return {ot: oi, shannon: sn, hhi: hi, cv: cn, hurst: hs, jaccard: jc};
 }
-
 window.openInsightModal = function(prefix){
     currentModalPrefix = prefix || 'pj';
     insightAllData = prefix === 'wp' && WP_MEMBER ? RAW.filter(r => r.name === WP_MEMBER) : RAW;
@@ -832,7 +795,6 @@ window.setInsightMode = function(mode){
     updateInsightUI();
 };
 window.changeInsightPeriod = function(){ insightSelectedPeriod = document.getElementById('insightPeriodSelect').value; updateInsightUI(); };
-
 function updateInsightUI() {
     document.getElementById('insightToggleQ').className = 'insight-t-btn ' + (insightTimeMode === 'Q' ? 'active' : '');
     document.getElementById('insightToggleM').className = 'insight-t-btn ' + (insightTimeMode === 'M' ? 'active' : '');
@@ -858,7 +820,6 @@ function updateInsightUI() {
     let cr = calcStandaloneMetrics(currData, prevData) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
     let pr = prevPeriod ? calcStandaloneMetrics(prevData, null) : null;
     let teamCr = calcStandaloneMetrics(teamCurrData, null) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
-    
     let normOt = Math.max(0, 1 - Math.min((cr.ot||0)/0.5, 1));
     let cv = [normOt, (cr.cv||0), (cr.hurst||0), (cr.hhi||0), (cr.shannon||0), (cr.jaccard||0)];
     let rawCv = [Math.max(0, 1 - (cr.ot||0)), cr.cv||0, cr.hurst||0, cr.hhi||0, cr.shannon||0, cr.jaccard||0];
@@ -870,12 +831,10 @@ function updateInsightUI() {
     }
     let normTeamOt = Math.max(0, 1 - Math.min((teamCr.ot||0)/0.5, 1));
     let teamCv = [normTeamOt, (teamCr.cv||0), (teamCr.hurst||0), (teamCr.hhi||0), (teamCr.shannon||0), (teamCr.jaccard||0)];
-
     document.getElementById('insightRadarTitle').textContent = `선택 기간(${insightSelectedPeriod}) 종합 레이더`;
     let cm = generateInsightComment(cr, pr, insightSelectedPeriod);
     document.getElementById('insightCommentText').innerHTML = cm.text;
     document.getElementById('insightCommentPills').innerHTML = cm.pills;
-    
     if(pr && pv){
         document.getElementById('insightPrevTitle').textContent = `이전 기간 비교 (${prevPeriod})`;
         let pvh = '';
@@ -944,8 +903,8 @@ function updateInsightUI() {
                 },
                 scales: {
                     r: {
-                        min: 0, max: 1,
-                        ticks: { stepSize: 0.25, font:{size:8}, backdropColor:'transparent', color:'#94a3b8' },
+                        min: 0, max: 1.2,
+                        ticks: { stepSize: 0.3, font:{size:8}, backdropColor:'transparent', color:'#94a3b8' },
                         pointLabels: { font: {size:13, weight:'800'}, color: '#64748b', padding: 15 },
                         grid: { color:'rgba(99,102,241,0.1)' },
                         angleLines: { color:'rgba(99,102,241,0.08)' }
@@ -981,8 +940,8 @@ function updateInsightUI() {
                     },
                     scales: {
                         r: {
-                            min: 0, max: 1,
-                            ticks: { stepSize: 0.25, font:{size:8}, backdropColor:'transparent', color:'#94a3b8' },
+                            min: 0, max: 1.2,
+                            ticks: { stepSize: 0.3, font:{size:8}, backdropColor:'transparent', color:'#94a3b8' },
                             pointLabels: { font: {size:9, weight:'700'}, color: '#64748b' },
                             grid: { color:'rgba(148,163,184,0.12)' },
                             angleLines: { color:'rgba(148,163,184,0.08)' }
@@ -1011,7 +970,6 @@ function generateInsightComment(c, p, currentPeriodLabel){
     else{t.push('허스트 지수(<strong style="color:#4f46e5;">'+hu.toFixed(2)+'</strong>)가 낮아 <span style="color:#f59e0b;font-weight:700;">외부 요인 변동</span>이 잦습니다.');pl+=pf('Hurst '+hu.toFixed(2),'w');}
     return {text:t.join(' '), pills:pl};
 }
-
 function renderAdvancedMetrics(d,da,col,pf){
     dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
     if(!d||d.length===0)return;
@@ -1061,18 +1019,15 @@ function renderAdvancedMetrics(d,da,col,pf){
             sc[i]={schTitle:st};shu[i]={schTitle:st};sj[i]={schTitle:st};
         }
     });
-    
     if(pf==='pj'){
         var ao=function(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:0;};
         document.getElementById('ovAvgShan').innerText=ao(sd).toFixed(2);
         document.getElementById('ovAvgHhi').innerText=ao(hd).toFixed(2);
         document.getElementById('ovAvgCv').innerText=ao(cd).toFixed(2);
     }
-    
     function dmc(id,l,xl,da,sa,cx){
         if(!document.getElementById(id))return;
         var sa2=sa.map(function(x){return x===null?null: 1.1;});
-        
         var cfg={
             type:'line',
             label:'주요일정',
@@ -1089,7 +1044,6 @@ function renderAdvancedMetrics(d,da,col,pf){
             order:0,
             spanGaps:false
         };
-        
         CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
             type:'line',
             data:{labels:xl,datasets:[{data:da,label:l,borderColor:cx,backgroundColor:hRgba(cx,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,pointHoverRadius:4,order:1},cfg]},
@@ -1112,7 +1066,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                                 return Array.isArray(cx[0].label)?cx[0].label.join(' '):cx[0].label;
                             },
                             label:function(cx){
-                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle; 
+                                if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle;
                                 return cx.dataset.label+': '+(cx.raw!=null?cx.raw.toFixed(3):0);
                             }
                         },
@@ -1143,7 +1097,6 @@ function renderAdvancedMetrics(d,da,col,pf){
     dmc(pf+'HurstChart','Hurst',bwl,hud,shu,'#ec4899');
     dmc(pf+'JaccardChart','Jaccard',bwl,jd,sj,'#3b82f6');
 }
-
 function renderDashboardTab(){
     var all=filtered();if(!all.length)return;
     var tm=all.reduce(function(s,r){return s+r.min;},0),mos=getMos(all),pd=all.filter(function(r){return r.project==='경남 서부의료원';}),pmos=getMos(pd),adt=new Set(all.map(function(r){return r.date;})).size;
@@ -1191,7 +1144,6 @@ function renderDashMonthlyOt(all,mos){dC('dashMonthlyOvertimeChart');var bd=['9~
 window.dTogMonthlyOt=function(b){hlMonthlyOt=hlMonthlyOt===b?null:b;var p=filtered().filter(function(r){return r.project==='경남 서부의료원';});renderDashMonthlyOt(p,getMos(p));renderDashOvertimeBars(p);};
 function renderDashOvertimeDonut(all){dC('dashOvertimeDonutChart9');dC('dashOvertimeDonutChart12');var dm=[],ds=[];MEMBERS.forEach(function(n){var pd={};all.filter(function(r){return r.name===n;}).forEach(function(r){pd[r.date]=(pd[r.date]||0)+r.min;});var o9=0,o12=0;Object.values(pd).forEach(function(m){if(m>=540)o9++;if(m>=720)o12++;});if(o9>0)dm.push({name:n,days:o9});if(o12>0)ds.push({name:n,days:o12});});document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(function(n){return '<div class="legend-item '+(hlOvertimeDonut!==null&&hlOvertimeDonut!==n?'dimmed':'')+'" onclick="dTogOtDonut(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>';}).join('');function dd(id,da){if(!da.length)return;CH[id]=new Chart(document.getElementById(id).getContext('2d'),{type:'doughnut',data:{labels:da.map(function(d){return d.name;}),datasets:[{data:da.map(function(d){return d.days;}),backgroundColor:da.map(function(d){return (hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0';}),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:15,bottom:15,left:20,right:20}},plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},formatter:function(v,cx){var s=cx.dataset.data.reduce(function(a,b){return a+b;},0),p=s>0?Math.round(v/s*100):0;return v>0?cx.chart.data.labels[cx.dataIndex]+'\n'+v+'일 ('+p+'%)':'';},anchor:'end',align:'end'}}}});}dd('dashOvertimeDonutChart9',dm);dd('dashOvertimeDonutChart12',ds);}
 window.dTogOtDonut=function(n){hlOvertimeDonut=hlOvertimeDonut===n?null:n;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
-
 // ==========================================
 // Working 탭 렌더링
 // ==========================================
@@ -1207,20 +1159,19 @@ function renderWpSwitchBar(d,mos,col){dC('wpSwitchBar');var sw={},pv=null;d.forE
 function renderWpFocusBar(d,mos){dC('wpFocusBar');var fk=['도면','설계','검토','계획','보고서','작성','분석'],mf={},md={};mos.forEach(function(m){mf[m]=0;md[m]=0;});d.forEach(function(r){var m=r.date.slice(0,7);if(mf[m]===undefined)return;var f=fk.some(function(k){return r.sub.includes(k)||r.cat.includes(k);});if(f)mf[m]+=r.min;else md[m]+=r.min;});CH.wpFocusBar=new Chart(document.getElementById('wpFocusBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{label:'집중업무',data:mos.map(function(m){return mToH(mf[m]||0);}),backgroundColor:'#00428E',stack:'S',borderRadius:3},{label:'분산업무',data:mos.map(function(m){return mToH(md[m]||0);}),backgroundColor:'#94a3b8',stack:'S',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11,weight:'bold'},usePointStyle:true}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});}
 function renderWpOvertimeDetail(d){dC('wpOtBar');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var od=Object.entries(dm).filter(function(e){return e[1]>=540;}).sort(function(a,b){return b[1]-a[1];}),mo=Array.from(new Set(od.map(function(e){return e[0].slice(0,7);}))).sort(),ct={'9~10h':[],'10~11h':[],'11~12h':[],'12h 이상':[]};mo.forEach(function(m){var c1=0,c2=0,c3=0,c4=0;od.forEach(function(e){if(!e[0].startsWith(m))return;var n=e[1];if(n<600)c1++;else if(n<660)c2++;else if(n<720)c3++;else c4++;});ct['9~10h'].push(c1);ct['10~11h'].push(c2);ct['11~12h'].push(c3);ct['12h 이상'].push(c4);});CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{type:'bar',data:{labels:mo,datasets:[{label:'9~10h',data:ct['9~10h'],backgroundColor:OT_COLORS[0],stack:'S',borderRadius:2},{label:'10~11h',data:ct['10~11h'],backgroundColor:OT_COLORS[1],stack:'S',borderRadius:2},{label:'11~12h',data:ct['11~12h'],backgroundColor:OT_COLORS[2],stack:'S',borderRadius:2},{label:'12h 이상',data:ct['12h 이상'],backgroundColor:OT_COLORS[3],stack:'S',borderRadius:2}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{right:15,top:10}},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,beginAtZero:true,display:false}}}});var le=document.getElementById('wpOtList');if(!od.length){le.innerHTML='<div style="color:#94a3b8;font-size:12px;text-align:center;padding:10px;">초과근무 없음</div>';return;}le.innerHTML=od.slice(0,10).map(function(e){var dt=e[0],mn=e[1],h=mToH(mn),lv=mn>=720?'#ef4444':mn>=660?'#f97316':mn>=600?'#f59e0b':'#818cf8';return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.5);"><span style="font-size:11px;color:#475569;font-weight:600;">'+dt+'</span><span style="font-size:12px;font-weight:800;color:'+lv+';">'+fmt(h)+'h</span></div>';}).join('');}
 function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
-
 // ==========================================
-// ★ KPI Eval 탭 렌더링
+// ★ KPI Eval 탭 렌더링 (AI 기능 연동 포함)
 // ==========================================
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
     if (!m) return;
-    
     var view = document.getElementById('view-kpieval');
-    // 개인의 모든 평가 데이터
+    
+    // 개인 평가 데이터
     var ed = EVAL_DATA.filter(function(d){ return d.name === m; });
     var sortedEd = ed.slice().sort(function(a,b){ return a.q.localeCompare(b.q); });
     
-    // 현재 선택된 기간 필터에 해당하는 평가 데이터
+    // 현재 선택된 기간 필터 평가 데이터
     var fq = filteredEvalQs();
     var fd = ed.filter(function(d){ return fq.includes(d.q); }).sort(function(a,b){ return a.q.localeCompare(b.q); });
     
@@ -1229,19 +1180,16 @@ function renderEvalTab() {
     var pf = RAW.find(function(r){ return r.name === m; });
     var po = pf ? pf.pos : '';
     var c = MC[m] || '#00428E';
-
+    
     dC('newKpiTrendChart'); dC('newKpiRadarChart'); dC('newKpiDonutChart'); dC('kpiInsightRadar');
-
-    // 🔥 평가 데이터가 없더라도 레이아웃이 붕괴되지 않도록 Fallback 처리
+    
     var hasEval = fd.length > 0;
     var latestQ = hasEval ? fd[fd.length - 1] : { q: '평가 없음', vals: [0,0,0,0,0] };
     var latestScore = latestQ.vals.reduce((a,b)=>a+b,0) / 5;
-    
     var avgVals = ed.length > 0 ? RADAR_LABELS.map((_, i) => ed.reduce((s, d) => s + d.vals[i], 0) / ed.length) : [0,0,0,0,0];
     var avgScore = ed.length > 0 ? avgVals.reduce((a,b)=>a+b,0) / 5 : 0;
-    
-    var allEvalAvgVals = EVAL_DATA.length > 0 
-        ? RADAR_LABELS.map((_, i) => EVAL_DATA.reduce((s, d) => s + d.vals[i], 0) / EVAL_DATA.length) 
+    var allEvalAvgVals = EVAL_DATA.length > 0
+        ? RADAR_LABELS.map((_, i) => EVAL_DATA.reduce((s, d) => s + d.vals[i], 0) / EVAL_DATA.length)
         : [0,0,0,0,0];
     
     var t = wd.reduce((s, r) => s + r.min, 0);
@@ -1249,29 +1197,28 @@ function renderEvalTab() {
     var dm = {}; wd.forEach(r => dm[r.date] = (dm[r.date] || 0) + r.min);
     var ad = Object.keys(dm).length;
     var o9 = 0; Object.values(dm).forEach(x => { if(x >= 540) o9++; });
-
+    
     var sm = grp(wd.filter(r => r.project === '경남 서부의료원'), 'sub');
-    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 5); 
-
-    // ★ Highest Record 구하기
+    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 5);
+    
+    // Highest Record 구하기
     var bestQ = null;
     var bestScore = 0;
     if (ed.length > 0) {
         bestQ = ed.reduce((best, curr) => {
             var currScore = curr.vals.reduce((a,b)=>a+b,0)/5;
             var bScore = best.vals.reduce((a,b)=>a+b,0)/5;
-            return currScore >= bScore ? curr : best; 
+            return currScore >= bScore ? curr : best;
         });
         bestScore = bestQ.vals.reduce((a,b)=>a+b,0)/5;
     }
-
+    
     var bestTopTasksHtml = '<div style="color:#94a3b8;font-size:11px;">데이터 없음</div>';
     if (bestQ) {
         var bestWd = RAW.filter(r => r.name === m && r.project === '경남 서부의료원' && getQ(r.date) === bestQ.q);
         var bestSm = grp(bestWd, 'sub');
         var bestTotal = Object.values(bestSm).reduce((a,b)=>a+b,0);
         var bestTopTasks = Object.entries(bestSm).sort((a,b) => b[1]-a[1]).slice(0, 3);
-        
         if (bestTopTasks.length > 0) {
             bestTopTasksHtml = bestTopTasks.map((t, i) => {
                 var p = bestTotal > 0 ? (t[1]/bestTotal*100).toFixed(1) : 0;
@@ -1281,14 +1228,14 @@ function renderEvalTab() {
             }).join('');
         }
     }
-
+    
     var scoreDiff = latestScore - avgScore;
-    var scoreDiffHtml = !hasEval ? '<span style="color:#94a3b8">-</span>' : (scoreDiff >= 0 
+    var scoreDiffHtml = !hasEval ? '<span style="color:#94a3b8">-</span>' : (scoreDiff >= 0
         ? '<span style="color:#10b981">▲ ' + scoreDiff.toFixed(2) + '</span>'
         : '<span style="color:#ef4444">▼ ' + Math.abs(scoreDiff).toFixed(2) + '</span>');
-
-    var topTasksHtml = topTasks.length === 0 
-        ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;">데이터 없음</div>' 
+    
+    var topTasksHtml = topTasks.length === 0
+        ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;">데이터 없음</div>'
         : topTasks.map((tk, i) => {
               var p = pm > 0 ? (tk[1]/pm*100).toFixed(1) : 0;
               return '<div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">' +
@@ -1299,7 +1246,7 @@ function renderEvalTab() {
                          '<div style="font-weight:800; color:#64748b;">' + p + '%</div>' +
                      '</div>';
           }).join('');
-
+          
     var detailListHtml = '<div class="kpi-detail-container">' + RADAR_LABELS.map((label, i) => {
         var val = latestQ.vals[i];
         var avg = avgVals[i];
@@ -1314,12 +1261,12 @@ function renderEvalTab() {
                    '</div>' +
                '</div>';
     }).join('') + '</div>';
-
+    
     var currData = RAW.filter(r => r.name === m && getQ(r.date) === latestQ.q);
     var prevQ = fd.length > 1 ? fd[fd.length - 2].q : null;
     var prevData = prevQ ? RAW.filter(r => r.name === m && getQ(r.date) === prevQ) : [];
     var teamCurrData = RAW.filter(r => getQ(r.date) === latestQ.q);
-
+    
     var cr = calcStandaloneMetrics(currData, prevData) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
     var teamCr = calcStandaloneMetrics(teamCurrData, null) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
     
@@ -1329,7 +1276,7 @@ function renderEvalTab() {
     
     var normTeamOt = Math.max(0, 1 - Math.min((teamCr.ot||0)/0.5, 1));
     var teamCvInsight = [normTeamOt, (teamCr.cv||0), (teamCr.hurst||0), (teamCr.hhi||0), (teamCr.shannon||0), (teamCr.jaccard||0)];
-
+    
     var html = '<div class="kpi-layout">' +
         '<!-- 좌측 패널 -->' +
         '<div class="kpi-panel left-panel">' +
@@ -1340,7 +1287,6 @@ function renderEvalTab() {
                     '<div style="font-size:13px;color:#64748b;font-weight:600;">' + po + '</div>' +
                 '</div>' +
             '</div>' +
-            
             '<div class="kpi-big-score">' +
                 '<div class="title">최근 분기 종합 점수 (' + latestQ.q + ')</div>' +
                 '<div style="display:flex;align-items:baseline;">' +
@@ -1351,7 +1297,6 @@ function renderEvalTab() {
                     '개인 평균(' + avgScore.toFixed(2) + ') 대비 ' + scoreDiffHtml +
                 '</div>' +
             '</div>' +
-            
             '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div>' +
             '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:30px;">' +
                 '<div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">' +
@@ -1363,16 +1308,13 @@ function renderEvalTab() {
                     '<div style="font-size:18px;font-weight:900;color:#f59e0b;">' + o9 + '일</div>' +
                 '</div>' +
             '</div>' +
-
             '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">역량 점수 트렌드</div>' +
             '<div style="height:120px; position:relative; margin-bottom:30px;">' +
                 (sortedEd.length > 0 ? '<canvas id="newKpiTrendChart"></canvas>' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;font-weight:600;">평가 데이터 없음</div>') +
             '</div>' +
-
             '<div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div>' +
             '<div class="kpi-detail-list">' + detailListHtml + '</div>' +
         '</div>' +
-        
         '<!-- 중앙 패널 -->' +
         '<div class="kpi-panel center-panel">' +
             '<div style="text-align:center; margin-bottom:10px;">' +
@@ -1394,7 +1336,6 @@ function renderEvalTab() {
                 '<canvas id="newKpiRadarChart"></canvas>' +
             '</div>' +
         '</div>' +
-        
         '<!-- 우측 패널 -->' +
         '<div class="kpi-panel right-panel" style="padding:25px 20px; gap:25px;">' +
             '<div style="flex:0 0 auto; display:flex; flex-direction:column;">' +
@@ -1419,7 +1360,20 @@ function renderEvalTab() {
                 '</div>' +
             '</div>' +
             
-            '<div style="flex:1; display:flex; flex-direction:column;">' +
+            // ★ AI Insight 영역 (추가)
+            '<div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;">' +
+                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                    '<div class="kpi-section-title" style="margin:0;"><span style="color:#6366f1;">✦ AI Insight</span> 종합 평가</div>' +
+                    '<button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(99,102,241,0.3);">분석 요청하기</button>' +
+                '</div>' +
+                '<div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:18px; border:1px solid rgba(99,102,241,0.2); min-height:100px;">' +
+                    '<div id="aiCommentBox" style="font-size:13px; line-height:1.7; color:#334155; font-weight:500;">' +
+                        '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 현재 역량과 근무 패턴에 대한 제미나이(Gemini)의 객관적이고 따뜻한 종합 피드백을 받아보세요.' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            
+            '<div style="flex:1; display:flex; flex-direction:column; margin-top:20px;">' +
                 '<div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div>' +
                 '<div style="flex:1; position:relative; min-height:160px; display:flex; align-items:center; justify-content:center;">' +
                     '<canvas id="kpiInsightRadar"></canvas>' +
@@ -1427,19 +1381,17 @@ function renderEvalTab() {
             '</div>' +
         '</div>' +
     '</div>';
-
+    
     view.innerHTML = html;
-
+    
     setTimeout(() => {
         if(sortedEd.length > 0) {
             var trendLabels = sortedEd.map(d => d.q);
             var trendData = sortedEd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
-            
             var ptRadii = trendLabels.map(q => fq.includes(q) ? 5 : 3);
             var ptBgColors = trendLabels.map(q => fq.includes(q) ? c : '#fff');
             var ptBorders = trendLabels.map(q => fq.includes(q) ? '#fff' : c);
             var ptBorderWidths = trendLabels.map(q => fq.includes(q) ? 2 : 1.5);
-
             CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), {
                 type: 'line',
                 data: {
@@ -1460,9 +1412,9 @@ function renderEvalTab() {
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false }, 
-                        datalabels: { 
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
                             display: true,
                             align: 'top',
                             anchor: 'end',
@@ -1506,7 +1458,7 @@ function renderEvalTab() {
                 }
             });
         }
-
+        
         CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
             type: 'radar',
             data: {
@@ -1516,7 +1468,7 @@ function renderEvalTab() {
                         label: '선택 기간 (' + latestQ.q + ')',
                         data: latestQ.vals,
                         borderColor: c,
-                        backgroundColor: hRgba(c, 0.15), 
+                        backgroundColor: hRgba(c, 0.15),
                         borderWidth: 2.5,
                         pointBackgroundColor: c,
                         pointBorderColor: '#fff',
@@ -1529,7 +1481,7 @@ function renderEvalTab() {
                         label: '개인 평균',
                         data: avgVals,
                         borderColor: '#94a3b8',
-                        backgroundColor: 'rgba(148, 163, 184, 0.08)', 
+                        backgroundColor: 'rgba(148, 163, 184, 0.08)',
                         borderWidth: 1.5,
                         borderDash: [],
                         pointBackgroundColor: '#94a3b8',
@@ -1578,10 +1530,10 @@ function renderEvalTab() {
                         }
                     }
                 },
-                elements: { line: { tension: 0.35 } } 
+                elements: { line: { tension: 0.35 } }
             }
         });
-
+        
         if(topTasks.length > 0) {
             CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), {
                 type: 'doughnut',
@@ -1650,10 +1602,10 @@ function renderEvalTab() {
                 },
                 scales: {
                     r: {
-                        min: 0, max: 1,
+                        min: 0, max: 1.2,
                         grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 },
                         angleLines: { color: 'rgba(203,213,225,0.4)' },
-                        ticks: { display: false, stepSize: 0.25 },
+                        ticks: { display: false, stepSize: 0.3 },
                         pointLabels: {
                             font: { size: 9, weight: '800' },
                             color: '#64748b',
@@ -1663,8 +1615,88 @@ function renderEvalTab() {
                 }
             }
         });
-
     }, 50);
+}
+
+// ==========================================
+// Gemini AI 분석 요청 로직 (Vercel API 호출)
+// ==========================================
+async function generateAiComment() {
+    var btn = document.getElementById('btnGenerateAI');
+    var box = document.getElementById('aiCommentBox');
+    
+    var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
+    var ed = EVAL_DATA.filter(function(d){ return d.name === m; }).sort(function(a,b){ return a.q.localeCompare(b.q); });
+    
+    var fq = filteredEvalQs();
+    var fd = ed.filter(function(d){ return fq.includes(d.q); }).sort(function(a,b){ return a.q.localeCompare(b.q); });
+    var latestQ = fd.length > 0 ? fd[fd.length - 1] : (ed.length > 0 ? ed[ed.length - 1] : null);
+
+    if(!latestQ) {
+        box.innerHTML = '<span style="color:#ef4444;">평가 데이터가 부족하여 분석할 수 없습니다.</span>';
+        return;
+    }
+
+    var wd = RAW.filter(function(r){ return r.name === m && getQ(r.date) === latestQ.q && r.project === '경남 서부의료원'; });
+    
+    var latestScore = (latestQ.vals.reduce((a,b)=>a+b,0) / 5).toFixed(2);
+    
+    var dm = {}; wd.forEach(r => dm[r.date] = (dm[r.date] || 0) + r.min);
+    var over9h = 0, over12h = 0;
+    Object.values(dm).forEach(x => { if(x >= 720) over12h++; else if(x >= 540) over9h++; });
+
+    var sm = grp(wd, 'sub');
+    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 3).map(t => t[0]).join(', ');
+
+    var prompt = `
+당신은 '경상남도 서부의료원 건립공사' 프로젝트의 성과 관리(HR) 애널리스트입니다. 
+아래의 데이터는 '${m}' 팀원의 ${latestQ.q} 분기 평가 데이터입니다.
+이 데이터를 바탕으로 팀원의 **현재 긍정적인 성과(강점) 1가지**와 **건강/업무 개선을 위한 조언 1가지**를 전문가의 따뜻하지만 객관적인 톤으로 3~4문장으로 짧게 요약해주세요.
+웹 대시보드에 바로 출력할 것이므로 마크다운 포맷(굵은 글씨 등)을 활용해 가독성을 높여주세요. 절대 인사말이나 불필요한 서론은 쓰지 마세요.
+
+[분석용 데이터 요약]
+- 대상자: ${m}
+- 종합 역량 점수: 5.0 만점에 ${latestScore}점
+- 세부 역량 (적극성, 생산성, 전문성, 창의성, 협업능력 순): ${latestQ.vals.join('점, ')}점
+- 주 집중 업무: ${topTasks || '데이터 없음'}
+- 초과근무 현황: 9~12시간 연장근무 ${over9h}일, 12시간 이상 심야근무 ${over12h}일
+    `;
+
+    btn.innerText = "분석 중...";
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    box.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#6366f1; height:100%; min-height:80px; font-weight:700;">
+            <div class="ov-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>
+            데이터를 종합하여 AI 인사이트를 생성 중입니다...
+        </div>
+    `;
+
+    try {
+        const response = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        const result = await response.json();
+
+        if(result.success) {
+            box.innerHTML = result.text
+                .replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>')
+                .replace(/\n/g, '<br>'); 
+        } else {
+            box.innerHTML = `<span style="color:#ef4444;">오류 발생: ${result.error}</span>`;
+            console.error(result.details);
+        }
+    } catch (e) {
+        box.innerHTML = `<span style="color:#ef4444;">서버 응답을 받지 못했습니다. Vercel 배포 상태를 확인하세요.</span>`;
+        console.error(e);
+    } finally {
+        btn.innerText = "다시 분석하기";
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
 }
 
 document.addEventListener('DOMContentLoaded',function(){updateNavSlider();window.addEventListener('resize',updateNavSlider);loadDataFromSheets();});
