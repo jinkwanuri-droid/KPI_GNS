@@ -11,7 +11,10 @@ export default async function handler(req, res) {
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
-            return res.status(500).json({ error: 'API 키가 설정되지 않았습니다.' });
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Vercel 환경변수에 GEMINI_API_KEY가 없습니다. (등록 후 반드시 Redeploy 하세요)' 
+            });
         }
 
         // Gemini 1.5 Flash 모델 API 엔드포인트
@@ -28,12 +31,25 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // 응답 텍스트 추출
+        // 1) 정상적으로 응답을 받은 경우
         if (data.candidates && data.candidates.length > 0) {
             const aiText = data.candidates[0].content.parts[0].text;
             return res.status(200).json({ success: true, text: aiText });
-        } else {
-            return res.status(500).json({ success: false, error: 'Gemini 응답을 분석할 수 없습니다.', details: data });
+        } 
+        // 2) 구글 API 쪽에서 명확한 에러를 뱉은 경우 (화면에 바로 원인 출력)
+        else if (data.error) {
+            return res.status(500).json({ 
+                success: false, 
+                error: `Google API 에러: ${data.error.message}` 
+            });
+        } 
+        // 3) 그 외 알 수 없는 에러
+        else {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Gemini 응답을 분석할 수 없습니다.', 
+                details: data 
+            });
         }
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
