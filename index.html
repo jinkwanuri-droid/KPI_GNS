@@ -131,7 +131,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .info-icon{width:14px;height:14px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .info-wrap:hover .info-icon{background:#00428E;}
 .info-tooltip{position:absolute;top:160%;left:50%;transform:translateX(-50%);min-width:340px;background:rgba(15,23,42,.97);color:#f8fafc;font-size:12px;line-height:1.6;padding:16px 20px;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.3);visibility:hidden;opacity:0;transition:all .2s;pointer-events:none;font-weight:500;text-align:left;z-index:99999;}
-.info-tooltip::after{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border-width:6px;border-style:solid;border-color:transparent transparent rgba(15,23,42,.97) transparent;}
+.info-tooltip::after{content:'absolute;bottom:100%;left:50%;transform:translateX(-50%);border-width:6px;border-style:solid;border-color:transparent transparent rgba(15,23,42,.97) transparent;}
 .info-wrap:hover .info-tooltip{visibility:visible;opacity:1;}
 .info-tooltip ul{padding-left:18px;margin-top:8px;}
 .info-tooltip li{word-break:keep-all;margin-bottom:4px;}
@@ -319,7 +319,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="card" style="height:320px;">
         <div class="card-section-title"><span>팀원별 초과근무 비율</span><div id="dashOvertimeDonutLegendWrap" style="display:flex;gap:10px;"></div></div>
         <div style="display:flex;flex:1;min-height:0;gap:10px;margin-top:-15px;">
-          <!-- 도넛 차트의 여백을 확보하기 위해 width를 90%로 살짝 줄임 -->
           <div style="flex:1;position:relative;display:flex;justify-content:center;align-items:center; width:90%;"><canvas id="dashOvertimeDonutChart9"></canvas><div style="position:absolute;font-size:11px;font-weight:800;color:#1e293b;pointer-events:none;text-align:center;">9시간<br>이상</div></div>
           <div style="width:1px;background:rgba(226,232,240,.6);margin:20px 0;"></div>
           <div style="flex:1;position:relative;display:flex;justify-content:center;align-items:center; width:90%;"><canvas id="dashOvertimeDonutChart12"></canvas><div style="position:absolute;font-size:11px;font-weight:800;color:#1e293b;pointer-events:none;text-align:center;">12시간<br>이상</div></div>
@@ -328,7 +327,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="card" style="height:320px;"><div class="card-section-title"><span>월별 근무 밀도</span><div id="heatYearTabs" style="display:flex;gap:3px;margin-left:auto;"></div></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:4px;"><table class="heat-table" id="heatTable"></table></div></div>
     </div>
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
-    <!-- 모달 대신 본문에 레이더와 테이블 삽입 (Project 탭) -->
     <div style="display:flex; gap:15px; margin-top:10px; height: 360px;">
       <div class="card" style="flex:1; height:100%;">
         <div class="card-section-title">종합 레이더 분석 (선택 기간 전체)</div>
@@ -401,11 +399,8 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       </div>
     </div>
     <div class="section-divider"><h2>업무유형 분석</h2></div>
-    <!-- 업무유형 분석 2x2 레이아웃 개편 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:8px;">
-      <!-- 1. 설계단계별 비중 -->
       <div class="card" style="height:320px;"><div class="card-section-title">설계단계별 비중</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpDonutCat"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;" id="wpCatCenter"></div></div></div>
-      <!-- 2. 집중 vs 분산 업무 -->
       <div class="card" style="height:320px;">
         <div class="card-section-title">
           집중 vs 분산 업무 비율
@@ -413,9 +408,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
         </div>
         <div style="flex:1;min-height:0;"><canvas id="wpFocusBar"></canvas></div>
       </div>
-      <!-- 3. 월별 업무 유형 -->
       <div class="card" style="height:320px;"><div class="card-section-title"><span>월별 업무 유형</span><div id="wpStackLegend" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:60%;"></div></div><div style="flex:1;min-height:0;"><canvas id="wpStackedBar"></canvas></div></div>
-      <!-- 4. 업무분류별 TOP 7 (도넛 + 레이블) -->
       <div class="card" style="height:320px;">
         <div class="card-section-title">업무분류별 TOP 7</div>
         <div style="display:flex;height:calc(100% - 45px);align-items:center;">
@@ -434,7 +427,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="card" style="height:320px;"><div class="card-section-title"><span>근무 밀도</span><div id="wpHeatTabs" style="display:flex;gap:3px;margin-left:auto;"></div></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:2px;"><table class="heat-table" id="wpHeatTable"></table></div></div>
     </div>
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
-    <!-- 모달 대신 본문에 레이더와 테이블 삽입 (Working 탭) -->
     <div style="display:flex; gap:15px; margin-top:10px; height: 360px;">
       <div class="card" style="flex:1; height:100%;">
         <div class="card-section-title">종합 레이더 분석 (선택 기간)</div>
@@ -455,19 +447,17 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="eval-trend-card"><div class="eval-trend-title">업무 리듬 주도성 (Hurst Exponent)</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpHurstChart"></canvas></div></div>
       <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpJaccardChart"></canvas></div></div>
     </div>
-    <!-- 하단 3단 배치: 초과근무 상세, 불평등도는 그대로 유지 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px;">
       <div class="card" style="height:300px;"><div class="card-section-title">초과근무 상세</div><div style="height:130px;position:relative;margin-bottom:8px;"><canvas id="wpOtBar"></canvas></div><div class="scroll-list" id="wpOtList" style="flex:1;overflow-y:auto;border-top:1px solid rgba(226,232,240,.5);padding-top:8px;"></div></div>
       <div class="card" style="height:300px;"><div style="display:flex;flex-direction:column;height:100%;gap:12px;"><div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div></div></div>
     </div>
   </div>
-  <!-- KPI Eval 뷰 (3단 레이아웃 전용 컨테이너) -->
+  <!-- KPI Eval 뷰 -->
   <div id="view-kpieval" class="view-section">
       <!-- renderEvalTab()을 통해 내부가 덮어씌워집니다 -->
   </div>
 </div>
 <script>
-// 백틱(Template Literal) 문제 최소화 및 안전한 문자열 결합 처리
 var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 var GITHUB_BASE='https://jinkwanuri-droid.github.io/KPI_GNS/';
 var PROFILE_IMG={'윤진관':GITHUB_BASE+'jk.yoon.jpg','김효언':GITHUB_BASE+'he.kim.jpg','정인태':GITHUB_BASE+'intae.jeoung.jpg','이혜인B':GITHUB_BASE+'hi.lee2.jpg'};
@@ -477,10 +467,7 @@ var SUB_PAL=['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f
 var OT_COLORS=['#818cf8','#6366f1','#4A90E2','#00428E'];
 var RADAR_LABELS=['적극성','생산성','전문성','창의성','협업능력'];
 var MONTH_KO=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],OVERTIME_RANGES=['9~10h','10~11h','11~12h','12h 이상'];
-
-// ✨ 이 줄을 추가했습니다 (이모지 필터링 정규식)
 var emojiRegex = /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g;
-
 var INSIGHT_RADAR_LABELS=['정시업무(1-OT)','CV 안정성','Hurst(주도성)','HHI(몰입도)','Shannon(집중)','Jaccard(확장)'];
 var INSIGHT_METRICS_INFO = [
     { key: 'ot', name: '정시업무(1-OT)', desc: '높을수록 야근 피로도가 낮고 안정적임을 의미' },
@@ -804,7 +791,7 @@ function calcStandaloneMetrics(currR, prevR) {
     return {ot: oi, shannon: sn, hhi: hi, cv: cn, hurst: hs, jaccard: jc};
 }
 // ==========================================
-// Advanced Analytics 렌더링 (안전한 문자열 결합 처리)
+// Advanced Analytics 렌더링
 // ==========================================
 function renderAdvancedMetrics(d,da,col,pf){
     dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
@@ -861,11 +848,16 @@ function renderAdvancedMetrics(d,da,col,pf){
         document.getElementById('ovAvgHhi').innerText=ao(hd).toFixed(2);
         document.getElementById('ovAvgCv').innerText=ao(cd).toFixed(2);
     }
+    
     var cr = calcStandaloneMetrics(d, null) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
+    
+    // ✨ FIX: 라인 차트(jd 배열)의 평균을 구해 레이더/테이블의 Jaccard 값으로 동기화
+    cr.jaccard = jd.length > 0 ? jd.reduce(function(a,b){return a+b;}, 0) / jd.length : 0;
+
     var normOt = Math.max(0, 1 - Math.min((cr.ot||0)/0.5, 1));
     var cvInsight = [normOt, (cr.cv||0), (cr.hurst||0), (cr.hhi||0), (cr.shannon||0), (cr.jaccard||0)];
     var rawCvInsight = [Math.max(0, 1 - (cr.ot||0)), cr.cv||0, cr.hurst||0, cr.hhi||0, cr.shannon||0, cr.jaccard||0];
-    // 레이더 차트용 데이터셋 구성 (기본 1개)
+
     var datasetsArr = [{
         label: '선택 기간',
         data: cvInsight,
@@ -878,10 +870,28 @@ function renderAdvancedMetrics(d,da,col,pf){
         pointRadius: 3,
         pointHoverRadius: 5
     }];
+
     // 워킹 탭인 경우 팀 전체 평균 점선 추가
     if (pf === 'wp') {
         var teamData = filtered().filter(function(r){return r.project==='경남 서부의료원';});
         var teamCr = calcStandaloneMetrics(teamData, null) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
+        
+        // ✨ FIX: 팀 데이터도 동일하게 bi-weekly Jaccard 평균을 구해서 덮어씀
+        var t_bwm = {}, t_ps = new Set(), t_jd = [];
+        teamData.forEach(function(r){
+            var k = getWeekInfo(r.date).key2;
+            if(!t_bwm[k]) t_bwm[k] = [];
+            t_bwm[k].push(r);
+        });
+        Object.keys(t_bwm).sort().forEach(function(k){
+            var cs2 = new Set(Object.keys(grp(t_bwm[k],'sub'))), it = 0;
+            cs2.forEach(function(x){ if(t_ps.has(x)) it++; });
+            var un = new Set([...t_ps, ...cs2]).size;
+            t_jd.push(un === 0 ? 0 : it/un);
+            t_ps = cs2;
+        });
+        teamCr.jaccard = t_jd.length > 0 ? t_jd.reduce(function(a,b){return a+b;}, 0) / t_jd.length : 0;
+
         var normTeamOt = Math.max(0, 1 - Math.min((teamCr.ot||0)/0.5, 1));
         var teamCvInsight = [normTeamOt, (teamCr.cv||0), (teamCr.hurst||0), (teamCr.hhi||0), (teamCr.shannon||0), (teamCr.jaccard||0)];
         datasetsArr.push({
@@ -890,11 +900,12 @@ function renderAdvancedMetrics(d,da,col,pf){
             borderColor: '#94a3b8',
             backgroundColor: 'transparent',
             borderWidth: 1,
-            borderDash: [3, 3], // 얇은 점선 효과
+            borderDash: [3, 3], 
             pointRadius: 0,
             pointHoverRadius: 0
         });
     }
+    
     dC(pf + 'InsightRadar');
     if(document.getElementById(pf + 'InsightRadar')) {
         CH[pf + 'InsightRadar'] = new Chart(document.getElementById(pf + 'InsightRadar').getContext('2d'), {
