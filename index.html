@@ -405,10 +405,11 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <!-- renderEvalTab()을 통해 내부가 덮어씌워집니다 -->
   </div>
 </div>
+
 <script>
-// ==========================================
-// 공통 변수 및 초기화 설정
-// ==========================================
+var emojiRegex = /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g;
+
+// 공통 변수 초기화
 var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 var GITHUB_BASE='https://jinkwanuri-droid.github.io/KPI_GNS/';
 var PROFILE_IMG={'윤진관':GITHUB_BASE+'jk.yoon.jpg','김효언':GITHUB_BASE+'he.kim.jpg','정인태':GITHUB_BASE+'intae.jeoung.jpg','이혜인B':GITHUB_BASE+'hi.lee2.jpg'};
@@ -419,6 +420,7 @@ var OT_COLORS=['#818cf8','#6366f1','#4A90E2','#00428E'];
 var RADAR_LABELS=['적극성','생산성','전문성','창의성','협업능력'];
 var MONTH_KO=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],OVERTIME_RANGES=['9~10h','10~11h','11~12h','12h 이상'];
 var INSIGHT_RADAR_LABELS=['정시업무(1-OT)','CV 안정성','Hurst(주도성)','HHI(몰입도)','Shannon(집중)','Jaccard(확장)'];
+
 var INSIGHT_METRICS_INFO = [
     { key: 'ot', name: '정시업무(1-OT)', desc: '높을수록 야근 피로도가 낮고 안정적임을 의미' },
     { key: 'cv', name: 'CV 안정성', desc: '높을수록 일일 투입 시간 편차가 적고 균일함' },
@@ -432,7 +434,6 @@ var MEMBERS=[],MC={},INITIALS={},SCHEDULE_DATA=[],EVAL_DATA=[],RAW=[],CH={};
 var GLOBAL_MEMBER='ALL',WP_MEMBER=null,hlTimeline=null,hlStage=null,hlOvertimeDonut=null,hlMonthlyOt=null,hlDonutWork=null,hlPjRatio=null,hlWpSub=null,hlHeroDonut=null,hlHeatBin=null;
 window.filterStartIndex=0;window.filterEndIndex=11;window.lastClickedIndex=0;
 var filterYears=[2024,2025,2026],filterQuarters=['Q1','Q2','Q3','Q4'],totalNodes=12,percentPositions=[];
-var emojiRegex=/(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
 
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
@@ -448,6 +449,7 @@ Chart.defaults.plugins.tooltip.cornerRadius=10;
 Chart.defaults.plugins.tooltip.padding=10;
 Chart.defaults.interaction.mode='index';
 Chart.defaults.interaction.intersect=false;
+
 Chart.register({
     id:'verticalLine',
     beforeDatasetsDraw:function(c){
@@ -471,6 +473,31 @@ Chart.register({
         });
     }
 });
+
+const customRadarBgPlugin = {
+    id: 'customRadarBg',
+    beforeDraw: (chart) => {
+        if (chart.config.type !== 'radar') return;
+        const { ctx, scales: { r } } = chart;
+        if (!r) return;
+        const maxVal = r.max;
+        const pts = [];
+        for(let i=0; i<r._pointLabels.length; i++){ pts.push(r.getPointPositionForValue(i, maxVal)); }
+        if(pts.length < 3) return;
+        ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(pts[1].x, pts[1].y); ctx.lineTo(pts[2].x, pts[2].y);
+        if(pts.length > 3) ctx.lineTo(pts[3].x, pts[3].y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.05)'; ctx.fill();
+        if(pts.length > 3) {
+            ctx.beginPath(); ctx.moveTo(pts[3].x, pts[3].y); ctx.lineTo(pts[4].x, pts[4].y);
+            if(pts.length > 5) ctx.lineTo(pts[5].x, pts[5].y);
+            ctx.lineTo(pts[0].x, pts[0].y); ctx.closePath();
+            ctx.fillStyle = 'rgba(236, 72, 153, 0.05)'; ctx.fill();
+        }
+    }
+};
+Chart.register(customRadarBgPlugin);
+
 function safeRender(fn){try{fn();}catch(e){console.error(e);}}
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
@@ -485,9 +512,196 @@ function filteredEvalQs(){return Array.from(new Set(EVAL_DATA.map(function(d){re
 function getAvatar(n,s,fs){return '<div class="avatar-base" style="width:'+(s||24)+'px;height:'+(s||24)+'px;font-size:'+(fs||10)+'px;background:'+(MC[n]||'#00428E')+';border:2px solid '+(MC[n]||'#00428E')+';">'+(INITIALS[n]||'A')+'</div>';}
 function getWeekInfo(ds){var d=new Date(ds),y=d.getFullYear(),m=d.getMonth()+1,dt=d.getDate(),wn=Math.ceil(dt/7),ym=y+'-'+String(m).padStart(2,'0'),bn=Math.ceil(wn/2);return{label1:[ym,'W'+String(wn).padStart(2,'0')],key1:ym+'-W'+String(wn).padStart(2,'0'),label2:[ym,'W'+(bn*2-1)+'-'+(bn*2)],key2:ym+'-B'+bn};}
 
-// ==========================================
-// Insight 모달 관련 핵심 계산 함수 (재활용)
-// ==========================================
+function hideLoadingOverlay(){var el=document.getElementById('loadingOverlay');if(el){el.style.opacity='0';setTimeout(function(){el.style.display='none';},600);}}
+function showEnterBtn(){var sa=document.getElementById('loadingStatusArea'),bw=document.getElementById('ovEnterBtnWrap');if(sa){sa.style.opacity='0';sa.style.visibility='hidden';}if(bw)bw.classList.add('show');}
+function setProgress(p,m){document.getElementById('ovProgress').style.width=p+'%';if(m)document.getElementById('ovMsg').textContent=m;}
+window.addEventListener('scroll',function(){var tb=document.getElementById('topbar');if(window.scrollY>20)tb.classList.add('scrolled');else tb.classList.remove('scrolled');},{passive:true});
+function updateNavSlider(){
+    var a=document.querySelector('.nav-item.active'),s=document.getElementById('navSlider');
+    if(a&&s){s.style.width=a.offsetWidth+'px';s.style.left=a.offsetLeft+'px';}
+}
+
+function showView(v,el){
+    document.querySelectorAll('.view-section').forEach(function(s){s.classList.remove('active');});
+    document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+    document.getElementById('view-'+v).classList.add('active');
+    el.classList.add('active');
+    updateNavSlider();
+    
+    var floatingFilter = document.getElementById('globalMemberSelectWrap');
+    if(v === 'members' || v === 'kpieval') {
+        floatingFilter.classList.add('show');
+    } else {
+        floatingFilter.classList.remove('show');
+        document.getElementById('fmOptions').classList.remove('open');
+    }
+
+    if(v==='members') renderWorkingTab(WP_MEMBER);
+    else if(v==='kpieval') renderEvalTab();
+    else renderDashboardTab();
+}
+
+function getShortName(n) {
+    if(n === 'ALL') return 'ALL';
+    if(n === '이혜인B') return '혜인';
+    if(n.length >= 3) return n.substring(1,3);
+    return n;
+}
+
+function renderCustomDropdown(){
+    var h='';
+    h += '<div class="fm-option-item" style="background:#1e40af;" onclick="selectGlobalMember(\'ALL\')">ALL</div>';
+    MEMBERS.forEach(function(n){
+        h += '<div class="fm-option-item" style="background:'+MC[n]+';" onclick="selectGlobalMember(\''+n+'\')">'+getShortName(n)+'</div>';
+    });
+    document.getElementById('fmOptions').innerHTML=h;
+    updateCustomSelectTrigger();
+}
+function toggleDropdown(){
+    document.getElementById('fmOptions').classList.toggle('open');
+}
+function selectGlobalMember(v){
+    GLOBAL_MEMBER=v;
+    document.getElementById('fmOptions').classList.remove('open');
+    updateCustomSelectTrigger();
+    if(document.querySelector('.view-section.active').id==='view-kpieval') renderEvalTab();
+}
+function updateCustomSelectTrigger(){
+    var sn = getShortName(GLOBAL_MEMBER);
+    var bg = GLOBAL_MEMBER === 'ALL' ? '#1e40af' : (MC[GLOBAL_MEMBER] || '#00428E');
+    document.getElementById('fmTriggerAvatar').style.background = bg;
+    document.getElementById('fmTriggerAvatar').innerText = sn;
+}
+document.addEventListener('click',function(e){
+    var w=document.getElementById('fmWrapper');
+    if(w&&!w.contains(e.target)){
+        document.getElementById('fmOptions').classList.remove('open');
+    }
+});
+
+function initSlider(){
+    var nc=document.getElementById('nodesContainer'),yr=document.getElementById('yearRow');
+    nc.innerHTML='';yr.innerHTML='';
+    var cp=0,pa=[];
+    for(var i=0;i<totalNodes;i++){pa.push(cp);if(i<totalNodes-1)cp+=(i%4===3?1.6:1);}
+    percentPositions=pa.map(function(p){return(p/cp)*100;});
+    filterYears.forEach(function(y,i){
+        var el=document.createElement('div');
+        el.className='year-label';el.innerText=y;
+        el.onclick=function(){window.filterStartIndex=i*4;window.filterEndIndex=i*4+3;updateFilterUI();};
+        el.style.left=((percentPositions[i*4]+percentPositions[i*4+3])/2)+'%';
+        yr.appendChild(el);
+    });
+    for(var i=0;i<totalNodes;i++){
+        (function(ix){
+            var n=document.createElement('div');n.className='node';n.style.left=percentPositions[ix]+'%';
+            n.onclick=function(e){
+                if(e.shiftKey){
+                    window.filterStartIndex=Math.min(window.lastClickedIndex,ix);
+                    window.filterEndIndex=Math.max(window.lastClickedIndex,ix);
+                }else{
+                    window.filterStartIndex=window.filterEndIndex=window.lastClickedIndex=ix;
+                }
+                updateFilterUI();
+            };
+            nc.appendChild(n);
+        })(i);
+    }
+    updateFilterUI();
+}
+function resetFilter(){window.filterStartIndex=0;window.filterEndIndex=totalNodes-1;updateFilterUI();}
+function updateFilterUI(){
+    document.querySelectorAll('.node').forEach(function(n,i){
+        n.className='node';
+        if(i>=window.filterStartIndex&&i<=window.filterEndIndex){
+            n.classList.add('active');
+            if(i===window.filterStartIndex||i===window.filterEndIndex)n.classList.add('endpoint');
+        }
+    });
+    if(percentPositions.length>0){
+        document.getElementById('trackActive').style.left=percentPositions[window.filterStartIndex]+'%';
+        document.getElementById('trackActive').style.width=(percentPositions[window.filterEndIndex]-percentPositions[window.filterStartIndex])+'%';
+    }
+    var sy=filterYears[Math.floor(window.filterStartIndex/4)],sq=filterQuarters[window.filterStartIndex%4],
+        ey=filterYears[Math.floor(window.filterEndIndex/4)],eq=filterQuarters[window.filterEndIndex%4],
+        cnt=window.filterEndIndex-window.filterStartIndex+1,
+        lbl=cnt===1?(sy+' '+sq):(cnt===totalNodes?'전체 기간':(sy+' '+sq+' ~ '+ey+' '+eq));
+    document.getElementById('summaryText').innerText=lbl;
+    if(RAW.length>0) renderAllViews();
+}
+function renderAllViews(){
+    if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboardTab();
+    else if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(WP_MEMBER);
+    else if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab();
+}
+
+function loadDataFromSheets(){
+    setProgress(20,'서버 연결 중...');
+    fetch(APPS_SCRIPT_URL+'?action=all&t='+Date.now()).then(function(r){
+        setProgress(50,'데이터 파싱 중...');
+        return r.json();
+    }).then(function(j){
+        setProgress(75,'차트 렌더링 중...');
+        SCHEDULE_DATA = j.schedule || j['tb_일정'] || [];
+        var rawEval = j.eval || j['tb_평가'] || j.evaluation || j.data || [];
+        EVAL_DATA = rawEval.map(function(r){
+            var yStr = String(r.year || r['# 연도'] || r['연도'] || '').trim();
+            var qStr = String(r.qtr || r['분기'] || '').trim();
+            var finalQ = r.q ? r.q : (yStr + '-' + (qStr.startsWith('Q') ? qStr : 'Q' + qStr));
+            var nameStr = String(r.name || r['성명'] || '').trim();
+            return {
+                q: finalQ,
+                name: nameStr,
+                vals: [
+                    parseFloat(r['적극성'])||0,
+                    parseFloat(r['생산성'])||0,
+                    parseFloat(r['전문성'])||0,
+                    parseFloat(r['창의성'])||0,
+                    parseFloat(r['협업능력'])||0
+                ]
+            };
+        }).filter(function(d){ return d.name && d.q.length > 3 && d.q.indexOf('undefined') === -1; });
+        var rawWork = j.work || j['tb_업무일지'] || j['tb_업무'] || [];
+        RAW = rawWork.filter(function(r){ return r.name && r.date && r.min > 0; }).map(function(r){
+            var p = String(r.project || r['프로젝트'] || r['PJ Code'] || r.pjCode || '').trim();
+            var pt = '공통업무';
+            if(p.includes('24188') || p.includes('서부의료원')) pt = '경남 서부의료원';
+            else if(/^[0-9]+$/.test(p) && p !== '') pt = '타 프로젝트';
+            return {
+                name: String(r.name).trim(),
+                pos: String(r.pos || '').trim(),
+                date: String(r.date).slice(0,10),
+                cat: String(r.cat || '미분류').trim(),
+                sub: String(r.sub || '기타').trim(),
+                project: pt,
+                min: parseInt(r.min) || 0
+            };
+        });
+        var to=['윤진관','이혜인B','정인태','김효언'];
+        MEMBERS=Array.from(new Set(RAW.map(function(r){return r.name;}).concat(EVAL_DATA.map(function(e){return e.name;}))))
+            .filter(function(n){return n && n !== 'undefined' && n.trim() !== '';})
+            .sort(function(a,b){
+                var ia=to.indexOf(a),ib=to.indexOf(b);
+                return (ia!==-1?ia:99) - (ib!==-1?ib:99);
+            });
+        MEMBERS.forEach(function(n,i){
+            MC[n]=DYNAMIC_COLORS[i%DYNAMIC_COLORS.length];
+            INITIALS[n]=n.length>=3?n.substring(1,3):n;
+        });
+        WP_MEMBER=MEMBERS[0]||null;
+        setProgress(100,'완료!');
+        initSlider(); 
+        renderCustomDropdown();
+        updateNavSlider();
+        document.getElementById('loadingDescText').textContent='데이터 분석 완료';
+        document.getElementById('loadingDescText').style.color='#2563eb';
+        showEnterBtn();
+    }).catch(function(e){
+        document.getElementById('ovMsg').innerHTML='<span style="color:#ef4444;font-weight:700;">❌ 연결 실패: '+e.message+'</span>';
+        showEnterBtn();
+    });
+}
+
 function calcStandaloneMetrics(currR, prevR) {
     if(!currR || currR.length === 0) return null;
     let t = currR.reduce((s,r)=>s+r.min,0) || 1;
@@ -533,7 +747,6 @@ function calcStandaloneMetrics(currR, prevR) {
     return {ot: oi, shannon: sn, hhi: hi, cv: cn, hurst: hs, jaccard: jc};
 }
 
-// 인라인 Advanced Analytics 렌더링
 function renderAdvancedMetrics(d,da,col,pf){
     dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
     if(!d||d.length===0)return;
@@ -591,7 +804,6 @@ function renderAdvancedMetrics(d,da,col,pf){
         document.getElementById('ovAvgCv').innerText=ao(cd).toFixed(2);
     }
     
-    // ★ 레이더 및 테이블 추가 (Advanced Analytics 첫 행)
     var cr = calcStandaloneMetrics(d, null) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
     let normOt = Math.max(0, 1 - Math.min((cr.ot||0)/0.5, 1));
     let cvInsight = [normOt, (cr.cv||0), (cr.hurst||0), (cr.hhi||0), (cr.shannon||0), (cr.jaccard||0)];
@@ -732,9 +944,6 @@ function renderAdvancedMetrics(d,da,col,pf){
     dmc(pf+'JaccardChart','Jaccard',bwl,jd,sj,'#3b82f6');
 }
 
-// ==========================================
-// Project 탭 렌더링
-// ==========================================
 function renderDashboardTab(){
     var all=filtered();if(!all.length)return;
     var tm=all.reduce(function(s,r){return s+r.min;},0),mos=getMos(all),pd=all.filter(function(r){return r.project==='경남 서부의료원';}),pmos=getMos(pd),adt=new Set(all.map(function(r){return r.date;})).size;
@@ -786,7 +995,7 @@ window.dTogOtDonut=function(n){hlOvertimeDonut=hlOvertimeDonut===n?null:n;render
 // ==========================================
 // Working 탭 렌더링
 // ==========================================
-window.currentWorkingAiData = null; // 워킹탭 AI 데이터 저장용
+window.currentWorkingAiData = null; 
 
 function renderWorkingTab(nm){
     if(!nm&&MEMBERS.length)nm=MEMBERS[0];
@@ -824,12 +1033,12 @@ function renderWorkingTab(nm){
     document.getElementById('wpStatMonths').textContent=mo.length;document.getElementById('wpStatActiveDays').textContent='('+ad+'일)';document.getElementById('wpStatTotal').textContent=fH(tt);document.getElementById('wpStatAvgMo').textContent='월평균 '+apm.toFixed(1)+'h';document.getElementById('wpStatDayAvg').textContent=da.toFixed(1);document.getElementById('wpStatMonthAvg').textContent=apm.toFixed(1)+'h/월';document.getElementById('wpStatOt1').textContent=t1;document.getElementById('wpStatOt2').textContent=t2;document.getElementById('wpStatOt3').textContent=t3;
     
     // AI 전역 데이터 세팅
-    var catStr = Object.entries(grp(d,'cat')).sort((a,b)=>b[1]-a[1]).map(x => x[0]+'('+(x[1]/tt*100).toFixed(0)+'%)').join(', ');
+    var catStr = Object.entries(grp(d,'cat')).sort((a,b)=>b[1]-a[1]).map(x => x[0]+'('+(tt>0 ? (x[1]/tt*100).toFixed(0) : 0)+'%)').join(', ');
     window.currentWorkingAiData = {
         m: nm, tt: tt, apm: apm, o9: o9, o12: o12, tk: tk, as: as, ah: ah, ac: ac, cat: catStr
     };
     
-    document.getElementById('wpAiCommentBox').innerHTML = '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 근무 패턴과 업무 분야 변화에 대한 10년 차 팀장의 심층 피드백을 받아보세요.';
+    document.getElementById('wpAiCommentBox').innerHTML = '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 근무 패턴과 설계 업무 분야 변화에 대한 10년 차 팀장의 심층 피드백을 받아보세요.';
     
     safeRender(function(){renderWpHeroDonut(d,tt,c);});
     safeRender(function(){renderWpMetricsBadges(d);});
@@ -871,7 +1080,7 @@ function renderWpStackedBar(d,mos){
         },
         options:{
             responsive:true, maintainAspectRatio:false, layout:{padding:{top:15}},
-            // ★ 툴팁이 차트를 다 가리지 않게 마우스 근처의 단일 항목만 표시하도록 수정
+            // 툴팁이 차트를 다 가리지 않게 가장 가까운 단일 항목만 표시
             interaction: { mode: 'nearest', intersect: true },
             plugins:{
                 legend:{display:false},
@@ -913,7 +1122,7 @@ async function generateWorkingAiComment() {
 1. 아래의 3가지 카테고리로 구분하여 줄바꿈과 함께 작성해 주세요.
    - 💡 업무 효율성 및 근태 분석
    - 📈 설계 업무 분야의 변화/트렌드
-   - 🚀 10년 차 팀장의 향후 방향성 제언
+   - 🚀 향후 성장을 위한 제언
 2. 설계 업무(BIM, 도면 작업, 계획설계 등)의 특성을 고려하여 업무 효율성 관점에서 전문 용어를 자연스럽게 섞어 조언해 주세요.
 3. 지시적이거나 딱딱하지 않고, 팀원의 성장을 응원하는 부드럽고 미래지향적인 어투를 사용해 주세요.
 4. 마크다운을 사용해 가독성 있게 작성하되, 인사말 없이 바로 카테고리부터 출력하세요.
@@ -986,7 +1195,7 @@ async function generateAiComment() {
 1. 답변은 아래의 3가지 카테고리로 구분하고, 각 카테고리마다 적절한 줄바꿈을 적용해 주세요.
    - 💡 업무 스타일 분석
    - 📈 평가 점수와의 상관관계
-   - 🚀 향후 성장 제언
+   - 🚀 향후 성장을 위한 제언
 2. 설계 업무(BIM, 도면 작성, 품질관리, 인허가 등)의 특성을 고려하여 업무 효율성 관점에서 건축설계 전문 용어를 혼합해 주세요.
 3. 지시적이거나 딱딱하지 않고, 팀원의 성장을 응원하는 부드럽고 미래지향적인 어투를 사용해 주세요.
 4. 마크다운(굵은 글씨 등)을 활용해 핵심 문구를 강조해 주세요. 인사말 없이 바로 '💡 업무 스타일 분석'부터 출력하세요.
@@ -1046,13 +1255,12 @@ async function generateAiComment() {
 }
 
 // ==========================================
-// 앱 초기화 및 데이터 로드 (무한 로딩 해결)
+// 앱 초기화 및 데이터 로드
 // ==========================================
 window.onload = function() {
     updateNavSlider();
     window.addEventListener('resize', updateNavSlider);
     
-    // 데이터 불러오기 시작
     if (typeof loadDataFromSheets === 'function') {
         loadDataFromSheets();
     } else {
