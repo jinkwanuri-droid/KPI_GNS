@@ -21,14 +21,26 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 @keyframes fM{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(-60px,40px,0) scale(0.9);}}
 @keyframes fL{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(70px,-50px,0) scale(1.15);}}
 #loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;overflow:hidden;}
-.ld-orb{position:absolute;border-radius:50%;will-change:transform;}
-.ld-orb-1{width:280px;height:280px;background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%);top:-60px;right:60px;filter:blur(25px) saturate(.7);opacity:.6;}
-.ld-orb-2{width:360px;height:360px;background:radial-gradient(circle at 40% 35%,rgba(186,230,253,.9),rgba(147,197,253,.6) 50%,rgba(96,165,250,.3) 100%);top:-100px;right:-60px;filter:blur(35px) saturate(.7);opacity:.5;}
-.ld-orb-3{width:140px;height:140px;background:radial-gradient(circle at 35% 30%,#7dd3fc,#38bdf8 50%,#0ea5e9 100%);bottom:80px;left:80px;filter:blur(15px) saturate(.7);opacity:.7;}
-.ld-dust{position:absolute;border-radius:50%;background:#fff;filter:blur(1px);will-change:transform;z-index:2;}
-@keyframes ldFloatDust1{0%{transform:translate(0,0);}100%{transform:translate(150px,-150px);}}
-@keyframes ldFloatDust2{0%{transform:translate(0,0);}100%{transform:translate(-100px,120px);}}
-@keyframes ldFloatDust3{0%{transform:translate(0,0);}100%{transform:translate(100px,100px);}}
+/* 로딩 화면 구슬 설정 (4개로 분산 배치 및 애니메이션 추가) */
+.ld-orb { position:absolute; border-radius:50%; will-change:transform; animation: ldOrbFloat 8s infinite alternate ease-in-out; }
+
+/* 우측 상단 */
+.ld-orb-1 { width:280px; height:280px; background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%); top:-40px; right:-20px; filter:blur(25px) saturate(.7); opacity:.5; animation-delay: 0s; }
+
+/* 좌측 상단 (새로 이동) */
+.ld-orb-2 { width:220px; height:220px; background:radial-gradient(circle at 40% 35%,rgba(186,230,253,.9),rgba(147,197,253,.6) 50%,rgba(96,165,250,.3) 100%); top:50px; left:-50px; filter:blur(30px) saturate(.7); opacity:.6; animation-delay: -2s; }
+
+/* 좌측 하단 */
+.ld-orb-3 { width:160px; height:160px; background:radial-gradient(circle at 35% 30%,#7dd3fc,#38bdf8 50%,#0ea5e9 100%); bottom:60px; left:40px; filter:blur(18px) saturate(.8); opacity:.7; animation-delay: -4s; }
+
+/* 우측 하단 (새로 추가) */
+.ld-orb-4 { width:190px; height:190px; background:radial-gradient(circle at 30% 30%,#a78bfa,#8b5cf6 50%,#6d28d9 100%); bottom:-30px; right:80px; filter:blur(22px) saturate(.7); opacity:.4; animation-delay: -6s; }
+
+/* 구슬 둥둥 떠다니는 애니메이션 */
+@keyframes ldOrbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-20px, 30px) scale(1.1); }
+}
 .loading-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;}
 .loading-brand{font-size:15px;font-weight:600;color:#64748b;letter-spacing:.15em;margin-bottom:28px;}
 .loading-brand b{color:#1e3a5f;font-weight:900;}
@@ -258,7 +270,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
   <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
   <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
   <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
-  <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div>
+  <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div><div class="ld-orb ld-orb-4"></div>
   <div class="loading-content">
     <div class="loading-brand"><b>HUMAN INSIGHT</b> · DATA TRACED</div>
     <div class="loading-main-title">GNWMC</div>
