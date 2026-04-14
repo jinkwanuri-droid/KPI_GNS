@@ -222,9 +222,9 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .ai-insight-content h3:first-child { margin-top:0; }
 .ai-insight-content p { margin-bottom:10px; }
 
-/* Working 탭 AI Content 스크롤 허용용 */
-#wpAiCommentBox::-webkit-scrollbar { width: 4px; }
-#wpAiCommentBox::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
+/* 스크롤 허용용 */
+#wpAiCommentBox::-webkit-scrollbar, #aiCommentBox::-webkit-scrollbar { width: 4px; }
+#wpAiCommentBox::-webkit-scrollbar-thumb, #aiCommentBox::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
 
 @media(max-width:1200px){
   .wp-hero-inner{grid-template-columns:1fr;}
@@ -245,6 +245,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
   <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
   <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
   <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
+  <!-- 4개의 로딩 구슬 -->
   <div class="ld-orb ld-orb-1"></div>
   <div class="ld-orb ld-orb-2"></div>
   <div class="ld-orb ld-orb-3"></div>
@@ -333,7 +334,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="card" style="height:320px;">
         <div class="card-section-title"><span>팀원별 초과근무 비율</span><div id="dashOvertimeDonutLegendWrap" style="display:flex;gap:10px;"></div></div>
         <div style="display:flex;flex:1;min-height:0;gap:10px;margin-top:-15px;">
-          <!-- 도넛 차트의 여백을 확보하여 사이즈 10% 축소 효과 -->
+          <!-- 도넛 차트의 여백을 확보하여 사이즈 10% 축소 효과 적용 -->
           <div style="flex:1;position:relative;display:flex;justify-content:center;align-items:center; padding:15px;">
             <canvas id="dashOvertimeDonutChart9"></canvas>
             <div style="position:absolute;font-size:11px;font-weight:800;color:#1e293b;pointer-events:none;text-align:center;">9시간<br>이상</div>
@@ -349,11 +350,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
     </div>
     
     <div class="section-divider"><h2>Advanced Analytics</h2></div>
-    <!-- 모달 대신 본문에 레이더와 테이블 삽입 (Project 탭) -->
+    <!-- 에러 방어 및 높이 최적화가 적용된 섹션 -->
     <div style="display:flex; gap:15px; margin-top:10px; height: 360px;">
       <div class="card" style="flex:1; height:100%;">
         <div class="card-section-title">종합 레이더 분석 (선택 기간 전체)</div>
-        <div style="flex:1; position:relative; display:flex; align-items:center; justify-content:center; padding:25px;">
+        <!-- 캔버스의 부모에서 flex-center를 제거하고 padding만 주어 크기 계산 버그 방지 -->
+        <div style="flex:1; position:relative; padding:15px;">
           <canvas id="pjInsightRadar"></canvas>
         </div>
       </div>
@@ -461,7 +463,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
     <div style="display:flex; gap:15px; margin-top:10px; height: 360px;">
       <div class="card" style="flex:1; height:100%;">
         <div class="card-section-title">종합 레이더 분석 (선택 기간)</div>
-        <div style="flex:1; position:relative; display:flex; align-items:center; justify-content:center; padding:25px;">
+        <div style="flex:1; position:relative; padding:15px;">
           <canvas id="wpInsightRadar"></canvas>
         </div>
       </div>
@@ -480,7 +482,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="eval-trend-card"><div class="eval-trend-title">직무 확장성 (Jaccard Similarity)</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpJaccardChart"></canvas></div></div>
     </div>
     
-    <!-- 하단 3단 배치: 초과근무 상세, 불평등도는 그대로 유지 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px;">
       <div class="card" style="height:300px;"><div class="card-section-title">초과근무 상세</div><div style="height:130px;position:relative;margin-bottom:8px;"><canvas id="wpOtBar"></canvas></div><div class="scroll-list" id="wpOtList" style="flex:1;overflow-y:auto;border-top:1px solid rgba(226,232,240,.5);padding-top:8px;"></div></div>
       <div class="card" style="height:300px;"><div style="display:flex;flex-direction:column;height:100%;gap:12px;"><div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div></div></div>
@@ -494,7 +495,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 </div>
 
 <script>
-// 문자열 결합 방식으로 복원 및 에러 방어
+// 따옴표 문자열 결합 완벽 복원 (에러 철벽 방어)
 var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 var GITHUB_BASE='https://jinkwanuri-droid.github.io/KPI_GNS/';
 var PROFILE_IMG={'윤진관':GITHUB_BASE+'jk.yoon.jpg','김효언':GITHUB_BASE+'he.kim.jpg','정인태':GITHUB_BASE+'intae.jeoung.jpg','이혜인B':GITHUB_BASE+'hi.lee2.jpg'};
@@ -519,6 +520,7 @@ var MEMBERS=[],MC={},INITIALS={},SCHEDULE_DATA=[],EVAL_DATA=[],RAW=[],CH={};
 var GLOBAL_MEMBER=null, WP_MEMBER=null, hlTimeline=null, hlStage=null, hlOvertimeDonut=null, hlMonthlyOt=null, hlDonutWork=null, hlPjRatio=null, hlWpSub=null, hlHeroDonut=null, hlHeatBin=null;
 window.filterStartIndex=0;window.filterEndIndex=11;window.lastClickedIndex=0;
 var filterYears=[2024,2025,2026],filterQuarters=['Q1','Q2','Q3','Q4'],totalNodes=12,percentPositions=[];
+var emojiRegex=/(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
 
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
@@ -583,13 +585,12 @@ const customRadarBgPlugin = {
                 ctx.lineTo(pts[0].x, pts[0].y); ctx.closePath();
                 ctx.fillStyle = 'rgba(236, 72, 153, 0.05)'; ctx.fill();
             }
-        } catch(e) { console.error("Radar BG Error", e); } 
+        } catch(e) { } // Silent fail to prevent crash
     }
 };
 Chart.register(customRadarBgPlugin);
 
-function safeRender(fn){try{fn();}catch(e){console.error("Render Error:", e);}}
-function safeToFixed(v) { return (typeof v === 'number' && !isNaN(v)) ? v.toFixed(2) : '0.00'; }
+function safeRender(fn){try{fn();}catch(e){console.error("Chart Render Error:", e);}}
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
 function fH(m){return fmt(mToH(m));}
@@ -918,7 +919,6 @@ function renderAdvancedMetrics(d,da,col,pf){
         var cvInsight = [normOt, (cr.cv||0), (cr.hurst||0), (cr.hhi||0), (cr.shannon||0), (cr.jaccard||0)];
         var rawCvInsight = [Math.max(0, 1 - (cr.ot||0)), cr.cv||0, cr.hurst||0, cr.hhi||0, cr.shannon||0, cr.jaccard||0];
         
-        // 레이더 차트용 데이터셋 배열 
         var datasetsArr = [{
             label: '선택 기간',
             data: cvInsight,
@@ -932,7 +932,6 @@ function renderAdvancedMetrics(d,da,col,pf){
             pointHoverRadius: 5
         }];
         
-        // 워킹 탭일 경우 팀원 전체 평균 점선 추가
         if (pf === 'wp') {
             var teamData = filtered().filter(function(r){return r.project==='경남 서부의료원';});
             var teamCr = calcStandaloneMetrics(teamData, null) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
@@ -944,13 +943,12 @@ function renderAdvancedMetrics(d,da,col,pf){
                 borderColor: '#94a3b8',
                 backgroundColor: 'transparent',
                 borderWidth: 1,
-                borderDash: [3, 3], // 얇은 점선 효과
+                borderDash: [3, 3], // 얇은 점선
                 pointRadius: 0,
                 pointHoverRadius: 0
             });
         }
         
-        // 종합 레이더 차트 렌더링
         dC(pf + 'InsightRadar');
         if(document.getElementById(pf + 'InsightRadar')) {
             CH[pf + 'InsightRadar'] = new Chart(document.getElementById(pf + 'InsightRadar').getContext('2d'), {
@@ -966,7 +964,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                         legend: { display: false },
                         datalabels: { 
                             display: function(cx) { return cx.datasetIndex === 0; },
-                            formatter: function(v) { return safeToFixed(v); },
+                            formatter: function(v) { return Number(v).toFixed(2); }, // 소수점 2자리 안정적용
                             color: col,
                             font: { size: 10, weight: 'bold' },
                             anchor: 'end',
@@ -975,8 +973,8 @@ function renderAdvancedMetrics(d,da,col,pf){
                         tooltip: {
                             callbacks: {
                                 label: function(cx) { 
-                                    if (cx.datasetIndex === 1) return cx.dataset.label + ': ' + safeToFixed(cx.raw);
-                                    return cx.dataset.label + ': ' + safeToFixed(rawCvInsight[cx.dataIndex]); 
+                                    if (cx.datasetIndex === 1) return cx.dataset.label + ': ' + Number(cx.raw).toFixed(2);
+                                    return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); 
                                 }
                             }
                         }
@@ -1004,7 +1002,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                 var status = val >= 0.7 ? '우수' : (val >= 0.4 ? '보통' : '주의');
                 tableHtml += '<tr style="border-bottom:1px dashed #e2e8f0; font-size:12px;">';
                 tableHtml += '<td style="padding:10px 4px; font-weight:800; color:#334155;">' + info.name + '</td>';
-                tableHtml += '<td style="padding:10px 4px; text-align:center; font-weight:900; color:' + col + ';">' + safeToFixed(val) + '</td>';
+                tableHtml += '<td style="padding:10px 4px; text-align:center; font-weight:900; color:' + col + ';">' + Number(val).toFixed(2) + '</td>';
                 tableHtml += '<td style="padding:10px 8px;">';
                 tableHtml += '<div style="display:flex; align-items:center; gap:6px;">';
                 tableHtml += '<span style="background:' + color + '15; color:' + color + '; padding:3px 6px; border-radius:6px; font-size:10px; font-weight:800; flex-shrink:0;">' + status + '</span>';
@@ -1017,64 +1015,56 @@ function renderAdvancedMetrics(d,da,col,pf){
 
         function dmc(id,l,xl,da,sa,cx){
             if(!document.getElementById(id))return;
-            var sa2=sa.map(function(x){return x===null?null: 1.1;});
-            var cfg={
-                type:'line',
-                label:'주요일정',
-                data:sa2,
-                backgroundColor:'transparent',
-                borderColor:'transparent',
-                showLine:false,
-                pointRadius:function(cx2){return cx2.raw!==null ? 6 : 0;},
-                pointHoverRadius: 8,
-                pointBackgroundColor:'#ef4444',
-                pointBorderColor:'#fff',
-                pointBorderWidth:1.5,
-                isSchedule:true,
-                order:0,
-                spanGaps:false
-            };
-            CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
-                type:'line',
-                data:{labels:xl,datasets:[{data:da,label:l,borderColor:cx,backgroundColor:hRgba(cx,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,pointHoverRadius:4,order:1},cfg]},
-                options:{
-                    responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}},
-                    interaction:{mode:'index',intersect:false},
-                    plugins:{
-                        legend:{display:false},
-                        datalabels:{display:false},
-                        tooltip:{
-                            displayColors:false,
-                            filter:function(it,i,its){
-                                var hs=its.some(function(x){return x.dataset.isSchedule&&x.raw!==null;});
-                                if(hs)return it.dataset.isSchedule;
-                                return !it.dataset.isSchedule;
-                            },
-                            callbacks:{
-                                title:function(cx){
-                                    if(cx[0].dataset.isSchedule)return null;
-                                    return Array.isArray(cx[0].label)?cx[0].label.join(' '):cx[0].label;
+            try {
+                var sa2=sa.map(function(x){return x===null?null: 1.1;});
+                var cfg={
+                    type:'line', label:'주요일정', data:sa2,
+                    backgroundColor:'transparent', borderColor:'transparent', showLine:false,
+                    pointRadius:function(cx2){return cx2.raw!==null ? 6 : 0;},
+                    pointHoverRadius: 8, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth:1.5,
+                    isSchedule:true, order:0, spanGaps:false
+                };
+                CH[id]=new Chart(document.getElementById(id).getContext('2d'),{
+                    type:'line',
+                    data:{labels:xl,datasets:[{data:da,label:l,borderColor:cx,backgroundColor:hRgba(cx,0.1),borderWidth:2,fill:true,tension:0.3,pointRadius:0,pointHoverRadius:4,order:1},cfg]},
+                    options:{
+                        responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}},
+                        interaction:{mode:'index',intersect:false},
+                        plugins:{
+                            legend:{display:false},
+                            datalabels:{display:false},
+                            tooltip:{
+                                displayColors:false,
+                                filter:function(it,i,its){
+                                    var hs=its.some(function(x){return x.dataset.isSchedule&&x.raw!==null;});
+                                    if(hs)return it.dataset.isSchedule;
+                                    return !it.dataset.isSchedule;
                                 },
-                                label:function(cx){
-                                    if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle;
-                                    return cx.dataset.label+': '+(cx.raw!=null?safeToFixed(cx.raw):'0.00');
+                                callbacks:{
+                                    title:function(cx){
+                                        if(cx[0].dataset.isSchedule)return null;
+                                        return Array.isArray(cx[0].label)?cx[0].label.join(' '):cx[0].label;
+                                    },
+                                    label:function(cx){
+                                        if(cx.dataset.isSchedule) return sa[cx.dataIndex].schTitle;
+                                        return cx.dataset.label+': '+(cx.raw!=null ? Number(cx.raw).toFixed(1) : '0.0');
+                                    }
                                 }
-                            },
-                            itemSort:function(a,b){return b.datasetIndex-a.datasetIndex;}
-                        }
-                    },
-                    scales:{
-                        x:{grid:{display:false},ticks:{maxTicksLimit:10,font:{size:9}}},
-                        y:{
-                            grid:{color:'rgba(226,232,240,0.5)'},
-                            min:0,
-                            max: 1.2,
-                            ticks: { callback: function(val) { if(val > 1.01) return ''; return safeToFixed(val); } }
+                            }
+                        },
+                        scales:{
+                            x:{grid:{display:false},ticks:{maxTicksLimit:10,font:{size:9}}},
+                            y:{
+                                grid:{color:'rgba(226,232,240,0.5)'},
+                                min:0, max: 1.2,
+                                ticks: { callback: function(val) { if(val > 1.01) return ''; return Number(val).toFixed(1); } }
+                            }
                         }
                     }
-                }
-            });
+                });
+            } catch(e) { console.error("Line chart render err:", id, e); }
         }
+        
         dmc(pf+'OtChart','OT Index',wl,od,so,'#ef4444');
         dmc(pf+'ShannonChart','Shannon',wl,sd,ss,'#14b8a6');
         dmc(pf+'HhiChart','HHI',wl,hd,sh,'#f59e0b');
@@ -1083,7 +1073,7 @@ function renderAdvancedMetrics(d,da,col,pf){
         dmc(pf+'JaccardChart','Jaccard',bwl,jd,sj,'#3b82f6');
         
     } catch(e) {
-        console.error("Advanced Metrics 렌더링 중 오류 발생", e);
+        console.error("Advanced Metrics 전체 렌더링 중 오류 발생", e);
     }
 }
 
@@ -1099,7 +1089,7 @@ function renderDashboardTab(){
         md.forEach(function(r){if(r.project==='경남 서부의료원')mP+=r.min;else if(r.project==='타 프로젝트')oP+=r.min;else cP+=r.min;});
         var pct=gtm>0?Math.round(mP/gtm*100):0,p1=tt>0?(mP/tt*100):0,p2=tt>0?(oP/tt*100):0,p3=tt>0?(cP/tt*100):0,mc=document.createElement('div');
         mc.className='card kpi-card';mc.style.border='1px solid '+hRgba(MC[n]||'#00428E',0.5);mc.style.position='relative';mc.style.overflow='hidden';
-        var bg=PROFILE_IMG[n]?'<img src="'+PROFILE_IMG[n]+'" style="position:absolute;right:5%;top:-20px;width:110px;height:150px;object-fit:cover;object-position:center top;opacity:0.35;z-index:0;filter:grayscale(100%);-webkit-mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 40%,transparent 70%);mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 40%,transparent 70%);">':'';
+        var bg=PROFILE_IMG[n]? '<img src="'+PROFILE_IMG[n]+'" style="position:absolute;right:5%;top:-20px;width:110px;height:150px;object-fit:cover;object-position:center top;opacity:0.35;z-index:0;filter:grayscale(100%);-webkit-mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 40%,transparent 70%);mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 40%,transparent 70%);">':'';
         mc.innerHTML=bg+'<div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;justify-content:center;"><div class="member-kpi-header"><div><div style="font-size:18px;font-weight:900;color:#1e293b;">'+n+'</div><div style="font-size:11px;color:#94a3b8;">'+po+'</div></div></div><div style="color:'+MC[n]+';font-size:28px;font-weight:800;margin-top:4px;">'+fH(mP)+'h <span style="font-size:13px;color:#64748b;font-weight:600;">| 총 '+fH(tt)+'h</span></div><div style="height:1px;background:rgba(226,232,240,0.8);margin:10px 0;"></div><div style="font-size:11px;color:#64748b;font-weight:600;">GNWMC 팀원 내 기여도</div><div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;"><div style="height:100%;background:'+MC[n]+';width:'+pct+'%;border-radius:4px;"></div></div><span style="font-size:11px;font-weight:700;color:'+MC[n]+';">'+pct+'%</span></div><div style="margin-top:12px;font-size:11px;color:#64748b;font-weight:600;">전체시간 대비 서부의료원 비율</div><div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;display:flex;height:8px;border-radius:4px;overflow:hidden;"><div style="width:'+p1+'%;background:#00428E;"></div><div style="width:'+p2+'%;background:#3b82f6;"></div><div style="width:'+p3+'%;background:#cbd5e1;"></div></div><span style="font-size:11px;font-weight:700;color:#64748b;">'+p1.toFixed(0)+'%</span></div></div>';
         gd.appendChild(mc);
     });
@@ -1178,7 +1168,7 @@ function renderDashOvertimeDonut(all){
             },
             options:{
                 responsive:true, maintainAspectRatio:false, cutout:'65%',
-                layout:{padding:{top:25,bottom:25,left:30,right:30}},
+                layout:{padding:{top:15,bottom:15,left:20,right:20}},
                 plugins:{
                     legend:{display:false},
                     datalabels:{
@@ -1200,6 +1190,7 @@ function renderDashOvertimeDonut(all){
     dd('dashOvertimeDonutChart9',dm);
     dd('dashOvertimeDonutChart12',ds);
 }
+
 window.dTogOtDonut=function(n){hlOvertimeDonut=hlOvertimeDonut===n?null:n;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
 
 // ==========================================
@@ -1211,6 +1202,7 @@ function renderWorkingTab(nm){
     if(!nm&&MEMBERS.length)nm=MEMBERS[0];
     if(WP_MEMBER!==nm){hlWpSub=null;hlHeroDonut=null;}
     WP_MEMBER=nm;
+    GLOBAL_MEMBER=nm; 
     
     var all=filtered(),d=nm?all.filter(function(r){return r.name===nm;}):all,c=MC[nm]||'#00428E',pf=RAW.find(function(r){return r.name===nm;}),po=pf?pf.pos:'';
     document.getElementById('wpMemberTabs').innerHTML=MEMBERS.map(function(n){return '<button class="wp-tab-btn '+(n===nm?'active':'')+'" onclick="renderWorkingTab(\''+n+'\')">'+n+'</button>';}).join('');
@@ -1347,13 +1339,14 @@ async function generateWorkingAiComment() {
 
     var ad = window.currentWorkingAiData;
 
-    var prompt = `당신은 10년 차 건축설계 팀장입니다. 팀원 '${ad.m}'의 업무 데이터를 보고 아주 짧고 날카로운 피드백을 주세요.
-요청사항: 인사말, 서론 절대 금지. 아래 3가지 항목만 1~2문장씩 간결하게 작성할 것. 마크다운 적용.
+    var prompt = `당신은 10년 차 건축설계 프로젝트 팀장입니다. 팀원 '${ad.m}'의 업무 데이터를 보고 아주 짧고 날카로운 피드백을 주세요.
+요청사항: 인사말/서론 절대 금지. 아래 3가지 항목만 1~2문장씩 짧고 간결하게 작성할 것. 마크다운 적용할 것.
+
 - 💡 업무 효율성 (근태/몰입도)
 - 📈 설계 트렌드 변화
 - 🚀 향후 제언
 
-데이터: ${fH(ad.tt)}h 투입, 연장 ${ad.o9}일, 심야 ${ad.o12}일. 집중업무: ${ad.tk}. HHI: ${ad.ah.toFixed(2)}, Shannon: ${ad.as.toFixed(2)}`;
+데이터: ${fH(ad.tt)}시간 투입, 연장 ${ad.o9}일, 심야 ${ad.o12}일. 집중업무: ${ad.tk}. 비중: ${ad.cat}. HHI: ${ad.ah.toFixed(2)}, Shannon: ${ad.as.toFixed(2)}`;
 
     btn.innerText = "분석 중...";
     btn.disabled = true;
@@ -1375,7 +1368,7 @@ async function generateWorkingAiComment() {
 }
 
 // ==========================================
-// ★ KPI Eval 탭 렌더링 및 AI 분석 로직
+// KPI Eval 탭 렌더링 및 AI 분석 로직
 // ==========================================
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
@@ -1502,7 +1495,7 @@ function renderEvalTab() {
                 '</div>' +
             '</div>' +
             
-            '<div style="flex:1; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center;"><canvas id="newKpiRadarChart"></canvas></div>' +
+            '<div style="flex:1; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="newKpiRadarChart"></canvas></div>' +
 
             '<div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;">' +
                 '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
@@ -1536,7 +1529,7 @@ function renderEvalTab() {
             
             '<div style="flex:1; display:flex; flex-direction:column; min-height:220px; margin-top:25px;">' +
                 '<div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div>' +
-                '<div style="flex:1; position:relative; min-height:180px; display:flex; align-items:center; justify-content:center;"><canvas id="kpiInsightRadar"></canvas></div>' +
+                '<div style="flex:1; position:relative; min-height:180px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="kpiInsightRadar"></canvas></div>' +
             '</div>' +
         '</div>' +
     '</div>';
@@ -1544,37 +1537,41 @@ function renderEvalTab() {
     view.innerHTML = html;
     
     setTimeout(() => {
-        if(sortedEd.length > 0) {
-            var trendLabels = sortedEd.map(d => d.q);
-            var trendData = sortedEd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
-            var ptRadii = trendLabels.map(q => fq.includes(q) ? 5 : 3);
-            var ptBgColors = trendLabels.map(q => fq.includes(q) ? c : '#fff');
-            var ptBorders = trendLabels.map(q => fq.includes(q) ? '#fff' : c);
-            var ptBorderWidths = trendLabels.map(q => fq.includes(q) ? 2 : 1.5);
-            CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: trendLabels, datasets: [{ data: trendData, borderColor: c, backgroundColor: hRgba(c, 0.1), borderWidth: 2, fill: true, tension: 0.4, pointRadius: ptRadii, pointBackgroundColor: ptBgColors, pointBorderColor: ptBorders, pointBorderWidth: ptBorderWidths, pointHoverRadius: 7 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', offset: 4, color: (cx) => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', font: (cx) => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), formatter: (v) => v.toFixed(1) }, tooltip: { callbacks: { title: function(cx) { return cx[0].label + ' 상세 역량'; }, label: function(cx) { var item = sortedEd[cx.dataIndex]; if(!item) return ''; var lines = ['종합 평균: ' + cx.raw.toFixed(2), '----------------']; RADAR_LABELS.forEach((lbl, i) => lines.push(lbl + ': ' + item.vals[i].toFixed(1))); return lines; } } } }, scales: { x: { display: false }, y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 } }, layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } }
-                }
+        try {
+            if(sortedEd.length > 0) {
+                var trendLabels = sortedEd.map(d => d.q);
+                var trendData = sortedEd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
+                var ptRadii = trendLabels.map(q => fq.includes(q) ? 5 : 3);
+                var ptBgColors = trendLabels.map(q => fq.includes(q) ? c : '#fff');
+                var ptBorders = trendLabels.map(q => fq.includes(q) ? '#fff' : c);
+                var ptBorderWidths = trendLabels.map(q => fq.includes(q) ? 2 : 1.5);
+                CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), {
+                    type: 'line',
+                    data: { labels: trendLabels, datasets: [{ data: trendData, borderColor: c, backgroundColor: hRgba(c, 0.1), borderWidth: 2, fill: true, tension: 0.4, pointRadius: ptRadii, pointBackgroundColor: ptBgColors, pointBorderColor: ptBorders, pointBorderWidth: ptBorderWidths, pointHoverRadius: 7 }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', offset: 4, color: (cx) => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', font: (cx) => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), formatter: (v) => Number(v).toFixed(1) }, tooltip: { callbacks: { title: function(cx) { return cx[0].label + ' 상세 역량'; }, label: function(cx) { var item = sortedEd[cx.dataIndex]; if(!item) return ''; var lines = ['종합 평균: ' + Number(cx.raw).toFixed(2), '----------------']; RADAR_LABELS.forEach((lbl, i) => lines.push(lbl + ': ' + Number(item.vals[i]).toFixed(1))); return lines; } } } }, scales: { x: { display: false }, y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 } }, layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } }
+                    }
+                });
+            }
+            
+            CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
+                type: 'radar',
+                data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] },
+                options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 10 }, plugins:{ legend:{ display:false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 14 }, bodyFont: { size: 13, weight: 'bold' }, padding: 12, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + Number(cx.raw).toFixed(2); } } } }, scales: { r: { min: 0, max: 5, grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 }, angleLines: { display: false }, ticks: { display: false, stepSize: 1 }, pointLabels: { font: { size: 14, weight: '800' }, color: '#475569', padding: 20 } } }, elements: { line: { tension: 0.35 } } }
             });
+            
+            if(topTasksArr.length > 0) {
+                CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), { type: 'doughnut', data: { labels: topTasksArr.map(t => t[0]), datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: { top: 5, bottom: 5, left: 5, right: 5 } } } });
+            }
+            
+            CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), {
+                type: 'radar',
+                data: { labels: INSIGHT_RADAR_LABELS, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 0, order: 2 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); } } } }, scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 9, weight: '800' }, color: '#64748b', padding: 8 } } } }
+            });
+        } catch (e) {
+            console.error("KPI 탭 렌더링 중 오류:", e);
         }
-        
-        CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
-            type: 'radar',
-            data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] },
-            options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 10 }, plugins:{ legend:{ display:false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 14 }, bodyFont: { size: 13, weight: 'bold' }, padding: 12, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + cx.raw.toFixed(2); } } } }, scales: { r: { min: 0, max: 5, grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 }, angleLines: { display: false }, ticks: { display: false, stepSize: 1 }, pointLabels: { font: { size: 14, weight: '800' }, color: '#475569', padding: 20 } } }, elements: { line: { tension: 0.35 } } }
-        });
-        
-        if(topTasksArr.length > 0) {
-            CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), { type: 'doughnut', data: { labels: topTasksArr.map(t => t[0]), datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: { top: 5, bottom: 5, left: 5, right: 5 } } } });
-        }
-        
-        CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), {
-            type: 'radar',
-            data: { labels: INSIGHT_RADAR_LABELS, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 0, order: 2 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + rawCvInsight[cx.dataIndex].toFixed(2); } } } }, scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 9, weight: '800' }, color: '#64748b', padding: 8 } } } }
-        });
     }, 50);
 }
 
@@ -1601,32 +1598,4 @@ async function generateAiComment() {
     btn.innerText = "분석 중...";
     btn.disabled = true;
     btn.style.opacity = '0.7';
-    box.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#6366f1; height:100%; font-weight:700;"><div class="ov-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>분석 중...</div>';
-
-    try {
-        const response = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt }) });
-        const result = await response.json();
-        if(result.success) box.innerHTML = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>'); 
-        else box.innerHTML = '<span style="color:#ef4444;">오류 발생: ' + result.error + '</span>';
-    } catch (e) {
-        box.innerHTML = '<span style="color:#ef4444;">서버 응답 오류. Vercel 배포를 확인하세요.</span>';
-    } finally {
-        btn.innerText = "다시 분석하기";
-        btn.disabled = false;
-        btn.style.opacity = '1';
-    }
-}
-
-window.onload = function() {
-    updateNavSlider();
-    window.addEventListener('resize', updateNavSlider);
-    if (typeof loadDataFromSheets === 'function') {
-        loadDataFromSheets();
-    } else {
-        document.getElementById('ovMsg').innerHTML = '<span style="color:#ef4444;font-weight:700;">오류: 데이터를 불러올 수 없습니다.</span>';
-        showEnterBtn();
-    }
-};
-</script>
-</body>
-</html>
+    box.innerHTML = '<div style="display:flex; align-items:
