@@ -1598,4 +1598,33 @@ async function generateAiComment() {
     btn.innerText = "분석 중...";
     btn.disabled = true;
     btn.style.opacity = '0.7';
-    box.innerHTML = '<div style="display:flex; align-items:
+    box.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#6366f1; height:100%; font-weight:700;"><div class="ov-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>분석 중...</div>';
+    
+    try {
+        const response = await fetch('/api/gemini', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ prompt: prompt }) 
+        });
+        const result = await response.json();
+        if(result.success) {
+            box.innerHTML = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>');
+        } else {
+            box.innerHTML = '<span style="color:#ef4444;">오류 발생: ' + result.error + '</span>';
+        }
+    } catch (e) {
+        box.innerHTML = '<span style="color:#ef4444;">서버 응답 오류</span>';
+    } finally {
+        btn.innerText = "분석 요청하기";
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+}
+
+// 🚀 [중요] 페이지가 로드되면 데이터를 가져오는 함수 실행
+window.addEventListener('DOMContentLoaded', function() {
+    loadDataFromSheets();
+});
+</script>
+</body>
+</html>
