@@ -1045,7 +1045,19 @@ async function generateAiComment() {
     }
 }
 
-document.addEventListener('DOMContentLoaded',function(){updateNavSlider();window.addEventListener('resize',updateNavSlider);loadDataFromSheets();});
+// 페이지 로드 완료 시 초기화 (무한 로딩 방지)
+window.onload = function() {
+    updateNavSlider();
+    window.addEventListener('resize', updateNavSlider);
+    
+    // 데이터 불러오기 시작
+    if (typeof loadDataFromSheets === 'function') {
+        loadDataFromSheets();
+    } else {
+        document.getElementById('ovMsg').innerHTML = '<span style="color:#ef4444;font-weight:700;">오류: 데이터를 불러올 수 없습니다.</span>';
+        showEnterBtn();
+    }
+};
 </script>
 </body>
 </html>
