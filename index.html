@@ -86,7 +86,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .reset-btn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;background:transparent;border:none;color:#94a3b8;cursor:pointer;border-radius:50%;transition:all .2s;}
 .reset-btn:hover{background:#F0F5FA;color:#00428E;}
 
-/* ✨ 플로팅 드롭다운 필터 */
+/* ✨ 플로팅 드롭다운 필터 (알약 애니메이션) */
 .floating-member-select { position:fixed; top:85px; right:30px; z-index:1999; opacity:0; visibility:hidden; transform:translateY(-15px); transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .floating-member-select.show { opacity:1; visibility:visible; transform:translateY(0); }
 .fm-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; }
@@ -144,6 +144,55 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .info-tooltip li{word-break:keep-all;margin-bottom:4px;}
 .info-tooltip b{color:#93c5fd;font-weight:800;}
 
+/* 🛠️ [복구됨] Working 탭 영웅영역 CSS 완벽 복구 */
+.wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);height:480px;min-height:480px;max-height:480px;display:flex;}
+.wp-hero-inner{display:grid;grid-template-columns:300px 1fr 400px;width:100%;height:100%;position:relative;z-index:2;}
+.wp-hero-profile{position:relative;overflow:hidden;border-right:1px solid rgba(147,197,253,0.25);display:flex;flex-direction:column;}
+.wp-hero-profile-bg{position:absolute;top:10%;left:-5%;width:220px;height:280px;object-fit:cover;object-position:center top;z-index:0;opacity:0.8;border-radius:20px;-webkit-mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,rgba(0,0,0,1) 40%,rgba(0,0,0,0) 80%);mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,rgba(0,0,0,1) 40%,rgba(0,0,0,0) 80%);}
+.wp-hero-profile-content{position:relative;z-index:1;padding:24px 20px;flex:1;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;}
+.wp-hero-tabs{width:100%;display:flex;overflow-x:auto;gap:4px;padding-bottom:16px;scrollbar-width:none;}
+.wp-hero-tabs::-webkit-scrollbar{display:none;}
+.wp-tab-btn{flex-shrink:0;padding:5px 12px;border:1px solid rgba(203,213,225,.4);border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.5);color:#64748b;transition:all .2s;}
+.wp-tab-btn.active{background:#00428E;color:#fff;border-color:transparent;}
+.wp-tab-btn:hover:not(.active){background:rgba(255,255,255,.8);color:#00428E;}
+.wp-profile-info{display:flex;justify-content:flex-end;align-items:baseline;gap:8px;margin-top:auto;margin-bottom:10px;}
+.wp-profile-name{font-size:24px;font-weight:900;color:#1e293b;letter-spacing:-.03em;}
+.wp-profile-pos{font-size:13px;color:#64748b;font-weight:700;}
+.wp-contrib-bar-wrap{width:100%;background:rgba(255,255,255,.6);border-radius:10px;padding:12px;border:1px solid rgba(147,197,253,.25);display:flex;flex-direction:column;gap:6px;}
+.wp-contrib-label{font-size:11px;color:#475569;font-weight:700;white-space:nowrap;}
+.wp-contrib-bar{height:8px;background:rgba(203,213,225,.4);border-radius:4px;overflow:hidden;}
+.wp-contrib-bar-fill{height:100%;border-radius:4px;transition:width .8s ease;background:linear-gradient(90deg,#00428E,#38bdf8);}
+.wp-contrib-bar-fill.second{background:linear-gradient(90deg,#c026d3,#ec4899);}
+.wp-contrib-pct{font-size:11px;font-weight:800;color:#00428E;white-space:nowrap;}
+.wp-hero-center{padding:30px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;}
+.wp-ai-box{flex:1;background:rgba(255,255,255,.55);border:1px solid rgba(147,197,253,.3);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;}
+.wp-ai-header{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:900;color:#3730a3;}
+.wp-ai-gem-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;}
+.wp-stats-row{display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:12px;}
+.wp-stat-mini{background:rgba(255,255,255,.6);border:1px solid rgba(147,197,253,.3);border-radius:14px;padding:16px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;}
+.wp-stat-mini .label{font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px;}
+.wp-stat-mini .value{font-size:24px;font-weight:900;line-height:1;}
+.wp-stat-mini .unit{font-size:12px;font-weight:700;color:#94a3b8;margin-left:2px;}
+.wp-stat-mini .sub{font-size:11px;color:#94a3b8;margin-top:5px;font-weight:600;}
+.wp-hero-right{padding:30px 20px;display:flex;flex-direction:column;gap:20px;border-left:1px solid rgba(147,197,253,.25);overflow-y:auto;}
+.wp-right-title{font-size:12px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.05em;}
+.wp-donut-row{display:flex;flex-direction:row;align-items:center;justify-content:space-around;gap:15px;}
+.wp-donut-canvas-wrap{width:110px;height:110px;position:relative;flex-shrink:0;}
+.wp-top5-list{flex:1;display:flex;flex-direction:column;gap:4px;}
+.wp-top5-item{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:#334155;background:rgba(255,255,255,0.4);padding:4px 8px;border-radius:6px;cursor:pointer;transition:all .2s;}
+.wp-top5-item:hover{background:rgba(255,255,255,.7);}
+.wp-top5-item.dimmed{opacity:.3;}
+.wp-top5-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.wp-top5-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wp-top5-pct{color:#64748b;font-size:11px;font-weight:800;}
+.wp-metrics-badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wp-metric-badge{display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,.5);border:1px solid rgba(147,197,253,.25);border-radius:10px;padding:10px;text-align:center;}
+.wp-metric-badge .name{color:#64748b;font-size:10px;font-weight:700;margin-bottom:4px;}
+.wp-metric-badge .val{font-size:16px;font-weight:900;}
+.wp-metric-badge.good .val{color:#22c55e;}
+.wp-metric-badge.warn .val{color:#f59e0b;}
+.wp-metric-badge.danger .val{color:#ef4444;}
+
 /* KPI 리디자인 전용 CSS 추가 */
 .kpi-layout { display: grid; grid-template-columns: 340px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 750px; align-items: stretch; }
 .kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); position: relative; overflow-y: auto; justify-content: space-between; gap: 15px; }
@@ -173,11 +222,6 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .ai-insight-content h3:first-child { margin-top:0; }
 .ai-insight-content p { margin-bottom:10px; }
 
-/* Working 탭 AI Content 전용 */
-.wp-ai-box{flex:1;background:rgba(255,255,255,.55);border:1px solid rgba(147,197,253,.3);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;}
-.wp-ai-header{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:900;color:#3730a3;}
-.wp-ai-gem-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;}
-
 @media(max-width:1200px){
   .wp-hero-inner{grid-template-columns:1fr;}
   .wp-hero{height:auto;max-height:none;}
@@ -198,6 +242,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
   <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
   <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
   <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
+  <!-- 4개의 로딩 구슬 -->
   <div class="ld-orb ld-orb-1"></div>
   <div class="ld-orb ld-orb-2"></div>
   <div class="ld-orb ld-orb-3"></div>
@@ -528,11 +573,13 @@ function showView(v,el){
     el.classList.add('active');
     updateNavSlider();
     
+    // 플로팅 필터 표시 로직 (Project 탭 외에서만 표시)
     var floatingFilter = document.getElementById('globalMemberSelectWrap');
     if(v === 'members' || v === 'kpieval') {
         floatingFilter.classList.add('show');
     } else {
         floatingFilter.classList.remove('show');
+        // 다른 탭으로 갈 때 열려있던 드롭다운도 닫기
         document.getElementById('fmOptions').classList.remove('open');
     }
 
@@ -1080,7 +1127,7 @@ function renderWpStackedBar(d,mos){
         },
         options:{
             responsive:true, maintainAspectRatio:false, layout:{padding:{top:15}},
-            // 툴팁이 차트를 다 가리지 않게 가장 가까운 단일 항목만 표시
+            // ★ 툴팁이 차트를 다 가리지 않게 마우스 근처의 단일 항목만 표시하도록 수정
             interaction: { mode: 'nearest', intersect: true },
             plugins:{
                 legend:{display:false},
