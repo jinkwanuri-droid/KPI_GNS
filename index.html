@@ -1045,7 +1045,9 @@ async function generateAiComment() {
     }
 }
 
-// 페이지 로드 완료 시 초기화 (무한 로딩 방지)
+// ==========================================
+// 앱 초기화 및 데이터 로드 (무한 로딩 해결)
+// ==========================================
 window.onload = function() {
     updateNavSlider();
     window.addEventListener('resize', updateNavSlider);
