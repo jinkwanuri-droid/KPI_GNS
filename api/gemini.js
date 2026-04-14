@@ -13,12 +13,12 @@ export default async function handler(req, res) {
         if (!apiKey) {
             return res.status(500).json({ 
                 success: false, 
-                error: 'Vercel 환경변수에 GEMINI_API_KEY가 없습니다. (등록 후 반드시 Redeploy 하세요)' 
+                error: 'Vercel 환경변수에 GEMINI_API_KEY가 없습니다.' 
             });
         }
 
-        // Gemini 1.5 Flash 모델 API 엔드포인트
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        // 요청하신 모델명 'gemini-3-flash-preview' 적용
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
         // Gemini API 호출
         const response = await fetch(url, {
