@@ -9,7 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable',Pretendard,sans-serif!important;}
-body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-weight:600;color:#334155;background-color:#f4f7f9;}
+body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-weight:600;color:#334155;background-color:#f4f7f9;}
 .bg-container{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;background:#f4f7f9;}
 .orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:0.45;will-change:transform;}
 .orb-1{width:140px;height:140px;background:rgba(59,130,246,0.7);top:10%;left:10%;animation:fS 6s infinite alternate ease-in-out;}
@@ -46,8 +46,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 #ovEnterBtnWrap.show{opacity:1;visibility:visible;transform:translateY(0);}
 .ov-enter-btn{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:50px;padding:16px 50px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(59,130,246,.5);transition:all .3s ease;}
 .ov-enter-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(59,130,246,.6);}
-.topbar{position:fixed;top:0;left:0;right:0;height:75px;z-index:2000;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(244,247,249,0.5);backdrop-filter:blur(4px);border-bottom:1px solid transparent;transition:all .4s ease;}
-.topbar.scrolled{background:rgba(255,255,255,0.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,0.6);box-shadow:0 2px 24px rgba(99,102,241,0.06);}
+
+/* 상단바 페이드 효과 */
+.topbar { position:fixed; top:0; left:0; right:0; height:85px; z-index:2000; display:flex; align-items:center; justify-content:space-between; padding:0 30px; background:transparent; border:none; transition:all .4s ease; }
+.topbar::before { content:''; position:absolute; inset:0; z-index:-1; pointer-events:none; background:linear-gradient(to bottom, rgba(244,247,249,0.85) 0%, rgba(244,247,249,0) 100%); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); -webkit-mask-image:linear-gradient(to bottom, black 40%, transparent 100%); mask-image:linear-gradient(to bottom, black 40%, transparent 100%); transition:all .4s ease; }
+.topbar.scrolled::before { background:linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%); }
+
 .logo-container{display:flex;align-items:center;gap:15px;flex:1;}
 .logo-title{font-size:29px;font-weight:900;letter-spacing:-.05em;line-height:1;}
 .logo-divider{width:1px;height:32px;background:#cbd5e1;margin:0 5px;}
@@ -76,14 +80,19 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .summary-text{color:#00428E;font-weight:700;font-size:10px;background:#F0F5FA;padding:4px 8px;border-radius:6px;width:85px;text-align:center;}
 .reset-btn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;background:transparent;border:none;color:#94a3b8;cursor:pointer;border-radius:50%;transition:all .2s;}
 .reset-btn:hover{background:#F0F5FA;color:#00428E;}
+
+/* 플로팅 드롭다운 필터 */
+.floating-member-select { position:fixed; top:85px; right:30px; z-index:1999; opacity:0; visibility:hidden; transform:translateY(-15px); transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.floating-member-select.show { opacity:1; visibility:visible; transform:translateY(0); }
 .custom-select-wrap{position:relative;}
-.custom-select-trigger{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.9);border:1.5px solid #E1EDF7;border-radius:24px;padding:4px 8px 4px 4px;cursor:pointer;height:38px;min-width:60px;transition:all .2s;}
-.custom-select-trigger:hover{border-color:#00428E;}
+.custom-select-trigger{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.95);border:1.5px solid #E1EDF7;border-radius:24px;padding:4px 8px 4px 4px;cursor:pointer;height:38px;min-width:60px;transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+.custom-select-trigger:hover{border-color:#00428E; box-shadow:0 4px 15px rgba(0,66,142,0.15);}
 .custom-select-options{position:absolute;top:120%;right:0;background:rgba(255,255,255,.97);border:1px solid rgba(226,232,240,.8);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.1);display:none;flex-direction:column;overflow:hidden;z-index:3000;min-width:150px;}
 .custom-select-options.open{display:flex;}
 .custom-option{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#334155;transition:background .2s;}
 .custom-option:hover{background:#F0F5FA;color:#00428E;}
-.main{flex:1;padding:25px 30px;display:flex;flex-direction:column;gap:15px;width:100%;max-width:1500px;margin:0 auto;position:relative;z-index:10;}
+
+.main{flex:1;padding:15px 30px 25px;display:flex;flex-direction:column;gap:15px;width:100%;max-width:1500px;margin:0 auto;position:relative;z-index:10;}
 .view-section{display:none;animation:fadeIn .4s ease forwards;}
 .view-section.active{display:flex;flex-direction:column;gap:15px;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
@@ -210,7 +219,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
 .kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); position: relative; overflow-y: auto; }
 .kpi-panel::-webkit-scrollbar { width: 4px; }
 .kpi-panel::-webkit-scrollbar-thumb { background: rgba(203,213,225,0.6); border-radius: 4px; }
-.kpi-panel.center-panel { padding: 20px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); overflow: hidden;}
+.kpi-panel.center-panel { padding: 25px 30px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); overflow: hidden; gap: 15px;}
 /* 좌측 패널 구성요소 */
 .kpi-profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
 .kpi-big-score { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(203,213,225,0.6); }
@@ -334,12 +343,17 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:75px;font-w
       <div class="timeline-container"><div class="year-row" id="yearRow"></div><div class="track-row" id="trackRow"><div class="track-bg"></div><div class="track-active" id="trackActive"></div><div class="nodes-container" id="nodesContainer"></div></div></div>
       <div class="range-summary"><span class="summary-text" id="summaryText">-</span><button class="reset-btn" onclick="resetFilter()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button></div>
     </div>
-    <div class="custom-select-wrap" id="globalMemberSelectWrap">
-      <div class="custom-select-trigger" id="customSelectTrigger" onclick="toggleDropdown()"></div>
-      <div class="custom-select-options" id="customSelectOptions"></div>
-    </div>
   </div>
 </nav>
+
+<!-- 우측 상단 플로팅 멤버 선택 드롭다운 (Project 탭 외에서 등장) -->
+<div class="floating-member-select" id="globalMemberSelectWrap">
+  <div class="custom-select-wrap">
+    <div class="custom-select-trigger" id="customSelectTrigger" onclick="toggleDropdown()"></div>
+    <div class="custom-select-options" id="customSelectOptions"></div>
+  </div>
+</div>
+
 <div class="main">
   <!-- 대시보드 뷰 -->
   <div id="view-dashboard" class="view-section active">
@@ -582,6 +596,15 @@ function showView(v,el){
     document.getElementById('view-'+v).classList.add('active');
     el.classList.add('active');
     updateNavSlider();
+    
+    // 플로팅 필터 표시 로직 (Project 탭 외에서만 표시)
+    var floatingFilter = document.getElementById('globalMemberSelectWrap');
+    if(v === 'members' || v === 'kpieval') {
+        floatingFilter.classList.add('show');
+    } else {
+        floatingFilter.classList.remove('show');
+    }
+
     if(v==='members') renderWorkingTab(WP_MEMBER);
     else if(v==='kpieval') renderEvalTab();
     else renderDashboardTab();
@@ -1144,6 +1167,7 @@ function renderDashMonthlyOt(all,mos){dC('dashMonthlyOvertimeChart');var bd=['9~
 window.dTogMonthlyOt=function(b){hlMonthlyOt=hlMonthlyOt===b?null:b;var p=filtered().filter(function(r){return r.project==='경남 서부의료원';});renderDashMonthlyOt(p,getMos(p));renderDashOvertimeBars(p);};
 function renderDashOvertimeDonut(all){dC('dashOvertimeDonutChart9');dC('dashOvertimeDonutChart12');var dm=[],ds=[];MEMBERS.forEach(function(n){var pd={};all.filter(function(r){return r.name===n;}).forEach(function(r){pd[r.date]=(pd[r.date]||0)+r.min;});var o9=0,o12=0;Object.values(pd).forEach(function(m){if(m>=540)o9++;if(m>=720)o12++;});if(o9>0)dm.push({name:n,days:o9});if(o12>0)ds.push({name:n,days:o12});});document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(function(n){return '<div class="legend-item '+(hlOvertimeDonut!==null&&hlOvertimeDonut!==n?'dimmed':'')+'" onclick="dTogOtDonut(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>';}).join('');function dd(id,da){if(!da.length)return;CH[id]=new Chart(document.getElementById(id).getContext('2d'),{type:'doughnut',data:{labels:da.map(function(d){return d.name;}),datasets:[{data:da.map(function(d){return d.days;}),backgroundColor:da.map(function(d){return (hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0';}),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:{top:15,bottom:15,left:20,right:20}},plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},formatter:function(v,cx){var s=cx.dataset.data.reduce(function(a,b){return a+b;},0),p=s>0?Math.round(v/s*100):0;return v>0?cx.chart.data.labels[cx.dataIndex]+'\n'+v+'일 ('+p+'%)':'';},anchor:'end',align:'end'}}}});}dd('dashOvertimeDonutChart9',dm);dd('dashOvertimeDonutChart12',ds);}
 window.dTogOtDonut=function(n){hlOvertimeDonut=hlOvertimeDonut===n?null:n;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
+
 // ==========================================
 // Working 탭 렌더링
 // ==========================================
@@ -1159,6 +1183,7 @@ function renderWpSwitchBar(d,mos,col){dC('wpSwitchBar');var sw={},pv=null;d.forE
 function renderWpFocusBar(d,mos){dC('wpFocusBar');var fk=['도면','설계','검토','계획','보고서','작성','분석'],mf={},md={};mos.forEach(function(m){mf[m]=0;md[m]=0;});d.forEach(function(r){var m=r.date.slice(0,7);if(mf[m]===undefined)return;var f=fk.some(function(k){return r.sub.includes(k)||r.cat.includes(k);});if(f)mf[m]+=r.min;else md[m]+=r.min;});CH.wpFocusBar=new Chart(document.getElementById('wpFocusBar').getContext('2d'),{type:'bar',data:{labels:mos,datasets:[{label:'집중업무',data:mos.map(function(m){return mToH(mf[m]||0);}),backgroundColor:'#00428E',stack:'S',borderRadius:3},{label:'분산업무',data:mos.map(function(m){return mToH(md[m]||0);}),backgroundColor:'#94a3b8',stack:'S',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11,weight:'bold'},usePointStyle:true}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});}
 function renderWpOvertimeDetail(d){dC('wpOtBar');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var od=Object.entries(dm).filter(function(e){return e[1]>=540;}).sort(function(a,b){return b[1]-a[1];}),mo=Array.from(new Set(od.map(function(e){return e[0].slice(0,7);}))).sort(),ct={'9~10h':[],'10~11h':[],'11~12h':[],'12h 이상':[]};mo.forEach(function(m){var c1=0,c2=0,c3=0,c4=0;od.forEach(function(e){if(!e[0].startsWith(m))return;var n=e[1];if(n<600)c1++;else if(n<660)c2++;else if(n<720)c3++;else c4++;});ct['9~10h'].push(c1);ct['10~11h'].push(c2);ct['11~12h'].push(c3);ct['12h 이상'].push(c4);});CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{type:'bar',data:{labels:mo,datasets:[{label:'9~10h',data:ct['9~10h'],backgroundColor:OT_COLORS[0],stack:'S',borderRadius:2},{label:'10~11h',data:ct['10~11h'],backgroundColor:OT_COLORS[1],stack:'S',borderRadius:2},{label:'11~12h',data:ct['11~12h'],backgroundColor:OT_COLORS[2],stack:'S',borderRadius:2},{label:'12h 이상',data:ct['12h 이상'],backgroundColor:OT_COLORS[3],stack:'S',borderRadius:2}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{right:15,top:10}},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,beginAtZero:true,display:false}}}});var le=document.getElementById('wpOtList');if(!od.length){le.innerHTML='<div style="color:#94a3b8;font-size:12px;text-align:center;padding:10px;">초과근무 없음</div>';return;}le.innerHTML=od.slice(0,10).map(function(e){var dt=e[0],mn=e[1],h=mToH(mn),lv=mn>=720?'#ef4444':mn>=660?'#f97316':mn>=600?'#f59e0b':'#818cf8';return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.5);"><span style="font-size:11px;color:#475569;font-weight:600;">'+dt+'</span><span style="font-size:12px;font-weight:800;color:'+lv+';">'+fmt(h)+'h</span></div>';}).join('');}
 function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
+
 // ==========================================
 // ★ KPI Eval 탭 렌더링 (AI 기능 연동 포함)
 // ==========================================
@@ -1315,12 +1340,13 @@ function renderEvalTab() {
             '<div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div>' +
             '<div class="kpi-detail-list">' + detailListHtml + '</div>' +
         '</div>' +
+        
         '<!-- 중앙 패널 -->' +
-        '<div class="kpi-panel center-panel">' +
-            '<div style="text-align:center; margin-bottom:10px;">' +
+        '<div class="kpi-panel center-panel" style="display:flex; flex-direction:column; padding: 25px 30px; gap:15px;">' +
+            '<div style="text-align:center;">' +
                 '<h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2>' +
                 '<div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div>' +
-                '<div style="display:flex; justify-content:center; gap:15px; margin-top:15px;">' +
+                '<div style="display:flex; justify-content:center; gap:15px; margin-top:12px;">' +
                     '<div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;">' +
                         '<div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> 선택 기간' +
                     '</div>' +
@@ -1332,12 +1358,27 @@ function renderEvalTab() {
                     '</div>' +
                 '</div>' +
             '</div>' +
-            '<div style="flex:1; position:relative; min-height:400px; display:flex; align-items:center; justify-content:center;">' +
+            
+            // ★ AI Insight 영역 (중앙 패널 상단으로 이동)
+            '<div style="flex:0 0 auto; display:flex; flex-direction:column;">' +
+                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                    '<div class="kpi-section-title" style="margin:0;"><span style="color:#6366f1;">✦ AI Insight</span> 종합 평가</div>' +
+                    '<button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(99,102,241,0.3);">분석 요청하기</button>' +
+                '</div>' +
+                '<div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:16px; border:1px solid rgba(99,102,241,0.2); min-height:80px;">' +
+                    '<div id="aiCommentBox" style="font-size:13px; line-height:1.7; color:#334155; font-weight:500;">' +
+                        '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 현재 역량과 근무 패턴에 대한 제미나이(Gemini)의 객관적이고 따뜻한 종합 피드백을 받아보세요.' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<div style="flex:1; position:relative; min-height:250px; display:flex; align-items:center; justify-content:center;">' +
                 '<canvas id="newKpiRadarChart"></canvas>' +
             '</div>' +
         '</div>' +
+        
         '<!-- 우측 패널 -->' +
-        '<div class="kpi-panel right-panel" style="padding:25px 20px; gap:25px;">' +
+        '<div class="kpi-panel right-panel" style="padding:25px 20px; display:flex; flex-direction:column; gap:25px;">' +
             '<div style="flex:0 0 auto; display:flex; flex-direction:column;">' +
                 '<div class="kpi-section-title" style="margin-bottom:10px;">Highest Record</div>' +
                 '<div style="background:rgba(255,255,255,0.7); border-radius:16px; padding:18px; border:1px solid rgba(226,232,240,0.8);">' +
@@ -1360,20 +1401,7 @@ function renderEvalTab() {
                 '</div>' +
             '</div>' +
             
-            // ★ AI Insight 영역 (추가)
-            '<div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;">' +
-                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
-                    '<div class="kpi-section-title" style="margin:0;"><span style="color:#6366f1;">✦ AI Insight</span> 종합 평가</div>' +
-                    '<button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(99,102,241,0.3);">분석 요청하기</button>' +
-                '</div>' +
-                '<div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:18px; border:1px solid rgba(99,102,241,0.2); min-height:100px;">' +
-                    '<div id="aiCommentBox" style="font-size:13px; line-height:1.7; color:#334155; font-weight:500;">' +
-                        '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 현재 역량과 근무 패턴에 대한 제미나이(Gemini)의 객관적이고 따뜻한 종합 피드백을 받아보세요.' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-            
-            '<div style="flex:1; display:flex; flex-direction:column; margin-top:20px;">' +
+            '<div style="flex:1; display:flex; flex-direction:column;">' +
                 '<div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div>' +
                 '<div style="flex:1; position:relative; min-height:160px; display:flex; align-items:center; justify-content:center;">' +
                     '<canvas id="kpiInsightRadar"></canvas>' +
@@ -1526,7 +1554,7 @@ function renderEvalTab() {
                         pointLabels: {
                             font: { size: 14, weight: '800' },
                             color: '#475569',
-                            padding: 25
+                            padding: 20
                         }
                     }
                 },
