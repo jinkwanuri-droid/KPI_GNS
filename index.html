@@ -20,27 +20,21 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 @keyframes fS{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(50px,60px,0) scale(1.1);}}
 @keyframes fM{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(-60px,40px,0) scale(0.9);}}
 @keyframes fL{0%{transform:translate3d(0,0,0) scale(1);}100%{transform:translate3d(70px,-50px,0) scale(1.15);}}
+
 #loadingOverlay{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 60% 40%,#dbeafe 0%,#eff6ff 40%,#f0f9ff 70%,#e0f2fe 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;overflow:hidden;}
-/* 로딩 화면 구슬 설정 (4개로 분산 배치 및 애니메이션 추가) */
+/* 로딩 화면 구슬 4개 세팅 및 애니메이션 */
 .ld-orb { position:absolute; border-radius:50%; will-change:transform; animation: ldOrbFloat 8s infinite alternate ease-in-out; }
-
-/* 우측 상단 */
 .ld-orb-1 { width:280px; height:280px; background:radial-gradient(circle at 35% 30%,#93c5fd,#3b82f6 50%,#1d4ed8 100%); top:-40px; right:-20px; filter:blur(25px) saturate(.7); opacity:.5; animation-delay: 0s; }
-
-/* 좌측 상단 (새로 이동) */
 .ld-orb-2 { width:220px; height:220px; background:radial-gradient(circle at 40% 35%,rgba(186,230,253,.9),rgba(147,197,253,.6) 50%,rgba(96,165,250,.3) 100%); top:50px; left:-50px; filter:blur(30px) saturate(.7); opacity:.6; animation-delay: -2s; }
-
-/* 좌측 하단 */
 .ld-orb-3 { width:160px; height:160px; background:radial-gradient(circle at 35% 30%,#7dd3fc,#38bdf8 50%,#0ea5e9 100%); bottom:60px; left:40px; filter:blur(18px) saturate(.8); opacity:.7; animation-delay: -4s; }
-
-/* 우측 하단 (새로 추가) */
 .ld-orb-4 { width:190px; height:190px; background:radial-gradient(circle at 30% 30%,#a78bfa,#8b5cf6 50%,#6d28d9 100%); bottom:-30px; right:80px; filter:blur(22px) saturate(.7); opacity:.4; animation-delay: -6s; }
+@keyframes ldOrbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-20px, 30px) scale(1.1); } }
 
-/* 구슬 둥둥 떠다니는 애니메이션 */
-@keyframes ldOrbFloat {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-20px, 30px) scale(1.1); }
-}
+.ld-dust{position:absolute;border-radius:50%;background:#fff;filter:blur(1px);will-change:transform;z-index:2;}
+@keyframes ldFloatDust1{0%{transform:translate(0,0);}100%{transform:translate(150px,-150px);}}
+@keyframes ldFloatDust2{0%{transform:translate(0,0);}100%{transform:translate(-100px,120px);}}
+@keyframes ldFloatDust3{0%{transform:translate(0,0);}100%{transform:translate(100px,100px);}}
+
 .loading-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;}
 .loading-brand{font-size:15px;font-weight:600;color:#64748b;letter-spacing:.15em;margin-bottom:28px;}
 .loading-brand b{color:#1e3a5f;font-weight:900;}
@@ -226,20 +220,21 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .wp-metric-badge.good .val{color:#22c55e;}
 .wp-metric-badge.warn .val{color:#f59e0b;}
 .wp-metric-badge.danger .val{color:#ef4444;}
+
 /* KPI 리디자인 전용 CSS 추가 */
-.kpi-layout { display: grid; grid-template-columns: 340px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 700px; align-items: stretch; }
-.kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); position: relative; overflow-y: auto; }
+.kpi-layout { display: grid; grid-template-columns: 340px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 750px; align-items: stretch; }
+.kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); position: relative; overflow-y: auto; justify-content: space-between; gap: 15px; }
 .kpi-panel::-webkit-scrollbar { width: 4px; }
 .kpi-panel::-webkit-scrollbar-thumb { background: rgba(203,213,225,0.6); border-radius: 4px; }
-.kpi-panel.center-panel { padding: 25px 30px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); overflow: hidden; gap: 15px;}
+.kpi-panel.center-panel { padding: 25px 30px; box-shadow: inset 0 0 40px rgba(255,255,255,0.5), 0 10px 40px rgba(31,38,135,0.05); overflow: hidden; gap: 20px; justify-content: flex-start; }
 /* 좌측 패널 구성요소 */
-.kpi-profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-.kpi-big-score { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(203,213,225,0.6); }
+.kpi-profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
+.kpi-big-score { padding-bottom: 15px; border-bottom: 1px solid rgba(203,213,225,0.6); }
 .kpi-big-score .title { font-size: 13px; color: #64748b; font-weight: 700; margin-bottom: 5px; }
 .kpi-big-score .score { font-size: 54px; font-weight: 900; color: #00428E; line-height: 1; letter-spacing: -0.02em; }
 .kpi-big-score .sub { font-size: 14px; color: #94a3b8; font-weight: 600; margin-left: 5px; }
 /* 우측/좌측 패널 공통 리스트 */
-.kpi-detail-container { background: rgba(255,255,255,0.6); border: 1px solid rgba(226,232,240,0.8); border-radius: 16px; padding: 5px 16px; display: flex; flex-direction: column; margin-top: 10px;}
+.kpi-detail-container { background: rgba(255,255,255,0.6); border: 1px solid rgba(226,232,240,0.8); border-radius: 16px; padding: 5px 16px; display: flex; flex-direction: column; margin-top: 5px;}
 .kpi-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed rgba(203,213,225,0.6); }
 .kpi-detail-item:last-child { border-bottom: none; }
 .kpi-detail-item .label { font-size: 13px; font-weight: 800; color: #334155; }
@@ -249,7 +244,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .kpi-delta.up { color: #10b981; }
 .kpi-delta.down { color: #ef4444; }
 .kpi-delta.flat { color: #94a3b8; }
-.kpi-section-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.kpi-section-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
 @media(max-width:1200px){
   .wp-hero-inner{grid-template-columns:1fr;}
   .wp-hero{height:auto;max-height:none;}
@@ -270,7 +265,11 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
   <div class="ld-dust" style="width:5px;height:5px;top:20%;left:30%;opacity:.3;animation:ldFloatDust1 5s infinite alternate;"></div>
   <div class="ld-dust" style="width:8px;height:8px;top:70%;left:10%;opacity:.25;animation:ldFloatDust2 7s infinite alternate-reverse;"></div>
   <div class="ld-dust" style="width:6px;height:6px;top:40%;right:20%;opacity:.35;animation:ldFloatDust3 6s infinite alternate;"></div>
-  <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div><div class="ld-orb ld-orb-4"></div>
+  <!-- 4개의 로딩 구슬 추가됨 -->
+  <div class="ld-orb ld-orb-1"></div>
+  <div class="ld-orb ld-orb-2"></div>
+  <div class="ld-orb ld-orb-3"></div>
+  <div class="ld-orb ld-orb-4"></div>
   <div class="loading-content">
     <div class="loading-brand"><b>HUMAN INSIGHT</b> · DATA TRACED</div>
     <div class="loading-main-title">GNWMC</div>
@@ -1197,8 +1196,11 @@ function renderWpOvertimeDetail(d){dC('wpOtBar');var dm={};d.forEach(function(r)
 function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
 
 // ==========================================
-// ★ KPI Eval 탭 렌더링 (AI 기능 연동 포함)
+// ★ KPI Eval 탭 렌더링 (AI 기능 연동 및 레이아웃 반영)
 // ==========================================
+// 전역으로 AI 분석에 쓰일 최신 지표 값을 보관합니다.
+window.currentAiData = null;
+
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
     if (!m) return;
@@ -1233,10 +1235,12 @@ function renderEvalTab() {
     var pm = wd.filter(r => r.project === '경남 서부의료원').reduce((s, r) => s + r.min, 0);
     var dm = {}; wd.forEach(r => dm[r.date] = (dm[r.date] || 0) + r.min);
     var ad = Object.keys(dm).length;
-    var o9 = 0; Object.values(dm).forEach(x => { if(x >= 540) o9++; });
+    var o9 = 0, o12 = 0; 
+    Object.values(dm).forEach(x => { if(x >= 720) o12++; else if(x >= 540) o9++; });
     
     var sm = grp(wd.filter(r => r.project === '경남 서부의료원'), 'sub');
-    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 5);
+    var topTasksArr = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 5);
+    var topTasksStr = topTasksArr.slice(0,3).map(t => t[0]).join(', ');
     
     // Highest Record 구하기
     var bestQ = null;
@@ -1271,9 +1275,9 @@ function renderEvalTab() {
         ? '<span style="color:#10b981">▲ ' + scoreDiff.toFixed(2) + '</span>'
         : '<span style="color:#ef4444">▼ ' + Math.abs(scoreDiff).toFixed(2) + '</span>');
     
-    var topTasksHtml = topTasks.length === 0
+    var topTasksHtml = topTasksArr.length === 0
         ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;">데이터 없음</div>'
-        : topTasks.map((tk, i) => {
+        : topTasksArr.map((tk, i) => {
               var p = pm > 0 ? (tk[1]/pm*100).toFixed(1) : 0;
               return '<div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">' +
                          '<div style="display:flex; align-items:center; gap:6px;">' +
@@ -1314,6 +1318,18 @@ function renderEvalTab() {
     var normTeamOt = Math.max(0, 1 - Math.min((teamCr.ot||0)/0.5, 1));
     var teamCvInsight = [normTeamOt, (teamCr.cv||0), (teamCr.hurst||0), (teamCr.hhi||0), (teamCr.shannon||0), (teamCr.jaccard||0)];
     
+    // AI 프롬프트 생성을 위해 최신 지표 값을 전역 객체에 저장
+    window.currentAiData = {
+        m: m,
+        q: latestQ.q,
+        score: latestScore.toFixed(2),
+        vals: latestQ.vals,
+        topTasks: topTasksStr,
+        over9h: o9,
+        over12h: o12,
+        rawCvInsight: rawCvInsight
+    };
+
     var html = '<div class="kpi-layout">' +
         '<!-- 좌측 패널 -->' +
         '<div class="kpi-panel left-panel">' +
@@ -1335,7 +1351,7 @@ function renderEvalTab() {
                 '</div>' +
             '</div>' +
             '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div>' +
-            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:30px;">' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">' +
                 '<div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;">' +
                     '<div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">총 투입 시간</div>' +
                     '<div style="font-size:18px;font-weight:900;color:#00428E;">' + fH(pm) + 'h</div>' +
@@ -1345,8 +1361,8 @@ function renderEvalTab() {
                     '<div style="font-size:18px;font-weight:900;color:#f59e0b;">' + o9 + '일</div>' +
                 '</div>' +
             '</div>' +
-            '<div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">역량 점수 트렌드</div>' +
-            '<div style="height:120px; position:relative; margin-bottom:30px;">' +
+            '<div class="kpi-section-title" style="font-size:14px; margin-bottom:5px;">역량 점수 트렌드</div>' +
+            '<div style="height:120px; position:relative; margin-bottom:15px;">' +
                 (sortedEd.length > 0 ? '<canvas id="newKpiTrendChart"></canvas>' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;font-weight:600;">평가 데이터 없음</div>') +
             '</div>' +
             '<div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div>' +
@@ -1354,8 +1370,8 @@ function renderEvalTab() {
         '</div>' +
         
         '<!-- 중앙 패널 -->' +
-        '<div class="kpi-panel center-panel" style="display:flex; flex-direction:column; padding: 25px 30px; gap:15px;">' +
-            '<div style="text-align:center;">' +
+        '<div class="kpi-panel center-panel">' +
+            '<div style="text-align:center; flex:0 0 auto;">' +
                 '<h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2>' +
                 '<div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div>' +
                 '<div style="display:flex; justify-content:center; gap:15px; margin-top:12px;">' +
@@ -1371,26 +1387,27 @@ function renderEvalTab() {
                 '</div>' +
             '</div>' +
             
-            // ★ AI Insight 영역 (중앙 패널 상단으로 이동)
-            '<div style="flex:0 0 auto; display:flex; flex-direction:column;">' +
+            // 중앙 패널 레이더 차트 (유동적으로 공간 채움)
+            '<div style="flex:1; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center;">' +
+                '<canvas id="newKpiRadarChart"></canvas>' +
+            '</div>' +
+
+            // ★ AI Insight 영역 (중앙 패널 하단으로 이동, 높이 넉넉하게 고정)
+            '<div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;">' +
                 '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
                     '<div class="kpi-section-title" style="margin:0;"><span style="color:#6366f1;">✦ AI Insight</span> 종합 평가</div>' +
                     '<button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(99,102,241,0.3);">분석 요청하기</button>' +
                 '</div>' +
-                '<div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:16px; border:1px solid rgba(99,102,241,0.2); min-height:80px;">' +
-                    '<div id="aiCommentBox" style="font-size:13px; line-height:1.7; color:#334155; font-weight:500;">' +
-                        '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 현재 역량과 근무 패턴에 대한 제미나이(Gemini)의 객관적이고 따뜻한 종합 피드백을 받아보세요.' +
+                '<div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:18px; border:1px solid rgba(99,102,241,0.2); min-height:180px; overflow-y:auto;">' +
+                    '<div id="aiCommentBox" style="font-size:13px; line-height:1.75; color:#334155; font-weight:500;">' +
+                        '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 현재 역량과 업무 스타일에 대한 10년 차 팀장의 심층 피드백을 받아보세요.' +
                     '</div>' +
                 '</div>' +
-            '</div>' +
-
-            '<div style="flex:1; position:relative; min-height:250px; display:flex; align-items:center; justify-content:center;">' +
-                '<canvas id="newKpiRadarChart"></canvas>' +
             '</div>' +
         '</div>' +
         
         '<!-- 우측 패널 -->' +
-        '<div class="kpi-panel right-panel" style="padding:25px 20px; display:flex; flex-direction:column; gap:25px;">' +
+        '<div class="kpi-panel right-panel" style="display:flex; flex-direction:column; justify-content:space-between; padding:25px 20px;">' +
             '<div style="flex:0 0 auto; display:flex; flex-direction:column;">' +
                 '<div class="kpi-section-title" style="margin-bottom:10px;">Highest Record</div>' +
                 '<div style="background:rgba(255,255,255,0.7); border-radius:16px; padding:18px; border:1px solid rgba(226,232,240,0.8);">' +
@@ -1413,9 +1430,9 @@ function renderEvalTab() {
                 '</div>' +
             '</div>' +
             
-            '<div style="flex:1; display:flex; flex-direction:column;">' +
+            '<div style="flex:1; display:flex; flex-direction:column; min-height:220px;">' +
                 '<div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div>' +
-                '<div style="flex:1; position:relative; min-height:160px; display:flex; align-items:center; justify-content:center;">' +
+                '<div style="flex:1; position:relative; min-height:180px; display:flex; align-items:center; justify-content:center;">' +
                     '<canvas id="kpiInsightRadar"></canvas>' +
                 '</div>' +
             '</div>' +
@@ -1574,14 +1591,14 @@ function renderEvalTab() {
             }
         });
         
-        if(topTasks.length > 0) {
+        if(topTasksArr.length > 0) {
             CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
-                    labels: topTasks.map(t => t[0]),
+                    labels: topTasksArr.map(t => t[0]),
                     datasets: [{
-                        data: topTasks.map(t => mToH(t[1])),
-                        backgroundColor: SUB_PAL.slice(0, topTasks.length),
+                        data: topTasksArr.map(t => mToH(t[1])),
+                        backgroundColor: SUB_PAL.slice(0, topTasksArr.length),
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -1665,41 +1682,36 @@ async function generateAiComment() {
     var btn = document.getElementById('btnGenerateAI');
     var box = document.getElementById('aiCommentBox');
     
-    var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
-    var ed = EVAL_DATA.filter(function(d){ return d.name === m; }).sort(function(a,b){ return a.q.localeCompare(b.q); });
-    
-    var fq = filteredEvalQs();
-    var fd = ed.filter(function(d){ return fq.includes(d.q); }).sort(function(a,b){ return a.q.localeCompare(b.q); });
-    var latestQ = fd.length > 0 ? fd[fd.length - 1] : (ed.length > 0 ? ed[ed.length - 1] : null);
-
-    if(!latestQ) {
-        box.innerHTML = '<span style="color:#ef4444;">평가 데이터가 부족하여 분석할 수 없습니다.</span>';
+    if(!window.currentAiData) {
+        box.innerHTML = '<span style="color:#ef4444;">분석할 데이터가 부족합니다.</span>';
         return;
     }
 
-    var wd = RAW.filter(function(r){ return r.name === m && getQ(r.date) === latestQ.q && r.project === '경남 서부의료원'; });
-    
-    var latestScore = (latestQ.vals.reduce((a,b)=>a+b,0) / 5).toFixed(2);
-    
-    var dm = {}; wd.forEach(r => dm[r.date] = (dm[r.date] || 0) + r.min);
-    var over9h = 0, over12h = 0;
-    Object.values(dm).forEach(x => { if(x >= 720) over12h++; else if(x >= 540) over9h++; });
+    var ad = window.currentAiData;
 
-    var sm = grp(wd, 'sub');
-    var topTasks = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 3).map(t => t[0]).join(', ');
-
+    // AI에게 지시할 프롬프트 (팀장 페르소나 및 건축설계 전문 용어 기반)
     var prompt = `
-당신은 '경상남도 서부의료원 건립공사' 프로젝트의 성과 관리(HR) 애널리스트입니다. 
-아래의 데이터는 '${m}' 팀원의 ${latestQ.q} 분기 평가 데이터입니다.
-이 데이터를 바탕으로 팀원의 **현재 긍정적인 성과(강점) 1가지**와 **건강/업무 개선을 위한 조언 1가지**를 전문가의 따뜻하지만 객관적인 톤으로 3~4문장으로 짧게 요약해주세요.
-웹 대시보드에 바로 출력할 것이므로 마크다운 포맷(굵은 글씨 등)을 활용해 가독성을 높여주세요. 절대 인사말이나 불필요한 서론은 쓰지 마세요.
+당신은 10년 차 건축설계 프로젝트 팀장입니다. 팀원 '${ad.m}'의 '${ad.q}' 분기 성과 및 업무 데이터를 바탕으로 피드백을 작성해 주세요.
 
-[분석용 데이터 요약]
-- 대상자: ${m}
-- 종합 역량 점수: 5.0 만점에 ${latestScore}점
-- 세부 역량 (적극성, 생산성, 전문성, 창의성, 협업능력 순): ${latestQ.vals.join('점, ')}점
-- 주 집중 업무: ${topTasks || '데이터 없음'}
-- 초과근무 현황: 9~12시간 연장근무 ${over9h}일, 12시간 이상 심야근무 ${over12h}일
+[팀원 데이터 요약]
+- 종합 역량 점수: 5.0 만점에 ${ad.score}점
+- 세부 역량: 적극성 ${ad.vals[0]}, 생산성 ${ad.vals[1]}, 전문성 ${ad.vals[2]}, 창의성 ${ad.vals[3]}, 협업능력 ${ad.vals[4]}
+- 주요 집중 업무: ${ad.topTasks || '데이터 없음'}
+- 초과근무: 9~12시간 연장근무 ${ad.over9h}일, 12시간 이상 심야근무 ${ad.over12h}일
+
+[Work Insight 6대 지표 (0~1 범위, 1에 가까울수록 우수/집중 상태)]
+- 정시업무(1-OT): ${ad.rawCvInsight[0].toFixed(2)} (야근 피로도가 낮을수록 높음)
+- CV 안정성: ${ad.rawCvInsight[1].toFixed(2)} (일일 업무량 기복이 적을수록 높음)
+- Hurst 주도성: ${ad.rawCvInsight[2].toFixed(2)} (자기 주도적인 업무 리듬일수록 높음)
+- HHI 몰입도: ${ad.rawCvInsight[3].toFixed(2)} (특정 주요 업무에 집중할수록 높음)
+- Shannon 집중도: ${ad.rawCvInsight[4].toFixed(2)} (업무 파편화가 적고 효율적일수록 높음)
+- Jaccard 확장성: ${ad.rawCvInsight[5].toFixed(2)} (새로운 과업에 도전할수록 높음)
+
+[요청 사항]
+1. 설계 업무(BIM, 도면 작성, 품질관리 등)의 특성을 고려하여, 업무 효율성 관점에서 건축설계 실무 전문 용어를 자연스럽게 섞어 피드백해 주세요.
+2. 제시된 'Work Insight 6대 지표'의 수치를 근거로 팀원의 업무 스타일(근무 리듬, 집중도, 파편화 등)에 대해 뼈대 있는 조언을 해 주세요.
+3. 해당 업무 스타일이 이번 평가 점수(세부 역량 포함)에 어떤 영향을 미쳤는지 상관관계를 분석해 주세요.
+4. 문장은 총 5~6줄 정도로 구성하고, 마크다운(굵은 글씨 등)을 적절히 사용해 가독성을 높여주세요. 절대 인사말이나 불필요한 서론 없이 본론만 바로 출력하세요.
     `;
 
     btn.innerText = "분석 중...";
@@ -1708,7 +1720,7 @@ async function generateAiComment() {
     box.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#6366f1; height:100%; min-height:80px; font-weight:700;">
             <div class="ov-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>
-            데이터를 종합하여 AI 인사이트를 생성 중입니다...
+            데이터를 종합하여 10년 차 팀장의 AI 인사이트를 생성 중입니다...
         </div>
     `;
 
