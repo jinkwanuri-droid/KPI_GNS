@@ -29,18 +29,17 @@
   /* --- 커스텀 부드러운 스크롤 --- */
   html, body {
     width: 100%; height: 100%;
-    overflow: hidden; /* 네이티브 스크롤 완전히 차단 */
+    overflow: hidden; 
     background: var(--bg-deep);
     color: var(--text-main);
     font-family: 'Pretendard', sans-serif;
     cursor: default;
   }
 
-  /* 뷰포트를 위아래로 움직일 컨테이너 (스크롤 속도 및 이징 제어) */
   .fullpage-wrapper {
     width: 100%; height: 100%;
     position: relative;
-    transition: transform 1.5s cubic-bezier(0.65, 0, 0.15, 1); /* 전환 속도 1.5초로 3배 느리게 */
+    transition: transform 1.5s cubic-bezier(0.65, 0, 0.15, 1); 
     will-change: transform;
     z-index: 10;
   }
@@ -67,6 +66,22 @@
   #dust-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
   .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.6; box-shadow: 0 0 6px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
   @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateY(-10vh) translateX(20px) rotate(360deg); opacity: 0; } }
+
+  /* ─── 전역 물결 배경 (Global Wave) ─── */
+  .wave-bg-global {
+    position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh;
+    transform: translateY(-50%); z-index: 0; opacity: 0.18; pointer-events: none;
+    display: flex; align-items: center;
+  }
+  .wave-bg-global svg { width: 100%; height: 600px; }
+  /* 빠른 물결 애니메이션 */
+  .wave-path-1 { animation: waveSlide 3s ease-in-out infinite alternate; }
+  .wave-path-2 { animation: waveSlide 4s ease-in-out infinite alternate-reverse; }
+  .wave-path-3 { animation: waveSlide 2.5s ease-in-out infinite alternate; }
+  .wave-path-4 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
+  .wave-path-5 { animation: waveSlide 3.5s ease-in-out infinite alternate; }
+  .wave-path-6 { animation: waveSlide 4.5s ease-in-out infinite alternate-reverse; } /* 새로 추가된 두꺼운 선 */
+  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-40px); } }
 
   /* ─── NAV (상단바) ─── */
   nav {
@@ -102,8 +117,6 @@
   .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
   
   .hero-title { font-size: clamp(32px, 5.5vw, 68px); line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
-  
-  /* 타이틀 세부 웨이트 처리 */
   .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.75); } 
   .hero-title .med-text { font-weight: 500; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -118,27 +131,13 @@
   @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.4} }
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
 
-  /* ─── SECTION: PROBLEM & 빠른 물결 배경 ─── */
-  #problem { text-align: center; position: relative; }
-  .wave-bg {
-    position: absolute; top: 50%; left: -10%; width: 120%; height: 600px;
-    transform: translateY(-50%); z-index: 1; opacity: 0.2; pointer-events: none;
-  }
-  .wave-bg svg { width: 100%; height: 100%; }
-  /* 물결 애니메이션 (더 빠르게) */
-  .wave-path-1 { animation: waveSlide 4s ease-in-out infinite alternate; }
-  .wave-path-2 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
-  .wave-path-3 { animation: waveSlide 3s ease-in-out infinite alternate; }
-  .wave-path-4 { animation: waveSlide 6s ease-in-out infinite alternate-reverse; }
-  .wave-path-5 { animation: waveSlide 4.5s ease-in-out infinite alternate; }
-  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-30px); } }
-
+  /* ─── SECTION: PROBLEM ─── */
+  #problem { text-align: center; }
   .problem-kicker { margin-bottom: 24px; color: var(--blue-1); }
   .problem-quote { font-size: clamp(24px, 3.5vw, 42px); font-weight: 800; line-height: 1.45; max-width: 900px; margin: 0 auto 20px; color: var(--text-main); letter-spacing: -0.02em; position: relative; z-index: 2; }
   .problem-quote .hl { background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .problem-sub { font-size: 18px; color: var(--text-sub); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 500; position: relative; z-index: 2; }
 
-  /* Problem 3원형 레이아웃 */
   .challenge-circles { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; z-index: 2; }
   .challenge-circle {
     width: 290px; height: 290px; border-radius: 50%;
@@ -151,24 +150,28 @@
   }
   .challenge-circle:hover { transform: translateY(-10px); background: rgba(255,255,255,0.85); box-shadow: 0 16px 32px rgba(37,99,235,0.1); }
   
-  /* 파란 소제목 위의 SVG 아이콘 */
-  .circle-icon { width: 32px; height: 32px; margin-bottom: 12px; stroke: url(#gradIcon); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .circle-icon { width: 36px; height: 36px; margin-bottom: 12px; stroke: url(#gradIcon); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .circle-title { font-size: 19px; font-weight: 800; color: var(--blue-1); margin-bottom: 16px; line-height: 1.35; word-break: keep-all; } 
   .circle-point { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
   .circle-divider { width: 40px; height: 2px; background: rgba(59,130,246,0.3); border: none; margin: 0 auto 12px; }
   .circle-desc { font-size: 14px; font-weight: 400; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
 
-  /* ─── SECTION: PHILOSOPHY (Slider) ─── */
+  /* ─── SECTION: PHILOSOPHY (Slider 3단) ─── */
   #philosophy .section-inner { position: relative; max-width: 1200px; }
   .slider-viewport { width: 100%; overflow: hidden; position: relative; padding: 10px 0; }
-  .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 200%; }
-  .slide-page { width: 50%; padding: 0 10px; display: flex; flex-direction: column; gap: 8px; }
+  .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 300%; /* 3페이지 */ }
+  
+  .slide-page { width: 33.333%; padding: 0 10px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .slide-subtitle {
+    font-size: 15px; font-weight: 900; letter-spacing: 0.25em; color: var(--blue-2);
+    text-align: center; margin-bottom: 12px;
+  }
   
   .phil-step { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 20px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.03); transition: all 0.4s; border-radius: 20px; }
   .phil-step:last-child { border-bottom: none; }
   .phil-step:hover { background: rgba(255,255,255,0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.04); transform: scale(1.01); }
   .phil-num { font-weight: 900; font-size: 56px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; opacity: 0.9; }
-  .phil-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; } /* min-width:0 은 말줄임표 작동을 위한 핵심요소 */
+  .phil-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; } 
   .phil-heading { font-weight: 800; font-size: 22px; letter-spacing: -0.01em; color: var(--text-main); }
   
   /* 내용을 무조건 1줄로 처리 (말줄임표) */
@@ -178,10 +181,10 @@
     width: 100%;
   }
 
-  /* 쐐기 버튼 (하얀 바탕 제거, 투명도 부여, 50% 확대) */
+  /* 쐐기 버튼 */
   .slider-btn {
     position: absolute; top: 50%; transform: translateY(-50%);
-    width: 72px; height: 72px; border-radius: 50%; /* 기존 48px에서 1.5배 */
+    width: 72px; height: 72px; border-radius: 50%; 
     background: transparent; border: none; box-shadow: none;
     display: flex; justify-content: center; align-items: center;
     cursor: pointer; z-index: 10; opacity: 0.4; transition: all 0.3s;
@@ -229,6 +232,22 @@
   .impact-title { font-weight: 800; font-size: 22px; line-height: 1.35; margin-bottom: 16px; color: var(--text-main); letter-spacing: -0.01em; }
   .impact-body { font-size: 15px; font-weight: 400; color: var(--text-sub); line-height: 1.7; word-break: keep-all; }
 
+  /* ─── SECTION: LINK (Go to Dashboard) ─── */
+  #link { text-align: center; }
+  .btn-giant {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 24px 64px; border-radius: 40px;
+    background: linear-gradient(135deg, var(--blue-1), var(--purple-1));
+    color: var(--white); font-size: 24px; font-weight: 800; letter-spacing: 0.05em;
+    text-decoration: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.3);
+    position: relative; overflow: hidden;
+  }
+  .btn-giant:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 24px 48px rgba(139, 92, 246, 0.4);
+  }
+
   /* ─── FOOTER ─── */
   footer { border-top: 1px solid rgba(255,255,255,0.6); padding: 60px; background: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; width: 100%; flex-shrink: 0; }
   .footer-logo { font-weight: 900; font-size: 22px; color: var(--text-main); }
@@ -249,6 +268,25 @@
       <stop offset="100%" stop-color="#8b5cf6" />
     </linearGradient>
   </defs>
+  <!-- 문서 아이콘 (업무일지) -->
+  <symbol id="icon-note" viewBox="0 0 24 24">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10 9 9 9 8 9"></polyline>
+  </symbol>
+  <!-- 평가 아이콘 (체크 보드) -->
+  <symbol id="icon-eval" viewBox="0 0 24 24">
+    <path d="M9 11l3 3L22 4"></path>
+    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+  </symbol>
+  <!-- 커리어 아이콘 (과녁) -->
+  <symbol id="icon-career" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10"></circle>
+    <circle cx="12" cy="12" r="6"></circle>
+    <circle cx="12" cy="12" r="2"></circle>
+  </symbol>
 </svg>
 
 <!-- Ambient Orbs -->
@@ -256,8 +294,21 @@
   <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 </div>
 
-<!-- Floating Dust Particles -->
+<!-- Floating Dust Particles (60개) -->
 <div id="dust-container"></div>
+
+<!-- 전역 다중 라인 물결 SVG 배경 -->
+<div class="wave-bg-global">
+  <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+    <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.6"></path>
+    <path class="wave-path-2" fill="none" stroke="#60a5fa" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.4"></path>
+    <path class="wave-path-3" fill="none" stroke="#a78bfa" stroke-width="0.5" d="M0,100 C400,350,600,20,900,100 C1200,180,1300,50,1440,100" opacity="0.5"></path>
+    <path class="wave-path-4" fill="none" stroke="#8b5cf6" stroke-width="0.4" d="M0,250 C300,100,600,280,900,150 C1200,20,1300,250,1440,150" opacity="0.4"></path>
+    <path class="wave-path-5" fill="none" stroke="#2563eb" stroke-width="0.6" d="M0,80 C350,200,500,50,800,220 C1100,390,1250,100,1440,120" opacity="0.3"></path>
+    <!-- 추가된 두꺼운 라인 -->
+    <path class="wave-path-6" fill="none" stroke="#8b5cf6" stroke-width="1.5" d="M0,180 C400,0,600,320,900,180 C1200,40,1300,280,1440,180" opacity="0.35"></path>
+  </svg>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -280,7 +331,7 @@
   
   <!-- HERO -->
   <section id="hero">
-    <div class="section-inner">
+    <div class="section-inner" style="text-align: center;">
       <div class="hero-eyebrow reveal">HUMAN INSIGHT · DATA TRACED</div>
       <h1 class="hero-title reveal reveal-delay-1">
         <span class="light-text">More Than</span> <strong class="med-text">Evaluation.</strong><br>
@@ -298,18 +349,7 @@
 
   <!-- PROBLEM -->
   <section id="problem">
-    <!-- 초슬림 다중 라인 물결 SVG 배경 -->
-    <div class="wave-bg">
-      <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-        <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.6"></path>
-        <path class="wave-path-2" fill="none" stroke="#60a5fa" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.4"></path>
-        <path class="wave-path-3" fill="none" stroke="#a78bfa" stroke-width="0.5" d="M0,100 C400,350,600,20,900,100 C1200,180,1300,50,1440,100" opacity="0.5"></path>
-        <path class="wave-path-4" fill="none" stroke="#8b5cf6" stroke-width="0.4" d="M0,250 C300,100,600,280,900,150 C1200,20,1300,250,1440,150" opacity="0.4"></path>
-        <path class="wave-path-5" fill="none" stroke="#2563eb" stroke-width="0.6" d="M0,80 C350,200,500,50,800,220 C1100,390,1250,100,1440,120" opacity="0.3"></path>
-      </svg>
-    </div>
-
-    <div class="section-inner">
+    <div class="section-inner" style="text-align: center;">
       <p class="problem-kicker reveal">The Challenge</p>
       <h2 class="problem-quote reveal reveal-delay-1">
         도면의 오차는 <span class="hl">mm 단위</span>로 잡으면서,<br>
@@ -321,25 +361,25 @@
       </p>
       
       <div class="challenge-circles reveal reveal-delay-3">
+        <!-- 1. 노트 아이콘 -->
         <div class="challenge-circle">
-          <!-- 문서 아이콘 -->
-          <svg class="circle-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <svg class="circle-icon"><use href="#icon-note"></use></svg>
           <h4 class="circle-title">매일 낭비되는 HUB<br>업무일지 데이터 활용</h4>
           <div class="circle-point">업무일지의 형해화</div>
           <hr class="circle-divider">
           <p class="circle-desc">매일 1,500명이 1분씩 쓰는 기록이 단순 출퇴근 확인용으로 전락하여 소중한 데이터가 버려지고 있습니다.</p>
         </div>
+        <!-- 2. 체크 보드 아이콘 -->
         <div class="challenge-circle">
-          <!-- 시계 아이콘 -->
-          <svg class="circle-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <svg class="circle-icon"><use href="#icon-eval"></use></svg>
           <h4 class="circle-title">기억에 의존한<br>분기별 인사평가</h4>
           <div class="circle-point">최신 편향(Recency Bias)</div>
           <hr class="circle-divider">
           <p class="circle-desc">평가 직전 1~2주의 성과나 기억이 3개월 전체의 인상을 좌우하는 문제가 빈번히 발생합니다.</p>
         </div>
+        <!-- 3. 과녁 아이콘 -->
         <div class="challenge-circle">
-          <!-- 차트 아이콘 -->
-          <svg class="circle-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <svg class="circle-icon"><use href="#icon-career"></use></svg>
           <h4 class="circle-title">커리어패스에 대한<br>인사이트 도출 한계</h4>
           <div class="circle-point">정성적 피드백의 한계</div>
           <hr class="circle-divider">
@@ -351,7 +391,7 @@
 
   <!-- PHILOSOPHY -->
   <section id="philosophy">
-    <div class="section-inner">
+    <div class="section-inner" style="max-width: 1200px;">
       <div class="section-header">
         <p class="section-eyebrow reveal">Core Philosophy</p>
         <h2 class="section-title reveal reveal-delay-1">3단계 성장 프로세스</h2>
@@ -371,51 +411,79 @@
           
           <!-- Page 1 -->
           <div class="slide-page">
+            <div class="slide-subtitle">PAST</div>
             <div class="phil-step">
               <div class="phil-num">01</div>
               <div class="phil-content">
                 <h3 class="phil-heading">조용한 데이터 추출</h3>
-                <!-- 내용 1줄 제한 (nowrap + ellipsis) -->
-                <p class="phil-body">기존에 쓰던 업무일지 그대로 GNS가 조용히 데이터를 추출합니다. 현장의 흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.</p>
+                <!-- 내용 1줄 제한 -->
+                <p class="phil-body" title="기존에 쓰던 업무일지 그대로 GNS가 조용히 데이터를 추출합니다. 현장의 흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.">기존에 쓰던 업무일지 그대로 GNS가 조용히 데이터를 추출합니다. 현장의 흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.</p>
               </div>
             </div>
             <div class="phil-step">
               <div class="phil-num">02</div>
               <div class="phil-content">
                 <h3 class="phil-heading">감(感)을 수치(Data)로</h3>
-                <p class="phil-body">야근시간, 분류별 업무투입시간 등 데이터를 기반으로 한 피드백의 기초를 마련합니다.</p>
+                <p class="phil-body" title="야근시간, 분류별 업무투입시간 등 데이터를 기반으로 한 피드백의 기초를 마련합니다.">야근시간, 분류별 업무투입시간 등 데이터를 기반으로 한 피드백의 기초를 마련합니다.</p>
               </div>
             </div>
             <div class="phil-step">
               <div class="phil-num">03</div>
               <div class="phil-content">
                 <h3 class="phil-heading">데이터 기반의 숨어있는 함축된 정보 도출</h3>
-                <p class="phil-body">Shannon, Hurst, Jaccard 등 검증된 수학적 모델을 통해 업무 패턴과 리소스 밸런스를 입체적으로 분석하고 수치화하여 유의미한 정보를 도출해 냅니다.</p>
+                <p class="phil-body" title="Shannon, Hurst, Jaccard 등 검증된 수학적 모델을 통해 업무 패턴과 리소스 밸런스를 입체적으로 분석하고 수치화하여 유의미한 정보를 도출해 냅니다.">Shannon, Hurst, Jaccard 등 검증된 수학적 모델을 통해 업무 패턴과 리소스 밸런스를 입체적으로 분석하고 수치화하여 유의미한 정보를 도출해 냅니다.</p>
               </div>
             </div>
           </div>
           
           <!-- Page 2 -->
           <div class="slide-page">
+            <div class="slide-subtitle">PRESENT</div>
             <div class="phil-step">
               <div class="phil-num">01</div>
               <div class="phil-content">
                 <h3 class="phil-heading">데이터의 선순환 구조</h3>
-                <p class="phil-body">업무일지를 제대로 쓴다 ➔ 데이터 품질 향상 ➔ 정확한 피드백 ➔ 납득 가능한 평가 ➔ 작성 동기 부여로 이어지는 선순환을 만듭니다.</p>
+                <p class="phil-body" title="업무일지를 제대로 쓴다 ➔ 데이터 품질 향상 ➔ 정확한 피드백 ➔ 납득 가능한 평가 ➔ 작성 동기 부여로 이어지는 선순환을 만듭니다.">업무일지를 제대로 쓴다 ➔ 데이터 품질 향상 ➔ 정확한 피드백 ➔ 납득 가능한 평가 ➔ 작성 동기 부여로 이어지는 선순환을 만듭니다.</p>
               </div>
             </div>
             <div class="phil-step">
               <div class="phil-num">02</div>
               <div class="phil-content">
                 <h3 class="phil-heading">업무 패턴 분석</h3>
-                <p class="phil-body">개인별 업무 집중 영역 및 변화 추이 식별하고, 팀 포트폴리오 시각화를 통해 팀 전체 리소스 배분의 균형점을 확인합니다.</p>
+                <p class="phil-body" title="개인별 업무 집중 영역 및 변화 추이 식별하고, 팀 포트폴리오 시각화를 통해 팀 전체 리소스 배분의 균형점을 확인합니다.">개인별 업무 집중 영역 및 변화 추이 식별하고, 팀 포트폴리오 시각화를 통해 팀 전체 리소스 배분의 균형점을 확인합니다.</p>
               </div>
             </div>
             <div class="phil-step">
               <div class="phil-num">03</div>
               <div class="phil-content">
                 <h3 class="phil-heading">팩트 기반의 성장</h3>
-                <p class="phil-body">막연한 말 대신 명확한 데이터로 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.</p>
+                <p class="phil-body" title="막연한 말 대신 명확한 데이터로 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.">막연한 말 대신 명확한 데이터로 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page 3 -->
+          <div class="slide-page">
+            <div class="slide-subtitle">FUTURE</div>
+            <div class="phil-step">
+              <div class="phil-num">01</div>
+              <div class="phil-content">
+                <h3 class="phil-heading">데이터의 선순환 구조</h3>
+                <p class="phil-body" title="데이터 기반 피드백 ➔ 업무일지의 작성의 중요성 인지 ➔ 데이터 품질 향상 ➔ 더욱 정확한 피드백 ➔ 작성 동기 부여로 이어지는 데이터의 건전성과 피드백 간의 선순환을 만듭니다.">데이터 기반 피드백 ➔ 업무일지의 작성의 중요성 인지 ➔ 데이터 품질 향상 ➔ 더욱 정확한 피드백 ➔ 작성 동기 부여로 이어지는 데이터의 건전성과 피드백 간의 선순환을 만듭니다.</p>
+              </div>
+            </div>
+            <div class="phil-step">
+              <div class="phil-num">02</div>
+              <div class="phil-content">
+                <h3 class="phil-heading">데이터를 통한 휴먼 인사이트</h3>
+                <p class="phil-body" title="지난 분기의 부족한 점, 초과달성한 점, 업무환경에 대한 피드백으로 단순 수치를 넘어서는 트렌드와 스타일에 대한 고찰을 통해 앞으로의 방향성을 고민하게 합니다.">지난 분기의 부족한 점, 초과달성한 점, 업무환경에 대한 피드백으로 단순 수치를 넘어서는 트렌드와 스타일에 대한 고찰을 통해 앞으로의 방향성을 고민하게 합니다.</p>
+              </div>
+            </div>
+            <div class="phil-step">
+              <div class="phil-num">03</div>
+              <div class="phil-content">
+                <h3 class="phil-heading">프로젝트 팀 이상의 인사이트를 위한 기반 마련</h3>
+                <p class="phil-body" title="현재는 프로젝트 팀 단위지만 더욱 확장될 경우 실 단위 이상의 인사이트와 업무 트렌드, 더 나아가 실행률과의 상관관계에 대한 고찰이 가능한 기반을 마련합니다.">현재는 프로젝트 팀 단위지만 더욱 확장될 경우 실 단위 이상의 인사이트와 업무 트렌드, 더 나아가 실행률과의 상관관계에 대한 고찰이 가능한 기반을 마련합니다.</p>
               </div>
             </div>
           </div>
@@ -571,6 +639,15 @@
     </div>
   </section>
 
+  <!-- LINK (Go to Dashboard) -->
+  <section id="link">
+    <div class="section-inner" style="text-align: center;">
+      <a href="https://kpi-gns.vercel.app" class="btn-giant reveal">
+        Go to Dashboard
+      </a>
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer>
     <div style="width:100%; max-width:1200px; display:flex; justify-content:space-between; align-items:center; margin:0 auto;">
@@ -588,10 +665,10 @@
 </div> <!-- fullpage-wrapper end -->
 
 <script>
-  // 먼지 파티클
+  // 먼지 파티클 (60개)
   document.addEventListener("DOMContentLoaded", () => {
     const dustContainer = document.getElementById('dust-container');
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 60; i++) {
       let dust = document.createElement('div');
       dust.className = 'dust';
       let size = Math.random() * 3 + 1; 
@@ -601,8 +678,6 @@
       dust.style.animationDelay = `${Math.random() * 10}s`;
       dustContainer.appendChild(dust);
     }
-    
-    // 리빌 트리거 초기화
     triggerReveal();
   });
 
@@ -613,44 +688,48 @@
   let currentIndex = 0;
   let isScrolling = false;
 
-  // 인덱스 변경 시 화면 및 메뉴 전환
   function moveToSection(index) {
     if (index < 0) index = 0;
     if (index >= totalSections) index = totalSections - 1;
     currentIndex = index;
     
-    // Y축으로 -100vh 씩 이동
     wrapper.style.transform = `translateY(-${currentIndex * 100}vh)`;
     
-    // 네비게이션 인디케이터 업데이트
     const targetId = sections[currentIndex].getAttribute('id');
     if (targetId) {
       const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
       if (activeLink) updateNavIndicator(activeLink);
     }
     
-    // 애니메이션 리빌 발동
     triggerReveal();
   }
 
-  // 휠 이벤트 감지 (Debounce / Throttle 효과)
+  // 휠 이벤트 (1.5초 딜레이)
   window.addEventListener('wheel', (e) => {
     if (isScrolling) return;
     isScrolling = true;
     
-    if (e.deltaY > 0) {
-      moveToSection(currentIndex + 1); // 아래로
-    } else {
-      moveToSection(currentIndex - 1); // 위로
-    }
+    if (e.deltaY > 0) moveToSection(currentIndex + 1);
+    else moveToSection(currentIndex - 1);
     
-    // 1.5초(CSS 트랜지션 시간) 동안 추가 스크롤 이벤트를 무시하여 한 번에 하나씩만 넘어가도록 함
-    setTimeout(() => {
-      isScrolling = false;
-    }, 1500); 
+    setTimeout(() => { isScrolling = false; }, 1500); 
   }, { passive: false });
 
-  // 네비게이션 모핑 인디케이터 연동
+  // 키보드 Page Down / Page Up 연동
+  window.addEventListener('keydown', (e) => {
+    if (isScrolling) return;
+    if (e.key === 'PageDown' || e.key === 'ArrowDown') {
+      isScrolling = true;
+      moveToSection(currentIndex + 1);
+      setTimeout(() => { isScrolling = false; }, 1500);
+    } else if (e.key === 'PageUp' || e.key === 'ArrowUp') {
+      isScrolling = true;
+      moveToSection(currentIndex - 1);
+      setTimeout(() => { isScrolling = false; }, 1500);
+    }
+  });
+
+  // 네비게이션 모핑 인디케이터
   const navLinks = document.querySelectorAll('.nav-links a');
   const indicator = document.querySelector('.nav-indicator');
 
@@ -662,7 +741,6 @@
     activeLink.classList.add('active');
   }
 
-  // 상단 메뉴 클릭 시 이동
   navLinks.forEach((link, idx) => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
@@ -673,20 +751,16 @@
   window.addEventListener('load', () => updateNavIndicator(document.querySelector('.nav-links a.active') || navLinks[0]));
   window.addEventListener('resize', () => updateNavIndicator(document.querySelector('.nav-links a.active')));
 
-  // 현재 화면에 있는 섹션의 Reveal 요소만 visible 클래스 추가
   function triggerReveal() {
     sections.forEach((sec, idx) => {
       const reveals = sec.querySelectorAll('.reveal');
       if (idx === currentIndex) {
         reveals.forEach(el => el.classList.add('visible'));
-      } else {
-        // (옵션) 다른 페이지로 가면 애니메이션 초기화하려면 아래 주석 해제
-        // reveals.forEach(el => el.classList.remove('visible'));
       }
     });
   }
 
-  // Philosophy 슬라이더 기능
+  // Philosophy 슬라이더 (3단)
   let currentSlide = 0;
   function moveSlide(direction) {
     const track = document.getElementById('phil-track');
@@ -695,13 +769,12 @@
     
     currentSlide += direction;
     if(currentSlide < 0) currentSlide = 0;
-    if(currentSlide > 1) currentSlide = 1;
+    if(currentSlide > 2) currentSlide = 2; // 최대 인덱스 2로 확장
     
-    track.style.transform = `translateX(-${currentSlide * 50}%)`;
+    track.style.transform = `translateX(-${currentSlide * 33.333}%)`;
     
-    // 버튼 상태 업데이트
     prevBtn.style.display = currentSlide === 0 ? 'none' : 'flex';
-    nextBtn.style.display = currentSlide === 1 ? 'none' : 'flex';
+    nextBtn.style.display = currentSlide === 2 ? 'none' : 'flex';
   }
 </script>
 
