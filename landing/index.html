@@ -217,12 +217,12 @@
   .tooltip-item strong { color: #60a5fa; margin-right: 4px; font-weight: 700; }
   .kpi-card.silver .tooltip-item strong { color: #a78bfa; }
 
-  /* ─── SECTION: IMPACT (업데이트) ─── */
+  /* ─── SECTION: IMPACT ─── */
   .impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
   .impact-card { 
     position: relative; overflow: hidden; border-radius: 24px; padding: 40px 32px; 
     transition: all 0.4s; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 12px 32px rgba(15,23,42,0.04); 
-    display: flex; flex-direction: column; /* 세로 확장성 고려 */
+    display: flex; flex-direction: column; 
   }
   .impact-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(15,23,42,0.08); }
   .impact-card::before { content: ''; position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.12; z-index: 0; transition: opacity 0.4s; }
@@ -234,44 +234,47 @@
   .impact-glass-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1; }
   .impact-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
   
-  /* Role & Title 폰트, 자간 업데이트 */
   .impact-role { font-size: 15px; font-weight: 800; letter-spacing: normal; color: var(--blue-1); margin-bottom: 12px; }
   .impact-title { font-weight: 800; font-size: 22px; line-height: 1.35; margin-bottom: 20px; color: var(--text-main); letter-spacing: -0.01em; }
   
-  /* 리스트 형태로 본문 변경 */
   .impact-list { margin: 0; padding-left: 20px; font-size: 15px; font-weight: 400; color: var(--text-sub); line-height: 1.7; word-break: keep-all; flex-grow: 1; }
   .impact-list li { margin-bottom: 10px; }
   .impact-list li:last-child { margin-bottom: 0; }
 
-  /* ─── SECTION: LINK (Go to Dashboard) ─── */
+  /* ─── SECTION: LINK (Magic Button - 70% Size & Glowing Ring) ─── */
   #link { text-align: center; }
   
-  /* 롤백 & 광택 애니메이션 효과 추가 */
-  .btn-giant {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 24px 64px; border-radius: 40px;
-    background: linear-gradient(135deg, var(--blue-1), var(--purple-1));
-    color: var(--white); font-size: 24px; font-weight: 800; letter-spacing: 0.05em;
-    text-decoration: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.3);
-    position: relative; overflow: hidden;
+  .btn-magic {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 32px; /* 70% Size 조정 */
+    border-radius: 50px; /* 완전한 알약(Pill) 모양 */
+    font-size: 15px; font-weight: 700; letter-spacing: 0.02em; color: #ffffff;
+    text-decoration: none;
+    /* 버튼 배경: 진한 보라색 그라데이션 */
+    background: linear-gradient(180deg, #9333ea 0%, #6366f1 100%);
+    /* 빛나는 내부 글로우 및 두꺼운 반투명 외부 링 효과 */
+    box-shadow: 
+      inset 0 1px 1px rgba(255,255,255,0.3), 
+      inset 0 -2px 4px rgba(0,0,0,0.2),
+      0 0 0 6px rgba(139, 92, 246, 0.25), /* 외부 투명 보라색 테두리 */
+      0 8px 24px rgba(139, 92, 246, 0.4); /* 부드러운 드롭 섀도우 */
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  .btn-giant:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 24px 48px rgba(139, 92, 246, 0.4);
+  
+  .btn-magic:hover {
+    transform: translateY(-3px) scale(1.02);
+    /* 호버 시 아우라와 그림자 확장 */
+    box-shadow: 
+      inset 0 1px 1px rgba(255,255,255,0.4), 
+      inset 0 -2px 4px rgba(0,0,0,0.2),
+      0 0 0 8px rgba(139, 92, 246, 0.35),
+      0 12px 32px rgba(139, 92, 246, 0.5);
   }
-  /* 반짝이는 광택 애니메이션 */
-  .btn-giant::before {
-    content: ''; position: absolute;
-    top: 0; left: -100%; width: 50%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transform: skewX(-25deg);
-    animation: shine 3s infinite;
-  }
-  @keyframes shine {
-    0% { left: -100%; }
-    20% { left: 200%; }
-    100% { left: 200%; }
+  
+  /* 반짝이 아이콘 SVG 스타일 */
+  .btn-magic svg {
+    width: 18px; height: 18px;
+    fill: #ffffff;
   }
 
   /* ─── FOOTER ─── */
@@ -294,7 +297,6 @@
       <stop offset="100%" stop-color="#8b5cf6" />
     </linearGradient>
   </defs>
-  <!-- 문서 아이콘 (업무일지) -->
   <symbol id="icon-note" viewBox="0 0 24 24">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
     <polyline points="14 2 14 8 20 8"></polyline>
@@ -302,12 +304,10 @@
     <line x1="16" y1="17" x2="8" y2="17"></line>
     <polyline points="10 9 9 9 8 9"></polyline>
   </symbol>
-  <!-- 평가 아이콘 (체크 보드) -->
   <symbol id="icon-eval" viewBox="0 0 24 24">
     <path d="M9 11l3 3L22 4"></path>
     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
   </symbol>
-  <!-- 커리어 아이콘 (과녁) -->
   <symbol id="icon-career" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="10"></circle>
     <circle cx="12" cy="12" r="6"></circle>
@@ -678,7 +678,12 @@
   <!-- LINK (Go to Dashboard) -->
   <section id="link">
     <div class="section-inner" style="text-align: center;">
-      <a href="https://kpi-gns.vercel.app" class="btn-giant reveal">
+      <a href="https://kpi-gns.vercel.app" class="btn-magic reveal">
+        <!-- 반짝이는 별 SVG 아이콘 -->
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="currentColor"/>
+          <path d="M6 14L6.5 16.5L9 17L6.5 17.5L6 20L5.5 17.5L3 17L5.5 16.5L6 14Z" fill="currentColor"/>
+        </svg>
         Go to Dashboard
       </a>
     </div>
