@@ -26,34 +26,30 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
-  /* --- 완벽한 스크롤 스냅을 위한 구조 --- */
+  /* --- 커스텀 부드러운 스크롤 --- */
   html, body {
     width: 100%; height: 100%;
-    overflow: hidden; /* 브라우저 기본 스크롤 차단 */
+    overflow: hidden; /* 네이티브 스크롤 완전히 차단 */
     background: var(--bg-deep);
     color: var(--text-main);
     font-family: 'Pretendard', sans-serif;
     cursor: default;
   }
 
-  /* 스냅 컨테이너 */
-  .snap-container {
-    width: 100%; height: 100vh;
-    overflow-y: auto;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth; /* a태그 이동시 부드럽게 */
+  /* 뷰포트를 위아래로 움직일 컨테이너 (스크롤 속도 및 이징 제어) */
+  .fullpage-wrapper {
+    width: 100%; height: 100%;
     position: relative;
+    transition: transform 1.5s cubic-bezier(0.65, 0, 0.15, 1); /* 전환 속도 1.5초로 3배 느리게 */
+    will-change: transform;
     z-index: 10;
   }
 
-  section {
-    position: relative;
+  section, footer {
     width: 100%; height: 100vh; 
-    scroll-snap-align: start;
-    scroll-snap-stop: always; 
     display: flex; flex-direction: column; justify-content: center; align-items: center; 
     padding: 60px 40px; 
-    overflow: hidden;
+    position: relative;
   }
   
   .section-inner { width: 100%; max-width: 1200px; position: relative; z-index: 2; }
@@ -75,20 +71,19 @@
   /* ─── NAV (상단바) ─── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 21px 60px 16px; /* 상단 5px 추가 */
+    padding: 21px 60px 16px; 
     display: flex; align-items: center; justify-content: space-between;
-    /* 연한 흰색 그라데이션 */
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
-    pointer-events: none; /* 배경 그라데이션 클릭 방해 막기 */
+    pointer-events: none; 
   }
-  .nav-logo, .nav-links { pointer-events: auto; } /* 컨텐츠는 클릭 가능하게 */
+  .nav-logo, .nav-links { pointer-events: auto; } 
   
   .nav-logo { display: flex; flex-direction: column; gap: 2px; }
   .nav-logo-main {
-    font-weight: 900; font-size: 24px; letter-spacing: normal; /* 자간 기본 */
+    font-weight: 900; font-size: 24px; letter-spacing: normal; 
     background: linear-gradient(135deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .nav-logo-sub { font-size: 11px; font-weight: 600; letter-spacing: normal; color: var(--text-sub); } /* 자간 기본 */
+  .nav-logo-sub { font-size: 11px; font-weight: 600; letter-spacing: normal; color: var(--text-sub); } 
   
   .nav-links { position: relative; display: flex; gap: 4px; margin-right: 20px; align-items: center; }
   .nav-links a { position: relative; z-index: 2; padding: 10px 20px; border-radius: 20px; font-size: 15px; font-weight: 600; color: var(--text-sub); text-decoration: none; transition: color 0.3s; }
@@ -106,14 +101,15 @@
   .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); }
   .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
   
-  /* 타이틀 크기 2pt 감소 (clamp 값 미세조정) */
-  .hero-title { font-size: clamp(32px, 5.5vw, 70px); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
-  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.75); } /* 10% 더 짙은 75% 불투명도 */
-  .hero-title strong { font-weight: 900; }
-  .hero-title .grad { background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-title { font-size: clamp(32px, 5.5vw, 68px); line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
+  
+  /* 타이틀 세부 웨이트 처리 */
+  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.75); } 
+  .hero-title .med-text { font-weight: 500; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   
   .hero-subtitle { font-size: 22px; font-weight: 500; color: var(--text-sub); margin-bottom: 12px; }
-  .hero-subtitle strong { font-weight: 800; color: var(--text-main); } /* 인사이트만 볼드체 */
+  .hero-subtitle strong { font-weight: 800; color: var(--text-main); } 
   .hero-sub2 { font-size: 16px; color: var(--text-muted); margin-bottom: 40px; font-weight: 400; }
   
   .scroll-hint { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 12px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; animation: bounceY 2s ease-in-out infinite; }
@@ -122,14 +118,20 @@
   @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.4} }
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
 
-  /* ─── SECTION: PROBLEM & 물결 배경 ─── */
+  /* ─── SECTION: PROBLEM & 빠른 물결 배경 ─── */
   #problem { text-align: center; position: relative; }
-  /* SVG 다중 라인 물결 배경 */
   .wave-bg {
-    position: absolute; top: 45%; left: 0; width: 100%; height: 600px;
-    transform: translateY(-50%); z-index: 1; opacity: 0.15; pointer-events: none;
+    position: absolute; top: 50%; left: -10%; width: 120%; height: 600px;
+    transform: translateY(-50%); z-index: 1; opacity: 0.2; pointer-events: none;
   }
   .wave-bg svg { width: 100%; height: 100%; }
+  /* 물결 애니메이션 (더 빠르게) */
+  .wave-path-1 { animation: waveSlide 4s ease-in-out infinite alternate; }
+  .wave-path-2 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
+  .wave-path-3 { animation: waveSlide 3s ease-in-out infinite alternate; }
+  .wave-path-4 { animation: waveSlide 6s ease-in-out infinite alternate-reverse; }
+  .wave-path-5 { animation: waveSlide 4.5s ease-in-out infinite alternate; }
+  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-30px); } }
 
   .problem-kicker { margin-bottom: 24px; color: var(--blue-1); }
   .problem-quote { font-size: clamp(24px, 3.5vw, 42px); font-weight: 800; line-height: 1.45; max-width: 900px; margin: 0 auto 20px; color: var(--text-main); letter-spacing: -0.02em; position: relative; z-index: 2; }
@@ -148,40 +150,46 @@
     transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
   }
   .challenge-circle:hover { transform: translateY(-10px); background: rgba(255,255,255,0.85); box-shadow: 0 16px 32px rgba(37,99,235,0.1); }
-  .circle-icon { width: 40px; height: 40px; margin-bottom: 12px; fill: url(#grad1); }
-  .circle-title { font-size: 17px; font-weight: 800; color: var(--blue-1); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; } /* 2pt 증가 */
+  
+  /* 파란 소제목 위의 SVG 아이콘 */
+  .circle-icon { width: 32px; height: 32px; margin-bottom: 12px; stroke: url(#gradIcon); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .circle-title { font-size: 19px; font-weight: 800; color: var(--blue-1); margin-bottom: 16px; line-height: 1.35; word-break: keep-all; } 
   .circle-point { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
   .circle-divider { width: 40px; height: 2px; background: rgba(59,130,246,0.3); border: none; margin: 0 auto 12px; }
   .circle-desc { font-size: 14px; font-weight: 400; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
 
   /* ─── SECTION: PHILOSOPHY (Slider) ─── */
-  #philosophy .section-inner { position: relative; }
-  .slider-viewport { width: 100%; overflow: hidden; position: relative; }
-  .slider-track { display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.32, 1); width: 200%; }
+  #philosophy .section-inner { position: relative; max-width: 1200px; }
+  .slider-viewport { width: 100%; overflow: hidden; position: relative; padding: 10px 0; }
+  .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 200%; }
   .slide-page { width: 50%; padding: 0 10px; display: flex; flex-direction: column; gap: 8px; }
   
-  .phil-step { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 30px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.03); transition: all 0.4s; border-radius: 20px; }
+  .phil-step { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 20px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.03); transition: all 0.4s; border-radius: 20px; }
   .phil-step:last-child { border-bottom: none; }
-  .phil-step:hover { background: rgba(255,255,255,0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.04); transform: scale(1.02); }
+  .phil-step:hover { background: rgba(255,255,255,0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.04); transform: scale(1.01); }
   .phil-num { font-weight: 900; font-size: 56px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; opacity: 0.9; }
-  .phil-content { display: flex; flex-direction: column; gap: 8px; }
-  .phil-heading { font-weight: 800; font-size: 24px; letter-spacing: -0.01em; color: var(--text-main); }
-  .phil-body { font-size: 16px; font-weight: 400; color: var(--text-sub); line-height: 1.6; max-width: 750px; word-break: keep-all; }
+  .phil-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; } /* min-width:0 은 말줄임표 작동을 위한 핵심요소 */
+  .phil-heading { font-weight: 800; font-size: 22px; letter-spacing: -0.01em; color: var(--text-main); }
+  
+  /* 내용을 무조건 1줄로 처리 (말줄임표) */
+  .phil-body { 
+    font-size: 16px; font-weight: 400; color: var(--text-sub); line-height: 1.6;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+    width: 100%;
+  }
 
-  /* 쐐기 버튼 (슬라이더 컨트롤) */
+  /* 쐐기 버튼 (하얀 바탕 제거, 투명도 부여, 50% 확대) */
   .slider-btn {
     position: absolute; top: 50%; transform: translateY(-50%);
-    width: 48px; height: 48px; border-radius: 50%;
-    background: var(--white); border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    width: 72px; height: 72px; border-radius: 50%; /* 기존 48px에서 1.5배 */
+    background: transparent; border: none; box-shadow: none;
     display: flex; justify-content: center; align-items: center;
-    cursor: pointer; z-index: 10; transition: all 0.3s;
+    cursor: pointer; z-index: 10; opacity: 0.4; transition: all 0.3s;
   }
-  .slider-btn:hover { background: var(--blue-1); color: var(--white); box-shadow: 0 8px 24px rgba(37,99,235,0.2); border-color: var(--blue-1); }
-  .slider-btn svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .slider-btn:hover svg { stroke: var(--white); }
-  .slider-btn.prev { left: -60px; display: none; } /* 초기엔 이전버튼 숨김 */
-  .slider-btn.next { right: -60px; }
+  .slider-btn:hover { opacity: 1; }
+  .slider-btn svg { width: 48px; height: 48px; stroke: var(--blue-1); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .slider-btn.prev { left: -80px; display: none; } 
+  .slider-btn.next { right: -80px; }
 
   /* ─── SECTION: KPI GRID & TOOLTIPS ─── */
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
@@ -222,7 +230,7 @@
   .impact-body { font-size: 15px; font-weight: 400; color: var(--text-sub); line-height: 1.7; word-break: keep-all; }
 
   /* ─── FOOTER ─── */
-  footer { scroll-snap-align: end; height: 30vh; border-top: 1px solid rgba(255,255,255,0.6); padding: 60px; background: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; width: 100%; flex-shrink: 0; }
+  footer { border-top: 1px solid rgba(255,255,255,0.6); padding: 60px; background: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; width: 100%; flex-shrink: 0; }
   .footer-logo { font-weight: 900; font-size: 22px; color: var(--text-main); }
   .footer-copy { font-size: 14px; font-weight: 400; color: var(--text-muted); margin-top: 8px; }
 
@@ -233,36 +241,19 @@
 </head>
 <body>
 
-<!-- 아이콘 SVG 정의 -->
+<!-- 아이콘/그라데이션 정의 -->
 <svg style="display: none;">
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="gradIcon" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#3b82f6" />
       <stop offset="100%" stop-color="#8b5cf6" />
     </linearGradient>
   </defs>
-  <!-- 아이콘 1: 문서/데이터 -->
-  <symbol id="icon-doc" viewBox="0 0 24 24">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-    <polyline points="14 2 14 8 20 8"></polyline>
-    <line x1="16" y1="13" x2="8" y2="13"></line>
-    <line x1="16" y1="17" x2="8" y2="17"></line>
-    <polyline points="10 9 9 9 8 9"></polyline>
-  </symbol>
-  <!-- 아이콘 2: 기억/시계 -->
-  <symbol id="icon-clock" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10"></circle>
-    <polyline points="12 6 12 12 16 14"></polyline>
-  </symbol>
-  <!-- 아이콘 3: 차트/성장 -->
-  <symbol id="icon-chart" viewBox="0 0 24 24">
-    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-  </symbol>
 </svg>
 
 <!-- Ambient Orbs -->
 <div id="bg-canvas">
-  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div>
+  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 </div>
 
 <!-- Floating Dust Particles -->
@@ -284,16 +275,16 @@
   </div>
 </nav>
 
-<!-- 전체 스냅 컨테이너 -->
-<main class="snap-container">
+<!-- 전체 풀페이지 래퍼 (커스텀 스크롤 영역) -->
+<div class="fullpage-wrapper" id="fullpage">
   
   <!-- HERO -->
   <section id="hero">
     <div class="section-inner">
       <div class="hero-eyebrow reveal">HUMAN INSIGHT · DATA TRACED</div>
       <h1 class="hero-title reveal reveal-delay-1">
-        <span class="light-text">More Than</span> <strong class="grad">Evaluation.</strong><br>
-        <span class="light-text">We make</span> <strong class="grad">Human Insight.</strong>
+        <span class="light-text">More Than</span> <strong class="med-text">Evaluation.</strong><br>
+        <span class="light-text">We make</span> <strong class="bold-text">Human Insight.</strong>
       </h1>
       <p class="hero-subtitle reveal reveal-delay-2">어제의 데이터가 아니라, 내일의 성장을 위한 <strong>인사이트.</strong></p>
       <p class="hero-sub2 reveal reveal-delay-3">경상남도 서부의료원 팀원 KPI DASHBOARD</p>
@@ -307,12 +298,14 @@
 
   <!-- PROBLEM -->
   <section id="problem">
-    <!-- 다중 라인 물결 SVG 배경 -->
+    <!-- 초슬림 다중 라인 물결 SVG 배경 -->
     <div class="wave-bg">
       <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-        <path fill="none" stroke="#3b82f6" stroke-width="2" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.8"></path>
-        <path fill="none" stroke="#60a5fa" stroke-width="3" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.5"></path>
-        <path fill="none" stroke="#a78bfa" stroke-width="2" d="M0,100 C400,350,600,20,900,100 C1200,180,1300,50,1440,100" opacity="0.6"></path>
+        <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.6"></path>
+        <path class="wave-path-2" fill="none" stroke="#60a5fa" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.4"></path>
+        <path class="wave-path-3" fill="none" stroke="#a78bfa" stroke-width="0.5" d="M0,100 C400,350,600,20,900,100 C1200,180,1300,50,1440,100" opacity="0.5"></path>
+        <path class="wave-path-4" fill="none" stroke="#8b5cf6" stroke-width="0.4" d="M0,250 C300,100,600,280,900,150 C1200,20,1300,250,1440,150" opacity="0.4"></path>
+        <path class="wave-path-5" fill="none" stroke="#2563eb" stroke-width="0.6" d="M0,80 C350,200,500,50,800,220 C1100,390,1250,100,1440,120" opacity="0.3"></path>
       </svg>
     </div>
 
@@ -327,24 +320,26 @@
         감(感)에 의존하는 평가는 이제 끝내야 합니다.
       </p>
       
-      <!-- 3원형 글라스모피즘 카드 -->
       <div class="challenge-circles reveal reveal-delay-3">
         <div class="challenge-circle">
-          <svg class="circle-icon"><use href="#icon-doc"></use></svg>
+          <!-- 문서 아이콘 -->
+          <svg class="circle-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           <h4 class="circle-title">매일 낭비되는 HUB<br>업무일지 데이터 활용</h4>
           <div class="circle-point">업무일지의 형해화</div>
           <hr class="circle-divider">
           <p class="circle-desc">매일 1,500명이 1분씩 쓰는 기록이 단순 출퇴근 확인용으로 전락하여 소중한 데이터가 버려지고 있습니다.</p>
         </div>
         <div class="challenge-circle">
-          <svg class="circle-icon" style="fill:none; stroke:url(#grad1); stroke-width:2; stroke-linecap:round;"><use href="#icon-clock"></use></svg>
+          <!-- 시계 아이콘 -->
+          <svg class="circle-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           <h4 class="circle-title">기억에 의존한<br>분기별 인사평가</h4>
           <div class="circle-point">최신 편향(Recency Bias)</div>
           <hr class="circle-divider">
           <p class="circle-desc">평가 직전 1~2주의 성과나 기억이 3개월 전체의 인상을 좌우하는 문제가 빈번히 발생합니다.</p>
         </div>
         <div class="challenge-circle">
-          <svg class="circle-icon" style="fill:none; stroke:url(#grad1); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><use href="#icon-chart"></use></svg>
+          <!-- 차트 아이콘 -->
+          <svg class="circle-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
           <h4 class="circle-title">커리어패스에 대한<br>인사이트 도출 한계</h4>
           <div class="circle-point">정성적 피드백의 한계</div>
           <hr class="circle-divider">
@@ -363,7 +358,7 @@
         <p class="section-desc reveal reveal-delay-2">새로운 입력 없이, 기존 데이터에서 인사이트를 자동 추출합니다.</p>
       </div>
       
-      <!-- 슬라이더 영역 -->
+      <!-- 쐐기 슬라이더 영역 -->
       <button class="slider-btn prev" onclick="moveSlide(-1)">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
@@ -380,6 +375,7 @@
               <div class="phil-num">01</div>
               <div class="phil-content">
                 <h3 class="phil-heading">조용한 데이터 추출</h3>
+                <!-- 내용 1줄 제한 (nowrap + ellipsis) -->
                 <p class="phil-body">기존에 쓰던 업무일지 그대로 GNS가 조용히 데이터를 추출합니다. 현장의 흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.</p>
               </div>
             </div>
@@ -387,19 +383,19 @@
               <div class="phil-num">02</div>
               <div class="phil-content">
                 <h3 class="phil-heading">감(感)을 수치(Data)로</h3>
-                <p class="phil-body">Shannon, Hurst, Jaccard 등 검증된 수학적 모델을 통해 업무 패턴과 리소스 밸런스를 입체적으로 분석하고 수치화합니다.</p>
+                <p class="phil-body">야근시간, 분류별 업무투입시간 등 데이터를 기반으로 한 피드백의 기초를 마련합니다.</p>
               </div>
             </div>
             <div class="phil-step">
               <div class="phil-num">03</div>
               <div class="phil-content">
-                <h3 class="phil-heading">팩트 기반의 성장</h3>
-                <p class="phil-body">막연한 말 대신 명확한 데이터로 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.</p>
+                <h3 class="phil-heading">데이터 기반의 숨어있는 함축된 정보 도출</h3>
+                <p class="phil-body">Shannon, Hurst, Jaccard 등 검증된 수학적 모델을 통해 업무 패턴과 리소스 밸런스를 입체적으로 분석하고 수치화하여 유의미한 정보를 도출해 냅니다.</p>
               </div>
             </div>
           </div>
           
-          <!-- Page 2 (새로운 3칸 구성) -->
+          <!-- Page 2 -->
           <div class="slide-page">
             <div class="phil-step">
               <div class="phil-num">01</div>
@@ -412,7 +408,7 @@
               <div class="phil-num">02</div>
               <div class="phil-content">
                 <h3 class="phil-heading">업무 패턴 분석</h3>
-                <p class="phil-body">개인별 업무 집중 영역 및 변화 추이 식별하고, <strong>팀 포트폴리오 시각화를 통해</strong> 팀 전체 리소스 배분의 균형점을 확인합니다.</p>
+                <p class="phil-body">개인별 업무 집중 영역 및 변화 추이 식별하고, 팀 포트폴리오 시각화를 통해 팀 전체 리소스 배분의 균형점을 확인합니다.</p>
               </div>
             </div>
             <div class="phil-step">
@@ -577,20 +573,22 @@
 
   <!-- FOOTER -->
   <footer>
-    <div>
-      <div class="footer-logo">GNWMC</div>
-      <div class="footer-copy">경상남도 서부의료원 · Path Reflection</div>
-    </div>
-    <div class="footer-copy" style="text-align: right;">
-      © 2026 GNS KPI Dashboard. All rights reserved.<br>
-      Built for Growth and Insight.
+    <div style="width:100%; max-width:1200px; display:flex; justify-content:space-between; align-items:center; margin:0 auto;">
+      <div>
+        <div class="footer-logo">GNWMC</div>
+        <div class="footer-copy">경상남도 서부의료원 · Path Reflection</div>
+      </div>
+      <div class="footer-copy" style="text-align: right;">
+        © 2026 GNS KPI Dashboard. All rights reserved.<br>
+        Built for Growth and Insight.
+      </div>
     </div>
   </footer>
 
-</main> <!-- snap-container end -->
+</div> <!-- fullpage-wrapper end -->
 
 <script>
-  // 먼지 파티클 생성
+  // 먼지 파티클
   document.addEventListener("DOMContentLoaded", () => {
     const dustContainer = document.getElementById('dust-container');
     for (let i = 0; i < 50; i++) {
@@ -603,17 +601,56 @@
       dust.style.animationDelay = `${Math.random() * 10}s`;
       dustContainer.appendChild(dust);
     }
+    
+    // 리빌 트리거 초기화
+    triggerReveal();
   });
 
-  // 스크롤 리빌 애니메이션 (가시 영역 감지)
-  const revealEls = document.querySelectorAll('.reveal');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.15 });
-  revealEls.forEach(el => revealObserver.observe(el));
+  /* --- 커스텀 부드러운 스크롤 (Fullpage) 구현 --- */
+  const wrapper = document.getElementById('fullpage');
+  const sections = document.querySelectorAll('#fullpage > section, #fullpage > footer');
+  const totalSections = sections.length;
+  let currentIndex = 0;
+  let isScrolling = false;
+
+  // 인덱스 변경 시 화면 및 메뉴 전환
+  function moveToSection(index) {
+    if (index < 0) index = 0;
+    if (index >= totalSections) index = totalSections - 1;
+    currentIndex = index;
+    
+    // Y축으로 -100vh 씩 이동
+    wrapper.style.transform = `translateY(-${currentIndex * 100}vh)`;
+    
+    // 네비게이션 인디케이터 업데이트
+    const targetId = sections[currentIndex].getAttribute('id');
+    if (targetId) {
+      const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
+      if (activeLink) updateNavIndicator(activeLink);
+    }
+    
+    // 애니메이션 리빌 발동
+    triggerReveal();
+  }
+
+  // 휠 이벤트 감지 (Debounce / Throttle 효과)
+  window.addEventListener('wheel', (e) => {
+    if (isScrolling) return;
+    isScrolling = true;
+    
+    if (e.deltaY > 0) {
+      moveToSection(currentIndex + 1); // 아래로
+    } else {
+      moveToSection(currentIndex - 1); // 위로
+    }
+    
+    // 1.5초(CSS 트랜지션 시간) 동안 추가 스크롤 이벤트를 무시하여 한 번에 하나씩만 넘어가도록 함
+    setTimeout(() => {
+      isScrolling = false;
+    }, 1500); 
+  }, { passive: false });
 
   // 네비게이션 모핑 인디케이터 연동
-  const sections = document.querySelectorAll('section');
   const navLinks = document.querySelectorAll('.nav-links a');
   const indicator = document.querySelector('.nav-indicator');
 
@@ -625,43 +662,29 @@
     activeLink.classList.add('active');
   }
 
-  // 메뉴 클릭 시 스크롤 부드럽게 이동 (snap-container 기준)
-  navLinks.forEach(link => {
+  // 상단 메뉴 클릭 시 이동
+  navLinks.forEach((link, idx) => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
-      const targetId = this.getAttribute('href').substring(1);
-      const targetSection = document.getElementById(targetId);
-      if (targetSection) {
-        document.querySelector('.snap-container').scrollTo({
-          top: targetSection.offsetTop,
-          behavior: 'smooth'
-        });
-      }
+      moveToSection(idx);
     });
   });
 
   window.addEventListener('load', () => updateNavIndicator(document.querySelector('.nav-links a.active') || navLinks[0]));
   window.addEventListener('resize', () => updateNavIndicator(document.querySelector('.nav-links a.active')));
 
-  // 스냅 컨테이너 스크롤 이벤트로 현재 섹션 감지
-  const snapContainer = document.querySelector('.snap-container');
-  snapContainer.addEventListener('scroll', () => {
-    let currentSection = sections[0];
-    let minDiff = Infinity;
-    const scrollY = snapContainer.scrollTop;
-    
-    sections.forEach(section => {
-      const diff = Math.abs(scrollY - section.offsetTop);
-      if (diff < minDiff) {
-        minDiff = diff;
-        currentSection = section;
+  // 현재 화면에 있는 섹션의 Reveal 요소만 visible 클래스 추가
+  function triggerReveal() {
+    sections.forEach((sec, idx) => {
+      const reveals = sec.querySelectorAll('.reveal');
+      if (idx === currentIndex) {
+        reveals.forEach(el => el.classList.add('visible'));
+      } else {
+        // (옵션) 다른 페이지로 가면 애니메이션 초기화하려면 아래 주석 해제
+        // reveals.forEach(el => el.classList.remove('visible'));
       }
     });
-    
-    const id = currentSection.getAttribute('id');
-    const activeLink = document.querySelector(`.nav-links a[href="#${id}"]`);
-    if(activeLink) updateNavIndicator(activeLink);
-  });
+  }
 
   // Philosophy 슬라이더 기능
   let currentSlide = 0;
