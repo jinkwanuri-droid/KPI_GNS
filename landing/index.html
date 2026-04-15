@@ -28,7 +28,6 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
-  /* --- 스크롤 스냅 (정확히 한 페이지씩) --- */
   html {
     scroll-behavior: smooth;
     scroll-snap-type: y mandatory;
@@ -46,24 +45,23 @@
   section {
     position: relative;
     z-index: 10;
-    height: 100vh; /* min-height 대신 height 고정으로 스크롤 밀림 방지 */
+    height: 100vh; 
     scroll-snap-align: start;
-    scroll-snap-stop: always; /* 무조건 한 페이지씩 멈추도록 강제 */
+    scroll-snap-stop: always; 
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center; /* 전체 중앙 정렬 */
+    align-items: center; 
     padding: 60px 40px; 
     overflow: hidden;
   }
   
-  /* 컨텐츠 내부 최대폭 제한 */
   .section-inner {
     width: 100%;
     max-width: 1200px;
   }
 
-  /* ─── CANVAS BG (Ambient Light Orbs) ─── */
+  /* ─── CANVAS BG ─── */
   #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 1; animation: drift ease-in-out infinite alternate; }
   .orb-1 { width: 700px; height: 700px; background: rgba(59, 130, 246, 0.3); top: -100px; left: -100px; animation-duration: 20s; }
@@ -91,7 +89,7 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     padding: 16px 60px;
     display: flex; align-items: center; justify-content: space-between;
-    background: transparent; /* 배경 완전히 투명하게 변경 */
+    background: transparent; 
     backdrop-filter: none;
     border-bottom: none;
   }
@@ -122,13 +120,27 @@
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.32, 1), width 0.4s cubic-bezier(0.25, 1, 0.32, 1);
   }
 
+  /* ─── COMMON SECTION HEADER (Eyebrow 자간 삭제) ─── */
+  .section-header { text-align: center; margin-bottom: 40px; }
+  .section-eyebrow, .problem-kicker, .hero-eyebrow { 
+    font-size: 12px; font-weight: 700; letter-spacing: 0; /* 자간 삭제 */
+    text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; 
+  }
+  .section-title { font-weight: 900; font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); }
+  .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 500px; margin: 0 auto; line-height: 1.6; }
+
   /* ─── HERO ─── */
   #hero { text-align: center; }
-  .hero-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--blue-1); margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); }
   .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
-  .hero-title { font-weight: 400; font-size: clamp(36px, 6vw, 76px); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
+  
+  .hero-title { font-size: clamp(36px, 6vw, 76px); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
+  
+  /* 타이틀 세부 스타일 */
+  .hero-title .light-text { font-weight: 300; color: rgba(30, 41, 59, 0.5); }
   .hero-title strong { font-weight: 900; }
   .hero-title .grad { background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
   .hero-subtitle { font-size: 22px; font-weight: 600; color: var(--text-sub); margin-bottom: 12px; }
   .hero-sub2 { font-size: 16px; color: var(--text-muted); margin-bottom: 40px; font-weight: 400; }
   
@@ -141,18 +153,32 @@
   @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.4} }
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
 
-  /* ─── COMMON SECTION HEADER ─── */
-  .section-header { text-align: center; margin-bottom: 40px; }
-  .section-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.3em; color: var(--blue-2); margin-bottom: 12px; }
-  .section-title { font-weight: 900; font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); }
-  .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 500px; margin: 0 auto; line-height: 1.6; }
-
   /* ─── SECTION: PROBLEM ─── */
   #problem { text-align: center; }
-  .problem-kicker { font-size: 13px; font-weight: 700; letter-spacing: 0.35em; color: var(--blue-1); margin-bottom: 32px; }
-  .problem-quote { font-size: clamp(28px, 4vw, 48px); font-weight: 800; line-height: 1.45; max-width: 900px; margin: 0 auto 32px; color: var(--text-main); letter-spacing: -0.02em; }
+  .problem-kicker { margin-bottom: 24px; color: var(--blue-1); }
+  .problem-quote { font-size: clamp(24px, 3.5vw, 44px); font-weight: 800; line-height: 1.45; max-width: 900px; margin: 0 auto 20px; color: var(--text-main); letter-spacing: -0.02em; }
   .problem-quote .hl { background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .problem-sub { font-size: 18px; color: var(--text-sub); max-width: 600px; margin: 0 auto; line-height: 1.7; font-weight: 500; }
+  .problem-sub { font-size: 18px; color: var(--text-sub); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 500; }
+
+  /* Problem 3원형 레이아웃 */
+  .challenge-circles {
+    display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+    width: 100%; max-width: 1000px; margin: 0 auto;
+  }
+  .challenge-circle {
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--glass-shadow);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 32px; text-align: center;
+    transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
+  }
+  .challenge-circle:hover { transform: translateY(-10px); background: rgba(255,255,255,0.85); box-shadow: 0 16px 32px rgba(37,99,235,0.1); }
+  .circle-title { font-size: 15px; font-weight: 800; color: var(--blue-1); margin-bottom: 12px; line-height: 1.4; word-break: keep-all; }
+  .circle-desc { font-size: 14px; font-weight: 400; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
 
   /* ─── SECTION: PHILOSOPHY ─── */
   .phil-steps { display: flex; flex-direction: column; gap: 8px; width: 100%; }
@@ -182,7 +208,6 @@
   .kpi-subtitle { font-weight: 700; font-size: 13px; letter-spacing: 0.02em; color: var(--blue-2); margin-bottom: 16px; }
   .kpi-desc { font-weight: 400; font-size: 13.5px; color: var(--text-sub); line-height: 1.6; flex-grow: 1; word-break: keep-all; }
   
-  /* 수식 박스 & 툴팁 */
   .kpi-formula-box {
     margin-top: auto; position: relative; cursor: help;
     background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255,255,255,0.9);
@@ -192,7 +217,6 @@
   .kpi-card.silver .math-font { color: var(--purple-1); }
   .kpi-card.silver .kpi-subtitle { color: var(--purple-2); }
 
-  /* 말풍선(Tooltip) 스타일 */
   .formula-tooltip {
     position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%) translateY(10px);
     width: 320px; background: rgba(30, 41, 59, 0.95); color: #f8fafc;
@@ -203,7 +227,6 @@
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
     box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 100;
   }
-  /* 말풍선 화살표 */
   .formula-tooltip::after {
     content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
     border-width: 7px; border-style: solid;
@@ -287,10 +310,9 @@
   <div class="section-inner" style="text-align: center;">
     <div class="hero-eyebrow reveal">HUMAN INSIGHT · DATA TRACED</div>
     <h1 class="hero-title reveal reveal-delay-1">
-      It's More Than<br>
-      <strong>Evaluation.</strong><br>
-      We make<br>
-      <strong class="grad">Human Insight.</strong>
+      <span class="light-text">It's More Than</span><br>
+      <strong class="grad">Evaluation.</strong><br>
+      <span class="light-text">We make</span> <strong class="grad">Human Insight.</strong>
     </h1>
     <p class="hero-subtitle reveal reveal-delay-2">어제의 데이터가 아니라, 내일의 성장을 위한 인사이트.</p>
     <p class="hero-sub2 reveal reveal-delay-3">경상남도 서부의료원 팀원 KPI DASHBOARD</p>
@@ -314,6 +336,22 @@
       분기말의 희미한 기억, 버려지는 업무일지.<br>
       감(感)에 의존하는 평가는 이제 끝내야 합니다.
     </p>
+    
+    <!-- 3원형 글라스모피즘 카드 -->
+    <div class="challenge-circles reveal reveal-delay-3">
+      <div class="challenge-circle">
+        <h4 class="circle-title">매일 낭비되는 HUB<br>업무일지 데이터 활용</h4>
+        <p class="circle-desc"><strong>업무일지의 형해화:</strong> 매일 1,500명이 1분씩 쓰는 기록이 단순 출퇴근 확인용으로 전락하여 소중한 데이터가 버려지고 있습니다.</p>
+      </div>
+      <div class="challenge-circle">
+        <h4 class="circle-title">기억에 의존한<br>분기별 인사평가</h4>
+        <p class="circle-desc"><strong>최신 편향(Recency Bias):</strong> 평가 직전 1~2주의 성과나 기억이 3개월 전체의 인상을 좌우하는 문제가 발생합니다.</p>
+      </div>
+      <div class="challenge-circle">
+        <h4 class="circle-title">커리어패스에 대한<br>인사이트 도출 한계</h4>
+        <p class="circle-desc"><strong>정성적 피드백의 한계:</strong> "고생 많았다"는 격려만으로는 성장의 동력을 얻고 구체적인 커리어를 설계하기 어렵습니다.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -554,11 +592,9 @@
     activeLink.classList.add('active');
   }
 
-  // 초기화 및 리사이즈
   window.addEventListener('load', () => updateNavIndicator(document.querySelector('.nav-links a.active') || navLinks[0]));
   window.addEventListener('resize', () => updateNavIndicator(document.querySelector('.nav-links a.active')));
 
-  // 스크롤 위치 감지 (절반 이상 보이면 하이라이트 변경)
   const sectionObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
