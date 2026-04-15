@@ -74,13 +74,12 @@
     display: flex; align-items: center;
   }
   .wave-bg-global svg { width: 100%; height: 600px; }
-  /* 빠른 물결 애니메이션 */
   .wave-path-1 { animation: waveSlide 3s ease-in-out infinite alternate; }
   .wave-path-2 { animation: waveSlide 4s ease-in-out infinite alternate-reverse; }
   .wave-path-3 { animation: waveSlide 2.5s ease-in-out infinite alternate; }
   .wave-path-4 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
   .wave-path-5 { animation: waveSlide 3.5s ease-in-out infinite alternate; }
-  .wave-path-6 { animation: waveSlide 4.5s ease-in-out infinite alternate-reverse; } /* 새로 추가된 두꺼운 선 */
+  .wave-path-6 { animation: waveSlide 4.5s ease-in-out infinite alternate-reverse; } 
   @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-40px); } }
 
   /* ─── NAV (상단바) ─── */
@@ -156,18 +155,39 @@
   .circle-divider { width: 40px; height: 2px; background: rgba(59,130,246,0.3); border: none; margin: 0 auto 12px; }
   .circle-desc { font-size: 14px; font-weight: 400; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
 
-  /* ─── SECTION: PHILOSOPHY (Slider 3단) ─── */
+  /* ─── SECTION: PHILOSOPHY (Slider 3단 & 네비게이션) ─── */
   #philosophy .section-inner { position: relative; max-width: 1200px; }
   .slider-viewport { width: 100%; overflow: hidden; position: relative; padding: 10px 0; }
-  .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 300%; /* 3페이지 */ }
+  .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 300%; }
   
-  .slide-page { width: 33.333%; padding: 0 10px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .slide-page { width: 33.333%; padding: 0 10px; display: flex; flex-direction: column; gap: 8px; position: relative; align-items: center; }
+  
+  /* 소제목 글래스 캡슐 디자인 */
   .slide-subtitle {
-    font-size: 15px; font-weight: 900; letter-spacing: 0.25em; color: var(--blue-2);
-    text-align: center; margin-bottom: 12px;
+    display: inline-block;
+    font-size: 14px; font-weight: 800; letter-spacing: 0.15em; color: var(--blue-1);
+    background: rgba(59, 130, 246, 0.08); /* 반투명 푸른색 */
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    padding: 6px 24px; border-radius: 999px; /* 캡슐 모양 */
+    margin-bottom: 16px; text-align: center;
   }
   
-  .phil-step { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 20px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.03); transition: all 0.4s; border-radius: 20px; }
+  /* 슬라이더 페이징 (Dots) */
+  .slider-dots {
+    display: flex; justify-content: center; gap: 10px; margin-top: 24px;
+  }
+  .slider-dot {
+    width: 8px; height: 8px; border-radius: 4px;
+    background: rgba(148, 163, 184, 0.4);
+    cursor: pointer; transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
+  }
+  .slider-dot:hover { background: rgba(148, 163, 184, 0.8); }
+  .slider-dot.active {
+    width: 28px; background: var(--blue-1);
+  }
+
+  .phil-step { width: 100%; display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 20px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.03); transition: all 0.4s; border-radius: 20px; }
   .phil-step:last-child { border-bottom: none; }
   .phil-step:hover { background: rgba(255,255,255,0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.04); transform: scale(1.01); }
   .phil-num { font-weight: 900; font-size: 56px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; opacity: 0.9; }
@@ -236,16 +256,24 @@
   #link { text-align: center; }
   .btn-giant {
     display: inline-flex; align-items: center; justify-content: center;
-    padding: 24px 64px; border-radius: 40px;
-    background: linear-gradient(135deg, var(--blue-1), var(--purple-1));
-    color: var(--white); font-size: 24px; font-weight: 800; letter-spacing: 0.05em;
+    padding: 16px 40px; /* 크기 1/2 축소 */
+    border-radius: 30px;
+    font-size: 18px; /* 폰트 사이즈 축소 */
+    font-weight: 700; letter-spacing: 0.05em;
     text-decoration: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.3);
+    /* 반투명 글래스 효과 적용 */
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    color: var(--blue-1);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
     position: relative; overflow: hidden;
   }
   .btn-giant:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 24px 48px rgba(139, 92, 246, 0.4);
+    transform: translateY(-4px);
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.2);
   }
 
   /* ─── FOOTER ─── */
@@ -305,7 +333,6 @@
     <path class="wave-path-3" fill="none" stroke="#a78bfa" stroke-width="0.5" d="M0,100 C400,350,600,20,900,100 C1200,180,1300,50,1440,100" opacity="0.5"></path>
     <path class="wave-path-4" fill="none" stroke="#8b5cf6" stroke-width="0.4" d="M0,250 C300,100,600,280,900,150 C1200,20,1300,250,1440,150" opacity="0.4"></path>
     <path class="wave-path-5" fill="none" stroke="#2563eb" stroke-width="0.6" d="M0,80 C350,200,500,50,800,220 C1100,390,1250,100,1440,120" opacity="0.3"></path>
-    <!-- 추가된 두꺼운 라인 -->
     <path class="wave-path-6" fill="none" stroke="#8b5cf6" stroke-width="1.5" d="M0,180 C400,0,600,320,900,180 C1200,40,1300,280,1440,180" opacity="0.35"></path>
   </svg>
 </div>
@@ -326,7 +353,7 @@
   </div>
 </nav>
 
-<!-- 전체 풀페이지 래퍼 (커스텀 스크롤 영역) -->
+<!-- 전체 풀페이지 래퍼 -->
 <div class="fullpage-wrapper" id="fullpage">
   
   <!-- HERO -->
@@ -361,7 +388,6 @@
       </p>
       
       <div class="challenge-circles reveal reveal-delay-3">
-        <!-- 1. 노트 아이콘 -->
         <div class="challenge-circle">
           <svg class="circle-icon"><use href="#icon-note"></use></svg>
           <h4 class="circle-title">매일 낭비되는 HUB<br>업무일지 데이터 활용</h4>
@@ -369,7 +395,6 @@
           <hr class="circle-divider">
           <p class="circle-desc">매일 1,500명이 1분씩 쓰는 기록이 단순 출퇴근 확인용으로 전락하여 소중한 데이터가 버려지고 있습니다.</p>
         </div>
-        <!-- 2. 체크 보드 아이콘 -->
         <div class="challenge-circle">
           <svg class="circle-icon"><use href="#icon-eval"></use></svg>
           <h4 class="circle-title">기억에 의존한<br>분기별 인사평가</h4>
@@ -377,7 +402,6 @@
           <hr class="circle-divider">
           <p class="circle-desc">평가 직전 1~2주의 성과나 기억이 3개월 전체의 인상을 좌우하는 문제가 빈번히 발생합니다.</p>
         </div>
-        <!-- 3. 과녁 아이콘 -->
         <div class="challenge-circle">
           <svg class="circle-icon"><use href="#icon-career"></use></svg>
           <h4 class="circle-title">커리어패스에 대한<br>인사이트 도출 한계</h4>
@@ -409,15 +433,14 @@
       <div class="slider-viewport reveal reveal-delay-3">
         <div class="slider-track" id="phil-track">
           
-          <!-- Page 1 -->
+          <!-- Page 1 (GOALS) -->
           <div class="slide-page">
-            <div class="slide-subtitle">PAST</div>
+            <div class="slide-subtitle">GOALS</div>
             <div class="phil-step">
               <div class="phil-num">01</div>
               <div class="phil-content">
                 <h3 class="phil-heading">조용한 데이터 추출</h3>
-                <!-- 내용 1줄 제한 -->
-                <p class="phil-body" title="기존에 쓰던 업무일지 그대로 GNS가 조용히 데이터를 추출합니다. 현장의 흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.">기존에 쓰던 업무일지 그대로 GNS가 조용히 데이터를 추출합니다. 현장의 흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.</p>
+                <p class="phil-body" title="기존에 쓰던 업무일지 그대로 대시보드가 조용히 데이터를 추출합니다. 부수적인 노력이나 업무흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.">기존에 쓰던 업무일지 그대로 대시보드가 조용히 데이터를 추출합니다. 부수적인 노력이나 업무흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.</p>
               </div>
             </div>
             <div class="phil-step">
@@ -436,14 +459,14 @@
             </div>
           </div>
           
-          <!-- Page 2 -->
+          <!-- Page 2 (PRESENT) -->
           <div class="slide-page">
             <div class="slide-subtitle">PRESENT</div>
             <div class="phil-step">
               <div class="phil-num">01</div>
               <div class="phil-content">
-                <h3 class="phil-heading">데이터의 선순환 구조</h3>
-                <p class="phil-body" title="업무일지를 제대로 쓴다 ➔ 데이터 품질 향상 ➔ 정확한 피드백 ➔ 납득 가능한 평가 ➔ 작성 동기 부여로 이어지는 선순환을 만듭니다.">업무일지를 제대로 쓴다 ➔ 데이터 품질 향상 ➔ 정확한 피드백 ➔ 납득 가능한 평가 ➔ 작성 동기 부여로 이어지는 선순환을 만듭니다.</p>
+                <h3 class="phil-heading">링크를 통한 자동 데이터 업데이트</h3>
+                <p class="phil-body" title="시스템 구축으로 장기적으로 해당 데이터들이 업데이트 될 수 있는 환경을 만듭니다.">시스템 구축으로 장기적으로 해당 데이터들이 업데이트 될 수 있는 환경을 만듭니다.</p>
               </div>
             </div>
             <div class="phil-step">
@@ -456,13 +479,13 @@
             <div class="phil-step">
               <div class="phil-num">03</div>
               <div class="phil-content">
-                <h3 class="phil-heading">팩트 기반의 성장</h3>
-                <p class="phil-body" title="막연한 말 대신 명확한 데이터로 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.">막연한 말 대신 명확한 데이터로 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.</p>
+                <h3 class="phil-heading">팩트 기반의 피드백</h3>
+                <p class="phil-body" title="막연한 말 대신 명확한 데이터로 지난 분기를 피드백하고 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.">막연한 말 대신 명확한 데이터로 지난 분기를 피드백하고 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.</p>
               </div>
             </div>
           </div>
 
-          <!-- Page 3 -->
+          <!-- Page 3 (FUTURE) -->
           <div class="slide-page">
             <div class="slide-subtitle">FUTURE</div>
             <div class="phil-step">
@@ -490,6 +513,14 @@
 
         </div>
       </div>
+      
+      <!-- 슬라이더 Dots -->
+      <div class="slider-dots reveal reveal-delay-3">
+        <div class="slider-dot active" onclick="goToSlide(0)"></div>
+        <div class="slider-dot" onclick="goToSlide(1)"></div>
+        <div class="slider-dot" onclick="goToSlide(2)"></div>
+      </div>
+      
     </div>
   </section>
 
@@ -695,12 +726,15 @@
     
     wrapper.style.transform = `translateY(-${currentIndex * 100}vh)`;
     
-    const targetId = sections[currentIndex].getAttribute('id');
-    if (targetId) {
-      const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
-      if (activeLink) updateNavIndicator(activeLink);
+    // 네비게이션 인디케이터 연동 (footer 제외하고 section id 찾기)
+    const currentElem = sections[currentIndex];
+    if (currentElem.tagName.toLowerCase() === 'section') {
+      const targetId = currentElem.getAttribute('id');
+      if (targetId) {
+        const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
+        if (activeLink) updateNavIndicator(activeLink);
+      }
     }
-    
     triggerReveal();
   }
 
@@ -760,21 +794,41 @@
     });
   }
 
-  // Philosophy 슬라이더 (3단)
+  // Philosophy 슬라이더 로직 (3단 + Dots 연동)
   let currentSlide = 0;
-  function moveSlide(direction) {
+  function updateSlider() {
     const track = document.getElementById('phil-track');
     const prevBtn = document.querySelector('.slider-btn.prev');
     const nextBtn = document.querySelector('.slider-btn.next');
+    const dots = document.querySelectorAll('.slider-dot');
     
-    currentSlide += direction;
-    if(currentSlide < 0) currentSlide = 0;
-    if(currentSlide > 2) currentSlide = 2; // 최대 인덱스 2로 확장
-    
+    // 트랙 이동
     track.style.transform = `translateX(-${currentSlide * 33.333}%)`;
     
+    // 버튼 상태
     prevBtn.style.display = currentSlide === 0 ? 'none' : 'flex';
     nextBtn.style.display = currentSlide === 2 ? 'none' : 'flex';
+    
+    // Dots 상태 업데이트
+    dots.forEach((dot, idx) => {
+      if (idx === currentSlide) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
+  function moveSlide(direction) {
+    currentSlide += direction;
+    if(currentSlide < 0) currentSlide = 0;
+    if(currentSlide > 2) currentSlide = 2; 
+    updateSlider();
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    updateSlider();
   }
 </script>
 
