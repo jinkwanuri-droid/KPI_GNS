@@ -1,57 +1,46 @@
 export default async function handler(req, res) {
-    // POST 요청만 허용
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+  // CORS 처리 (필요시 활성화)
+  // res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // if (req.method === 'OPTIONS') { return res.status(200).end(); }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: 'POST 메서드만 허용됩니다.' });
+  }
+
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ success: false, error: '프롬프트 데이터가 필요합니다.' });
+  }
+
+  try {
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    if (!GEMINI_API_KEY) {
+      return res.status(500).json({ success: false, error: '서버 환경 변수(GEMINI_API_KEY)가 설정되지 않았습니다.' });
     }
 
-    try {
-        const { prompt } = req.body;
-        
-        // Vercel 환경변수에서 API 키 가져오기
-        const apiKey = process.env.GEMINI_API_KEY;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
 
-        if (!apiKey) {
-            return res.status(500).json({ 
-                success: false, 
-                error: 'Vercel 환경변수에 GEMINI_API_KEY가 없습니다.' 
-            });
-        }
+    const data = await response.json();
 
-        // 요청하신 모델명 'gemini-3-flash-preview' 적용
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-        // Gemini API 호출
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
-        });
-
-        const data = await response.json();
-
-        // 1) 정상적으로 응답을 받은 경우
-        if (data.candidates && data.candidates.length > 0) {
-            const aiText = data.candidates[0].content.parts[0].text;
-            return res.status(200).json({ success: true, text: aiText });
-        } 
-        // 2) 구글 API 쪽에서 명확한 에러를 뱉은 경우 (화면에 바로 원인 출력)
-        else if (data.error) {
-            return res.status(500).json({ 
-                success: false, 
-                error: `Google API 에러: ${data.error.message}` 
-            });
-        } 
-        // 3) 그 외 알 수 없는 에러
-        else {
-            return res.status(500).json({ 
-                success: false, 
-                error: 'Gemini 응답을 분석할 수 없습니다.', 
-                details: data 
-            });
-        }
-    } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Gemini API 연동 중 오류 발생');
     }
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    return res.status(200).json({ success: true, text });
+
+  } catch (error) {
+    console.error('Gemini API Error:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
 }
