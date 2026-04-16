@@ -133,11 +133,25 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .info-icon{width:14px;height:14px;background:rgba(148,163,184,.8);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .info-wrap:hover .info-icon{background:#00428E;}
 .info-tooltip{position:absolute;top:160%;left:50%;transform:translateX(-50%);min-width:340px;background:rgba(15,23,42,.97);color:#f8fafc;font-size:12px;line-height:1.6;padding:16px 20px;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.3);visibility:hidden;opacity:0;transition:all .2s;pointer-events:none;font-weight:500;text-align:left;z-index:999999;}
-.info-tooltip::after{content:'absolute;bottom:100%;left:50%;transform:translateX(-50%);border-width:6px;border-style:solid;border-color:transparent transparent rgba(15,23,42,.97) transparent;}
+.info-tooltip::after{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border-width:6px;border-style:solid;border-color:transparent transparent rgba(15,23,42,.97) transparent;}
 .info-wrap:hover .info-tooltip{visibility:visible;opacity:1;}
 .info-tooltip ul{padding-left:18px;margin-top:8px;}
 .info-tooltip li{word-break:keep-all;margin-bottom:4px;}
 .info-tooltip b{color:#93c5fd;font-weight:800;}
+
+/* Project Tab 진척도 프로그레스바 */
+.pj-progress-wrap { background: rgba(255,255,255,0.6); border-radius: 12px; padding: 20px 25px; box-shadow: 0 4px 15px rgba(31,38,135,0.02); border: 1px solid rgba(226,232,240,0.8); }
+.pj-prog-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+.pj-prog-title { font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.pj-prog-pct { font-size: 26px; font-weight: 900; color: #3b82f6; line-height: 1; margin-top: 4px; letter-spacing: -0.03em; }
+.pj-prog-bar-bg { width: 100%; height: 16px; background: #dbeafe; border-radius: 8px; position: relative; margin-top: 8px; }
+.pj-prog-bar-fill { height: 100%; background: #3b82f6; border-radius: 8px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); position: absolute; top: 0; left: 0; }
+.pj-prog-dot { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: #1e3a8a; border-radius: 50%; cursor: pointer; z-index: 2; transition: transform 0.2s; box-shadow: 0 0 0 2px rgba(255,255,255,0.5); }
+.pj-prog-dot:hover { transform: translate(-50%, -50%) scale(1.5); }
+.pj-prog-tooltip { position: absolute; bottom: 150%; left: 50%; transform: translate(-50%, 10px); background: rgba(15,23,42,0.9); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 11px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s ease; pointer-events: none; z-index: 10; font-weight: 700; text-align: center; }
+.pj-prog-tooltip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border-width:5px; border-style:solid; border-color:rgba(15,23,42,0.9) transparent transparent transparent; }
+.pj-prog-dot:hover .pj-prog-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+
 /* Working 탭 영웅영역 CSS */
 .wp-hero{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.55) 0%,rgba(224,242,254,.45) 40%,rgba(240,249,255,.4) 100%);backdrop-filter:blur(20px);border:1px solid rgba(147,197,253,.35);box-shadow:0 8px 40px rgba(59,130,246,.08);height:480px;min-height:480px;max-height:480px;display:flex;}
 .wp-hero-inner{display:grid;grid-template-columns:300px 1fr 400px;width:100%;height:100%;position:relative;z-index:2;}
@@ -279,13 +293,20 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
     <div class="fm-options" id="fmOptions"></div>
   </div>
 </div>
+
 <div class="main">
   <!-- 대시보드 뷰 -->
   <div id="view-dashboard" class="view-section active">
-    <!-- 기존 대시보드 구조 동일 유지 -->
+    <!-- OVERALL 영역과 팀원 카드를 5:5(1:1) 비율로 구성 -->
     <div style="display:flex;gap:15px;margin-bottom:5px;min-height:450px;align-items:stretch;">
-      <div class="card" style="flex:1.4;display:flex;flex-direction:column;gap:20px;">
+      
+      <!-- 왼쪽 50% : OVERALL -->
+      <div class="card" style="flex:1; display:flex; flex-direction:column; gap:20px;">
         <div class="card-section-title" style="margin-bottom:0;"><span style="font-size:20px;color:#00428E;font-weight:900;">PROJECT OVERALL</span></div>
+        
+        <!-- 진척도 막대 그래프 (여기에 삽입됨) -->
+        <div id="projectProgressWrap"></div>
+
         <div style="display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:20px 0;">
           <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);"><div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">선택 기간 총 투입</div><div style="font-size:26px;font-weight:900;color:#00428E;" id="ovTotalHour">0h</div></div>
           <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);"><div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">참여 인원</div><div style="font-size:26px;font-weight:900;color:#1e293b;" id="ovTotalMember">0명</div></div>
@@ -302,8 +323,11 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
           <div class="mini-stat-card"><div style="font-size:12px;color:#94a3b8;font-weight:600;">CV 평균</div><div style="font-size:24px;font-weight:800;color:#ef4444;margin-top:6px;" id="ovAvgCv">0.00</div></div>
         </div>
       </div>
-      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:15px;" id="topKpiGrid"></div>
+
+      <!-- 오른쪽 50% : 팀원 카드 4장 그리드 -->
+      <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:15px;" id="topKpiGrid"></div>
     </div>
+    
     <div class="section-divider"><h2>Project Time Analysis</h2></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:5px;">
       <div class="card" style="height:350px;"><div class="card-section-title"><span>단계별 투입비율</span><div id="dashStageLegendWrap" style="display:flex;gap:6px;"></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="stageChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:18px;font-weight:900;color:#1e293b;" id="stageCenter">-</div><div style="font-size:12px;color:#94a3b8;">총 투입</div></div></div></div>
@@ -332,8 +356,10 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="card" style="height:320px;"><div class="card-section-title"><span>월별 근무 밀도</span><div id="heatYearTabs" style="display:flex;gap:3px;margin-left:auto;"></div></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:4px;"><table class="heat-table" id="heatTable"></table></div></div>
     </div>
   </div>
+
   <!-- 멤버 뷰 (Working) -->
   <div id="view-members" class="view-section">
+    <!-- 영웅 영역 복구됨 -->
     <div class="wp-hero">
       <div class="wp-hero-inner">
         <div class="wp-hero-profile">
@@ -420,7 +446,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
             </div>
         </div>
         
-        <!-- 토글 버튼 -->
+        <!-- 토글 버튼 (아코디언) -->
         <div style="border-top: 1px dashed rgba(226,232,240,0.8); background: rgba(248,250,252,0.5); text-align: center; padding: 10px 0; cursor: pointer; transition: background 0.2s;" onclick="toggleAdvancedDetails('wp')" onmouseover="this.style.background='rgba(226,232,240,0.4)'" onmouseout="this.style.background='rgba(248,250,252,0.5)'">
             <span id="wpAdvancedToggleText" style="font-size: 13px; font-weight: 800; color: #4f46e5; display: inline-flex; align-items: center; gap: 4px;">
                 세부정보 차트 보기 ▼
@@ -468,11 +494,13 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <div class="card" style="height:300px;"><div style="display:flex;flex-direction:column;height:100%;gap:12px;"><div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div></div></div>
     </div>
   </div>
-  <!-- KPI Eval 뷰 (3단 레이아웃 전용 컨테이너) -->
+
+  <!-- KPI Eval 뷰 (3단 레이아웃 전용 컨테이너 복구됨) -->
   <div id="view-kpieval" class="view-section">
       <!-- renderEvalTab()을 통해 내부가 덮어씌워집니다 -->
   </div>
 </div>
+
 <script>
 var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 var GITHUB_BASE='https://jinkwanuri-droid.github.io/KPI_GNS/';
@@ -483,9 +511,9 @@ var SUB_PAL=['#00428E','#4A90E2','#0ea5e9','#38bdf8','#818cf8','#6366f1','#a855f
 var OT_COLORS=['#818cf8','#6366f1','#4A90E2','#00428E'];
 var RADAR_LABELS=['적극성','생산성','전문성','창의성','협업능력'];
 var MONTH_KO=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],OVERTIME_RANGES=['9~10h','10~11h','11~12h','12h 이상'];
-// 레이더 차트 및 지표 라벨 (순서 보장)
+// 레이더 차트 및 지표 라벨
 var INSIGHT_RADAR_LABELS=['정시업무(1-OT)','Shannon(파편화도)','HHI(몰입도)','CV(안정성)','Hurst(주도성)','Jaccard(확장성)'];
-// 스크린샷 기반 지표 설명 및 동적 상태 평가 로직
+
 var INSIGHT_METRICS_INFO = [
     {
         key: 'ot', name: '정시업무(1-OT)', target: '1.0 (야근無)',
@@ -534,6 +562,7 @@ var INSIGHT_METRICS_INFO = [
         }
     }
 ];
+
 var MEMBERS=[],MC={},INITIALS={},SCHEDULE_DATA=[],EVAL_DATA=[],RAW=[],CH={};
 var GLOBAL_MEMBER=null, WP_MEMBER=null, hlTimeline=null, hlStage=null, hlOvertimeDonut=null, hlMonthlyOt=null, hlDonutWork=null, hlPjRatio=null, hlWpSub=null, hlHeroDonut=null, hlHeatBin=null;
 window.filterStartIndex=0;window.filterEndIndex=11;window.lastClickedIndex=0;
@@ -553,7 +582,6 @@ Chart.defaults.plugins.tooltip.cornerRadius=10;
 Chart.defaults.plugins.tooltip.padding=10;
 Chart.defaults.interaction.mode='index';
 Chart.defaults.interaction.intersect=false;
-// 일정 표시 세로선 플러그인
 Chart.register({
     id:'verticalLine',
     beforeDatasetsDraw:function(c){
@@ -604,6 +632,7 @@ const customRadarBgPlugin = {
     }
 };
 Chart.register(customRadarBgPlugin);
+
 function safeRender(fn){try{fn();}catch(e){console.error("Chart Render Error:", e);}}
 function fmt(v){return typeof v==='number'?v.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):v;}
 function mToH(m){return parseFloat((m/60).toFixed(1));}
@@ -617,6 +646,7 @@ function filtered(){return RAW.filter(function(r){var q=getQ(r.date),y=parseInt(
 function filteredEvalQs(){return Array.from(new Set(EVAL_DATA.map(function(d){return d.q;}))).sort().filter(function(q){var y=parseInt(q.slice(0,4)),qn=parseInt(q.slice(6,7))-1,i=(y-2024)*4+qn;return i>=window.filterStartIndex&&i<=window.filterEndIndex;});}
 function getAvatar(n,s,fs){return '<div class="avatar-base" style="width:'+(s||24)+'px;height:'+(s||24)+'px;font-size:'+(fs||10)+'px;background:'+(MC[n]||'#00428E')+';border:2px solid '+(MC[n]||'#00428E')+';">'+(INITIALS[n]||'A')+'</div>';}
 function getWeekInfo(ds){var d=new Date(ds),y=d.getFullYear(),m=d.getMonth()+1,dt=d.getDate(),wn=Math.ceil(dt/7),ym=y+'-'+String(m).padStart(2,'0'),bn=Math.ceil(wn/2);return{label1:[ym,'W'+String(wn).padStart(2,'0')],key1:ym+'-W'+String(wn).padStart(2,'0'),label2:[ym,'W'+(bn*2-1)+'-'+(bn*2)],key2:ym+'-B'+bn};}
+
 function hideLoadingOverlay(){var el=document.getElementById('loadingOverlay');if(el){el.style.opacity='0';setTimeout(function(){el.style.display='none';},600);}}
 function showEnterBtn(){var sa=document.getElementById('loadingStatusArea'),bw=document.getElementById('ovEnterBtnWrap');if(sa){sa.style.opacity='0';sa.style.visibility='hidden';}if(bw)bw.classList.add('show');}
 function setProgress(p,m){document.getElementById('ovProgress').style.width=p+'%';if(m)document.getElementById('ovMsg').textContent=m;}
@@ -625,6 +655,7 @@ function updateNavSlider(){
     var a=document.querySelector('.nav-item.active'),s=document.getElementById('navSlider');
     if(a&&s){s.style.width=a.offsetWidth+'px';s.style.left=a.offsetLeft+'px';}
 }
+
 function showView(v,el){
     document.querySelectorAll('.view-section').forEach(function(s){s.classList.remove('active');});
     document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
@@ -634,10 +665,12 @@ function showView(v,el){
     var floatingFilter = document.getElementById('globalMemberSelectWrap');
     if(v === 'members' || v === 'kpieval') { floatingFilter.classList.add('show'); }
     else { floatingFilter.classList.remove('show'); document.getElementById('fmOptions').classList.remove('open'); }
+    
     if(v==='members') renderWorkingTab(WP_MEMBER || GLOBAL_MEMBER);
     else if(v==='kpieval') renderEvalTab();
     else renderDashboardTab();
 }
+
 function getShortName(n) { if(!n) return ''; if(n === '이혜인B') return '혜인'; if(n.length >= 3) return n.substring(1,3); return n; }
 function renderCustomDropdown(){
     var h='';
@@ -660,6 +693,7 @@ function updateCustomSelectTrigger(){
     document.getElementById('fmTriggerAvatar').innerText = getShortName(GLOBAL_MEMBER);
 }
 document.addEventListener('click',function(e){ var w=document.getElementById('fmWrapper'); if(w&&!w.contains(e.target)){ document.getElementById('fmOptions').classList.remove('open'); }});
+
 function initSlider(){
     var nc=document.getElementById('nodesContainer'),yr=document.getElementById('yearRow');
     nc.innerHTML='';yr.innerHTML='';
@@ -706,12 +740,13 @@ function updateFilterUI(){
     document.getElementById('summaryText').innerText=lbl;
     if(RAW.length>0) renderAllViews();
 }
+
 function renderAllViews(){
     if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboardTab();
     else if(document.getElementById('view-members').classList.contains('active')) renderWorkingTab(WP_MEMBER);
     else if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab();
 }
-// 구글 시트 호출
+
 function loadDataFromSheets(){
     setProgress(20,'서버 연결 중...');
     fetch(APPS_SCRIPT_URL+'?action=all&t='+Date.now()).then(function(r){
@@ -761,7 +796,7 @@ function loadDataFromSheets(){
         showEnterBtn();
     });
 }
-// 지표 계산 알고리즘
+
 function calcStandaloneMetrics(currR) {
     if(!currR || currR.length === 0) return {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
     var t = currR.reduce((s,r)=>s+r.min,0) || 1;
@@ -805,12 +840,12 @@ function calcStandaloneMetrics(currR) {
     }
     return {ot: oi, shannon: sn, hhi: hi, cv: cn, hurst: hs, jaccard: jc};
 }
+
 function renderAdvancedMetrics(d,da,col,pf){
     try {
         dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
         if(!d||d.length===0)return;
         
-        // 1. 단일 지표 계산 (레이더 및 요약 테이블)
         var cr = calcStandaloneMetrics(d) || {ot:0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
         var normOt = Math.max(0, 1 - Math.min((cr.ot||0)/0.5, 1)); 
         var cvInsight = [normOt, (cr.shannon||0), (cr.hhi||0), (cr.cv||0), (cr.hurst||0), (cr.jaccard||0)];
@@ -908,7 +943,7 @@ function renderAdvancedMetrics(d,da,col,pf){
             tb.innerHTML = tableHtml;
         }
         
-        // 2. 6개 추이 차트를 위한 데이터 생성 및 렌더링
+        // 추이 차트 데이터 렌더링
         var wm={},bwm={};
         d.forEach(function(r){
             var wi=getWeekInfo(r.date);
@@ -1008,14 +1043,13 @@ function renderAdvancedMetrics(d,da,col,pf){
     } catch(e) { console.error("Advanced Metrics 전체 렌더링 중 오류 발생", e); }
 }
 
-// Advanced Analytics 세부정보 아코디언 토글 로직
+// Advanced Analytics 세부정보 아코디언 토글
 window.toggleAdvancedDetails = function(pf) {
     var detailDiv = document.getElementById(pf + 'AdvancedDetails');
     var btnText = document.getElementById(pf + 'AdvancedToggleText');
     if (detailDiv.style.display === 'none') {
         detailDiv.style.display = 'block';
         btnText.innerHTML = '세부정보 차트 닫기 ▲';
-        // 애니메이션 후 차트 리사이즈 강제 호출 (깨짐 방지)
         setTimeout(function(){
             ['OtChart','ShannonChart','HhiChart','CvChart','HurstChart','JaccardChart'].forEach(function(k){
                 if(CH[pf + k]) CH[pf + k].resize();
@@ -1027,11 +1061,83 @@ window.toggleAdvancedDetails = function(pf) {
     }
 };
 
+// 프로그레스 바(진척도) 렌더링
+function renderProjectProgress() {
+    var wrap = document.getElementById('projectProgressWrap');
+    if(!wrap) return;
+
+    var milestones = [
+        { key: '설계공모', date: '2024-03-01' },
+        { key: '착수보고회', date: '2024-05-15' },
+        { key: '건축허가', date: '2025-02-20' },
+        { key: '프로젝트 종료', date: '2025-12-31' }
+    ];
+
+    if (SCHEDULE_DATA && SCHEDULE_DATA.length > 0) {
+        SCHEDULE_DATA.forEach(function(s) {
+            var t = s.title || s.name || s['일정'] || s['내용'] || '';
+            var d = s.date ? s.date.slice(0,10) : '';
+            if(!d) return;
+            if(t.includes('설계공모')) milestones[0].date = d;
+            if(t.includes('착수보고')) milestones[1].date = d;
+            if(t.includes('건축허가')) milestones[2].date = d;
+            if(t.includes('종료')) milestones[3].date = d;
+        });
+    }
+
+    var st = new Date(milestones[0].date).getTime();
+    var ed = new Date(milestones[3].date).getTime();
+    var now = new Date().getTime();
+
+    var total = ed - st;
+    var current = now - st;
+    var pct = 0;
+    if(total > 0) {
+        pct = (current / total) * 100;
+        pct = Math.max(0, Math.min(100, pct));
+    }
+
+    var dotHtml = milestones.map(function(m) {
+        var mTime = new Date(m.date).getTime();
+        var mPct = total > 0 ? ((mTime - st) / total) * 100 : 0;
+        mPct = Math.max(0, Math.min(100, mPct));
+        
+        var isPassed = mPct <= pct;
+        var dotColor = isPassed ? '#1e3a8a' : '#fff';
+        
+        return '<div class="pj-prog-dot" style="left: '+mPct+'%; background: '+dotColor+';">' +
+               '<div class="pj-prog-tooltip">' + m.key + ' <br><span style="color:#93c5fd;font-size:9px;">(' + m.date + ')</span></div>' +
+               '</div>';
+    }).join('');
+
+    var html = '<div class="pj-progress-wrap">' +
+        '<div class="pj-prog-header">' +
+            '<div>' +
+                '<div class="pj-prog-title">Your progress</div>' +
+                '<div class="pj-prog-pct">' + pct.toFixed(1) + '% <span style="font-size:16px;font-weight:700;color:#64748b;">to complete</span></div>' +
+            '</div>' +
+            '<div style="font-size:11px; color:#94a3b8; font-weight:700; display:flex; align-items:center; gap:4px; margin-bottom:4px;">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>' +
+                'Today' +
+            '</div>' +
+        '</div>' +
+        '<div class="pj-prog-bar-bg">' +
+            '<div class="pj-prog-bar-fill" style="width: '+pct+'%;"></div>' +
+            dotHtml +
+        '</div>' +
+    '</div>';
+
+    wrap.innerHTML = html;
+}
+
 function renderDashboardTab(){
     var all=filtered();if(!all.length)return;
     var tm=all.reduce(function(s,r){return s+r.min;},0),mos=getMos(all),pd=all.filter(function(r){return r.project==='경남 서부의료원';}),pmos=getMos(pd),adt=new Set(all.map(function(r){return r.date;})).size;
     document.getElementById('ovTotalHour').innerText=fH(tm)+'h';document.getElementById('ovTotalMember').innerText=MEMBERS.length+'명';document.getElementById('ovTotalMonth').innerText=mos.length+'개월';document.getElementById('ovActiveDays').innerText=adt+'일';
+    
+    safeRender(function(){renderProjectProgress();}); // 진척도 막대 렌더링 호출
     safeRender(function(){renderOvProjectRatio(all);});
+    
     var gd=document.getElementById('topKpiGrid');gd.innerHTML='';
     var gtm=pd.reduce(function(s,r){return s+r.min;},0);
     MEMBERS.forEach(function(n){
@@ -1052,11 +1158,11 @@ function renderDashboardTab(){
         safeRender(function(){renderDashOvertimeBars(pd);});
         safeRender(function(){renderDashOvertimeDonut(pd);});
         safeRender(function(){renderDashMonthlyOt(pd,pmos);});
-        // Project 탭의 Advanced Metrics는 그대로 유지
         var da=Array.from(new Set(pd.map(function(r){return r.date;}))).sort();
         safeRender(function(){renderAdvancedMetrics(pd,da,'#00428E','pj');});
     }
 }
+
 function renderOvProjectRatio(all){dC('ovPjRatioBar');var m=0,o=0,c=0;all.forEach(function(r){if(r.project==='경남 서부의료원')m+=r.min;else if(r.project==='타 프로젝트')o+=r.min;else c+=r.min;});var t=m+o+c,it=[{k:'경남 서부의료원',c:'#00428E'},{k:'타 프로젝트',c:'#3b82f6'},{k:'공통업무',c:'#cbd5e1'}];document.getElementById('ovPjRatioLegendWrap').innerHTML=it.map(function(i){return '<div class="legend-item '+(hlPjRatio!==null&&hlPjRatio!==i.k?'dimmed':'')+'" onclick="ovTogglePjR(\''+i.k+'\')"><div class="legend-dot" style="background:'+i.c+'"></div><span style="font-size:11px;">'+i.k.replace('경남 ','')+'</span></div>';}).join('');CH.ovPjRatioBar=new Chart(document.getElementById('ovPjRatioBar').getContext('2d'),{type:'bar',data:{labels:[''],datasets:[{label:'경남 서부의료원',data:[mToH(m)],backgroundColor:(hlPjRatio===null||hlPjRatio==='경남 서부의료원')?'#00428E':'#e2e8f0',barThickness:60,borderRadius:{topLeft:10,bottomLeft:10}},{label:'타 프로젝트',data:[mToH(o)],backgroundColor:(hlPjRatio===null||hlPjRatio==='타 프로젝트')?'#3b82f6':'#e2e8f0',barThickness:60},{label:'공통업무',data:[mToH(c)],backgroundColor:(hlPjRatio===null||hlPjRatio==='공통업무')?'#cbd5e1':'#e2e8f0',barThickness:60,borderRadius:{topRight:10,bottomRight:10}}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,color:function(cx){return cx.datasetIndex===2?'#334155':'#fff';},font:{weight:'bold',size:12},anchor:'center',align:'center',textAlign:'center',formatter:function(v,cx){if(v<=0)return'';return fmt(v)+'h\n('+((v/mToH(t)*100).toFixed(1))+'%)';}}},scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}}});}
 window.ovTogglePjR=function(b){hlPjRatio=hlPjRatio===b?null:b;renderOvProjectRatio(filtered());};
 function renderDashStage(all){dC('stageChart');var cm=grp(all,'cat'),t=Object.values(cm).reduce(function(a,b){return a+b;},0);if(!t)return;document.getElementById('dashStageLegendWrap').innerHTML=CAT_ORDER.map(function(c,i){return '<div class="legend-item '+(hlStage!==null&&hlStage!==c?'dimmed':'')+'" onclick="dTogStage(\''+c+'\')"><div class="legend-dot" style="background:'+CAT_COLORS[i]+'"></div><span style="font-size:11px;">'+c+'</span></div>';}).join('');CH.stageChart=new Chart(document.getElementById('stageChart').getContext('2d'),{type:'doughnut',data:{labels:CAT_ORDER,datasets:[{data:CAT_ORDER.map(function(c){return mToH(cm[c]||0);}),backgroundColor:CAT_ORDER.map(function(c,i){return (hlStage===null||hlStage===c)?CAT_COLORS[i]:'#e2e8f0';}),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',layout:{padding:{top:25,bottom:25,left:35,right:35}},plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100);if(p<5)return'';return cx.chart.data.labels[cx.dataIndex]+'\n'+fmt(v)+'h ('+p.toFixed(1)+'%)';}}},onClick:function(e,els){if(els.length)dTogStage(CAT_ORDER[els[0].index]);else{hlStage=null;var p=filtered().filter(function(r){return r.project==='경남 서부의료원';});renderDashStage(p);renderDashCompare(p);}}}});document.getElementById('stageCenter').innerText=fH(t)+'h';}
@@ -1095,6 +1201,7 @@ function renderDashOvertimeDonut(all){
     dd('dashOvertimeDonutChart9',dm); dd('dashOvertimeDonutChart12',ds);
 }
 window.dTogOtDonut=function(n){hlOvertimeDonut=hlOvertimeDonut===n?null:n;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
+
 // ==========================================
 // Working 탭 렌더링
 // ==========================================
@@ -1203,7 +1310,6 @@ function renderWpDonutSub(d,t){
         options:{responsive:true,maintainAspectRatio:false,cutout:'50%',layout:{padding:{top:20,bottom:20,left:20,right:20}},plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:10,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ta[cx.dataIndex][0]+'\n'+p+'%';}}},onClick:function(e,els){if(els.length)dTogWpSub(CH.wpDonutSub.data.labels[els[0].index]);else dTogWpSub(null);}}
     });
 }
-// 클릭 시 두 차트 연동
 window.dTogWpSub=function(s){
     hlWpSub=hlWpSub===s?null:s;
     var d=WP_MEMBER?filtered().filter(function(r){return r.name===WP_MEMBER;}):filtered();
@@ -1298,7 +1404,6 @@ function renderWpOvertimeDetail(d){
 }
 function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
 
-// Working 탭 전용 AI 코멘트 로직 (API 연동 및 방어적 코딩 포함)
 async function generateWorkingAiComment() {
     var btn = document.getElementById('btnWpAi');
     var box = document.getElementById('wpAiCommentBox');
@@ -1333,7 +1438,6 @@ async function generateWorkingAiComment() {
     }
 }
 
-// KPI Eval 탭 렌더링
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
     if (!m) return;
@@ -1489,7 +1593,6 @@ function renderEvalTab() {
     }, 50);
 }
 
-// KPI 탭 전용 AI 코멘트 로직 (API 연동 및 방어적 코딩 포함)
 async function generateAiComment() {
     var btn = document.getElementById('btnGenerateAI');
     var box = document.getElementById('aiCommentBox');
