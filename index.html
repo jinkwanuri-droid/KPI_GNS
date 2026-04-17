@@ -1089,7 +1089,7 @@ window.toggleAdvancedDetails = function(pf) {
 };
 
 // ==========================================
-// 인건비 차트 전역 변수 및 렌더링 로직 (V3)
+// 인건비 차트 전역 변수 및 렌더링 로직 (V4)
 // ==========================================
 window.isCostCumulative = true;
 window.lastCostMos = [];
@@ -1130,7 +1130,7 @@ function renderCostTrendChart(mos) {
     var allMosMap = {};
     COST_DATA.forEach(function(r) {
         if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0 };
-        // 단위 변환: 천원 -> 천만원 (10,000으로 나눔)
+        // 단위 변환: 천원 -> 천만원
         allMosMap[r.date].plan += (r.plan / 10000);
         allMosMap[r.date].exec += (r.exec / 10000);
     });
@@ -1156,21 +1156,18 @@ function renderCostTrendChart(mos) {
         cumPlan += mPlan;
 
         if (m < lastActualMonth) {
-            // 과거 데이터
             cumExecActual += mExec;
             cumExecPred = cumExecActual;
             dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
             dataSets.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
             dataSets.execPred.push(null); 
         } else if (m === lastActualMonth) {
-            // 예측선과 실선이 만나는 지점 (두 배열 모두에 같은 값 할당하여 선 연결)
             cumExecActual += mExec;
             cumExecPred = cumExecActual;
             dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
             dataSets.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
             dataSets.execPred.push(window.isCostCumulative ? cumExecActual : mExec); 
         } else {
-            // 미래 예측 데이터
             cumExecPred += avgExec;
             dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
             dataSets.execActual.push(null);
@@ -1183,7 +1180,8 @@ function renderCostTrendChart(mos) {
         ...dataSets.execActual.filter(function(v){return v!==null;}),
         ...dataSets.execPred.filter(function(v){return v!==null;})
     );
-    var scheduleTopY = maxVal * 1.15;
+    // 점이 잘리지 않도록 여유 공간 확보 (기존 1.15 -> 1.1 사용 후 CSS 패딩으로 조절)
+    var scheduleTopY = maxVal * 1.1;
 
     var schData = [];
     fullMonths.forEach(function(m) {
@@ -1200,9 +1198,10 @@ function renderCostTrendChart(mos) {
         type:'line', label:'주요일정',
         data: schData.map(function(x) { return x ? x.yPos : null; }),
         backgroundColor:'transparent', borderColor:'transparent', showLine:false,
-        pointRadius: function(cx) { return cx.raw !== null ? 7 : 0; }, pointHoverRadius: 10,
-        pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 2,
-        isCostSchedule:true, order:0, spanGaps:false // isSchedule -> isCostSchedule로 변경하여 오뚜기 모양 렌더링 픽스
+        // 점 사이즈 작고 깔끔하게 원형으로 복구
+        pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 6,
+        pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5,
+        isSchedule:true, order:0, spanGaps:false // 원래 지정된 플러그인과 연동되도록 isSchedule 복구
     };
 
     CH.costTrendChart = new Chart(document.getElementById('costTrendChart').getContext('2d'), {
@@ -1216,7 +1215,7 @@ function renderCostTrendChart(mos) {
                     borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2
                 },
                 {
-                    label: '실행 예측', data: dataSets.execPred,
+                    label: '실행 (예측)', data: dataSets.execPred,
                     borderColor: '#f59e0b', backgroundColor: 'transparent',
                     borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3
                 },
@@ -1230,24 +1229,26 @@ function renderCostTrendChart(mos) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { top: 35, right: 15 } },
+            // 상단 점이 잘리지 않도록 top 패딩을 45로 넉넉하게 확보
+            layout: { padding: { top: 45, right: 15 } },
             interaction: { mode: 'nearest', intersect: true },
             plugins: {
                 legend: { display: false }, datalabels: { display: false },
                 tooltip: {
+                    displayColors: false, // 툴팁 앞의 색상 네모칸 삭제
                     backgroundColor: 'rgba(15,23,42,0.95)',
-                    titleFont: { size: 13, weight: 'bold' },
+                    titleFont: { size: 14, weight: 'bold' },
                     bodyFont: { size: 12 },
                     padding: 12,
                     callbacks: {
+                        // 툴팁 제목: 심플하게 월(Month) 텍스트만 표시
                         title: function(cx) { 
-                            if (cx[0].dataset.isCostSchedule) return "📅 주요일정 (" + cx[0].label + ")"; 
-                            return "📊 " + cx[0].label + " 인건비 현황"; 
+                            return cx[0].label; 
                         },
+                        // 툴팁 내용: 이모지나 소제목 없이 데이터만 깔끔하게 표시
                         label: function(cx) { 
-                            if (cx.dataset.isCostSchedule) return schData[cx.dataIndex].schTitle; 
+                            if (cx.dataset.isSchedule) return schData[cx.dataIndex].schTitle; 
                             
-                            // 꺾은선 차트에 롤오버 시 계획, 실행, 차이 한 번에 표시
                             var idx = cx.dataIndex;
                             var plan = dataSets.plan[idx];
                             var actual = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx];
@@ -1255,9 +1256,9 @@ function renderCostTrendChart(mos) {
                             var diffText = diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만원)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만원)";
 
                             return [
-                                "계획 금액: " + plan.toFixed(1) + " 천만원",
-                                cx.dataset.label + ": " + actual.toFixed(1) + " 천만원",
-                                "차이 분석: " + diffText
+                                "계획 인건비: " + plan.toFixed(1) + " 천만원",
+                                "실행 인건비: " + actual.toFixed(1) + " 천만원",
+                                diffText
                             ];
                         }
                     }
@@ -1284,7 +1285,6 @@ function renderCostSummary(lastMonth, totalPlan, totalExec) {
     var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
     var diff = totalPlan - totalExec;
     
-    // 로직 변경: 예산 대비 실행이 적을수록 좋은 지표 (초록색)
     var statusClass = 'good';
     var statusMsg = '효율적 집행 (우수)';
     var diffLabel = '예산 절감액';
