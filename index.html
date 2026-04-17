@@ -1210,7 +1210,6 @@ function renderCostTrendChart(mos) {
         ...dataSets.execPred.filter(function(v){return v!==null;})
     );
     
-    // Y축이 지저분해지지 않게 10단위로 깔끔하게 올림 처리 (예: 96.3 -> 110)
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10; 
     
     var schData = [];
@@ -1230,7 +1229,6 @@ function renderCostTrendChart(mos) {
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
     
-    // 세련된 바이올렛(Violet) 그라데이션 적용
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
     gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); 
     gradPred.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
@@ -1269,7 +1267,7 @@ function renderCostTrendChart(mos) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { top: 60, right: 20, left: 10 } }, 
+            layout: { padding: { top: 60, right: 20, left: 10, bottom: 10 } }, 
             clip: false, 
             interaction: { mode: 'nearest', intersect: true }, 
             plugins: {
@@ -1279,18 +1277,33 @@ function renderCostTrendChart(mos) {
                         if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false;
                         return true;
                     },
-                    // 계획(인덱스2)은 2025-04까지는 아래, 이후는 위. 실행/예상(인덱스0,1)은 무조건 위
                     align: function(cx) { 
-                        if (cx.datasetIndex === 2) {
-                            var monthLabel = cx.chart.data.labels[cx.dataIndex];
-                            return monthLabel <= '2025-04' ? 'bottom' : 'top';
+                        var idx = cx.dataIndex;
+                        var planVal = dataSets.plan[idx];
+                        var actVal = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx];
+                        
+                        // 두 점 사이의 차이가 7 미만일 때 (겹칠 위험이 있을 때) 유동적으로 위/아래 밀어내기
+                        if (Math.abs(planVal - actVal) < 7) {
+                            if (cx.datasetIndex === 2) { // 계획
+                                return planVal >= actVal ? 'top' : 'bottom';
+                            } else { // 실행/예상
+                                return actVal > planVal ? 'top' : 'bottom';
+                            }
                         }
+                        // 간격이 충분하면 기본적으로 모두 위쪽 표시
                         return 'top'; 
                     },
                     anchor: function(cx) { 
-                        if (cx.datasetIndex === 2) {
-                            var monthLabel = cx.chart.data.labels[cx.dataIndex];
-                            return monthLabel <= '2025-04' ? 'bottom' : 'top';
+                        var idx = cx.dataIndex;
+                        var planVal = dataSets.plan[idx];
+                        var actVal = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx];
+                        
+                        if (Math.abs(planVal - actVal) < 7) {
+                            if (cx.datasetIndex === 2) {
+                                return planVal >= actVal ? 'top' : 'bottom';
+                            } else {
+                                return actVal > planVal ? 'top' : 'bottom';
+                            }
                         }
                         return 'top'; 
                     },
@@ -1331,7 +1344,7 @@ function renderCostTrendChart(mos) {
                     min: 0, 
                     max: scheduleTopY,
                     ticks: { 
-                        stepSize: 10, // 10단위로 눈금 표시
+                        stepSize: 10, 
                         callback: function(v) { return v.toLocaleString('ko-KR') + '천만'; } 
                     }
                 }
