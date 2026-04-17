@@ -1124,8 +1124,15 @@ function renderCostTrendChart(mos) {
     if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
     
     var startMonth = mos[0];
-    var endMonth = mos[mos.length - 1]; // 필터링된 마지막 월 동적 할당
-    var fullMonths = mos; // 필터링된 배열 그대로 사용
+    var endMonth = mos[mos.length - 1]; 
+    
+    // 💡 2026년이 필터에 포함될 경우, 프로젝트 종료월인 2026-11까지 차트를 강제 확장
+    if (endMonth.startsWith('2026')) {
+        endMonth = '2026-11';
+    }
+    
+    // 시작월부터 종료월까지 이빨 빠진 곳 없이 촘촘한 월 배열 생성
+    var fullMonths = getMonthsBetween(startMonth, endMonth);
     
     // 전체 데이터를 월별로 집계
     var allMosMap = {};
@@ -1138,6 +1145,8 @@ function renderCostTrendChart(mos) {
     var lastActualMonth = '';
     var totalActualExec = 0;
     var actualMonthCount = 0;
+    
+    // 데이터의 마지막 실제 실행월 파악 (실제 지출이 일어난 마지막 달)
     Object.keys(allMosMap).sort().forEach(function(m) {
         if(allMosMap[m].exec > 0) {
             lastActualMonth = m;
@@ -1145,9 +1154,11 @@ function renderCostTrendChart(mos) {
             actualMonthCount++;
         }
     });
+    
+    // 평균 실행 인건비 계산 (미래 예측 추세용)
     var avgExec = actualMonthCount > 0 ? (totalActualExec / actualMonthCount) : 0;
     
-    // 시작월 이전 누적값 계산 (누적 모드일 때만 사용되어 연속성 유지)
+    // 시작월 이전 누적값 계산 (누적 모드일 때만 적용되어 자연스럽게 이어지도록 함)
     var prevPlanSum = 0;
     var prevExecSum = 0;
     Object.keys(allMosMap).sort().forEach(function(m) {
@@ -1181,7 +1192,7 @@ function renderCostTrendChart(mos) {
         var curExecVal = 0;
         var curPredVal = 0;
 
-        if (m < lastActualMonth) {
+        if (!lastActualMonth || m < lastActualMonth) {
             cumExecActual += mExec;
             cumExecPred = cumExecActual;
             curExecVal = window.isCostCumulative ? cumExecActual : mExec;
@@ -1192,15 +1203,16 @@ function renderCostTrendChart(mos) {
             cumExecPred = cumExecActual;
             curExecVal = window.isCostCumulative ? cumExecActual : mExec;
             dataSets.execActual.push(curExecVal);
-            dataSets.execPred.push(curExecVal); // 차트를 이어주기 위함
+            dataSets.execPred.push(curExecVal); // 파란선과 녹색선을 끊기지 않게 연결
         } else {
+            // 실제 데이터가 없는 미래 구간 -> 예상치(녹색 선) 적용
             cumExecPred += avgExec;
             curPredVal = window.isCostCumulative ? cumExecPred : avgExec;
             dataSets.execActual.push(null);
             dataSets.execPred.push(curPredVal);
         }
         
-        // 마지막 월의 값 저장 (요약 패널용 - 기간 대비 처리)
+        // 마지막 월의 값 저장 (오른쪽 패널 요약용)
         if (m === endMonth) {
             summaryPlan = curPlanVal;
             if (m <= lastActualMonth) {
@@ -1233,13 +1245,14 @@ function renderCostTrendChart(mos) {
     
     var ctx = document.getElementById('costTrendChart').getContext('2d');
     
-    // 그라데이션 적용
+    // 파란색 실행 영역 그라데이션
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
     
+    // 모던 그린 예상 영역 그라데이션
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
-    gradPred.addColorStop(0, 'rgba(16, 185, 129, 0.3)'); // 모던 그린 (#10b981)
+    gradPred.addColorStop(0, 'rgba(16, 185, 129, 0.3)'); 
     gradPred.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
     var schConfig = {
@@ -1284,10 +1297,9 @@ function renderCostTrendChart(mos) {
                     display: function(cx) {
                         if (cx.dataset.isSchedule) return false;
                         if (cx.raw === null || cx.raw === 0) return false;
-                        // 라벨이 너무 겹치지 않게 홀수 인덱스만 표시하거나 시작/끝점만 표시할 수 있지만 기본적으로 표시
                         return true;
                     },
-                    align: function(cx) { return cx.datasetIndex === 2 ? 'bottom' : 'top'; }, // 계획은 아래로, 실행은 위로
+                    align: function(cx) { return cx.datasetIndex === 2 ? 'bottom' : 'top'; },
                     color: function(cx) { return cx.dataset.borderColor; },
                     font: { size: 10, weight: 'bold' },
                     formatter: function(v) { return Math.round(v); }
@@ -1297,7 +1309,6 @@ function renderCostTrendChart(mos) {
                     backgroundColor: 'rgba(15,23,42,0.95)',
                     titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12,
                     filter: function(item, index, items) {
-                        // 중복 방지: 동일 인덱스 내에서 하나의 툴팁 블록만 표시되도록 허용
                         return item.datasetIndex === items[0].datasetIndex;
                     },
                     callbacks: {
@@ -1330,6 +1341,7 @@ function renderCostTrendChart(mos) {
         }
     });
     
+    // 요약 패널 업데이트
     renderCostSummary(endMonth, summaryPlan, summaryExec, isSummaryPred);
 }
 
