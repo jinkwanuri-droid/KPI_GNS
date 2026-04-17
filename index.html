@@ -235,6 +235,23 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 @media(max-width:768px){
   #pjAdvancedDetails > div, #wpAdvancedDetails > div { grid-template-columns: 1fr !important; }
 }
+  /* --- 인건비 차트 전용 추가 CSS --- */
+.cost-header-wrap { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px; flex-wrap: wrap; gap: 10px; }
+.ios-toggle-wrapper { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; }
+.ios-toggle { position: relative; width: 48px; height: 26px; appearance: none; background: #e2e8f0; border-radius: 13px; outline: none; cursor: pointer; transition: background 0.3s; box-shadow: inset 0 1px 4px rgba(0,0,0,0.1); flex-shrink: 0; margin: 0; }
+.ios-toggle:checked { background: #00428E; }
+.ios-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; background: #fff; border-radius: 50%; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.ios-toggle:checked::after { transform: translateX(22px); }
+.cost-layout { display: flex; width: 100%; height: calc(100% - 35px); gap: 15px; align-items: stretch; }
+.cost-chart-area { flex: 0 0 70%; max-width: 70%; position: relative; display: flex; flex-direction: column; }
+.cost-summary-area { flex: 0 0 30%; max-width: 30%; display: flex; flex-direction: column; justify-content: center; border-left: 1px dashed rgba(226,232,240,0.8); padding-left: 20px; overflow: hidden; }
+.cost-sum-box { background: rgba(255,255,255,0.6); border: 1px solid rgba(226,232,240,0.8); border-radius: 16px; padding: 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+.cost-sum-title { font-size: 12px; color: #64748b; font-weight: 800; margin-bottom: 5px; }
+.cost-sum-val { font-size: 24px; font-weight: 900; color: #1e293b; line-height: 1.1; margin-bottom: 12px; }
+.cost-sum-pct { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: 800; }
+.cost-sum-pct.good { background: #dcfce7; color: #166534; }
+.cost-sum-pct.warn { background: #fef08a; color: #854d0e; }
+.cost-sum-pct.danger { background: #fee2e2; color: #991b1b; }
 </style>
 </head>
 <body>
@@ -318,16 +335,28 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
     
     <div class="section-divider"><h2>Project Time Analysis</h2></div>
     
-    <!-- 신규 인건비 누적 차트 -->
-    <div class="card" style="height:380px; margin-top:5px; margin-bottom: 10px;">
-      <div class="card-section-title">
-        계획 vs 실행 인건비 추이
-        <div id="costLegendWrap" style="display:flex;gap:10px;">
-            <div class="legend-item"><div class="legend-dot" style="background:#00428E"></div><span style="font-size:11px;">실행 인건비 (누적)</span></div>
-            <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div><span style="font-size:11px;">계획 인건비 (누적)</span></div>
+    <!-- 신규 인건비 누적 차트 (업그레이드) -->
+    <div class="card" style="height:420px; margin-top:5px; margin-bottom: 10px; padding: 20px 25px;">
+      <div class="cost-header-wrap">
+        <div class="card-section-title" style="margin-bottom:0;">
+          계획 vs 실행 인건비 추이
+          <div class="ios-toggle-wrapper" style="margin-left: 20px;">
+             <span id="costToggleLbl1" style="color:#94a3b8;">월별</span>
+             <input type="checkbox" id="costToggleBtn" class="ios-toggle" checked onchange="toggleCostMode()">
+             <span id="costToggleLbl2" style="color:#00428E;">누적</span>
+          </div>
+        </div>
+        <div id="costLegendWrap" style="display:flex; gap:12px; align-items:center;">
+            <div class="legend-item"><div class="legend-dot" style="background:#00428E"></div><span style="font-size:11px;">실행 인건비</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b; border-radius:50%;"></div><span style="font-size:11px;">실행 (예측)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div><span style="font-size:11px;">계획 인건비</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:50%;"></div><span style="font-size:11px;">주요 일정</span></div>
         </div>
       </div>
-      <div style="flex:1;min-height:0;position:relative;"><canvas id="costTrendChart"></canvas></div>
+      <div class="cost-layout">
+         <div class="cost-chart-area"><canvas id="costTrendChart"></canvas></div>
+         <div class="cost-summary-area" id="costSummaryArea"></div>
+      </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:5px;">
@@ -1059,10 +1088,45 @@ window.toggleAdvancedDetails = function(pf) {
     }
 };
 
-// 인건비 차트
+// ==========================================
+// 인건비 차트 전역 변수 및 렌더링 로직
+// ==========================================
+window.isCostCumulative = true;
+window.lastCostMos = [];
+window.toggleCostMode = function() {
+    window.isCostCumulative = document.getElementById('costToggleBtn').checked;
+    if(window.isCostCumulative) {
+        document.getElementById('costToggleLbl2').style.color = '#00428E';
+        document.getElementById('costToggleLbl1').style.color = '#94a3b8';
+    } else {
+        document.getElementById('costToggleLbl2').style.color = '#94a3b8';
+        document.getElementById('costToggleLbl1').style.color = '#00428E';
+    }
+    renderCostTrendChart(window.lastCostMos);
+};
+
+function getMonthsBetween(start, end) {
+    var res = [];
+    var curr = new Date(start + '-01');
+    var endDate = new Date(end + '-01');
+    while(curr <= endDate) {
+        var y = curr.getFullYear();
+        var m = String(curr.getMonth() + 1).padStart(2, '0');
+        res.push(y + '-' + m);
+        curr.setMonth(curr.getMonth() + 1);
+    }
+    return res;
+}
+
 function renderCostTrendChart(mos) {
     dC('costTrendChart');
+    window.lastCostMos = mos;
     if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
+
+    // 2026-11까지 확장
+    var startMonth = mos[0];
+    var endMonth = "2026-11";
+    var fullMonths = getMonthsBetween(startMonth, endMonth);
 
     var allMosMap = {};
     COST_DATA.forEach(function(r) {
@@ -1070,88 +1134,174 @@ function renderCostTrendChart(mos) {
         allMosMap[r.date].plan += r.plan;
         allMosMap[r.date].exec += r.exec;
     });
-    
-    var allMosKeys = Object.keys(allMosMap).sort();
-    var cumPlan = 0, cumExec = 0;
-    var cumDataMap = {};
-    allMosKeys.forEach(function(m) {
-        cumPlan += allMosMap[m].plan;
-        cumExec += allMosMap[m].exec;
-        cumDataMap[m] = { plan: cumPlan, exec: cumExec };
+
+    var lastActualMonth = '';
+    var totalActualExec = 0;
+    var actualMonthCount = 0;
+    Object.keys(allMosMap).sort().forEach(function(m) {
+        if(allMosMap[m].exec > 0) {
+            lastActualMonth = m;
+            totalActualExec += allMosMap[m].exec;
+            actualMonthCount++;
+        }
+    });
+    var avgExec = actualMonthCount > 0 ? (totalActualExec / actualMonthCount) : 0;
+
+    var dataSets = { plan: [], execActual: [], execPred: [] };
+    var cumPlan = 0, cumExecActual = 0, cumExecPred = 0;
+
+    fullMonths.forEach(function(m) {
+        var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
+        var mExec = allMosMap[m] ? allMosMap[m].exec : 0;
+        cumPlan += mPlan;
+
+        if (m <= lastActualMonth) {
+            cumExecActual += mExec;
+            cumExecPred = cumExecActual;
+            dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
+            dataSets.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
+            dataSets.execPred.push(null); 
+        } else {
+            cumExecPred += avgExec;
+            dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
+            dataSets.execActual.push(null);
+            dataSets.execPred.push(window.isCostCumulative ? cumExecPred : avgExec);
+        }
     });
 
-    var plotPlan = [], plotExec = [], schData = [];
-    mos.forEach(function(m) {
-        var targetM = allMosKeys.filter(function(k) { return k <= m; }).pop();
-        if(targetM) {
-            plotPlan.push(cumDataMap[targetM].plan);
-            plotExec.push(cumDataMap[targetM].exec);
-        } else {
-            plotPlan.push(0); plotExec.push(0);
-        }
+    var maxVal = Math.max(
+        ...dataSets.plan,
+        ...dataSets.execActual.filter(function(v){return v!==null;}),
+        ...dataSets.execPred.filter(function(v){return v!==null;})
+    );
+    var scheduleTopY = maxVal * 1.15; // 최상단에 띄우기
 
+    var schData = [];
+    fullMonths.forEach(function(m) {
         var schedules = SCHEDULE_DATA.filter(function(s) { return s.date && s.date.startsWith(m); });
         if(schedules.length > 0) {
             var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').replace(emojiRegex,'').trim(); });
-            schData.push({ schTitle: st });
+            schData.push({ schTitle: st, yPos: scheduleTopY });
         } else {
             schData.push(null);
         }
     });
 
     var schConfig = {
-        type:'line', label:'주요일정', 
-        data: schData.map(function(x,i) { return x ? Math.max(plotExec[i], plotPlan[i]) * 1.1 || 10 : null; }), 
+        type:'line', label:'주요일정',
+        data: schData.map(function(x) { return x ? x.yPos : null; }),
         backgroundColor:'transparent', borderColor:'transparent', showLine:false,
-        pointRadius: function(cx) { return cx.raw !== null ? 6 : 0; }, pointHoverRadius: 8, 
-        pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth:1.5,
+        pointRadius: function(cx) { return cx.raw !== null ? 7 : 0; }, pointHoverRadius: 10,
+        pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 2,
         isSchedule:true, order:0, spanGaps:false
     };
 
     CH.costTrendChart = new Chart(document.getElementById('costTrendChart').getContext('2d'), {
         type: 'line',
         data: {
-            labels: mos,
+            labels: fullMonths,
             datasets: [
                 {
-                    label: '실행 인건비', data: plotExec,
-                    borderColor: '#00428E', backgroundColor: hRgba('#00428E', 0.1),
-                    borderWidth: 2.5, fill: true, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 1
+                    label: '실행 인건비', data: dataSets.execActual,
+                    borderColor: '#00428E', backgroundColor: window.isCostCumulative ? hRgba('#00428E', 0.1) : 'transparent',
+                    borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2
                 },
                 {
-                    label: '계획 인건비', data: plotPlan,
-                    borderColor: '#94a3b8', borderDash: [5, 5], backgroundColor: 'transparent',
-                    borderWidth: 2, fill: false, tension: 0.3, pointRadius: 0, pointHoverRadius: 0, order: 2
+                    label: '실행 예측', data: dataSets.execPred,
+                    borderColor: '#f59e0b', backgroundColor: 'transparent',
+                    borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3
+                },
+                {
+                    label: '계획 인건비', data: dataSets.plan,
+                    borderColor: '#94a3b8', backgroundColor: 'transparent',
+                    borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 0, pointHoverRadius: 4, order: 4
                 },
                 schConfig
             ]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { top: 25 } },
-            interaction: { mode: 'index', intersect: false },
+            layout: { padding: { top: 35 } },
+            interaction: { mode: 'nearest', intersect: true },
             plugins: {
                 legend: { display: false }, datalabels: { display: false },
                 tooltip: {
-                    filter: function(it, i, its) {
-                        var hs = its.some(function(x) { return x.dataset.isSchedule && x.raw !== null; });
-                        if(hs) return it.dataset.isSchedule;
-                        return !it.dataset.isSchedule;
-                    },
                     callbacks: {
-                        title: function(cx) { return cx[0].dataset.isSchedule ? null : cx[0].label; },
-                        label: function(cx) { return cx.dataset.isSchedule ? schData[cx.dataIndex].schTitle : cx.dataset.label + ': ' + Math.round(cx.raw).toLocaleString() + ' 원'; }
+                        title: function(cx) { return cx[0].dataset.isSchedule ? cx[0].label : cx[0].label + " 인건비 현황"; },
+                        label: function(cx) { 
+                            if (cx.dataset.isSchedule) return schData[cx.dataIndex].schTitle; 
+                            return cx.dataset.label + ': ' + Math.round(cx.raw).toLocaleString() + ' 원'; 
+                        }
                     }
                 }
             },
             scales: {
-                x: { grid: { display: false } },
-                y: { grid: { color: 'rgba(226,232,240,0.5)' }, min: 0, grace: '10%' }
+                x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } },
+                y: { 
+                    grid: { color: 'rgba(226,232,240,0.5)' }, 
+                    min: 0, max: scheduleTopY, 
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 100000000) return (value / 100000000).toFixed(1) + '억';
+                            if (value >= 10000) return (value / 10000).toFixed(0) + '만';
+                            return value;
+                        }
+                    }
+                }
             }
         }
     });
+
+    renderCostSummary(lastActualMonth, cumPlan, cumExecActual);
 }
 
+function renderCostSummary(lastMonth, totalPlan, totalExec) {
+    var wrap = document.getElementById('costSummaryArea');
+    if(!wrap) return;
+
+    var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
+    var statusClass = 'good';
+    var statusMsg = '안정적 집행';
+    var aiText = '계획 대비 집행률이 적정 수준을 유지하고 있습니다. 현재 추세라면 예산 내 프로젝트 완수가 가능합니다.';
+
+    if(ratio > 110) {
+        statusClass = 'danger'; statusMsg = '초과 집행 위험';
+        aiText = '예산 대비 인건비 투입이 과도합니다. 추가 예산 확보 또는 잔여 업무의 효율적 재배치가 시급합니다.';
+    } else if (ratio > 95) {
+        statusClass = 'warn'; statusMsg = '예산 소진 임박';
+        aiText = '예산 집행률이 한계치에 근접했습니다. 남은 기간 동안 불필요한 초과근무를 통제할 필요가 있습니다.';
+    } else if (ratio < 70) {
+        statusClass = 'warn'; statusMsg = '집행 지연';
+        aiText = '계획 대비 인건비 투입이 저조합니다. 프로젝트 일정이 지연되고 있는지 점검이 필요합니다.';
+    }
+
+    var html = '<div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">' +
+        '최근 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ' + lastMonth + ')</span></div>' +
+        '<div class="cost-sum-box" style="margin-bottom: 10px;">' +
+            '<div class="cost-sum-title">누적 예산 집행률</div>' +
+            '<div style="display:flex; align-items:center; gap:10px;">' +
+                '<div class="cost-sum-val" style="margin:0; color:#00428E;">' + ratio + '%</div>' +
+                '<div class="cost-sum-pct ' + statusClass + '">' + statusMsg + '</div>' +
+            '</div>' +
+            '<div style="height:4px; width:100%; background:#e2e8f0; border-radius:2px; margin-top:12px; overflow:hidden;">' +
+                '<div style="height:100%; width:' + Math.min(ratio, 100) + '%; background:' + (statusClass === 'danger' ? '#ef4444' : statusClass === 'warn' ? '#f59e0b' : '#10b981') + ';"></div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 15px;">' +
+            '<div class="cost-sum-box" style="padding:15px; text-align:center;">' +
+                '<div class="cost-sum-title">계획 인건비</div>' +
+                '<div style="font-size:15px; font-weight:800; color:#94a3b8;">' + (totalPlan/10000).toLocaleString('ko-KR', {maximumFractionDigits:0}) + '만</div>' +
+            '</div>' +
+            '<div class="cost-sum-box" style="padding:15px; text-align:center;">' +
+                '<div class="cost-sum-title">실행 인건비</div>' +
+                '<div style="font-size:15px; font-weight:800; color:#1e293b;">' + (totalExec/10000).toLocaleString('ko-KR', {maximumFractionDigits:0}) + '만</div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="font-size:12px; color:#475569; line-height:1.5; background:#f8fafc; padding:12px; border-radius:8px; border-left:3px solid #3b82f6;">' +
+            '<b>💡 Trend Insight:</b><br>' + aiText +
+        '</div>';
+    wrap.innerHTML = html;
+}
 function renderProjectProgress() {
     var wrap = document.getElementById('projectProgressWrap');
     if(!wrap) return;
