@@ -1089,7 +1089,7 @@ window.toggleAdvancedDetails = function(pf) {
 };
 
 // ==========================================
-// 인건비 차트 전역 변수 및 렌더링 로직 (V4)
+// 인건비 차트 전역 변수 및 렌더링 로직
 // ==========================================
 window.isCostCumulative = true;
 window.lastCostMos = [];
@@ -1119,26 +1119,33 @@ function getMonthsBetween(start, end) {
 }
 
 function renderCostTrendChart(mos) {
+    var canvas = document.getElementById('costTrendChart');
+    if (!canvas) return;
     dC('costTrendChart');
     window.lastCostMos = mos;
     if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
 
+    var is2026Included = mos.some(function(m){ return m.startsWith('2026'); });
     var startMonth = mos[0];
-    var endMonth = "2026-11";
+    var endMonth = is2026Included ? "2026-11" : mos[mos.length - 1]; 
+    
     var fullMonths = getMonthsBetween(startMonth, endMonth);
 
     var allMosMap = {};
     COST_DATA.forEach(function(r) {
         if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0 };
-        // 단위 변환: 천원 -> 천만원
         allMosMap[r.date].plan += (r.plan / 10000);
         allMosMap[r.date].exec += (r.exec / 10000);
     });
 
+    var sortedAllMos = Object.keys(allMosMap).sort();
+    if(sortedAllMos.length === 0) return;
+    var globalStart = sortedAllMos[0]; 
+
     var lastActualMonth = '';
     var totalActualExec = 0;
     var actualMonthCount = 0;
-    Object.keys(allMosMap).sort().forEach(function(m) {
+    sortedAllMos.forEach(function(m) {
         if(allMosMap[m].exec > 0) {
             lastActualMonth = m;
             totalActualExec += allMosMap[m].exec;
@@ -1147,31 +1154,52 @@ function renderCostTrendChart(mos) {
     });
     var avgExec = actualMonthCount > 0 ? (totalActualExec / actualMonthCount) : 0;
 
-    var dataSets = { plan: [], execActual: [], execPred: [] };
-    var cumPlan = 0, cumExecActual = 0, cumExecPred = 0;
+    var globalEnd = endMonth > sortedAllMos[sortedAllMos.length-1] ? endMonth : sortedAllMos[sortedAllMos.length-1];
+    var globalFullMonths = getMonthsBetween(globalStart, globalEnd);
 
-    fullMonths.forEach(function(m) {
+    var cumPlan = 0, cumExecActual = 0, cumExecPred = 0;
+    var globalData = {};
+
+    globalFullMonths.forEach(function(m) {
         var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
         var mExec = allMosMap[m] ? allMosMap[m].exec : 0;
+        
         cumPlan += mPlan;
-
+        
         if (m < lastActualMonth) {
             cumExecActual += mExec;
             cumExecPred = cumExecActual;
-            dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
-            dataSets.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
-            dataSets.execPred.push(null); 
+            globalData[m] = {
+                plan: window.isCostCumulative ? cumPlan : mPlan,
+                execActual: window.isCostCumulative ? cumExecActual : mExec,
+                execPred: null
+            };
         } else if (m === lastActualMonth) {
             cumExecActual += mExec;
             cumExecPred = cumExecActual;
-            dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
-            dataSets.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
-            dataSets.execPred.push(window.isCostCumulative ? cumExecActual : mExec); 
+            globalData[m] = {
+                plan: window.isCostCumulative ? cumPlan : mPlan,
+                execActual: window.isCostCumulative ? cumExecActual : mExec,
+                execPred: window.isCostCumulative ? cumExecActual : mExec 
+            };
         } else {
             cumExecPred += avgExec;
-            dataSets.plan.push(window.isCostCumulative ? cumPlan : mPlan);
-            dataSets.execActual.push(null);
-            dataSets.execPred.push(window.isCostCumulative ? cumExecPred : avgExec);
+            globalData[m] = {
+                plan: window.isCostCumulative ? cumPlan : mPlan,
+                execActual: null,
+                execPred: window.isCostCumulative ? cumExecPred : avgExec
+            };
+        }
+    });
+
+    var dataSets = { plan: [], execActual: [], execPred: [] };
+    fullMonths.forEach(function(m) {
+        if(globalData[m]) {
+            dataSets.plan.push(globalData[m].plan);
+            dataSets.execActual.push(globalData[m].execActual);
+            dataSets.execPred.push(globalData[m].execPred);
+        } else {
+            dataSets.plan.push(0); dataSets.execActual.push(null); dataSets.execPred.push(null);
         }
     });
 
@@ -1180,8 +1208,7 @@ function renderCostTrendChart(mos) {
         ...dataSets.execActual.filter(function(v){return v!==null;}),
         ...dataSets.execPred.filter(function(v){return v!==null;})
     );
-    // 점이 잘리지 않도록 여유 공간 확보 (기존 1.15 -> 1.1 사용 후 CSS 패딩으로 조절)
-    var scheduleTopY = maxVal * 1.1;
+    var scheduleTopY = maxVal * 1.15;
 
     var schData = [];
     fullMonths.forEach(function(m) {
@@ -1198,26 +1225,40 @@ function renderCostTrendChart(mos) {
         type:'line', label:'주요일정',
         data: schData.map(function(x) { return x ? x.yPos : null; }),
         backgroundColor:'transparent', borderColor:'transparent', showLine:false,
-        // 점 사이즈 작고 깔끔하게 원형으로 복구
         pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 6,
         pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5,
-        isSchedule:true, order:0, spanGaps:false // 원래 지정된 플러그인과 연동되도록 isSchedule 복구
+        isCostSchedule:true, order:0, spanGaps:false
     };
 
-    CH.costTrendChart = new Chart(document.getElementById('costTrendChart').getContext('2d'), {
+    var ctx = canvas.getContext('2d');
+    var gradientActual = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientActual.addColorStop(0, 'rgba(0, 66, 142, 0.4)');
+    gradientActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
+    
+    var gradientPred = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientPred.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+    gradientPred.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+    document.getElementById('costLegendWrap').innerHTML = 
+        '<div class="legend-item"><div class="legend-dot" style="background:#00428E"></div><span style="font-size:11px;">실행 인건비</span></div>' +
+        '<div class="legend-item"><div class="legend-dot" style="background:#10b981; border-radius:50%;"></div><span style="font-size:11px;">실행 (예상)</span></div>' +
+        '<div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div><span style="font-size:11px;">계획 인건비</span></div>' +
+        '<div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:50%;"></div><span style="font-size:11px;">주요 일정</span></div>';
+
+    CH.costTrendChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: fullMonths,
             datasets: [
                 {
                     label: '실행 인건비', data: dataSets.execActual,
-                    borderColor: '#00428E', backgroundColor: window.isCostCumulative ? hRgba('#00428E', 0.1) : 'transparent',
+                    borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradientActual : 'transparent',
                     borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2
                 },
                 {
-                    label: '실행 (예측)', data: dataSets.execPred,
-                    borderColor: '#f59e0b', backgroundColor: 'transparent',
-                    borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3
+                    label: '실행 (예상)', data: dataSets.execPred,
+                    borderColor: '#10b981', backgroundColor: window.isCostCumulative ? gradientPred : 'transparent',
+                    borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3
                 },
                 {
                     label: '계획 인건비', data: dataSets.plan,
@@ -1229,35 +1270,46 @@ function renderCostTrendChart(mos) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            // 상단 점이 잘리지 않도록 top 패딩을 45로 넉넉하게 확보
             layout: { padding: { top: 45, right: 15 } },
             interaction: { mode: 'nearest', intersect: true },
             plugins: {
-                legend: { display: false }, datalabels: { display: false },
+                legend: { display: false },
+                datalabels: {
+                    display: function(cx) {
+                        if(cx.dataset.isCostSchedule || cx.datasetIndex === 2) return false;
+                        if(cx.raw === null) return false;
+                        if(cx.datasetIndex === 1 && dataSets.execActual[cx.dataIndex] !== null) return false; 
+                        return true;
+                    },
+                    align: 'top', anchor: 'end', offset: 3,
+                    color: function(cx) { return cx.datasetIndex === 0 ? '#00428E' : '#10b981'; },
+                    font: { size: 9, weight: 'bold' },
+                    formatter: function(v) { return v > 0 ? v.toFixed(0) : ''; }
+                },
                 tooltip: {
-                    displayColors: false, // 툴팁 앞의 색상 네모칸 삭제
+                    displayColors: false,
                     backgroundColor: 'rgba(15,23,42,0.95)',
                     titleFont: { size: 14, weight: 'bold' },
                     bodyFont: { size: 12 },
                     padding: 12,
                     callbacks: {
-                        // 툴팁 제목: 심플하게 월(Month) 텍스트만 표시
-                        title: function(cx) { 
-                            return cx[0].label; 
-                        },
-                        // 툴팁 내용: 이모지나 소제목 없이 데이터만 깔끔하게 표시
+                        title: function(cx) { return cx[0].label; },
                         label: function(cx) { 
-                            if (cx.dataset.isSchedule) return schData[cx.dataIndex].schTitle; 
+                            if (cx.dataset.isCostSchedule) return schData[cx.dataIndex].schTitle; 
                             
                             var idx = cx.dataIndex;
+                            if (cx.datasetIndex === 2) return null; 
+                            if (cx.datasetIndex === 1 && dataSets.execActual[idx] !== null) return null; 
+                            
                             var plan = dataSets.plan[idx];
                             var actual = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx];
                             var diff = plan - actual;
                             var diffText = diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만원)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만원)";
+                            var prefix = dataSets.execActual[idx] !== null ? "실행 인건비: " : "실행 (예상): ";
 
                             return [
                                 "계획 인건비: " + plan.toFixed(1) + " 천만원",
-                                "실행 인건비: " + actual.toFixed(1) + " 천만원",
+                                prefix + actual.toFixed(1) + " 천만원",
                                 diffText
                             ];
                         }
@@ -1275,10 +1327,15 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    renderCostSummary(lastActualMonth, cumPlan, cumExecActual);
+    var lastChartMonth = fullMonths[fullMonths.length - 1];
+    var comparePlan = globalData[lastChartMonth].plan;
+    var compareActual = globalData[lastChartMonth].execActual !== null ? globalData[lastChartMonth].execActual : globalData[lastChartMonth].execPred;
+    var isPred = globalData[lastChartMonth].execActual === null;
+    
+    renderCostSummary(lastChartMonth, comparePlan, compareActual, isPred);
 }
 
-function renderCostSummary(lastMonth, totalPlan, totalExec) {
+function renderCostSummary(lastMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea');
     if(!wrap) return;
 
@@ -1286,7 +1343,7 @@ function renderCostSummary(lastMonth, totalPlan, totalExec) {
     var diff = totalPlan - totalExec;
     
     var statusClass = 'good';
-    var statusMsg = '효율적 집행 (우수)';
+    var statusMsg = '비용 절감 (우수)';
     var diffLabel = '예산 절감액';
 
     if(ratio > 100) {
@@ -1294,6 +1351,8 @@ function renderCostSummary(lastMonth, totalPlan, totalExec) {
     } else if (ratio > 90) {
         statusClass = 'warn'; statusMsg = '정상 (한계 근접)';
     }
+
+    var execTitle = isPred ? "실행 금액 (예상)" : "실행 금액";
 
     var html = '<div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">' +
         '최근 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ' + lastMonth + ')</span></div>' +
@@ -1313,7 +1372,7 @@ function renderCostSummary(lastMonth, totalPlan, totalExec) {
                 '<div style="font-size:16px; font-weight:800; color:#94a3b8;">' + totalPlan.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:11px;margin-left:2px;">천만</span></div>' +
             '</div>' +
             '<div class="cost-sum-box" style="padding:15px; text-align:center;">' +
-                '<div class="cost-sum-title">실행 금액</div>' +
+                '<div class="cost-sum-title">' + execTitle + '</div>' +
                 '<div style="font-size:16px; font-weight:800; color:#1e293b;">' + totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:11px;margin-left:2px;">천만</span></div>' +
             '</div>' +
         '</div>' +
@@ -1322,6 +1381,7 @@ function renderCostSummary(lastMonth, totalPlan, totalExec) {
             '<div style="font-size:18px; font-weight:900; color:' + (diff >= 0 ? '#15803d' : '#b91c1c') + ';">' + Math.abs(diff).toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:12px;margin-left:2px;">천만원</span></div>' +
         '</div>';
     wrap.innerHTML = html;
+}
 }
 function renderProjectProgress() {
     var wrap = document.getElementById('projectProgressWrap');
@@ -1434,37 +1494,46 @@ function renderDashboardTab(){
 }
 
 function renderOvProjectRatio(all){
-    dC('ovPjRatioBar');var m=0,o=0,c=0;all.forEach(function(r){if(r.project==='경남 서부의료원')m+=r.min;else if(r.project==='타 프로젝트')o+=r.min;else c+=r.min;});var t=m+o+c,it=[{k:'경남 서부의료원',c:'#00428E'},{k:'타 프로젝트',c:'#3b82f6'},{k:'공통업무',c:'#cbd5e1'}];
-    document.getElementById('ovPjRatioLegendWrap').innerHTML=it.map(function(i){return '<div class="legend-item '+(hlPjRatio!==null&&hlPjRatio!==i.k?'dimmed':'')+'" onclick="ovTogglePjR(\''+i.k+'\')"><div class="legend-dot" style="background:'+i.c+'"></div><span style="font-size:11px;">'+i.k.replace('경남 ','')+'</span></div>';}).join('');
-    CH.ovPjRatioBar=new Chart(document.getElementById('ovPjRatioBar').getContext('2d'),{
-        type:'bar',
-        data:{
-            labels:[''],
-            datasets:[
-                {label:'경남 서부의료원',data:[mToH(m)],backgroundColor:(hlPjRatio===null||hlPjRatio==='경남 서부의료원')?'#00428E':'#e2e8f0',barThickness:60,borderRadius:{topLeft:10,bottomLeft:10}},
-                {label:'타 프로젝트',data:[mToH(o)],backgroundColor:(hlPjRatio===null||hlPjRatio==='타 프로젝트')?'#3b82f6':'#e2e8f0',barThickness:60},
-                {label:'공통업무',data:[mToH(c)],backgroundColor:(hlPjRatio===null||hlPjRatio==='공통업무')?'#cbd5e1':'#e2e8f0',barThickness:60,borderRadius:{topRight:10,bottomRight:10}}
-            ]
-        },
-        options:{
-            indexAxis:'y',responsive:true,maintainAspectRatio:false,
-            interaction: { mode: 'point', intersect: true }, 
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    display:function(cx){return cx.datasetIndex===2?'#334155':'#fff';},
-                    font:{weight:'bold',size:12},anchor:'center',align:'center',textAlign:'center',
-                    formatter:function(v,cx){if(v<=0)return'';return fmt(v)+'h\n('+((v/mToH(t)*100).toFixed(1))+'%)';}
-                },
-                tooltip: {
-                    callbacks: { label: function(cx) { return cx.dataset.label + ': ' + fmt(cx.raw) + 'h'; } }
-                }
-            },
-            scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}
-        }
+    var m=0,o=0,c=0;
+    all.forEach(function(r){
+        if(r.project==='경남 서부의료원') m+=r.min;
+        else if(r.project==='타 프로젝트') o+=r.min;
+        else c+=r.min;
     });
+    var t=m+o+c;
+    var p1 = t>0 ? (m/t*100) : 0;
+    var p2 = t>0 ? (o/t*100) : 0;
+    var p3 = t>0 ? (c/t*100) : 0;
+    
+    // 퍼플 테마 (서부의료원 vs 타 프로젝트 구분)
+    var c1 = '#8b5cf6'; 
+    var c2 = '#c026d3'; 
+    var c3 = '#cbd5e1'; 
+    
+    document.getElementById('ovPjRatioLegendWrap').innerHTML=
+        '<div class="legend-item"><div class="legend-dot" style="background:'+c1+'"></div><span style="font-size:11px;">서부의료원</span></div>' +
+        '<div class="legend-item"><div class="legend-dot" style="background:'+c2+'"></div><span style="font-size:11px;">타 프로젝트</span></div>' +
+        '<div class="legend-item"><div class="legend-dot" style="background:'+c3+'"></div><span style="font-size:11px;">공통업무</span></div>';
+        
+    var wrap = document.getElementById('ovPjRatioBar').parentNode;
+    var html = '<div style="background:rgba(255,255,255,0.7); border-radius:12px; padding:18px 20px; box-shadow:0 4px 15px rgba(31,38,135,0.02); border:1px solid rgba(226,232,240,0.8);">' +
+        '<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:12px;">' +
+            '<div style="font-size:13px; font-weight:800; color:#475569;">서부의료원 프로젝트 집중도</div>' +
+            '<div style="font-size:26px; font-weight:900; color:'+c1+'; line-height:1; letter-spacing:-0.03em;">'+p1.toFixed(1)+'%</div>' +
+        '</div>' +
+        '<div style="width:100%; height:16px; background:#f1f5f9; border-radius:8px; display:flex; overflow:hidden;">' +
+            '<div style="height:100%; width:'+p1+'%; background:linear-gradient(90deg, #6d28d9, #8b5cf6); transition:width 1s;"></div>' +
+            '<div style="height:100%; width:'+p2+'%; background:linear-gradient(90deg, #d946ef, #c026d3); transition:width 1s;"></div>' +
+            '<div style="height:100%; width:'+p3+'%; background:#cbd5e1; transition:width 1s;"></div>' +
+        '</div>' +
+        '<div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:#94a3b8; margin-top:8px;">' +
+            '<span>서부의료원 투입: '+fH(m)+'h</span>' +
+            '<span>총 투입: '+fH(t)+'h</span>' +
+        '</div>' +
+    '</div>';
+    wrap.innerHTML = html;
 }
-window.ovTogglePjR=function(b){hlPjRatio=hlPjRatio===b?null:b;renderOvProjectRatio(filtered());};
+window.ovTogglePjR=function(b){ /* 프로그레스 형태이므로 클릭 토글 무시 */ };
 
 function renderDashStage(all){
     dC('stageChart');var cm=grp(all,'cat'),t=Object.values(cm).reduce(function(a,b){return a+b;},0);if(!t)return;
