@@ -1333,7 +1333,7 @@ function renderCostTrendChart(mos) {
     renderCostSummary(endMonth, summaryPlan, summaryExec, isSummaryPred);
 }
 
-unction renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
+function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea');
     if(!wrap) return;
     var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
