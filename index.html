@@ -325,8 +325,8 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
           <div style="padding:0 20px;"><div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">업무일지 작성 일수</div><div style="font-size:26px;font-weight:900;color:#7c3aed;" id="ovActiveDays">0일</div></div>
         </div>
         <div>
-          <div style="font-size:14px;font-weight:700;color:#475569;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">경남 서부의료원 vs 타 프로젝트<div id="ovPjRatioLegendWrap" style="display:flex;gap:6px;"></div></div>
-          <div style="height:60px;position:relative;"><canvas id="ovPjRatioBar"></canvas></div>
+          <div id="ovPjRatioContainer" style="margin-top:auto; padding-top:10px;">
+            <!-- JS 커스텀 프로그레스 바 렌더링 영역 -->
         </div>
       </div>
       <!-- 오른쪽 50% : 팀원 카드 -->
@@ -1510,37 +1510,60 @@ function renderDashboardTab(){
 }
 
 function renderOvProjectRatio(all){
-    dC('ovPjRatioBar');var m=0,o=0,c=0;all.forEach(function(r){if(r.project==='경남 서부의료원')m+=r.min;else if(r.project==='타 프로젝트')o+=r.min;else c+=r.min;});var t=m+o+c,it=[{k:'경남 서부의료원',c:'#00428E'},{k:'타 프로젝트',c:'#3b82f6'},{k:'공통업무',c:'#cbd5e1'}];
-    document.getElementById('ovPjRatioLegendWrap').innerHTML=it.map(function(i){return '<div class="legend-item '+(hlPjRatio!==null&&hlPjRatio!==i.k?'dimmed':'')+'" onclick="ovTogglePjR(\''+i.k+'\')"><div class="legend-dot" style="background:'+i.c+'"></div><span style="font-size:11px;">'+i.k.replace('경남 ','')+'</span></div>';}).join('');
-    CH.ovPjRatioBar=new Chart(document.getElementById('ovPjRatioBar').getContext('2d'),{
-        type:'bar',
-        data:{
-            labels:[''],
-            datasets:[
-                {label:'경남 서부의료원',data:[mToH(m)],backgroundColor:(hlPjRatio===null||hlPjRatio==='경남 서부의료원')?'#00428E':'#e2e8f0',barThickness:60,borderRadius:{topLeft:10,bottomLeft:10}},
-                {label:'타 프로젝트',data:[mToH(o)],backgroundColor:(hlPjRatio===null||hlPjRatio==='타 프로젝트')?'#3b82f6':'#e2e8f0',barThickness:60},
-                {label:'공통업무',data:[mToH(c)],backgroundColor:(hlPjRatio===null||hlPjRatio==='공통업무')?'#cbd5e1':'#e2e8f0',barThickness:60,borderRadius:{topRight:10,bottomRight:10}}
-            ]
-        },
-        options:{
-            indexAxis:'y',responsive:true,maintainAspectRatio:false,
-            interaction: { mode: 'point', intersect: true }, 
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    display:function(cx){return cx.datasetIndex===2?'#334155':'#fff';},
-                    font:{weight:'bold',size:12},anchor:'center',align:'center',textAlign:'center',
-                    formatter:function(v,cx){if(v<=0)return'';return fmt(v)+'h\n('+((v/mToH(t)*100).toFixed(1))+'%)';}
-                },
-                tooltip: {
-                    callbacks: { label: function(cx) { return cx.dataset.label + ': ' + fmt(cx.raw) + 'h'; } }
-                }
-            },
-            scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}
-        }
+    var m = 0, o = 0, c = 0;
+    all.forEach(function(r) {
+        if(r.project === '경남 서부의료원') m += r.min;
+        else if(r.project === '타 프로젝트') o += r.min;
+        else c += r.min;
     });
+    
+    var t = m + o + c;
+    var pM = t > 0 ? (m / t * 100) : 0;
+    var pO = t > 0 ? (o / t * 100) : 0;
+    var pC = t > 0 ? (c / t * 100) : 0;
+
+    // 클릭 필터링 시 강조/흐림 처리 컬러 (서부의료원: 네이비, 타프로젝트: 바이올렛, 공통: 슬레이트 그레이)
+    var cM = (hlPjRatio === null || hlPjRatio === '경남 서부의료원') ? '#00428E' : '#e2e8f0';
+    var cO = (hlPjRatio === null || hlPjRatio === '타 프로젝트') ? '#8b5cf6' : '#e2e8f0';
+    var cC = (hlPjRatio === null || hlPjRatio === '공통업무') ? '#cbd5e1' : '#f1f5f9';
+    var txtC = (hlPjRatio === null || hlPjRatio === '공통업무') ? '#64748b' : '#cbd5e1';
+
+    var html = '' +
+        '<div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">' +
+            '업무 비중 분석 <span style="font-size:11px; color:#64748b; font-weight:600;">(총 ' + fH(t) + 'h)</span>' +
+        '</div>' +
+        '<div style="display:flex; gap:10px; margin-bottom:12px;">' +
+            '<div style="flex:1; background:rgba(255,255,255,0.6); border:1px solid rgba(226,232,240,0.8); border-radius:10px; padding:12px 10px; text-align:center; cursor:pointer; transition:all 0.2s;" onclick="ovTogglePjR(\'경남 서부의료원\')" onmouseover="this.style.background=\'rgba(255,255,255,0.9)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.6)\'">' +
+                '<div style="font-size:11px; color:#475569; font-weight:700; margin-bottom:6px; display:flex; align-items:center; justify-content:center; gap:5px;">' +
+                    '<div style="width:8px; height:8px; border-radius:50%; background:' + cM + ';"></div>서부의료원' +
+                '</div>' +
+                '<div style="font-size:16px; font-weight:900; color:' + cM + ';">' + fH(m) + 'h</div>' +
+                '<div style="font-size:12px; color:#64748b; font-weight:700; margin-top:2px;">' + pM.toFixed(1) + '%</div>' +
+            '</div>' +
+            '<div style="flex:1; background:rgba(255,255,255,0.6); border:1px solid rgba(226,232,240,0.8); border-radius:10px; padding:12px 10px; text-align:center; cursor:pointer; transition:all 0.2s;" onclick="ovTogglePjR(\'타 프로젝트\')" onmouseover="this.style.background=\'rgba(255,255,255,0.9)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.6)\'">' +
+                '<div style="font-size:11px; color:#475569; font-weight:700; margin-bottom:6px; display:flex; align-items:center; justify-content:center; gap:5px;">' +
+                    '<div style="width:8px; height:8px; border-radius:50%; background:' + cO + ';"></div>타 프로젝트' +
+                '</div>' +
+                '<div style="font-size:16px; font-weight:900; color:' + cO + ';">' + fH(o) + 'h</div>' +
+                '<div style="font-size:12px; color:#64748b; font-weight:700; margin-top:2px;">' + pO.toFixed(1) + '%</div>' +
+            '</div>' +
+            '<div style="flex:1; background:rgba(255,255,255,0.6); border:1px solid rgba(226,232,240,0.8); border-radius:10px; padding:12px 10px; text-align:center; cursor:pointer; transition:all 0.2s;" onclick="ovTogglePjR(\'공통업무\')" onmouseover="this.style.background=\'rgba(255,255,255,0.9)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.6)\'">' +
+                '<div style="font-size:11px; color:#475569; font-weight:700; margin-bottom:6px; display:flex; align-items:center; justify-content:center; gap:5px;">' +
+                    '<div style="width:8px; height:8px; border-radius:50%; background:' + cC + ';"></div>공통업무' +
+                '</div>' +
+                '<div style="font-size:16px; font-weight:900; color:' + txtC + ';">' + fH(c) + 'h</div>' +
+                '<div style="font-size:12px; color:#94a3b8; font-weight:700; margin-top:2px;">' + pC.toFixed(1) + '%</div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="width:100%; height:18px; border-radius:9px; background:#f1f5f9; display:flex; overflow:hidden; box-shadow:inset 0 1px 3px rgba(0,0,0,0.05); cursor:pointer;">' +
+            '<div title="서부의료원: ' + fH(m) + 'h (' + pM.toFixed(1) + '%)" onclick="ovTogglePjR(\'경남 서부의료원\')" style="width:' + pM + '%; background:' + cM + '; transition:all 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>' +
+            '<div title="타 프로젝트: ' + fH(o) + 'h (' + pO.toFixed(1) + '%)" onclick="ovTogglePjR(\'타 프로젝트\')" style="width:' + pO + '%; background:' + cO + '; transition:all 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>' +
+            '<div title="공통업무: ' + fH(c) + 'h (' + pC.toFixed(1) + '%)" onclick="ovTogglePjR(\'공통업무\')" style="width:' + pC + '%; background:' + cC + '; transition:all 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>' +
+        '</div>';
+    
+    var wrap = document.getElementById('ovPjRatioContainer');
+    if(wrap) wrap.innerHTML = html;
 }
-window.ovTogglePjR=function(b){hlPjRatio=hlPjRatio===b?null:b;renderOvProjectRatio(filtered());};
 
 function renderDashStage(all){
     dC('stageChart');var cm=grp(all,'cat'),t=Object.values(cm).reduce(function(a,b){return a+b;},0);if(!t)return;
