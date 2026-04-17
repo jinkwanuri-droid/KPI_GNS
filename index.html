@@ -348,7 +348,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
         </div>
         <div id="costLegendWrap" style="display:flex; gap:12px; align-items:center;">
     <div class="legend-item"><div class="legend-dot" style="background:#00428E"></div><span style="font-size:11px;">실행 인건비</span></div>
-    <div class="legend-item"><div class="legend-dot" style="background:#0d9488; border-radius:50%;"></div><span style="font-size:11px;">실행 (예상)</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6; border-radius:50%;"></div><span style="font-size:11px;">실행 (예상)</span></div>
     <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div><span style="font-size:11px;">계획 인건비</span></div>
     <div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:50%;"></div><span style="font-size:11px;">주요 일정</span></div>
 </div>
@@ -1126,7 +1126,6 @@ function renderCostTrendChart(mos) {
     var startMonth = mos[0];
     var endMonth = mos[mos.length - 1]; 
     
-    // 2026년이 필터에 포함될 경우 종료월인 2026-11까지 확장
     if (endMonth.startsWith('2026')) { endMonth = '2026-11'; }
     
     var fullMonths = getMonthsBetween(startMonth, endMonth);
@@ -1210,7 +1209,9 @@ function renderCostTrendChart(mos) {
         ...dataSets.execActual.filter(function(v){return v!==null;}),
         ...dataSets.execPred.filter(function(v){return v!==null;})
     );
-    var scheduleTopY = maxVal * 1.15; // 점이 잘리지 않도록 높이 여유 확보
+    
+    // Y축이 지저분해지지 않게 10단위로 깔끔하게 올림 처리 (예: 96.3 -> 110)
+    var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10; 
     
     var schData = [];
     fullMonths.forEach(function(m) {
@@ -1229,16 +1230,16 @@ function renderCostTrendChart(mos) {
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
     
-    // 모던 틸(Teal) 그라데이션 적용
+    // 세련된 바이올렛(Violet) 그라데이션 적용
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
-    gradPred.addColorStop(0, 'rgba(13, 148, 136, 0.3)'); 
-    gradPred.addColorStop(1, 'rgba(13, 148, 136, 0.0)');
+    gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); 
+    gradPred.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
 
     var schConfig = {
         type:'line', label:'주요일정',
         data: schData.map(function(x) { return x ? x.yPos : null; }),
         backgroundColor:'transparent', borderColor:'transparent', showLine:false,
-        pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, // 호버 반경 확대
+        pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, 
         pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5,
         isSchedule:true, order:0, spanGaps:false 
     };
@@ -1255,7 +1256,7 @@ function renderCostTrendChart(mos) {
                 },
                 {
                     label: '실행 (예상)', data: dataSets.execPred,
-                    borderColor: '#0d9488', backgroundColor: window.isCostCumulative ? gradPred : 'transparent',
+                    borderColor: '#8b5cf6', backgroundColor: window.isCostCumulative ? gradPred : 'transparent',
                     borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3
                 },
                 {
@@ -1268,9 +1269,9 @@ function renderCostTrendChart(mos) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { top: 60, right: 20, left: 10 } }, // 윗부분 잘림 방지를 위해 top 패딩 크게 확보
-            clip: false, // 캔버스 밖으로 그리기 허용
-            interaction: { mode: 'nearest', intersect: true }, // 마우스를 올린 정확한 점에만 반응하도록 분리
+            layout: { padding: { top: 60, right: 20, left: 10 } }, 
+            clip: false, 
+            interaction: { mode: 'nearest', intersect: true }, 
             plugins: {
                 legend: { display: false }, 
                 datalabels: {
@@ -1278,29 +1279,37 @@ function renderCostTrendChart(mos) {
                         if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false;
                         return true;
                     },
-                    align: function(cx) { return cx.datasetIndex === 2 ? 'bottom' : 'top'; }, // 겹침 방지: 계획은 아래, 실행은 위로
-                    anchor: function(cx) { return cx.datasetIndex === 2 ? 'bottom' : 'top'; },
-                    offset: 6, // 점과의 간격 띄움
+                    // 계획(인덱스2)은 2025-04까지는 아래, 이후는 위. 실행/예상(인덱스0,1)은 무조건 위
+                    align: function(cx) { 
+                        if (cx.datasetIndex === 2) {
+                            var monthLabel = cx.chart.data.labels[cx.dataIndex];
+                            return monthLabel <= '2025-04' ? 'bottom' : 'top';
+                        }
+                        return 'top'; 
+                    },
+                    anchor: function(cx) { 
+                        if (cx.datasetIndex === 2) {
+                            var monthLabel = cx.chart.data.labels[cx.dataIndex];
+                            return monthLabel <= '2025-04' ? 'bottom' : 'top';
+                        }
+                        return 'top'; 
+                    },
+                    offset: 6,
                     color: function(cx) { return cx.dataset.borderColor; },
-                    font: { size: 10, weight: '900' },
-                    backgroundColor: 'rgba(255,255,255,0.75)', // 선과 겹쳐도 글씨가 잘 보이도록 반투명 배경
-                    borderRadius: 4,
-                    padding: { top: 2, bottom: 2, left: 4, right: 4 },
+                    font: { size: 10, weight: 'bold' },
                     formatter: function(v) { return Math.round(v); }
                 },
                 tooltip: {
                     displayColors: false,
                     backgroundColor: 'rgba(15,23,42,0.95)',
                     titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12,
-                    filter: function(item, index) { return index === 0; }, // 중복 툴팁 렌더링 방지
+                    filter: function(item, index) { return index === 0; }, 
                     callbacks: {
                         title: function(cx) { return cx[0].label; },
                         label: function(cx) {
                             var item = cx; 
-                            // 빨간 점에 올렸을 때는 주요일정만 표시
                             if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
                             
-                            // 인건비 점에 올렸을 때는 계획/실행 데이터를 한 번에 조합해서 표시
                             var idx = item.dataIndex;
                             var plan = dataSets.plan[idx];
                             var actual = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx];
@@ -1319,8 +1328,12 @@ function renderCostTrendChart(mos) {
                 x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } },
                 y: {
                     grid: { color: 'rgba(226,232,240,0.5)' },
-                    min: 0, max: scheduleTopY,
-                    ticks: { callback: function(v) { return v.toLocaleString('ko-KR') + '천만'; } }
+                    min: 0, 
+                    max: scheduleTopY,
+                    ticks: { 
+                        stepSize: 10, // 10단위로 눈금 표시
+                        callback: function(v) { return v.toLocaleString('ko-KR') + '천만'; } 
+                    }
                 }
             }
         }
@@ -1343,7 +1356,7 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
         statusClass = 'warn'; statusMsg = '정상 (한계 근접)';
     }
     
-    var titleSuffix = isPred ? ' <span style="color:#0d9488; font-size:11px;">(예상)</span>' : '';
+    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상)</span>' : '';
     
     var html = '<div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">' +
         '기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ' + targetMonth + ')</span></div>' +
