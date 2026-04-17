@@ -549,6 +549,7 @@ var GLOBAL_MEMBER=null, WP_MEMBER=null, hlTimeline=null, hlStage=null, hlOvertim
 window.filterStartIndex=0;window.filterEndIndex=11;window.lastClickedIndex=0;
 var filterYears=[2024,2025,2026],filterQuarters=['Q1','Q2','Q3','Q4'],totalNodes=12,percentPositions=[];
 var emojiRegex=/(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+
 Chart.defaults.animation.duration=400;
 Chart.defaults.font.family="'Pretendard Variable',Pretendard,sans-serif";
 Chart.register(ChartDataLabels);
@@ -705,7 +706,6 @@ function initSlider(){
 function resetFilter(){
     window.filterStartIndex=0;
     window.filterEndIndex=totalNodes-1;
-    // 모든 차트 하이라이트 상태 초기화
     hlTimeline = null; hlStage = null; hlOvertimeDonut = null; hlMonthlyOt = null; 
     hlDonutWork = null; hlPjRatio = null; hlWpSub = null; hlHeroDonut = null; 
     hlHeatBin = null; hlWpOt = null;
@@ -1492,6 +1492,7 @@ function renderWpStackedBar(d,mos){
         }
     });
 }
+
 function renderWpDonutSub(d,t){
     dC('wpDonutSub');
     var sm=grp(d,'sub'),ta=Object.entries(sm).sort(function(a,b){return b[1]-a[1];});
@@ -1616,7 +1617,7 @@ function renderWpOvertimeDetail(d){
         }
     });
 }
-function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
+function renderWpGini(d,c){dC('wpGiniChart');var dm={};d.forEach(function(r){dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort(function(a,b){return a-b;}),n=vl.length,gn=0;if(n>1){var sm=vl.reduce(function(a,b){return a+b;},0),cs=0;vl.forEach(function(v){cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce(function(a,b){return a+b;},0)||1;vl.forEach(function(v,i){cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:function(v){return (v*100).toFixed(0)+'%';}}}}}});var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';}
 
 async function generateWorkingAiComment() {
     var btn = document.getElementById('btnWpAi');
@@ -1841,25 +1842,6 @@ async function generateAiComment() {
         btn.innerText = "다시 분석하기"; btn.disabled = false; btn.style.opacity = '1'; 
     }
 }
-
-window.addEventListener('DOMContentLoaded', function() {
-    // 배경 파티클 유지
-    var overlay = document.getElementById('loadingOverlay');
-    if(overlay) {
-        for(let i=0; i<35; i++) {
-            let dust = document.createElement('div');
-            dust.className = 'dust-ptcl';
-            let size = Math.random() * 4 + 1.5; 
-            dust.style.width = size + 'px';
-            dust.style.height = size + 'px';
-            dust.style.left = Math.random() * 100 + 'vw';
-            dust.style.top = Math.random() * 100 + 'vh';
-            dust.style.animationDuration = (Math.random() * 6 + 4) + 's';
-            dust.style.animationDelay = (Math.random() * -10) + 's';
-            overlay.appendChild(dust);
-        }
-    }
-});
 </script>
 </body>
 </html>
