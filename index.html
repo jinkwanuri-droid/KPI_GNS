@@ -42,6 +42,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .ld-orb-3 { width:160px; height:160px; background:radial-gradient(circle at 35% 30%,#7dd3fc,#38bdf8 50%,#0ea5e9 100%); bottom:60px; left:40px; filter:blur(18px) saturate(.8); opacity:.7; animation: ldOrbFloat 4s infinite alternate ease-in-out; animation-delay: -1s; }
 .ld-orb-4 { width:190px; height:190px; background:radial-gradient(circle at 30% 30%,#a78bfa,#8b5cf6 50%,#6d28d9 100%); bottom:-30px; right:80px; filter:blur(22px) saturate(.7); opacity:.4; animation: ldOrbFloat 9s infinite alternate ease-in-out; animation-delay: -4s; }
 @keyframes ldOrbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-25px, 35px) scale(1.1); } }
+
 /* 빛나는 더스트(파티클) 효과 */
 .dust-ptcl { position: absolute; background: #fff; border-radius: 50%; pointer-events: none; z-index: 2; animation: floatDust linear infinite; box-shadow: 0 0 6px rgba(255,255,255,1), 0 0 12px rgba(255,255,255,0.7); filter: blur(0.5px); }
 @keyframes floatDust { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.95; } 90% { opacity: 0.7; } 100% { transform: translateY(-200px) translateX(100px); opacity: 0; } }
@@ -257,7 +258,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
   <div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
 </div>
 
-<!-- 세련된 로딩 오버레이 (물결 배경 교체) -->
+<!-- 세련된 로딩 오버레이 (물결 배경 적용) -->
 <div id="loadingOverlay">
   <!-- 추가된 물결 배경 -->
   <div class="wave-bg-global">
@@ -525,6 +526,7 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
       <!-- renderEvalTab()을 통해 내부가 덮어씌워집니다 -->
   </div>
 </div>
+
 <script>
 // ---------- 스크립트 데이터 및 함수 영역 ----------
 var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
@@ -534,38 +536,32 @@ async function loadDataFromSheets() {
     try {
         setProgress(30, "데이터 요청 중...");
         
-        // 구글 앱스 스크립트에서 데이터 가져오기
         let res = await fetch(APPS_SCRIPT_URL);
         let data = await res.json();
         
         setProgress(70, "데이터 분석 중...");
         
-        // 받아온 데이터를 전역 변수에 할당
         RAW = data.RAW || data.raw || data.workData || [];
         SCHEDULE_DATA = data.SCHEDULE_DATA || data.schedule || data.scheduleData || [];
         EVAL_DATA = data.EVAL_DATA || data.eval || data.evalData || [];
         COST_DATA = data.COST_DATA || data.cost || data.costData || [];
         
-        // 멤버 목록 추출 및 고유 색상/이니셜 설정
         MEMBERS = Array.from(new Set(RAW.map(function(r){return r.name;}))).filter(Boolean).sort();
         MEMBERS.forEach(function(n, i){
             MC[n] = DYNAMIC_COLORS[i % DYNAMIC_COLORS.length];
             INITIALS[n] = getShortName(n).charAt(0);
         });
         
-        // 타임라인 필터 및 상단 드롭다운 초기화
         initSlider();
         renderCustomDropdown();
         
-        // 로딩 완료 처리
         setProgress(100, "준비 완료!");
-        setTimeout(showEnterBtn, 600); // 로딩 막대 채워진 후 입장 버튼 표시
+        setTimeout(showEnterBtn, 600);
         
     } catch(e) {
         console.error("데이터 로드 실패:", e);
         setProgress(100, "연결 실패");
         document.getElementById('ovMsg').innerText = "데이터를 불러오는 데 실패했습니다.";
-        // 에러가 발생하더라도 빈 대시보드 레이아웃을 볼 수 있도록 입장 버튼 표시
         setTimeout(showEnterBtn, 600);
     }
 }
@@ -587,7 +583,7 @@ var INSIGHT_METRICS_INFO = [
     { key: 'hurst', name: 'Hurst(주도성)', target: '0.6 이상 (주도)', eval: function(v){ if(v>=0.6) return {s: '좋음', c: '#10b981', i: '👍', t: '0.6 이상으로 주도성이 높습니다. 수동적으로 시키는 일만 하는 게 아니라, 본인의 리듬대로 업무를 질적으로 컨트롤하고 있습니다.'}; return {s: '주의', c: '#f59e0b', i: '⚠️', t: '수치가 낮아 자신의 리듬을 잃기 쉽고, 외부 요인에 휩쓸려 방어적으로 일할 우려가 있습니다.'}; } },
     { key: 'jaccard', name: 'Jaccard(확장성)', target: '0.3 이상 (확장)', eval: function(v){ if(v>=0.3 && v<=0.7) return {s: '좋음', c: '#10b981', i: '👍', t: '기존 업무와 새 업무의 조화를 측정합니다. 0.5 근처로 최적의 성장을 보이며, 새로운 업무 범위로 무난히 확장하고 있습니다.'}; if(v<0.3) return {s: '보통', c: '#94a3b8', i: 'ℹ️', t: '기존에 하던 익숙한 일만 고수하며 새로운 직무 확장이 일어나지 않는 정체 상태입니다.'}; return {s: '보통', c: '#94a3b8', i: 'ℹ️', t: '기존 업무가 아예 없어지고 매번 새로운 일만 하여 다소 혼란스러울 수 있는 상태입니다.'}; } }
 ];
-var MEMBERS=[],MC={},INITIALS=[],SCHEDULE_DATA=[],EVAL_DATA=[],RAW=[],COST_DATA=[],CH={};
+var MEMBERS=[],MC={},INITIALS={},SCHEDULE_DATA=[],EVAL_DATA=[],RAW=[],COST_DATA=[],CH={};
 var GLOBAL_MEMBER=null, WP_MEMBER=null, hlTimeline=null, hlStage=null, hlOvertimeDonut=null, hlMonthlyOt=null, hlDonutWork=null, hlPjRatio=null, hlWpSub=null, hlHeroDonut=null, hlHeatBin=null, hlWpOt=null;
 window.filterStartIndex=0;window.filterEndIndex=11;window.lastClickedIndex=0;
 var filterYears=[2024,2025,2026],filterQuarters=['Q1','Q2','Q3','Q4'],totalNodes=12,percentPositions=[];
@@ -739,7 +735,6 @@ function initSlider(){
 function resetFilter(){
     window.filterStartIndex=0;
     window.filterEndIndex=totalNodes-1;
-    // 모든 하이라이트 상태 초기화
     hlTimeline = null; hlStage = null; hlOvertimeDonut = null; hlMonthlyOt = null;
     hlDonutWork = null; hlPjRatio = null; hlWpSub = null; hlHeroDonut = null;
     hlHeatBin = null; hlWpOt = null;
@@ -1016,7 +1011,6 @@ window.toggleAdvancedDetails = function(pf) {
         btnText.innerHTML = '세부정보 차트 보기 ▼';
     }
 };
-// 인건비 차트 (누적/월별 토글 적용, 주요일정 최상단, 예상추세, 단위변환)
 window.isCostCum = true;
 window.toggleCostMode = function() {
     window.isCostCum = !window.isCostCum;
@@ -1164,10 +1158,6 @@ function renderCostTrendChart(pmos) {
                         }
                     }
                 }
-            },
-            scales: {
-                x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45, minRotation: 45 } },
-                y: { grid: { color: 'rgba(226,232,240,0.5)' }, min: 0, max: yAxisMax, ticks: { display: false } }
             }
         }
     });
@@ -1499,6 +1489,7 @@ function renderDashOvertimeDonut(all){
     dd('dashOvertimeDonutChart9',dm); dd('dashOvertimeDonutChart12',ds);
 }
 window.dTogOtDonut=function(n){hlOvertimeDonut=hlOvertimeDonut===n?null:n;renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';}));};
+
 // ==========================================
 // Working 탭 렌더링
 // ==========================================
@@ -1866,6 +1857,7 @@ function renderEvalTab() {
     var teamCvInsight = [normTeamOt, (teamCr.shannon||0), (teamCr.hhi||0), (teamCr.cv||0), (teamCr.hurst||0), (teamCr.jaccard||0)];
     var teamRawCvInsight = [Math.max(0, 1 - (teamCr.ot||0)), (teamCr.shannon||0), (teamCr.hhi||0), teamCr.cv||0, teamCr.hurst||0, teamCr.jaccard||0];
     window.currentAiData = { m: m, q: latestQ.q, score: latestScore.toFixed(2), vals: latestQ.vals, topTasks: topTasksStr, over9h: o9, over12h: o12, rawCvInsight: rawCvInsight };
+
     var html = '<div class="kpi-layout">' +
         '<div class="kpi-panel left-panel">' +
             '<div class="kpi-profile-header">' + getAvatar(m, 50, 18) + '<div><div style="font-size:24px;font-weight:900;color:#1e293b;line-height:1.2;">' + m + '</div><div style="font-size:13px;color:#64748b;font-weight:600;">' + po + '</div></div></div>' +
@@ -1916,16 +1908,16 @@ function renderEvalTab() {
                     '<div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">' + topTasksHtml + '</div>' +
                 '</div>' +
             '</div>' +
-            '<div style="flex:1; display:flex; flex-direction:column; min-height:220px
-      ; margin-top:25px;">' +
+            '<div style="flex:1; display:flex; flex-direction:column; min-height:220px; margin-top:25px;">' +
                 '<div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div>' +
                 '<div style="flex:1; position:relative; min-height:180px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="kpiInsightRadar"></canvas></div>' +
             '</div>' +
         '</div>' +
     '</div>';
-    view.innerHTML = html;
+        view.innerHTML = html;
     setTimeout(() => {
         try {
+            // 1. 역량 점수 트렌드 차트 (Line Chart)
             if(sortedEd.length > 0) {
                 var trendLabels = sortedEd.map(d => d.q);
                 var trendData = sortedEd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
@@ -1933,32 +1925,169 @@ function renderEvalTab() {
                 var ptBgColors = trendLabels.map(q => fq.includes(q) ? c : '#fff');
                 var ptBorders = trendLabels.map(q => fq.includes(q) ? '#fff' : c);
                 var ptBorderWidths = trendLabels.map(q => fq.includes(q) ? 2 : 1.5);
+                
                 CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), {
                     type: 'line',
-                    data: { labels: trendLabels, datasets: [{ data: trendData, borderColor: c, backgroundColor: hRgba(c, 0.1), borderWidth: 2, fill: true, tension: 0.4, pointRadius: ptRadii, pointBackgroundColor: ptBgColors, pointBorderColor: ptBorders, pointBorderWidth: ptBorderWidths, pointHoverRadius: 7 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', offset: 4, color: (cx) => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', font: (cx) => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), formatter: (v) => Number(v).toFixed(1) }, tooltip: { callbacks: { title: function(cx) { return cx[0].label + ' 상세 역량'; }, label: function(cx) { var item = sortedEd[cx.dataIndex]; if(!item) return ''; var lines = ['종합 평균: ' + Number(cx.raw).toFixed(2), '----------------']; RADAR_LABELS.forEach((lbl, i) => lines.push(lbl + ': ' + Number(item.vals[i]).toFixed(1))); return lines; } } } }, scales: { x: { display: false }, y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 } }, layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } } }
+                    data: { 
+                        labels: trendLabels, 
+                        datasets: [{ 
+                            data: trendData, 
+                            borderColor: c, 
+                            backgroundColor: hRgba(c, 0.1), 
+                            borderWidth: 2, 
+                            fill: true, 
+                            tension: 0.4, 
+                            pointRadius: ptRadii, 
+                            pointBackgroundColor: ptBgColors, 
+                            pointBorderColor: ptBorders, 
+                            pointBorderWidth: ptBorderWidths, 
+                            pointHoverRadius: 7 
+                        }] 
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { display: false }, 
+                            datalabels: { 
+                                display: true, 
+                                align: 'top', 
+                                anchor: 'end', 
+                                offset: 4, 
+                                color: (cx) => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', 
+                                font: (cx) => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), 
+                                formatter: (v) => Number(v).toFixed(1) 
+                            }, 
+                            tooltip: { 
+                                callbacks: { 
+                                    title: function(cx) { return cx[0].label + ' 상세 역량'; }, 
+                                    label: function(cx) { 
+                                        var item = sortedEd[cx.dataIndex]; 
+                                        if(!item) return ''; 
+                                        var lines = ['종합 평균: ' + Number(cx.raw).toFixed(2), '----------------']; 
+                                        RADAR_LABELS.forEach((lbl, i) => lines.push(lbl + ': ' + Number(item.vals[i]).toFixed(1))); 
+                                        return lines; 
+                                    } 
+                                } 
+                            } 
+                        }, 
+                        scales: { 
+                            x: { display: false }, 
+                            y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 } 
+                        }, 
+                        layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } } 
+                    }
                 });
             }
+
+            // 2. 다각도 분석 레이더 차트 (Radar Chart)
             CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
                 type: 'radar',
-                data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] },
-                options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 10 }, plugins:{ legend:{ display:false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 14 }, bodyFont: { size: 13, weight: 'bold' }, padding: 12, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + Number(cx.raw).toFixed(2); } } } }, scales: { r: { min: 0, max: 5, grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 }, angleLines: { display: false }, ticks: { display: false, stepSize: 1 }, pointLabels: { font: { size: 14, weight: '800' }, color: '#475569', padding: 20 } } }, elements: { line: { tension: 0.35 } } }
+                data: { 
+                    labels: RADAR_LABELS, 
+                    datasets: [
+                        { label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, 
+                        { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, 
+                        { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }
+                    ] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    clip: false, 
+                    layout:{ padding: 10 }, 
+                    plugins:{ 
+                        legend:{ display:false }, 
+                        datalabels: { display: false }, 
+                        tooltip: { 
+                            backgroundColor: 'rgba(15,23,42,0.9)', 
+                            titleFont: { size: 14 }, 
+                            bodyFont: { size: 13, weight: 'bold' }, 
+                            padding: 12, 
+                            callbacks: { label: function(cx) { return cx.dataset.label + ': ' + Number(cx.raw).toFixed(2); } } 
+                        } 
+                    }, 
+                    scales: { 
+                        r: { 
+                            min: 0, max: 5, 
+                            grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 }, 
+                            angleLines: { display: false }, 
+                            ticks: { display: false, stepSize: 1 }, 
+                            pointLabels: { font: { size: 14, weight: '800' }, color: '#475569', padding: 20 } 
+                        } 
+                    }, 
+                    elements: { line: { tension: 0.35 } } 
+                }
             });
+
+            // 3. 주요 업무 비중 도넛 차트 (Doughnut Chart)
             if(topTasksArr.length > 0) {
-                CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), { type: 'doughnut', data: { labels: topTasksArr.map(t => t[0]), datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: { top: 5, bottom: 5, left: 5, right: 5 } } } });
+                CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), { 
+                    type: 'doughnut', 
+                    data: { 
+                        labels: topTasksArr.map(t => t[0]), 
+                        datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] 
+                    }, 
+                    options: { 
+                        responsive: true, maintainAspectRatio: false, cutout: '70%', 
+                        plugins: { legend: { display: false }, datalabels: { display: false } }, 
+                        layout: { padding: { top: 5, bottom: 5, left: 5, right: 5 } } 
+                    } 
+                });
             }
+
+            // 4. Work Insight 레이더 차트 (Insight Radar)
             CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), {
                 type: 'radar',
-                data: { labels: INSIGHT_RADAR_LABELS, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 0, order: 2 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { if(cx.datasetIndex===0) { return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); } else { return cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2); } } } } }, scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 9, weight: '800' }, color: '#64748b', padding: 8 } } } }
+                data: { 
+                    labels: INSIGHT_RADAR_LABELS, 
+                    datasets: [
+                        { label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, 
+                        { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 0, order: 2 }
+                    ] 
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false }, 
+                        datalabels: { display: false }, 
+                        tooltip: { 
+                            backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, 
+                            callbacks: { 
+                                label: function(cx) { 
+                                    if(cx.datasetIndex===0) { return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); } 
+                                    else { return cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2); } 
+                                } 
+                            } 
+                        } 
+                    }, 
+                    scales: { 
+                        r: { 
+                            min: 0, max: 1.2, 
+                            grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, 
+                            angleLines: { color: 'rgba(203,213,225,0.4)' }, 
+                            ticks: { display: false, stepSize: 0.3 }, 
+                            pointLabels: { font: { size: 9, weight: '800' }, color: '#64748b', padding: 8 } 
+                        } 
+                    } 
+                }
             });
-        } catch (e) { console.error("KPI 탭 렌더링 중 오류:", e); }
+
+        } catch (e) { 
+            console.error("KPI 탭 차트 렌더링 중 오류:", e); 
+        }
     }, 50);
 }
+
+// AI 코멘트 생성 함수
 async function generateAiComment() {
     var btn = document.getElementById('btnGenerateAI');
     var box = document.getElementById('aiCommentBox');
-    if(!window.currentAiData) { box.innerHTML = '<span style="color:#ef4444;">분석할 데이터가 부족합니다.</span>'; return; }
+    if(!window.currentAiData) { 
+        box.innerHTML = '<span style="color:#ef4444;">분석할 데이터가 부족합니다.</span>'; 
+        return; 
+    }
+    
     var ad = window.currentAiData;
     var prompt = `당신은 10년 차 건축설계 팀장입니다. 팀원 '${ad.m}'의 평가 데이터를 보고 아주 짧고 날카로운 피드백을 주세요.
 요청사항: 인사말, 서론 절대 금지. 아래 3가지 항목만 1~2문장씩 간결하게 작성할 것. 마크다운 적용.
@@ -1967,8 +2096,12 @@ async function generateAiComment() {
 - 🌱 성장 제언
 데이터: 점수 ${ad.score}점, 집중업무: ${ad.topTasks}.
 정시업무 ${(ad.rawCvInsight[0]||0).toFixed(2)}, Shannon파편화도 ${(ad.rawCvInsight[1]||0).toFixed(2)}, HHI몰입도 ${(ad.rawCvInsight[2]||0).toFixed(2)}, CV안정성 ${(ad.rawCvInsight[3]||0).toFixed(2)}, Hurst주도성 ${(ad.rawCvInsight[4]||0).toFixed(2)}, Jaccard확장성 ${(ad.rawCvInsight[5]||0).toFixed(2)}`;
-    btn.innerText = "분석 중..."; btn.disabled = true; btn.style.opacity = '0.7';
+    
+    btn.innerText = "분석 중..."; 
+    btn.disabled = true; 
+    btn.style.opacity = '0.7';
     box.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#6366f1; height:100%; font-weight:700;"><div class="ov-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>분석 중...</div>';
+    
     try {
         const response = await fetch('/api/gemini', {
             method: 'POST',
@@ -1977,16 +2110,23 @@ async function generateAiComment() {
         });
         const result = await response.json();
         if(result.success) {
-            box.innerHTML = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>');
+            box.innerHTML = result.text
+                .replace(/### (.*?)\n/g, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>')
+                .replace(/\n/g, '<br>');
         } else {
             box.innerHTML = '<span style="color:#ef4444;">오류 발생: ' + (result.error || '알 수 없는 오류') + '</span>';
         }
     } catch (e) {
         box.innerHTML = '<span style="color:#ef4444;">서버 응답 오류 (Vercel 연동 확인 필요)</span>';
     } finally {
-        btn.innerText = "다시 분석하기"; btn.disabled = false; btn.style.opacity = '1';
+        btn.innerText = "다시 분석하기"; 
+        btn.disabled = false; 
+        btn.style.opacity = '1';
     }
 }
+
+// 화면 로드 시 초기화 함수 실행
 window.addEventListener('DOMContentLoaded', function() {
     // 배경 데이터 호출 시작
     loadDataFromSheets();
