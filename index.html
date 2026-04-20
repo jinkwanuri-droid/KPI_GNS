@@ -78,7 +78,7 @@
       <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:15px;" id="topKpiGrid"></div>
     </div>
     
-    <div class="section-divider"><h2>Project Time Analysis <span style="font-size:12px;color:#94a3b8;font-weight:600;margin-left:10px;">* 해당 섹션부터는 '경남 서부의료원' 데이터만 표기됩니다.</span></h2></div>
+    <div class="section-divider"><h2>Project Time Analysis <span style="font-size:12px;color:#94a3b8;font-weight:600;margin-left:10px;">* 해당 섹션부터는 '경남 서부의료원' 프로젝트 데이터만 표기됩니다.</span></h2></div>
     
     <div class="card" style="height:420px; margin-top:5px; margin-bottom: 10px; padding: 20px 25px;">
       <div class="cost-header-wrap">
@@ -101,7 +101,6 @@
          <div class="cost-summary-area" id="costSummaryArea"></div>
       </div>
     </div>
-    
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:5px;">
       <div class="card" style="height:350px;"><div class="card-section-title"><span>단계별 투입비율</span><div id="dashStageLegendWrap" style="display:flex;gap:6px;"></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="stageChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:18px;font-weight:900;color:#1e293b;" id="stageCenter">-</div><div style="font-size:12px;color:#94a3b8;">총 투입</div></div></div></div>
       <div class="card" style="height:350px;"><div class="card-section-title"><span>설계단계별 투입시간</span><div id="dashCompareLegendWrap" style="display:flex;gap:6px;"></div></div><div style="flex:1;min-height:0;"><canvas id="compareChart"></canvas></div></div>
@@ -135,7 +134,7 @@
             </div>
             <div style="flex: 6; padding: 20px; display:flex; flex-direction:column; overflow:hidden;">
                 <div class="card-section-title" style="margin-bottom:0;">주요 분석 지표 요약</div>
-                <div id="pjInsightTable" style="flex:1; overflow-y:auto; padding-top:10px;" class="custom-scroll"></div>
+                <div id="pjInsightTable" style="flex:1; overflow-y:auto; padding-top:10px;"></div>
             </div>
         </div>
         <div style="border-top: 1px dashed rgba(226,232,240,0.8); background: rgba(248,250,252,0.5); text-align: center; padding: 10px 0; cursor: pointer; transition: background 0.2s;" onclick="toggleAdvancedDetails('pj')" onmouseover="this.style.background='rgba(226,232,240,0.4)'" onmouseout="this.style.background='rgba(248,250,252,0.5)'">
@@ -179,21 +178,16 @@
                 </svg>
                 업무 INSIGHT <span class="wp-ai-gem-badge">✦ Gemini</span>
               </div>
-              <div style="display:flex; gap:6px; align-items:center;">
-                <button class="icon-btn" onclick="openAiModal('wp')" title="새창에서 크게 보기">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </button>
-                <button id="btnWpAi" onclick="generateWorkingAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700; cursor:pointer;">분석 요청하기</button>
-              </div>
+              <button id="btnWpAi" onclick="generateWorkingAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700; cursor:pointer;">분석 요청하기</button>
             </div>
-            <div style="flex:1; overflow-y:auto; padding-right:5px;" id="wpAiCommentBox" class="custom-scroll">
+            <div style="flex:1; overflow-y:auto; padding-right:5px;" id="wpAiCommentBox">
               <div class="ai-insight-content" style="color:#64748b;">우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.</div>
             </div>
           </div>
           <div class="wp-stats-row">
             <div class="wp-stat-mini"><div class="label">참여 기간</div><div><span class="value" id="wpStatMonths" style="color:#1e293b;">0</span><span class="unit">개월</span></div><div class="sub" id="wpStatActiveDays">(0일)</div></div>
             <div class="wp-stat-mini"><div class="label">서부의료원 투입</div><div><span class="value" id="wpStatTotal" style="color:#00428E;">0.0</span><span class="unit">h</span></div><div class="sub" style="color:#7c3aed; font-weight:800;" id="wpStatDayAvg">-</div></div>
-            <div class="wp-stat-mini"><div class="label">초과근무일</div><div style="display:flex;justify-content:center;gap:6px;margin-top:4px;"><div><div class="value" id="wpStatOt1" style="color:#f59e0b;font-size:16px;">0</div><div class="sub">9~11h</div></div><div style="width:1px;background:#e2e8f0;"></div><div><div class="value" id="wpStatOt2" style="color:#ef4444;font-size:16px;">0</div><div class="sub">11h 이상</div></div></div></div>
+            <div class="wp-stat-mini"><div class="label">초과근무일</div><div style="display:flex;justify-content:center;gap:6px;margin-top:4px;"><div><div class="value" id="wpStatOt1" style="color:#f59e0b;font-size:16px;">0</div><div class="sub">9~11h</div></div><div style="width:1px;background:#e2e8f0;"></div><div><div class="value" id="wpStatOt2" style="color:#f97316;font-size:16px;">0</div><div class="sub">11~12h</div></div><div style="width:1px;background:#e2e8f0;"></div><div><div class="value" id="wpStatOt3" style="color:#ef4444;font-size:16px;">0</div><div class="sub">12h+</div></div></div></div>
             <div class="wp-stat-mini" style="padding:12px 15px;">
               <div class="label" style="text-align:left; margin-bottom:8px;">업무유형 TOP 3</div>
               <div id="wpTop3ListOnly" style="display:flex;flex-direction:column;gap:6px;text-align:left;"></div>
@@ -201,8 +195,8 @@
           </div>
         </div>
         <div class="wp-hero-right">
-          <div class="wp-right-title" style="margin-bottom:5px;">종합 역량 지표 <span style="font-size:9px;color:#94a3b8;font-weight:600;margin-left:4px;text-transform:none;">(회색선: 팀평균)</span></div>
-          <div style="flex:1; position:relative; min-height:160px; margin-top: -10px;"><canvas id="wpHeroRadar"></canvas></div>
+          <div class="wp-right-title" style="margin-bottom:5px;">종합 역량 지표</div>
+          <div style="flex:1; position:relative; min-height:160px;"><canvas id="wpHeroRadar"></canvas></div>
           <div style="margin-top:10px;"><div class="wp-metrics-badges" id="wpHeroMetricsCards"></div></div>
         </div>
       </div>
@@ -231,7 +225,7 @@
             </div>
             <div style="flex: 6; padding: 20px; display:flex; flex-direction:column; overflow:hidden;">
                 <div class="card-section-title" style="margin-bottom:0;">주요 분석 지표 요약</div>
-                <div id="wpInsightTable" style="flex:1; overflow-y:auto; padding-top:10px;" class="custom-scroll"></div>
+                <div id="wpInsightTable" style="flex:1; overflow-y:auto; padding-top:10px;"></div>
             </div>
         </div>
         <div style="border-top: 1px dashed rgba(226,232,240,0.8); background: rgba(248,250,252,0.5); text-align: center; padding: 10px 0; cursor: pointer; transition: background 0.2s;" onclick="toggleAdvancedDetails('wp')" onmouseover="this.style.background='rgba(226,232,240,0.4)'" onmouseout="this.style.background='rgba(248,250,252,0.5)'">
@@ -266,22 +260,6 @@
   <!-- 3. KPI Eval 뷰 -->
   <div id="view-kpieval" class="view-section">
       <!-- renderEvalTab()을 통해 내부가 동적 생성됨 -->
-  </div>
-</div>
-
-<!-- 모달 레이어 (새 창 보기용) -->
-<div id="aiModalOverlay" class="modal-overlay" onclick="closeAiModal()">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <div style="font-weight:900; color:#1e3a8a; display:flex; align-items:center; gap:8px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/><path d="m12 8-4 4 4 4 4-4Z"/></svg>
-        AI Insight 상세 리포트
-      </div>
-      <button class="modal-close" onclick="closeAiModal()">&times;</button>
-    </div>
-    <div class="modal-body ai-insight-content custom-scroll" id="aiModalBody">
-      <!-- 내용이 여기에 복사됨 -->
-    </div>
   </div>
 </div>
 
