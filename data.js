@@ -213,7 +213,10 @@ async function generateWorkingAiComment() {
     try {
         const response = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt }) });
         const result = await response.json();
-        if(result.success) { box.innerHTML = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>'); } 
+        if(result.success) { 
+            window.currentWorkingAiResponse = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>');
+            box.innerHTML = window.currentWorkingAiResponse;
+        } 
         else { box.innerHTML = '<span style="color:#ef4444;">오류 발생: ' + (result.error || '알 수 없는 오류') + '</span>'; }
     } catch (e) { box.innerHTML = '<span style="color:#ef4444;">서버 응답 오류 (Vercel 연동 확인 필요)</span>'; } finally { btn.innerText = "다시 분석하기"; btn.disabled = false; btn.style.opacity = '1'; }
 }
@@ -234,7 +237,10 @@ async function generateAiComment() {
     try {
         const response = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt }) });
         const result = await response.json();
-        if(result.success) { box.innerHTML = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>'); } 
+        if(result.success) { 
+            window.currentAiResponse = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>');
+            box.innerHTML = window.currentAiResponse;
+        } 
         else { box.innerHTML = '<span style="color:#ef4444;">오류 발생: ' + (result.error || '알 수 없는 오류') + '</span>'; }
     } catch (e) { box.innerHTML = '<span style="color:#ef4444;">서버 응답 오류 (Vercel 연동 확인 필요)</span>'; } finally { btn.innerText = "다시 분석하기"; btn.disabled = false; btn.style.opacity = '1'; }
 }
