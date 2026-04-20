@@ -1,213 +1,292 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GNWMC KPI 대시보드</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Chart.js 및 플러그인 로드 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GNWMC KPI 대시보드</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- 배경 애니메이션 -->
-    <div class="bg-container">
-        <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
+<div class="bg-container">
+  <div class="orb orb-1"></div><div class="orb orb-2"></div>
+  <div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
+</div>
+
+<div id="loadingOverlay">
+  <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div>
+  <div class="ld-orb ld-orb-3"></div><div class="ld-orb ld-orb-4"></div>
+  <div class="loading-content">
+    <div class="loading-brand"><b>HUMAN INSIGHT</b> · DATA TRACED</div>
+    <div class="loading-main-title">GNWMC</div>
+    <div class="loading-sub-title">경상남도 서부의료원 KPI DASHBOARD</div>
+    <div class="loading-desc" id="loadingDescText">데이터를 수집하고 분석 중입니다...</div>
+    <div id="loadingBottomArea">
+      <div id="loadingStatusArea"><div class="ov-progress"><div class="ov-progress-fill" id="ovProgress"></div></div><div class="ov-spinner" id="ovSpinner"></div><div class="ov-msg" id="ovMsg">데이터 연결 중...</div></div>
+      <div id="ovEnterBtnWrap"><button class="ov-enter-btn" onclick="hideLoadingOverlay()">대시보드 입장하기</button></div>
+    </div>
+  </div>
+</div>
+
+<nav class="topbar" id="topbar">
+  <div class="logo-container">
+    <div><div class="logo-title"><span style="color:#00428E;">GNW</span><span style="color:#38bdf8;">MC</span></div><div class="logo-subtitle">PATH REFLECTION</div></div>
+    <div class="logo-divider"></div>
+    <div><div class="logo-desc">경상남도 서부의료원</div><div class="logo-desc">팀원 KPI DASHBOARD</div></div>
+  </div>
+  <div class="topbar-center" id="navContainer">
+    <div class="nav-slider" id="navSlider"></div>
+    <div class="nav-item active" onclick="showView('dashboard',this)">Project</div>
+    <div class="nav-item" onclick="showView('members',this)">Working</div>
+    <div class="nav-item" onclick="showView('kpieval',this)">Personal KPI</div>
+  </div>
+  <div class="topbar-right">
+    <div class="top-filter-wrap">
+      <div class="timeline-container"><div class="year-row" id="yearRow"></div><div class="track-row" id="trackRow"><div class="track-bg"></div><div class="track-active" id="trackActive"></div><div class="nodes-container" id="nodesContainer"></div></div></div>
+      <div class="range-summary"><span class="summary-text" id="summaryText">-</span><button class="reset-btn" onclick="resetFilter()" title="초기화 (필터 및 차트 선택 해제)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+    </div>
+  </div>
+</nav>
+
+<div class="floating-member-select" id="globalMemberSelectWrap">
+  <div class="fm-wrapper" id="fmWrapper">
+    <div class="fm-trigger" onclick="toggleDropdown()" title="팀원 필터"><div class="fm-avatar" id="fmTriggerAvatar">선택</div></div>
+    <div class="fm-options" id="fmOptions"></div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- 1. 대시보드 뷰 -->
+  <div id="view-dashboard" class="view-section active">
+    <div style="display:flex;gap:15px;margin-bottom:5px;min-height:450px;align-items:stretch;">
+      <div class="card" style="flex:1; display:flex; flex-direction:column; gap:20px;">
+        <div class="card-section-title" style="margin-bottom:0;"><span style="font-size:20px;color:#00428E;font-weight:900;">PROJECT OVERALL</span></div>
+        <div id="projectProgressWrap"></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:20px 0;">
+          <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);"><div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">선택 기간 총 투입</div><div style="font-size:26px;font-weight:900;color:#00428E;" id="ovTotalHour">0h</div></div>
+          <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);"><div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">참여 인원</div><div style="font-size:26px;font-weight:900;color:#1e293b;" id="ovTotalMember">0명</div></div>
+          <div style="padding:0 20px;border-right:1px solid rgba(226,232,240,0.8);"><div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">참여 개월 수</div><div style="font-size:26px;font-weight:900;color:#1e293b;" id="ovTotalMonth">0개월</div></div>
+          <div style="padding:0 20px;"><div style="font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;">업무일지 작성 일수</div><div style="font-size:26px;font-weight:900;color:#7c3aed;" id="ovActiveDays">0일</div></div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#475569;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">투입 비율 (경남 서부의료원 vs 타 프로젝트)</div>
+          <div id="ovPjRatioWrap" class="pj-ratio-wrap"></div>
+        </div>
+      </div>
+      <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:15px;" id="topKpiGrid"></div>
+    </div>
+    
+    <div class="section-divider"><h2>Project Time Analysis <span style="font-size:12px;color:#94a3b8;font-weight:600;margin-left:10px;">* 해당 섹션부터는 '경남 서부의료원' 데이터만 표기됩니다.</span></h2></div>
+    
+    <div class="card" style="height:420px; margin-top:5px; margin-bottom: 10px; padding: 20px 25px;">
+      <div class="cost-header-wrap">
+        <div class="card-section-title" style="margin-bottom:0;">계획 vs 실행 인건비 추이
+          <div class="ios-toggle-wrapper" style="margin-left: 20px;">
+             <span id="costToggleLbl1" style="color:#94a3b8;">월별</span>
+             <input type="checkbox" id="costToggleBtn" class="ios-toggle" checked onchange="toggleCostMode()">
+             <span id="costToggleLbl2" style="color:#00428E;">누적</span>
+          </div>
+        </div>
+        <div id="costLegendWrap" style="display:flex; gap:12px; align-items:center;">
+          <div class="legend-item"><div class="legend-dot" style="background:#00428E"></div><span style="font-size:11px;">실행 인건비</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6; border-radius:50%;"></div><span style="font-size:11px;">실행 (예상)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div><span style="font-size:11px;">계획 인건비</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:50%;"></div><span style="font-size:11px;">주요 일정</span></div>
+        </div>
+      </div>
+      <div class="cost-layout">
+         <div class="cost-chart-area"><canvas id="costTrendChart"></canvas></div>
+         <div class="cost-summary-area" id="costSummaryArea"></div>
+      </div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:5px;">
+      <div class="card" style="height:350px;"><div class="card-section-title"><span>단계별 투입비율</span><div id="dashStageLegendWrap" style="display:flex;gap:6px;"></div></div><div style="flex:1;min-height:0;position:relative;"><canvas id="stageChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:18px;font-weight:900;color:#1e293b;" id="stageCenter">-</div><div style="font-size:12px;color:#94a3b8;">총 투입</div></div></div></div>
+      <div class="card" style="height:350px;"><div class="card-section-title"><span>설계단계별 투입시간</span><div id="dashCompareLegendWrap" style="display:flex;gap:6px;"></div></div><div style="flex:1;min-height:0;"><canvas id="compareChart"></canvas></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:5px;">
+      <div class="card" style="height:400px;"><div class="card-section-title">분류별 업무 TOP 7</div><div style="display:flex;height:100%;align-items:center;"><div class="chart-area-65"><canvas id="donutChart"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:18px;font-weight:900;color:#1e293b;" id="donutCenter">-</div><div style="font-size:12px;color:#94a3b8;">총 투입</div></div></div><div class="list-area-35"><ul class="top5-rank-list" id="top5List"></ul></div></div></div>
+      <div class="card" style="height:400px;"><div class="card-section-title"><span>월별 투입시간 추이</span><div id="timelineLegendWrap" style="display:flex;gap:6px;"></div></div><div style="flex:1;min-height:0;margin-top:10px;"><canvas id="timelineChart"></canvas></div></div>
     </div>
 
-    <!-- 로딩 화면 -->
-    <div id="loadingOverlay">
-        <div class="ld-orb ld-orb-1"></div><div class="ld-orb ld-orb-2"></div><div class="ld-orb ld-orb-3"></div><div class="ld-orb ld-orb-4"></div>
-        <div class="loading-content">
-            <div class="loading-brand">HUMAN INSIGHT · DATA TRACED<br><b>GNWMC</b></div>
-            <h1 class="loading-main-title">KPI DASHBOARD</h1>
-            <div class="loading-sub-title">경상남도 서부의료원</div>
-            <div class="loading-desc">데이터를 수집하고 분석 중입니다...</div>
-            <div id="loadingBottomArea">
-                <div id="loadingStatusArea">
-                    <div class="ov-spinner"></div>
-                    <div id="ovProgress" class="ov-progress"><div class="ov-progress-fill" style="width: 100%;"></div></div>
-                    <div id="ovMsg" class="ov-msg">데이터 연결 중...</div>
-                </div>
-                <div id="ovEnterBtnWrap" class="show">
-                    <button class="ov-enter-btn" onclick="hideLoadingOverlay()">대시보드 입장하기</button>
-                </div>
+    <div class="section-divider"><h2>Working Hours Analysis</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:5px;">
+      <div class="card" style="height:320px;"><div class="card-section-title">일별 초과근무 일수</div><div style="flex:1;min-height:0;position:relative;margin-top:10px;"><canvas id="dashOvertimeBarChart"></canvas></div></div>
+      <div class="card" style="height:320px;"><div class="card-section-title"><span>월별 9h+ 초과근무일</span><div id="dashMonthlyOtLegendWrap" style="display:flex;gap:6px;"></div></div><div style="flex:1;min-height:0;margin-top:10px;"><canvas id="dashMonthlyOvertimeChart"></canvas></div></div>
+      <div class="card" style="height:320px;">
+        <div class="card-section-title"><span>팀원별 초과근무 비율</span><div id="dashOvertimeDonutLegendWrap" style="display:flex;gap:10px;"></div></div>
+        <div style="display:flex;flex:1;min-height:0;gap:10px;margin-top:-15px;">
+          <div style="flex:1;position:relative;display:flex;justify-content:center;align-items:center; padding:15px;"><canvas id="dashOvertimeDonutChart9"></canvas><div style="position:absolute;font-size:11px;font-weight:800;color:#1e293b;pointer-events:none;text-align:center;">9시간<br>이상</div></div>
+          <div style="width:1px;background:rgba(226,232,240,.6);margin:20px 0;"></div>
+          <div style="flex:1;position:relative;display:flex;justify-content:center;align-items:center; padding:15px;"><canvas id="dashOvertimeDonutChart12"></canvas><div style="position:absolute;font-size:11px;font-weight:800;color:#1e293b;pointer-events:none;text-align:center;">12시간<br>이상</div></div>
+        </div>
+      </div>
+      <div class="card" style="height:320px;"><div class="card-section-title"><span>근무 밀도 (히트맵)</span><div id="heatYearTabs" style="display:flex;gap:3px;margin-left:auto;"></div></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:4px;"><table class="heat-table" id="heatTable"></table></div></div>
+    </div>
+    
+    <div class="section-divider"><h2>Advanced Analytics</h2></div>
+    <div class="card" style="padding: 0; margin-top:10px; overflow:hidden;">
+        <div style="display:flex; flex-direction:row; height: 420px;">
+            <div style="flex: 4; padding: 20px; border-right: 1px solid rgba(226,232,240,0.8); display:flex; flex-direction:column; position:relative;">
+                <div class="card-section-title">종합 레이더 분석 (선택 기간)</div>
+                <div style="flex:1; position:relative; padding:10px 0;"><canvas id="pjInsightRadar"></canvas></div>
+            </div>
+            <div style="flex: 6; padding: 20px; display:flex; flex-direction:column; overflow:hidden;">
+                <div class="card-section-title" style="margin-bottom:0;">주요 분석 지표 요약</div>
+                <div id="pjInsightTable" style="flex:1; overflow-y:auto; padding-top:10px;" class="custom-scroll"></div>
+            </div>
+        </div>
+        <div style="border-top: 1px dashed rgba(226,232,240,0.8); background: rgba(248,250,252,0.5); text-align: center; padding: 10px 0; cursor: pointer; transition: background 0.2s;" onclick="toggleAdvancedDetails('pj')" onmouseover="this.style.background='rgba(226,232,240,0.4)'" onmouseout="this.style.background='rgba(248,250,252,0.5)'">
+            <span id="pjAdvancedToggleText" style="font-size: 13px; font-weight: 800; color: #4f46e5; display: inline-flex; align-items: center; gap: 4px;">세부정보 차트 보기 ▼</span>
+        </div>
+        <div id="pjAdvancedDetails" style="display: none; padding: 20px; background: rgba(255,255,255,0.4); border-top: 1px solid rgba(226,232,240,0.8);">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">정시업무 (1-OT) 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="pjOtChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">Shannon 파편화도 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="pjShannonChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">HHI 몰입도 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="pjHhiChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">CV 안정성 (Norm) 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="pjCvChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">Hurst 주도성 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="pjHurstChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">Jaccard 확장성 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="pjJaccardChart"></canvas></div></div>
             </div>
         </div>
     </div>
+  </div>
 
-    <!-- 상단 네비게이션바 -->
-    <header id="topbar" class="topbar">
-        <div class="logo-container">
-            <span class="logo-title">GNWMC</span>
+  <!-- 2. 멤버 뷰 (Working) -->
+  <div id="view-members" class="view-section">
+    <div class="wp-hero">
+      <div class="wp-hero-inner">
+        <div class="wp-hero-profile">
+          <img id="wpProfileImgBg" class="wp-hero-profile-bg" src="" onerror="this.style.display='none'">
+          <div class="wp-hero-profile-content">
+            <div class="wp-profile-info"><div class="wp-profile-name" id="wpProfileName"></div><div class="wp-profile-pos" id="wpProfilePos"></div></div>
+            <div class="wp-contrib-bar-wrap">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><div class="wp-contrib-label">전체 대비 서부의료원</div><div class="wp-contrib-pct" id="wpContribPct">0%</div></div>
+              <div class="wp-contrib-bar"><div class="wp-contrib-bar-fill" id="wpContribFill" style="width:0%"></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;"><div class="wp-contrib-label">서부의료원 중 나의 비율</div><div class="wp-contrib-pct" id="wpContribPct2" style="color:#e11d48;">0%</div></div>
+              <div class="wp-contrib-bar"><div class="wp-contrib-bar-fill second" id="wpContribFill2" style="width:0%"></div></div>
+            </div>
+          </div>
         </div>
-        <div class="topbar-center">
-            <div id="navSlider" class="nav-slider"></div>
-            <div class="nav-item active" onclick="showView('dashboard', this)">Project</div>
-            <div class="nav-item" onclick="showView('members', this)">Working</div>
-            <div class="nav-item" onclick="showView('kpieval', this)">Personal KPI</div>
+        <div class="wp-hero-center">
+          <div class="wp-ai-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <div class="wp-ai-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/><path d="m12 8-4 4 4 4 4-4Z"/>
+                </svg>
+                업무 INSIGHT <span class="wp-ai-gem-badge">✦ Gemini</span>
+              </div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <button class="icon-btn" onclick="openAiModal('wp')" title="새창에서 크게 보기">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+                <button id="btnWpAi" onclick="generateWorkingAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700; cursor:pointer;">분석 요청하기</button>
+              </div>
+            </div>
+            <div style="flex:1; overflow-y:auto; padding-right:5px;" id="wpAiCommentBox" class="custom-scroll">
+              <div class="ai-insight-content" style="color:#64748b;">우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.</div>
+            </div>
+          </div>
+          <div class="wp-stats-row">
+            <div class="wp-stat-mini"><div class="label">참여 기간</div><div><span class="value" id="wpStatMonths" style="color:#1e293b;">0</span><span class="unit">개월</span></div><div class="sub" id="wpStatActiveDays">(0일)</div></div>
+            <div class="wp-stat-mini"><div class="label">서부의료원 투입</div><div><span class="value" id="wpStatTotal" style="color:#00428E;">0.0</span><span class="unit">h</span></div><div class="sub" style="color:#7c3aed; font-weight:800;" id="wpStatDayAvg">-</div></div>
+            <div class="wp-stat-mini"><div class="label">초과근무일</div><div style="display:flex;justify-content:center;gap:6px;margin-top:4px;"><div><div class="value" id="wpStatOt1" style="color:#f59e0b;font-size:16px;">0</div><div class="sub">9~11h</div></div><div style="width:1px;background:#e2e8f0;"></div><div><div class="value" id="wpStatOt2" style="color:#ef4444;font-size:16px;">0</div><div class="sub">11h 이상</div></div></div></div>
+            <div class="wp-stat-mini" style="padding:12px 15px;">
+              <div class="label" style="text-align:left; margin-bottom:8px;">업무유형 TOP 3</div>
+              <div id="wpTop3ListOnly" style="display:flex;flex-direction:column;gap:6px;text-align:left;"></div>
+            </div>
+          </div>
         </div>
-        <div class="topbar-right">
-            <div class="top-filter-wrap">
-                <div class="timeline-container">
-                    <div id="yearRow" class="year-row"></div>
-                    <div class="track-row">
-                        <div class="track-bg"></div>
-                        <div id="trackActive" class="track-active"></div>
-                        <div id="nodesContainer" class="nodes-container"></div>
-                    </div>
-                </div>
-                <div class="range-summary"><span id="summaryText" class="summary-text">전체 기간</span></div>
-                <button class="reset-btn" onclick="resetFilter()">↺</button>
+        <div class="wp-hero-right">
+          <div class="wp-right-title" style="margin-bottom:5px;">종합 역량 지표 <span style="font-size:9px;color:#94a3b8;font-weight:600;margin-left:4px;text-transform:none;">(회색선: 팀평균)</span></div>
+          <div style="flex:1; position:relative; min-height:160px; margin-top: -10px;"><canvas id="wpHeroRadar"></canvas></div>
+          <div style="margin-top:10px;"><div class="wp-metrics-badges" id="wpHeroMetricsCards"></div></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section-divider"><h2>업무유형 분석</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:8px;">
+      <div class="card" style="height:400px;"><div class="card-section-title">설계단계별 비중</div><div style="flex:1;min-height:0;position:relative;"><canvas id="wpDonutCat"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;" id="wpCatCenter"></div></div></div>
+      <div class="card" style="height:400px;">
+        <div class="card-section-title">집중업무 비율 추이<div class="info-wrap"><div class="info-icon">?</div><div class="info-tooltip" style="z-index:999999;"><ul><li><b>집중 업무</b>: 도면, 설계, 검토, 계획, 보고서 등 핵심 산출물 관련 작업 (단위: %)</li></ul></div></div></div>
+        <div style="flex:1;min-height:0;margin-top:10px;"><canvas id="wpFocusBar"></canvas></div>
+      </div>
+      <div class="card" style="height:400px;"><div class="card-section-title"><span>월별 업무 유형</span><div id="wpStackLegend" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:60%;"></div></div><div style="flex:1;min-height:0;margin-top:10px;"><canvas id="wpStackedBar"></canvas></div></div>
+      <div class="card" style="height:400px;">
+        <div class="card-section-title">업무분류별 TOP 7</div>
+        <div style="display:flex;height:calc(100% - 45px);align-items:center;"><div class="chart-area-65"><canvas id="wpDonutSub"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;"><div style="font-size:16px;font-weight:900;color:#1e293b;" id="wpDonutSubCenter">-</div><div style="font-size:11px;color:#94a3b8;">분류기준</div></div></div><div class="list-area-35"><ul class="top5-rank-list" id="wpSubRankList"></ul></div></div>
+      </div>
+    </div>
+    
+    <div class="section-divider"><h2>Advanced Analytics</h2></div>
+    <div class="card" style="padding: 0; margin-top:10px; overflow:hidden;">
+        <div style="display:flex; flex-direction:row; height: 420px;">
+            <div style="flex: 4; padding: 20px; border-right: 1px solid rgba(226,232,240,0.8); display:flex; flex-direction:column; position:relative;">
+                <div class="card-section-title">종합 레이더 분석 (선택 기간)</div>
+                <div style="flex:1; position:relative; padding:10px 0;"><canvas id="wpInsightRadar"></canvas></div>
+            </div>
+            <div style="flex: 6; padding: 20px; display:flex; flex-direction:column; overflow:hidden;">
+                <div class="card-section-title" style="margin-bottom:0;">주요 분석 지표 요약</div>
+                <div id="wpInsightTable" style="flex:1; overflow-y:auto; padding-top:10px;" class="custom-scroll"></div>
             </div>
         </div>
-    </header>
-
-    <!-- 멤버 선택 플로팅 메뉴 -->
-    <div id="globalMemberSelectWrap" class="floating-member-select">
-        <div id="fmWrapper" class="fm-wrapper">
-            <div class="fm-trigger" onclick="toggleDropdown()">
-                <div id="fmTriggerAvatar" class="fm-avatar">ALL</div>
+        <div style="border-top: 1px dashed rgba(226,232,240,0.8); background: rgba(248,250,252,0.5); text-align: center; padding: 10px 0; cursor: pointer; transition: background 0.2s;" onclick="toggleAdvancedDetails('wp')" onmouseover="this.style.background='rgba(226,232,240,0.4)'" onmouseout="this.style.background='rgba(248,250,252,0.5)'">
+            <span id="wpAdvancedToggleText" style="font-size: 13px; font-weight: 800; color: #4f46e5; display: inline-flex; align-items: center; gap: 4px;">세부정보 차트 보기 ▼</span>
+        </div>
+        <div id="wpAdvancedDetails" style="display: none; padding: 20px; background: rgba(255,255,255,0.4); border-top: 1px solid rgba(226,232,240,0.8);">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">정시업무 (1-OT) 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="wpOtChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">Shannon 파편화도 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="wpShannonChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">HHI 몰입도 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="wpHhiChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">CV 안정성 (Norm) 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="wpCvChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">Hurst 주도성 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="wpHurstChart"></canvas></div></div>
+                <div style="height:240px; background:rgba(255,255,255,0.7); border-radius:12px; padding:15px; border:1px solid rgba(226,232,240,0.8);"><div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:5px;">Jaccard 확장성 추이</div><div style="height:calc(100% - 25px); position:relative;"><canvas id="wpJaccardChart"></canvas></div></div>
             </div>
-            <div id="fmOptions" class="fm-options"></div>
         </div>
     </div>
-
-    <!-- 메인 대시보드 뷰 -->
-    <main class="main">
-        <!-- 1. Project 탭 -->
-        <div id="view-dashboard" class="view-section active">
-            <div class="card">
-                <h2 class="card-section-title">PROJECT OVERALL</h2>
-                <div style="display:flex; gap:20px; margin-bottom: 15px;">
-                    <div>총 투입: <span id="ovTotalHour">0h</span></div>
-                    <div>참여 인원: <span id="ovTotalMember">0명</span></div>
-                    <div>참여 개월: <span id="ovTotalMonth">0개월</span></div>
-                    <div>업무일수: <span id="ovActiveDays">0일</span></div>
-                </div>
-                <div id="projectProgressWrap"></div>
-                <div id="ovPjRatioWrap"></div>
-            </div>
-            
-            <div id="topKpiGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;"></div>
-
-            <div class="card">
-                <div style="height: 300px;"><canvas id="costTrendChart"></canvas></div>
-                <div id="costSummaryArea"></div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="card"><canvas id="stageChart"></canvas><div id="dashStageLegendWrap"></div><div id="stageCenter" style="text-align:center;"></div></div>
-                <div class="card"><canvas id="compareChart"></canvas><div id="dashCompareLegendWrap"></div></div>
-                <div class="card"><canvas id="donutChart"></canvas><ul id="top5List" class="top5-rank-list"></ul><div id="donutCenter" style="text-align:center;"></div></div>
-                <div class="card"><canvas id="timelineChart"></canvas><div id="timelineLegendWrap"></div></div>
-                <div class="card"><canvas id="dashOvertimeBarChart"></canvas></div>
-                <div class="card"><canvas id="dashMonthlyOvertimeChart"></canvas><div id="dashMonthlyOtLegendWrap"></div></div>
-                <div class="card"><canvas id="dashOvertimeDonutChart9"></canvas></div>
-                <div class="card"><canvas id="dashOvertimeDonutChart12"></canvas><div id="dashOvertimeDonutLegendWrap"></div></div>
-            </div>
-            
-            <button id="pjAdvancedToggleText" onclick="toggleAdvancedDetails('pj')">세부정보 차트 보기 ▼</button>
-            <div id="pjAdvancedDetails" style="display:none;">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                    <div class="card"><canvas id="pjOtChart"></canvas></div>
-                    <div class="card"><canvas id="pjShannonChart"></canvas></div>
-                    <div class="card"><canvas id="pjHhiChart"></canvas></div>
-                    <div class="card"><canvas id="pjCvChart"></canvas></div>
-                    <div class="card"><canvas id="pjHurstChart"></canvas></div>
-                    <div class="card"><canvas id="pjJaccardChart"></canvas></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Working 탭 -->
-        <div id="view-members" class="view-section">
-            <div class="card wp-hero">
-                <div class="wp-hero-inner">
-                    <div class="wp-hero-profile">
-                        <img id="wpProfileImgBg" class="wp-hero-profile-bg" style="display:none;">
-                        <div class="wp-hero-profile-content">
-                            <div class="wp-profile-info">
-                                <h2 id="wpProfileName" class="wp-profile-name">멤버이름</h2><span id="wpProfilePos" class="wp-profile-pos">직급</span>
-                            </div>
-                            <div class="wp-contrib-bar-wrap">
-                                <div class="wp-contrib-label">전체 대비 비중</div>
-                                <div class="wp-contrib-bar"><div id="wpContribFill" class="wp-contrib-bar-fill"></div></div>
-                                <div id="wpContribPct" class="wp-contrib-pct"></div>
-                                <div class="wp-contrib-label">서부의료원 기여도</div>
-                                <div class="wp-contrib-bar"><div id="wpContribFill2" class="wp-contrib-bar-fill second"></div></div>
-                                <div id="wpContribPct2" class="wp-contrib-pct"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="wp-hero-center">
-                        <div class="wp-ai-box">
-                            <div class="wp-ai-header">AI 분석</div>
-                            <div id="wpAiCommentBox" class="ai-insight-content"></div>
-                        </div>
-                        <div class="wp-stats-row">
-                            <div class="wp-stat-mini"><div class="label">참여월</div><div id="wpStatMonths" class="value">0</div><div id="wpStatActiveDays" class="sub"></div></div>
-                            <div class="wp-stat-mini"><div class="label">총 투입</div><div id="wpStatTotal" class="value">0</div><div id="wpStatDayAvg" class="sub"></div></div>
-                            <div class="wp-stat-mini"><div class="label">연장 9h+</div><div id="wpStatOt1" class="value">0</div><div id="wpStatOt2" class="sub"></div></div>
-                        </div>
-                    </div>
-                    <div class="wp-hero-right">
-                        <div class="wp-right-title">Top 3 주요 업무</div>
-                        <div id="wpTop3ListOnly" style="margin-bottom:15px; margin-top:10px;"></div>
-                        <div class="wp-right-title" style="margin-bottom:10px;">역량 지표</div>
-                        <div id="wpHeroMetricsCards" class="wp-metrics-badges"></div>
-                        <div style="height:150px; margin-top:10px;"><canvas id="wpHeroRadar"></canvas></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="card"><canvas id="wpStackedBar"></canvas><div id="wpStackLegend"></div></div>
-                <div class="card"><canvas id="wpDonutSub"></canvas><ul id="wpSubRankList" class="top5-rank-list"></ul><div id="wpDonutSubCenter" style="text-align:center;"></div></div>
-                <div class="card"><canvas id="wpDonutCat"></canvas><div id="wpCatCenter" style="text-align:center;"></div></div>
-                <div class="card"><canvas id="wpSwitchBar"></canvas></div>
-                <div class="card"><canvas id="wpFocusBar"></canvas></div>
-                <div class="card"><canvas id="wpOtBar"></canvas><div id="wpOtLegendWrap"></div></div>
-                <div class="card"><canvas id="wpGiniChart"></canvas><div id="wpGiniTxt"></div></div>
-                <div class="card">
-                    <div id="wpHeatTabs" style="display:flex;gap:5px;margin-bottom:10px;"></div>
-                    <table id="wpHeatTable" class="heat-table"></table>
-                </div>
-            </div>
-            
-            <button id="wpAdvancedToggleText" onclick="toggleAdvancedDetails('wp')">세부정보 차트 보기 ▼</button>
-            <div id="wpAdvancedDetails" style="display:none;">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                    <div class="card"><canvas id="wpOtChart"></canvas></div>
-                    <div class="card"><canvas id="wpShannonChart"></canvas></div>
-                    <div class="card"><canvas id="wpHhiChart"></canvas></div>
-                    <div class="card"><canvas id="wpCvChart"></canvas></div>
-                    <div class="card"><canvas id="wpHurstChart"></canvas></div>
-                    <div class="card"><canvas id="wpJaccardChart"></canvas></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. KPI Eval 탭 -->
-        <div id="view-kpieval" class="view-section">
-            <!-- charts.js에 의해 동적으로 렌더링 됩니다. -->
-        </div>
-    </main>
-
-    <!-- AI 상세 분석 모달 -->
-    <div id="aiModalOverlay" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="margin:0;">AI 상세 분석</h3>
-                <button class="modal-close" onclick="closeAiModal()">×</button>
-            </div>
-            <div id="aiModalBody" class="modal-body"></div>
-        </div>
+    
+    <div class="section-divider"><h2>업무시간 분석</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:8px;">
+      <div class="card" style="height:320px;"><div class="card-section-title">업무 전환 횟수</div><div style="flex:1;min-height:0;margin-top:5px;"><canvas id="wpSwitchBar"></canvas></div></div>
+      <div class="card" style="height:320px;"><div class="card-section-title"><span>근무 밀도 (히트맵)</span><div id="wpHeatTabs" style="display:flex;gap:3px;margin-left:auto;"></div></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:2px;"><table class="heat-table" id="wpHeatTable"></table></div></div>
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px;">
+      <div class="card" style="height:300px;">
+          <div class="card-section-title"><span>초과근무 상세</span><div id="wpOtLegendWrap" style="display:flex;gap:6px;"></div></div>
+          <div style="flex:1;position:relative;"><canvas id="wpOtBar"></canvas></div>
+      </div>
+      <div class="card" style="height:300px;"><div style="display:flex;flex-direction:column;height:100%;gap:12px;"><div style="flex:1;display:flex;flex-direction:column;"><div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px;">업무시간 불평등도 (Gini)</div><div style="flex:1;position:relative;"><canvas id="wpGiniChart"></canvas></div><div id="wpGiniTxt" style="font-size:11px;font-weight:700;color:#64748b;margin-top:4px;text-align:center;"></div></div></div></div>
+    </div>
+  </div>
 
-    <!-- 스크립트 로드 순서 (데이터 -> 차트 -> 실행) -->
-    <script src="data.js"></script>
-    <script src="charts.js"></script>
-    <script src="app.js"></script>
+  <!-- 3. KPI Eval 뷰 -->
+  <div id="view-kpieval" class="view-section">
+      <!-- renderEvalTab()을 통해 내부가 동적 생성됨 -->
+  </div>
+</div>
+
+<!-- 모달 레이어 (새 창 보기용) -->
+<div id="aiModalOverlay" class="modal-overlay" onclick="closeAiModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div style="font-weight:900; color:#1e3a8a; display:flex; align-items:center; gap:8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/><path d="m12 8-4 4 4 4 4-4Z"/></svg>
+        AI Insight 상세 리포트
+      </div>
+      <button class="modal-close" onclick="closeAiModal()">&times;</button>
+    </div>
+    <div class="modal-body ai-insight-content custom-scroll" id="aiModalBody">
+      <!-- 내용이 여기에 복사됨 -->
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
