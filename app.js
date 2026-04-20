@@ -1,3 +1,4 @@
+// --- 1. 초기화 및 이벤트 리스너 ---
 document.addEventListener("DOMContentLoaded", function() {
     var overlay = document.getElementById('loadingOverlay');
     if(overlay) {
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
             overlay.appendChild(dust);
         }
     }
+    // data.js 에 선언된 함수 호출
     loadDataFromSheets();
 });
 
@@ -21,12 +23,15 @@ window.addEventListener('scroll',function(){
     else tb.classList.remove('scrolled');
 },{passive:true});
 
+// 외부 영역 클릭 시 플로팅 필터 옵션 닫기
 document.addEventListener('click',function(e){ 
     var w=document.getElementById('fmWrapper'); 
     var fmOptions = document.getElementById('fmOptions');
     if(w && !w.contains(e.target) && fmOptions) fmOptions.classList.remove('open'); 
 });
 
+
+// --- 2. 로딩 및 UI 유틸리티 ---
 function hideLoadingOverlay(){
     var el=document.getElementById('loadingOverlay');
     if(el){el.style.opacity='0';setTimeout(function(){el.style.display='none';},600);}
@@ -44,6 +49,8 @@ function setProgress(p,m){
     if(m){ var msgEl = document.getElementById('ovMsg'); if(msgEl) msgEl.textContent=m; }
 }
 
+
+// --- 3. 네비게이션 탭 (View 전환) ---
 function updateNavSlider(){
     var a=document.querySelector('.nav-item.active'), s=document.getElementById('navSlider');
     if(a&&s){s.style.width=a.offsetWidth+'px';s.style.left=a.offsetLeft+'px';}
@@ -55,9 +62,11 @@ function showView(v,el){
     document.getElementById('view-'+v).classList.add('active');
     el.classList.add('active');
     updateNavSlider();
+    
     var floatingFilter = document.getElementById('globalMemberSelectWrap');
     if(v === 'members' || v === 'kpieval') floatingFilter.classList.add('show');
     else { floatingFilter.classList.remove('show'); document.getElementById('fmOptions').classList.remove('open'); }
+    
     if(v==='members') renderWorkingTab(WP_MEMBER || GLOBAL_MEMBER);
     else if(v==='kpieval') renderEvalTab();
     else renderDashboardTab();
@@ -69,6 +78,8 @@ function renderAllViews(){
     else if(document.getElementById('view-kpieval').classList.contains('active')) renderEvalTab();
 }
 
+
+// --- 4. 플로팅 멤버 필터 ---
 function renderCustomDropdown(){
     var h='';
     MEMBERS.forEach(function(n){ h += '<div class="fm-option-item" style="background:'+MC[n]+';" onclick="selectGlobalMember(\''+n+'\')">'+getShortName(n)+'</div>'; });
@@ -93,6 +104,8 @@ function updateCustomSelectTrigger(){
     if(fmTrig) { fmTrig.style.background = MC[GLOBAL_MEMBER] || '#00428E'; fmTrig.innerText = getShortName(GLOBAL_MEMBER); }
 }
 
+
+// --- 5. 타임라인 슬라이더 필터 ---
 function initSlider(){
     var nc=document.getElementById('nodesContainer'), yr=document.getElementById('yearRow');
     if(!nc || !yr) return;
@@ -140,6 +153,8 @@ function updateFilterUI(){
     if(RAW && RAW.length>0) renderAllViews();
 }
 
+
+// --- 6. 각종 UI 토글 및 차트 클릭 이벤트 ---
 window.toggleCostMode = function() {
     window.isCostCumulative = document.getElementById('costToggleBtn').checked;
     if(window.isCostCumulative) {
@@ -188,13 +203,19 @@ window.renderWpHeatmapYear = function(yr){
     buildHeatmapHTML(d, ty, MC[WP_MEMBER]||'#00428E', 'wpHeatTable');
 };
 
-// AI 모달 열기/닫기
+// --- 7. AI Insight 모달(새 창 보기) 이벤트 ---
 window.openAiModal = function(type) {
     var overlay = document.getElementById('aiModalOverlay');
     var body = document.getElementById('aiModalBody');
     var srcHtml = '';
-    if(type === 'wp') { srcHtml = document.getElementById('wpAiCommentBox').innerHTML; }
-    else if(type === 'kpi') { srcHtml = document.getElementById('aiCommentBox').innerHTML; }
+    
+    // 눌린 버튼의 종류에 따라 해당하는 텍스트 박스의 내용을 가져옴
+    if(type === 'wp') { 
+        srcHtml = document.getElementById('wpAiCommentBox').innerHTML; 
+    }
+    else if(type === 'kpi') { 
+        srcHtml = document.getElementById('aiCommentBox').innerHTML; 
+    }
     
     if(overlay && body) {
         body.innerHTML = srcHtml;
@@ -207,7 +228,7 @@ window.closeAiModal = function() {
     if(overlay) overlay.classList.remove('show');
 };
 
-// ESC 키로 모달 닫기
+// ESC 키를 누르면 모달창 닫기
 document.addEventListener('keydown', function(e) {
     if(e.key === 'Escape') closeAiModal();
 });
