@@ -150,23 +150,17 @@ function renderOvProjectRatio(all){
     wrap.innerHTML = html;
 }
 
-function getMonthsBetween(start, end) {
-    var res = []; var curr = new Date(start + '-01'); var endDate = new Date(end + '-01');
-    while(curr <= endDate) { var y = curr.getFullYear(); var m = String(curr.getMonth() + 1).padStart(2, '0'); res.push(y + '-' + m); curr.setMonth(curr.getMonth() + 1); }
-    return res;
-}
-
 function renderCostTrendChart(mos) {
     dC('costTrendChart'); window.lastCostMos = mos;
     if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
-    var startMonth = mos[0], endMonth = mos[mos.length - 1];
-    var fullMonths = getMonthsBetween(startMonth, endMonth);
+    var fullMonths = mos; 
     var allMosMap = {};
     COST_DATA.forEach(function(r) {
         if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0 };
         allMosMap[r.date].plan += (r.plan / 10000); allMosMap[r.date].exec += (r.exec / 10000);
     });
     
+    var startMonth = mos[0], endMonth = mos[mos.length - 1];
     var lastActualMonth = '', totalActualExec = 0, actualMonthCount = 0;
     Object.keys(allMosMap).sort().forEach(function(m) {
         if(allMosMap[m].exec > 0) { lastActualMonth = m; totalActualExec += allMosMap[m].exec; actualMonthCount++; }
@@ -290,17 +284,16 @@ function renderDashCompare(pd){
     dC('compareChart');if(!pd.length)return;
     var ds=MEMBERS.map(function(n){ return { label: n, data: CAT_ORDER.map(c => mToH(pd.filter(r => r.name===n&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: CAT_ORDER.map(c => { if(hlStage!==null && hlStage!==c) return '#e2e8f0'; if(hlTimeline!==null && hlTimeline!==n) return '#e2e8f0'; return MC[n]; }), borderRadius:4, order: 2 }; });
     
-    // 실시설계(예상) 라인 추가
     ds.push({
         type: 'line', label: '실시설계(예상)', 
-        data: [null, null, null, 1500], // 임의의 예상 투입시간(예: 1500h)
+        data: [null, null, null, 1500],
         borderColor: '#8b5cf6', backgroundColor: 'transparent', borderDash: [5,5], borderWidth: 2, pointRadius: 0, order: 1
     });
 
     document.getElementById('dashCompareLegendWrap').innerHTML=MEMBERS.map(function(n){return '<div class="legend-item '+(hlTimeline!==null&&hlTimeline!==n?'dimmed':'')+'" style="font-size:11px;" onclick="dTogTimeline(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>';}).join('');
     CH.compareChart=new Chart(document.getElementById('compareChart').getContext('2d'),{
         type:'bar', data:{labels:CAT_ORDER,datasets:ds},
-        options:{ responsive:true,maintainAspectRatio:false,layout:{padding:{top:15}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display:function(cx){ if(cx.dataset.type === 'line') return false; var stg = CAT_ORDER[cx.dataIndex]; var mem = cx.dataset.label; if(hlStage!==null && hlStage!==stg) return false; if(hlTimeline!==null && hlTimeline!==mem) return false; return cx.dataset.data[cx.dataIndex] > 0; }, color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end', formatter:function(v){return v>0?v.toFixed(1):'';} } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'10%'}}, onClick:function(e,els){ if(els.length && els[0].datasetIndex < MEMBERS.length) { dTogStage(CAT_ORDER[els[0].index]); } else { dTogStage(null); } } }
+        options:{ responsive:true,maintainAspectRatio:false,layout:{padding:{top:15}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display:function(cx){ if(cx.dataset.type === 'line') return false; var stg = CAT_ORDER[cx.dataIndex]; var mem = cx.dataset.label; if(hlStage!==null && hlStage!==stg) return false; if(hlTimeline!==null && hlTimeline!==mem) return false; return cx.dataset.data[cx.dataIndex] > 0; }, color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end', formatter:function(v){return v>0?v.toFixed(1):'';} } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'15%'}}, onClick:function(e,els){ if(els.length && els[0].datasetIndex < MEMBERS.length) { dTogStage(CAT_ORDER[els[0].index]); } else { dTogStage(null); } } }
     });
 }
 
@@ -327,7 +320,7 @@ function renderDashOvertimeBars(pd){
     dC('dashOvertimeBarChart');var dm={};pd.forEach(r=>{var k=r.name+'|'+r.date;dm[k]=(dm[k]||0)+r.min;});var c=[0,0,0,0];Object.values(dm).forEach(m=>{if(m>=540&&m<600)c[0]++;else if(m>=600&&m<660)c[1]++;else if(m>=660&&m<720)c[2]++;else if(m>=720)c[3]++;});
     CH.dashOvertimeBarChart=new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'),{
         type:'bar', data:{labels:OVERTIME_RANGES,datasets:[{data:c,backgroundColor:c.map((_,i)=>(hlMonthlyOt===null||hlMonthlyOt===OVERTIME_RANGES[i])?OT_COLORS[i]:'#e2e8f0'),borderRadius:4}]},
-        options:{ indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',formatter:v=>v>0?v+'일':''}}, scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(OVERTIME_RANGES[els[0].index]); else dTogMonthlyOt(null); } }
+        options:{ indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'end',formatter:v=>v>0?v+'일':''}}, scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(OVERTIME_RANGES[els[0].index]); else dTogMonthlyOt(null); } }
     });
 }
 
@@ -399,7 +392,7 @@ function renderWorkingTab(nm){
     
     document.getElementById('wpStatMonths').textContent=mo.length;document.getElementById('wpStatActiveDays').textContent='('+ad+'일)';
     document.getElementById('wpStatTotal').textContent=fH(pm);document.getElementById('wpStatDayAvg').textContent=da.toFixed(1)+'h/일';
-    document.getElementById('wpStatOt1').textContent=t1;document.getElementById('wpStatOt2').textContent=t2;document.getElementById('wpStatOt3').textContent=t3;
+    document.getElementById('wpStatOt1').textContent=(t1+t2);document.getElementById('wpStatOt2').textContent=t3;
     
     var top3Html = '';
     if(ta2.length > 0) {
@@ -411,26 +404,47 @@ function renderWorkingTab(nm){
 
     var catStr = Object.entries(grp(d,'cat')).sort((a,b)=>b[1]-a[1]).map(x => x[0]+'('+(pm>0 ? (x[1]/pm*100).toFixed(0) : 0)+'%)').join(', ');
     window.currentWorkingAiData = { m: nm, tt: pm, apm: apm, o9: o9, o12: o12, tk: tk, as: as, ah: ah, ac: ac, cat: catStr };
-    document.getElementById('wpAiCommentBox').innerHTML = '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.';
+    document.getElementById('wpAiCommentBox').innerHTML = '<div class="ai-insight-content" style="color:#64748b;">우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.</div>';
     
     if(typeof updateCustomSelectTrigger !== 'undefined') updateCustomSelectTrigger();
     
     var cr = calcStandaloneMetrics(d);
+    var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
+    var teamCr = calcStandaloneMetrics(teamData);
+
     var metricsCards = `
-        <div class="wp-metric-badge ${cr.ot>=0.8?'good':cr.ot>=0.5?'warn':'danger'}"><span class="name">1-OT</span><span class="val">${cr.ot.toFixed(2)}</span></div>
-        <div class="wp-metric-badge ${cr.shannon>=0.5?'good':'warn'}"><span class="name">Shannon</span><span class="val">${cr.shannon.toFixed(2)}</span></div>
-        <div class="wp-metric-badge ${cr.hhi>=0.4?'good':'warn'}"><span class="name">HHI</span><span class="val">${cr.hhi.toFixed(2)}</span></div>
-        <div class="wp-metric-badge ${cr.cv>=0.7?'good':cr.cv>=0.4?'warn':'danger'}"><span class="name">CV</span><span class="val">${cr.cv.toFixed(2)}</span></div>
-        <div class="wp-metric-badge ${cr.hurst>=0.6?'good':'warn'}"><span class="name">Hurst</span><span class="val">${cr.hurst.toFixed(2)}</span></div>
-        <div class="wp-metric-badge ${cr.jaccard>=0.3?'good':'warn'}"><span class="name">Jaccard</span><span class="val">${cr.jaccard.toFixed(2)}</span></div>
+        <div class="wp-metric-badge">
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.ot>=0.8?'good':cr.ot>=0.5?'warn':'danger'}"></div><span class="name">1-OT</span></div><span class="val">${cr.ot.toFixed(2)}</span>
+        </div>
+        <div class="wp-metric-badge">
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.shannon>=0.5?'good':'warn'}"></div><span class="name">Shannon</span></div><span class="val">${cr.shannon.toFixed(2)}</span>
+        </div>
+        <div class="wp-metric-badge">
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.hhi>=0.4?'good':'warn'}"></div><span class="name">HHI</span></div><span class="val">${cr.hhi.toFixed(2)}</span>
+        </div>
+        <div class="wp-metric-badge">
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.cv>=0.7?'good':cr.cv>=0.4?'warn':'danger'}"></div><span class="name">CV</span></div><span class="val">${cr.cv.toFixed(2)}</span>
+        </div>
+        <div class="wp-metric-badge">
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.hurst>=0.6?'good':'warn'}"></div><span class="name">Hurst</span></div><span class="val">${cr.hurst.toFixed(2)}</span>
+        </div>
+        <div class="wp-metric-badge">
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.jaccard>=0.3?'good':'warn'}"></div><span class="name">Jaccard</span></div><span class="val">${cr.jaccard.toFixed(2)}</span>
+        </div>
     `;
     document.getElementById('wpHeroMetricsCards').innerHTML = metricsCards;
     
     dC('wpHeroRadar');
     CH.wpHeroRadar = new Chart(document.getElementById('wpHeroRadar').getContext('2d'), {
         type: 'radar',
-        data: { labels: INSIGHT_RADAR_LABELS, datasets: [{ data: [cr.ot, cr.shannon, cr.hhi, cr.cv, cr.hurst, cr.jaccard], borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointRadius: 3 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { displayColors: false, callbacks: { label: cx => cx.raw.toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:8, weight:'800'}, color: '#64748b' } } } }
+        data: { 
+            labels: INSIGHT_RADAR_LABELS, 
+            datasets: [
+                { data: [cr.ot, cr.shannon, cr.hhi, cr.cv, cr.hurst, cr.jaccard], borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointRadius: 3, order: 1 },
+                { data: [teamCr.ot, teamCr.shannon, teamCr.hhi, teamCr.cv, teamCr.hurst, teamCr.jaccard], borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3,3], pointRadius: 0, order: 2 }
+            ] 
+        },
+        options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{padding:10}, plugins: { legend: { display: false }, datalabels: { display: cx=>cx.datasetIndex===0, color: c, font: {size:9, weight:'bold'}, formatter: v=>v.toFixed(2), anchor:'end', align:'end' }, tooltip: { displayColors: false, callbacks: { label: cx => cx.raw.toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:8, weight:'800'}, color: '#64748b' } } } }
     });
 
     safeRender(function(){renderWpStackedBar(d,mo);});
@@ -487,9 +501,9 @@ function renderWpSwitchBar(d,mos,col){
     CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{
         data:{labels:mos,datasets:[
             {type:'bar', label:'개인 전환 횟수', data:mos.map(m=>sw[m]||0),backgroundColor:col,borderRadius:6, order:2},
-            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[5,5], borderWidth:2, pointRadius:0, order:1}
+            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[4,4], borderWidth:1.5, pointRadius:4, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
         ]},
-        options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:15}},plugins:{legend:{display:false},datalabels:{display:cx=>cx.dataset.type==='bar'&&cx.raw>0,color:col,font:{weight:'bold',size:10},anchor:'end',align:'end',formatter:v=>v>0?v:''}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}}}}
+        options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}},plugins:{legend:{display:false},datalabels:{display:cx=>cx.raw>0,color:cx=>cx.dataset.type==='bar'?col:'#64748b',font:{weight:'bold',size:10},anchor:cx=>cx.dataset.type==='bar'?'end':'start',align:cx=>cx.dataset.type==='bar'?'end':'start',formatter:v=>v}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'20%'}}}
     });
 }
 
@@ -500,7 +514,7 @@ function renderWpFocusBar(d,mos){
     d.forEach(r=>{ var m=r.date.slice(0,7); if(mt[m]===undefined)return; var isFocus = !nonFocus.some(k=>r.sub.includes(k)||r.cat.includes(k)); if(isFocus)mf[m]+=r.min; mt[m]+=r.min; });
     CH.wpFocusBar=new Chart(document.getElementById('wpFocusBar').getContext('2d'),{
         type:'line', data:{ labels:mos, datasets:[ { label:'집중업무 비율(%)', data:mos.map(m=>mt[m]>0?(mf[m]/mt[m]*100):0), borderColor:'#00428E', backgroundColor:hRgba('#00428E',0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:4, pointBackgroundColor:'#00428E' } ] },
-        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, plugins:{ legend:{display:false}, datalabels:{display:cx=>cx.dataIndex%2===0, formatter:v=>v.toFixed(1)+'%', align:'top', font:{size:10, weight:'bold'}, color:'#00428E'} }, scales:{ x:{grid:{display:false}}, y:{min: 0, max: 110, grid:{color:'rgba(226,232,240,0.5)'}, ticks:{callback:v=>v > 100 ? '' : v+'%'}} } }
+        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, plugins:{ legend:{display:false}, datalabels:{display:cx=>mos.length>10?cx.dataIndex%2===0:true, formatter:v=>v.toFixed(1)+'%', align:'top', font:{size:10, weight:'bold'}, color:'#00428E'} }, scales:{ x:{grid:{display:false}}, y:{min: 0, max: 110, grid:{color:'rgba(226,232,240,0.5)'}, ticks:{callback:v=>v > 100 ? '' : v+'%'}} } }
     });
 }
 
@@ -514,7 +528,7 @@ function renderWpOvertimeDetail(d){
     document.getElementById('wpOtLegendWrap').innerHTML = bd.map((b, i) => '<div class="legend-item ' + (hlWpOt!==null && hlWpOt!==b ? 'dimmed' : '') + '" onclick="dTogWpOt(\''+b+'\')"><div class="legend-dot" style="background:'+OT_COLORS[i]+'"></div><span style="font-size:11px;">'+b+'</span></div>').join('');
     CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{
         type:'bar', data:{ labels:mo, datasets:[ {label:'9~10h', data:ct['9~10h'], backgroundColor: (hlWpOt===null||hlWpOt==='9~10h')?OT_COLORS[0]:'#e2e8f0', stack:'S', borderRadius:2}, {label:'10~11h', data:ct['10~11h'], backgroundColor: (hlWpOt===null||hlWpOt==='10~11h')?OT_COLORS[1]:'#e2e8f0', stack:'S', borderRadius:2}, {label:'11~12h', data:ct['11~12h'], backgroundColor: (hlWpOt===null||hlWpOt==='11~12h')?OT_COLORS[2]:'#e2e8f0', stack:'S', borderRadius:2}, {label:'12h 이상', data:ct['12h 이상'], backgroundColor: (hlWpOt===null||hlWpOt==='12h 이상')?OT_COLORS[3]:'#e2e8f0', stack:'S', borderRadius:2} ] },
-        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display: cx=>cx.dataset.data[cx.dataIndex] > 0 && (hlWpOt===null || hlWpOt===cx.dataset.label), color: '#fff', font: {size:10, weight:'bold'}, formatter: v=>v } }, scales:{ x:{stacked:true, grid:{display:false}, ticks:{font:{size:11}}}, y:{stacked:true, display:false, grace:'10%'} }, onClick: (e,els)=>{ if(els.length) dTogWpOt(CH.wpOtBar.data.datasets[els[0].datasetIndex].label); else dTogWpOt(null); } }
+        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display: function(cx){ if(hlWpOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlWpOt && cx.dataset.data[cx.dataIndex] > 0; } }, color: function(cx){ return hlWpOt === null ? '#1e293b' : '#fff'; }, font: {size:10, weight:'bold'}, anchor: function(cx){ return hlWpOt === null ? 'end' : 'center'; }, align: function(cx){ return hlWpOt === null ? 'end' : 'center'; }, offset: function(cx){ return hlWpOt === null ? 4 : 0; }, formatter: function(v, cx){ if(hlWpOt === null) { var sum=0; cx.chart.data.datasets.forEach(ds=>{sum+=ds.data[cx.dataIndex]||0;}); return sum>0?sum:''; } else return v>0?v:''; } } }, scales:{ x:{stacked:true, grid:{display:false}, ticks:{font:{size:11}}}, y:{stacked:true, display:false, grace:'20%'} }, onClick: (e,els)=>{ if(els.length) dTogWpOt(CH.wpOtBar.data.datasets[els[0].datasetIndex].label); else dTogWpOt(null); } }
     });
 }
 
@@ -707,7 +721,7 @@ function renderEvalTab() {
     
     var html = '<div class="kpi-layout">' +
         '<div class="kpi-panel left-panel"><div class="kpi-profile-header">' + getAvatar(m, 50, 18) + '<div><div style="font-size:24px;font-weight:900;color:#1e293b;line-height:1.2;">' + m + '</div><div style="font-size:13px;color:#64748b;font-weight:600;">' + po + '</div></div></div><div class="kpi-big-score"><div class="title">최근 분기 종합 점수 (' + latestQ.q + ')</div><div style="display:flex;align-items:baseline;"><div class="score">' + latestScore.toFixed(2) + '</div><div class="sub">/ 5.0</div></div><div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">개인 평균(' + avgScore.toFixed(2) + ') 대비 ' + scoreDiffHtml + '</div></div><div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;"><div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">총 투입 시간</div><div style="font-size:18px;font-weight:900;color:#00428E;">' + fH(t) + 'h</div></div><div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;"><div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">9h+ 연장근무</div><div style="font-size:18px;font-weight:900;color:#f59e0b;">' + o9 + '일</div></div></div><div class="kpi-section-title" style="font-size:14px; margin-bottom:5px;">역량 점수 트렌드</div><div style="height:120px; position:relative; margin-bottom:15px;">' + (sortedEd.length > 0 ? '<canvas id="newKpiTrendChart"></canvas>' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;font-weight:600;">평가 데이터 없음</div>') + '</div><div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div><div class="kpi-detail-list">' + detailListHtml + '</div></div>' +
-        '<div class="kpi-panel center-panel"><div style="text-align:center; flex:0 0 auto;"><h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2><div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div><div style="display:flex; justify-content:center; gap:15px; margin-top:12px;"><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;"><div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> 선택 기간</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;"><div style="width:12px; height:3px; background:#94a3b8; border-radius:2px;"></div> 개인 평균</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#64748b;"><div style="width:12px; height:0; border-top:2px dashed #7dd3fc; border-radius:2px;"></div> 팀 전체 평균</div></div></div><div style="flex:1; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="newKpiRadarChart"></canvas></div><div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div class="kpi-section-title" style="margin:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; vertical-align:text-bottom;"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/><path d="m12 8-4 4 4 4 4-4Z"/></svg><span style="color:#6366f1;">AI Insight</span> 종합 평가</div><button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(99,102,241,0.3);">분석 요청하기</button></div><div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:18px; border:1px solid rgba(99,102,241,0.2); min-height:180px; overflow-y:auto;"><div id="aiCommentBox" class="ai-insight-content" style="color:#64748b;">우측 상단의 <b>분석 요청하기</b> 버튼을 눌러 팀원의 현재 역량과 업무 스타일에 대한 심층 피드백을 받아보세요.</div></div></div></div>' +
+        '<div class="kpi-panel center-panel"><div style="text-align:center; flex:0 0 auto;"><h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2><div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div><div style="display:flex; justify-content:center; gap:15px; margin-top:12px;"><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;"><div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> 선택 기간</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;"><div style="width:12px; height:3px; background:#94a3b8; border-radius:2px;"></div> 개인 평균</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#64748b;"><div style="width:12px; height:0; border-top:2px dashed #7dd3fc; border-radius:2px;"></div> 팀 전체 평균</div></div></div><div style="flex:1; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="newKpiRadarChart"></canvas></div><div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div class="kpi-section-title" style="margin:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; vertical-align:text-bottom;"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/><path d="m12 8-4 4 4 4 4-4Z"/></svg><span style="color:#6366f1;">AI Insight</span> 종합 평가</div><div style="display:flex; gap:6px; align-items:center;"><button class="icon-btn" onclick="openAiModal(\'kpi\')" title="새창에서 크게 보기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button><button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700; cursor:pointer;">분석 요청하기</button></div></div><div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:15px; border:1px solid rgba(99,102,241,0.2); max-height:160px; overflow-y:auto;" class="custom-scroll"><div id="aiCommentBox" class="ai-insight-content" style="color:#64748b;">우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.</div></div></div></div>' +
         '<div class="kpi-panel right-panel" style="display:flex; flex-direction:column; justify-content:flex-start; padding:25px 20px;"><div style="flex:0 0 auto; display:flex; flex-direction:column;"><div class="kpi-section-title" style="margin-bottom:10px;">Highest Record</div><div style="background:rgba(255,255,255,0.7); border-radius:16px; padding:18px; border:1px solid rgba(226,232,240,0.8);"><div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; border-bottom:1px dashed rgba(203,213,225,0.6); padding-bottom:10px;"><div style="font-size:14px; font-weight:900; color:#1e293b;">' + (bestQ ? bestQ.q : '-') + '</div><div style="font-size:22px; font-weight:900; color:' + c + ';">' + bestScore.toFixed(2) + '<span style="font-size:12px; color:#94a3b8;"> / 5.0</span></div></div><div style="font-size:11px; color:#94a3b8; font-weight:700; margin-bottom:8px;">해당 분기 주요 업무 TOP 3</div>' + bestTopTasksHtml + '</div></div><div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:25px;"><div class="kpi-section-title" style="margin-bottom:10px;">주요 업무 비중 <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(선택 기간)</span></div><div style="display:flex; align-items:center; height:120px; gap:15px;"><div style="width:110px; height:110px; position:relative; flex-shrink:0;"><canvas id="newKpiDonutChart"></canvas></div><div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">' + topTasksHtml + '</div></div></div><div style="flex:1; display:flex; flex-direction:column; min-height:220px; margin-top:25px;"><div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div><div style="flex:1; position:relative; min-height:180px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="kpiInsightRadar"></canvas></div></div></div></div>';
     
     view.innerHTML = html;
@@ -720,9 +734,4 @@ function renderEvalTab() {
                 var ptBorders = trendLabels.map(q => fq.includes(q) ? '#fff' : c), ptBorderWidths = trendLabels.map(q => fq.includes(q) ? 2 : 1.5);
                 CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), { type: 'line', data: { labels: trendLabels, datasets: [{ data: trendData, borderColor: c, backgroundColor: hRgba(c, 0.1), borderWidth: 2, fill: true, tension: 0.4, pointRadius: ptRadii, pointBackgroundColor: ptBgColors, pointBorderColor: ptBorders, pointBorderWidth: ptBorderWidths, pointHoverRadius: 7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', offset: 4, color: cx => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', font: cx => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), formatter: v => Number(v).toFixed(1) }, tooltip: { callbacks: { title: cx => cx[0].label + ' 상세 역량', label: cx => { var item = sortedEd[cx.dataIndex]; if(!item) return ''; var lines = ['종합 평균: ' + Number(cx.raw).toFixed(2), '----------------']; RADAR_LABELS.forEach((lbl, i) => lines.push(lbl + ': ' + Number(item.vals[i]).toFixed(1))); return lines; } } } }, scales: { x: { display: false }, y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 } }, layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } } } });
             }
-            CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), { type: 'radar', data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] }, options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 10 }, plugins:{ legend:{ display:false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 14 }, bodyFont: { size: 13, weight: 'bold' }, padding: 12, callbacks: { label: cx => cx.dataset.label + ': ' + Number(cx.raw).toFixed(2) } } }, scales: { r: { min: 0, max: 5, grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 }, angleLines: { display: false }, ticks: { display: false, stepSize: 1 }, pointLabels: { font: { size: 14, weight: '800' }, color: '#475569', padding: 20 } } }, elements: { line: { tension: 0.35 } } } });
-            if(topTasksArr.length > 0) { CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), { type: 'doughnut', data: { labels: topTasksArr.map(t => t[0]), datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: { top: 5, bottom: 5, left: 5, right: 5 } } } }); }
-            CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), { type: 'radar', data: { labels: INSIGHT_RADAR_LABELS, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 0, order: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: cx => cx.datasetIndex===0 ? cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2) : cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 9, weight: '800' }, color: '#64748b', padding: 8 } } } } });
-        } catch (e) {}
-    }, 50);
-}
+            CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), { type: 'radar', data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 1
