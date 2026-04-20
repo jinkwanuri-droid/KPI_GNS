@@ -133,4 +133,81 @@ function updateFilterUI(){
         var track = document.getElementById('trackActive');
         if(track) { track.style.left=percentPositions[window.filterStartIndex]+'%'; track.style.width=(percentPositions[window.filterEndIndex]-percentPositions[window.filterStartIndex])+'%'; }
     }
-    var sy=filterYears[Math.floor(window.filterStartIndex/4)], sq=filterQuarters[window.filterStartIndex%4], ey=filterYears[Math.floor(window.filterEndIndex/4)], eq=filterQuarters[window.filterEndIndex%4], cnt=window.filterEndIndex-
+    var sy=filterYears[Math.floor(window.filterStartIndex/4)], sq=filterQuarters[window.filterStartIndex%4], ey=filterYears[Math.floor(window.filterEndIndex/4)], eq=filterQuarters[window.filterEndIndex%4], cnt=window.filterEndIndex-window.filterStartIndex+1;
+    var lbl=cnt===1 ? (sy+' '+sq) : (cnt===totalNodes ? '전체 기간' : (sy+' '+sq+' ~ '+ey+' '+eq));
+    var summaryEl = document.getElementById('summaryText');
+    if(summaryEl) summaryEl.innerText=lbl;
+    if(RAW && RAW.length>0) renderAllViews();
+}
+
+window.toggleCostMode = function() {
+    window.isCostCumulative = document.getElementById('costToggleBtn').checked;
+    if(window.isCostCumulative) {
+        document.getElementById('costToggleLbl2').style.color = '#00428E'; document.getElementById('costToggleLbl1').style.color = '#94a3b8';
+    } else {
+        document.getElementById('costToggleLbl2').style.color = '#94a3b8'; document.getElementById('costToggleLbl1').style.color = '#00428E';
+    }
+    renderCostTrendChart(window.lastCostMos);
+};
+
+window.toggleAdvancedDetails = function(pf) {
+    var detailDiv = document.getElementById(pf + 'AdvancedDetails'), btnText = document.getElementById(pf + 'AdvancedToggleText');
+    if(!detailDiv || !btnText) return;
+    if (detailDiv.style.display === 'none') {
+        detailDiv.style.display = 'block'; btnText.innerHTML = '세부정보 차트 닫기 ▲';
+        setTimeout(function(){ ['OtChart','ShannonChart','HhiChart','CvChart','HurstChart','JaccardChart'].forEach(function(k){ if(CH[pf + k]) CH[pf + k].resize(); }); }, 50);
+    } else { detailDiv.style.display = 'none'; btnText.innerHTML = '세부정보 차트 보기 ▼'; }
+};
+
+window.ovTogglePjR = function(b){ hlPjRatio = hlPjRatio===b ? null : b; renderOvProjectRatio(filtered()); };
+window.dTogStage = function(c){ hlStage = hlStage===c ? null : c; var p = filtered().filter(function(r){return r.project==='경남 서부의료원';}); renderDashStage(p); renderDashCompare(p); };
+window.dTogDonut = function(k){ hlDonutWork = hlDonutWork===k ? null : k; renderDashDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';})); };
+window.dTogTimeline = function(n){ hlTimeline = hlTimeline===n ? null : n; var p = filtered().filter(function(r){return r.project==='경남 서부의료원';}); renderDashTimeline(p, getMos(p)); renderDashCompare(p); };
+window.dTogMonthlyOt = function(b){ hlMonthlyOt = hlMonthlyOt===b ? null : b; var p = filtered().filter(function(r){return r.project==='경남 서부의료원';}); renderDashMonthlyOt(p, getMos(p)); renderDashOvertimeBars(p); };
+window.dTogOtDonut = function(n){ hlOvertimeDonut = hlOvertimeDonut===n ? null : n; renderDashOvertimeDonut(filtered().filter(function(r){return r.project==='경남 서부의료원';})); };
+window.dTogHeroDonut = function(k){ hlHeroDonut = hlHeroDonut===k ? null : k; var d = WP_MEMBER ? filtered().filter(function(r){return r.name===WP_MEMBER;}) : filtered(); renderWpHeroDonut(d, d.reduce(function(s,r){return s+r.min;},0), MC[WP_MEMBER]); };
+window.dTogWpSub = function(s){ hlWpSub = hlWpSub===s ? null : s; var d = WP_MEMBER ? filtered().filter(function(r){return r.name===WP_MEMBER;}) : filtered(); safeRender(function(){renderWpStackedBar(d, getMos(d));}); safeRender(function(){renderWpDonutSub(d, d.reduce(function(x,y){return x+y.min;},0));}); };
+window.dTogWpOt = function(label) { hlWpOt = hlWpOt === label ? null : label; var d = WP_MEMBER ? filtered().filter(function(r){return r.name === WP_MEMBER;}) : filtered(); safeRender(function(){ renderWpOvertimeDetail(d); }); };
+window.toggleHeatBin = function(bn, yr, tid){ hlHeatBin = (hlHeatBin===bn) ? null : bn; if(tid==='wpHeatTable') renderWpHeatmapYear(yr); else renderHeatmapOnly(yr); };
+
+window.renderHeatmapOnly = function(yr){ 
+    var p = filtered().filter(function(r){return r.project==='경남 서부의료원';}); 
+    var ay = Array.from(new Set(p.map(function(r){return r.date.slice(0,4);}))).sort(); 
+    if(ay.length===0) ay = ['2024']; var ty = yr && ay.includes(yr) ? yr : ay[ay.length-1]; 
+    var heatTabs = document.getElementById('heatYearTabs');
+    if(heatTabs) { heatTabs.innerHTML = ay.map(function(y){ return '<button class="tab-btn-sm '+(y===ty?'active':'')+'" onclick="renderHeatmapOnly(\''+y+'\')">'+y+'</button>'; }).join(''); }
+    buildHeatmapHTML(p, ty, '#00428E', 'heatTable');
+};
+
+window.renderWpHeatmapYear = function(yr){ 
+    var d = WP_MEMBER ? filtered().filter(function(r){return r.name===WP_MEMBER;}) : filtered(); 
+    var ay = Array.from(new Set(d.map(function(r){return r.date.slice(0,4);}))).sort(); 
+    if(ay.length===0) ay = ['2024']; var ty = yr && ay.includes(yr) ? yr : ay[ay.length-1]; 
+    var wpHeatTabs = document.getElementById('wpHeatTabs');
+    if(wpHeatTabs) { wpHeatTabs.innerHTML = ay.map(function(y){ return '<button class="tab-btn-sm '+(y===ty?'active':'')+'" onclick="renderWpHeatmapYear(\''+y+'\')">'+y+'</button>'; }).join(''); }
+    buildHeatmapHTML(d, ty, MC[WP_MEMBER]||'#00428E', 'wpHeatTable');
+};
+
+// AI 모달 열기/닫기
+window.openAiModal = function(type) {
+    var overlay = document.getElementById('aiModalOverlay');
+    var body = document.getElementById('aiModalBody');
+    var srcHtml = '';
+    if(type === 'wp') { srcHtml = document.getElementById('wpAiCommentBox').innerHTML; }
+    else if(type === 'kpi') { srcHtml = document.getElementById('aiCommentBox').innerHTML; }
+    
+    if(overlay && body) {
+        body.innerHTML = srcHtml;
+        overlay.classList.add('show');
+    }
+};
+
+window.closeAiModal = function() {
+    var overlay = document.getElementById('aiModalOverlay');
+    if(overlay) overlay.classList.remove('show');
+};
+
+// ESC 키로 모달 닫기
+document.addEventListener('keydown', function(e) {
+    if(e.key === 'Escape') closeAiModal();
+});
