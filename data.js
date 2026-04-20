@@ -1,4 +1,3 @@
-// --- 1. 전역 상수 설정 ---
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ_RuJcGEMFYmDswuKkg6D8bUCaWg1-twtmqPKikraPuq1Sp-RYTSjbbUDXRILpf7b/exec';
 const GITHUB_BASE = 'https://jinkwanuri-droid.github.io/KPI_GNS/';
 const PROFILE_IMG = {'윤진관':'./img/jk.yoon.jpg','김효언':'./img/he.kim.jpg','정인태':'./img/intae.jeoung.jpg','이혜인B':'./img/hi.lee2.jpg'};
@@ -11,7 +10,6 @@ const RADAR_LABELS = ['적극성','생산성','전문성','창의성','협업능
 const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const OVERTIME_RANGES = ['9~10h','10~11h','11~12h','12h 이상'];
 const INSIGHT_RADAR_LABELS = ['정시업무(1-OT)','Shannon(파편화도)','HHI(몰입도)','CV(안정성)','Hurst(주도성)','Jaccard(확장성)'];
-
 const emojiRegex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
 
 const INSIGHT_METRICS_INFO = [
@@ -57,7 +55,6 @@ function filteredEvalQs(){
     });
 }
 
-// --- 신규 1-OT 반영된 분석 함수 ---
 function calcStandaloneMetrics(currR) {
     if(!currR || currR.length === 0) return {ot:1.0, shannon:0, hhi:0, cv:0, hurst:0.5, jaccard:0};
     
@@ -68,7 +65,7 @@ function calcStandaloneMetrics(currR) {
     keys.forEach(k => { var p = sm[k]/t; hi += p*p; if(p>0) sn -= p*Math.log(p); });
     if(keys.length>1) sn = sn/Math.log(keys.length); else sn=0;
     
-    // --- 신규 1-OT 산출 로직 (일일 OT Point, 주간 페널티, 활성 주차 평균) ---
+    // --- 신규 1-OT 지수 공식 반영 ---
     var dailyHours = {};
     currR.forEach(r => { 
         var dKey = r.name + '|' + r.date;
@@ -79,8 +76,8 @@ function calcStandaloneMetrics(currR) {
     Object.keys(dailyHours).forEach(dKey => {
         var parts = dKey.split('|'), name = parts[0], date = parts[1];
         var hrs = dailyHours[dKey] / 60;
-        
         var pt = 0, isOT = false;
+        
         if(hrs >= 12) { pt = 0.45; isOT = true; }
         else if(hrs >= 11) { pt = 0.32; isOT = true; }
         else if(hrs >= 10) { pt = 0.20; isOT = true; }
@@ -106,15 +103,14 @@ function calcStandaloneMetrics(currR) {
         if(wData && wData.count > 0) {
             var n = wData.count;
             var f = 1.0;
-            if(n === 2) f = 1.15; else if(n === 3) f = 1.25; else if(n >= 4) f = 1.4;
+            if(n === 2) f = 1.25; else if(n === 3) f = 1.50; else if(n >= 4) f = 2.0;
             x = wData.pts * f;
         }
-        var p = 2 - (2 / (1 + Math.exp(-1.5 * x)));
+        var p = 2 - (2 / (1 + Math.exp(-2.0 * x)));
         totalP += p;
     });
 
     var finalOT = activeWeeks.size > 0 ? totalP / activeWeeks.size : 1.0;
-    // ----------------------------------------------------------------------
     
     var dt = grp(currR, 'date');
     var vl = Object.values(dt);
@@ -201,12 +197,13 @@ function loadDataFromSheets(){
     });
 }
 
+// AI 멘트 어조 수정 지시
 async function generateWorkingAiComment() {
     var btn = document.getElementById('btnWpAi'); var box = document.getElementById('wpAiCommentBox');
     if(!window.currentWorkingAiData) { box.innerHTML = '<span style="color:#ef4444;">분석할 데이터가 부족합니다.</span>'; return; }
     var ad = window.currentWorkingAiData;
-    var prompt = `당신은 10년 차 건축설계 프로젝트 팀장입니다. 팀원 '${ad.m}'의 업무 데이터를 보고 아주 짧고 날카로운 피드백을 주세요.
-요청사항: 인사말/서론 절대 금지. 아래 3가지 항목만 1~2문장씩 짧고 간결하게 작성할 것. 마크다운 적용할 것.
+    var prompt = `당신은 10년 차 건축설계 프로젝트 팀장입니다. 팀원 '${ad.m}'의 업무 데이터를 보고 아주 상세하고 전문적이며, 부드러운 컨설턴트 어조(~습니다, ~해요체)로 피드백을 주세요.
+요청사항: 인사말/서론 절대 금지. 반말/딱딱한 군대식 말투 금지. 아래 3가지 항목만 간결하게 작성할 것. 마크다운 적용할 것.
 - 💡 업무 효율성 (근태/몰입도)
 - 📈 설계 트렌드 변화
 - 🚀 향후 제언
@@ -225,8 +222,8 @@ async function generateAiComment() {
     var btn = document.getElementById('btnGenerateAI'); var box = document.getElementById('aiCommentBox');
     if(!window.currentAiData) { box.innerHTML = '<span style="color:#ef4444;">분석할 데이터가 부족합니다.</span>'; return; }
     var ad = window.currentAiData;
-    var prompt = `당신은 10년 차 건축설계 팀장입니다. 팀원 '${ad.m}'의 평가 데이터를 보고 아주 짧고 날카로운 피드백을 주세요.
-요청사항: 인사말, 서론 절대 금지. 아래 3가지 항목만 1~2문장씩 간결하게 작성. 마크다운 적용.
+    var prompt = `당신은 10년 차 건축설계 팀장입니다. 팀원 '${ad.m}'의 평가 데이터를 보고 아주 상세하고 전문적이며, 부드러운 컨설턴트 어조(~습니다, ~해요체)로 피드백을 주세요.
+요청사항: 인사말, 서론 절대 금지. 반말/딱딱한 군대식 말투 금지. 아래 3가지 항목만 간결하게 작성. 마크다운 적용.
 - 🎯 업무 스타일 (지표 기반)
 - 📊 점수 상관관계
 - 🌱 성장 제언
