@@ -63,7 +63,6 @@ const customRadarBgPlugin = {
 };
 Chart.register(customRadarBgPlugin);
 
-// --- Dashboard 탭 (프로젝트 전체) ---
 function renderDashboardTab(){
     var all=filtered();if(!all.length)return;
     var tm=all.reduce(function(s,r){return s+r.min;},0),mos=getMos(all),pd=all.filter(function(r){return r.project==='경남 서부의료원';}),pmos=getMos(pd),adt=new Set(all.map(function(r){return r.date;})).size;
@@ -150,79 +149,86 @@ function renderOvProjectRatio(all){
     wrap.innerHTML = html;
 }
 
+function getMonthsBetween(start, end) {
+    var res = []; var curr = new Date(start + '-01'); var endDate = new Date(end + '-01');
+    while(curr <= endDate) { var y = curr.getFullYear(); var m = String(curr.getMonth() + 1).padStart(2, '0'); res.push(y + '-' + m); curr.setMonth(curr.getMonth() + 1); }
+    return res;
+}
+
 function renderCostTrendChart(mos) {
     dC('costTrendChart'); window.lastCostMos = mos;
     if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
     
-    // 필터링된 기간(mos)만 사용
-    var fullMonths = mos; 
+    // 전체 기간 고정 (스프레드시트 데이터 첫 달 ~ 프로젝트 종료 예정 2026-12)
+    var globalStart = '2024-03';
+    var globalEnd = '2026-12';
+    var allFullMonths = getMonthsBetween(globalStart, globalEnd);
+    
     var allMosMap = {};
     COST_DATA.forEach(function(r) {
         if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0 };
         allMosMap[r.date].plan += (r.plan / 10000); allMosMap[r.date].exec += (r.exec / 10000);
     });
     
-    var startMonth = mos[0], endMonth = mos[mos.length - 1];
     var lastActualMonth = '', totalActualExec = 0, actualMonthCount = 0;
     Object.keys(allMosMap).sort().forEach(function(m) {
         if(allMosMap[m].exec > 0) { lastActualMonth = m; totalActualExec += allMosMap[m].exec; actualMonthCount++; }
     });
     var avgExec = actualMonthCount > 0 ? (totalActualExec / actualMonthCount) : 0;
     
-    // 누적의 경우 필터링 이전의 금액들도 합산해 주어야 함
-    var prevPlanSum = 0, prevExecSum = 0;
-    Object.keys(allMosMap).sort().forEach(function(m) {
-        if(m < startMonth) { 
-            prevPlanSum += allMosMap[m].plan; 
-            if (m <= lastActualMonth) prevExecSum += allMosMap[m].exec; 
-            else prevExecSum += avgExec; 
-        }
-    });
+    var globalData = { plan: [], execActual: [], execPred: [] };
+    var cumPlan = 0, cumExecActual = 0, cumExecPred = 0;
     
-    var dataSets = { plan: [], execActual: [], execPred: [] };
-    var cumPlan = window.isCostCumulative ? prevPlanSum : 0;
-    var cumExecActual = window.isCostCumulative ? prevExecSum : 0;
-    var cumExecPred = window.isCostCumulative ? prevExecSum : 0;
-    var summaryPlan = 0, summaryExec = 0, isSummaryPred = false;
-    
-    fullMonths.forEach(function(m) {
+    allFullMonths.forEach(function(m) {
         var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
         var mExec = allMosMap[m] ? allMosMap[m].exec : 0;
+        
         cumPlan += mPlan;
         var curPlanVal = window.isCostCumulative ? cumPlan : mPlan;
-        dataSets.plan.push(curPlanVal);
+        globalData.plan.push(curPlanVal);
         
-        var curExecVal = 0, curPredVal = 0;
         if (!lastActualMonth || m < lastActualMonth) {
             cumExecActual += mExec; cumExecPred = cumExecActual;
-            curExecVal = window.isCostCumulative ? cumExecActual : mExec;
-            dataSets.execActual.push(curExecVal); dataSets.execPred.push(null);
+            globalData.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
+            globalData.execPred.push(null);
         } else if (m === lastActualMonth) {
             cumExecActual += mExec; cumExecPred = cumExecActual;
-            curExecVal = window.isCostCumulative ? cumExecActual : mExec;
-            dataSets.execActual.push(curExecVal); dataSets.execPred.push(curExecVal); // 예상선이 끊기지 않도록 연결점 제공
+            var val = window.isCostCumulative ? cumExecActual : mExec;
+            globalData.execActual.push(val);
+            globalData.execPred.push(val);
         } else {
             cumExecPred += avgExec;
-            curPredVal = window.isCostCumulative ? cumExecPred : avgExec;
-            dataSets.execActual.push(null); dataSets.execPred.push(curPredVal);
-        }
-        if (m === endMonth) { 
-            summaryPlan = curPlanVal; 
-            if (m <= lastActualMonth) { summaryExec = curExecVal; isSummaryPred = false; } 
-            else { summaryExec = curPredVal; isSummaryPred = true; } 
+            globalData.execActual.push(null);
+            globalData.execPred.push(window.isCostCumulative ? cumExecPred : avgExec);
         }
     });
     
-    var maxVal = Math.max(...dataSets.plan, ...dataSets.execActual.filter(function(v){return v!==null;}), ...dataSets.execPred.filter(function(v){return v!==null;}));
+    // 선택된 필터 기간 추출 (slice)
+    var reqStart = mos[0], reqEnd = mos[mos.length - 1];
+    var sIdx = allFullMonths.indexOf(reqStart);
+    var eIdx = allFullMonths.indexOf(reqEnd);
+    if(sIdx === -1) sIdx = 0; if(eIdx === -1) eIdx = allFullMonths.length - 1;
+    
+    var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
+    var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
+    var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
+    var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
+    
+    var maxVal = Math.max(...viewPlan, ...viewActual.filter(function(v){return v!==null;}), ...viewPred.filter(function(v){return v!==null;}));
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
+    
     var schData = [];
-    fullMonths.forEach(function(m) {
+    viewMonths.forEach(function(m) {
         var schedules = SCHEDULE_DATA.filter(function(s) { return s.date && s.date.startsWith(m); });
         if(schedules.length > 0) {
             var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').replace(emojiRegex,'').trim(); });
             schData.push({ schTitle: st, yPos: scheduleTopY });
         } else { schData.push(null); }
     });
+
+    var summaryPlan = viewPlan[viewPlan.length - 1] || 0;
+    var summaryExec = viewActual[viewActual.length - 1] !== null ? viewActual[viewActual.length - 1] : (viewPred[viewPred.length - 1] || 0);
+    var isSummaryPred = viewActual[viewActual.length - 1] === null;
     
     var ctx = document.getElementById('costTrendChart').getContext('2d');
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
@@ -233,22 +239,22 @@ function renderCostTrendChart(mos) {
     CH.costTrendChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: fullMonths,
+            labels: viewMonths,
             datasets: [
-                { label: '실행 인건비', data: dataSets.execActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2 },
-                { label: '실행 (예상)', data: dataSets.execPred, borderColor: '#8b5cf6', backgroundColor: window.isCostCumulative ? gradPred : 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3 },
-                { label: '계획 인건비', data: dataSets.plan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 4 },
+                { label: '실행 인건비', data: viewActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2 },
+                { label: '실행 (예상)', data: viewPred, borderColor: '#8b5cf6', backgroundColor: window.isCostCumulative ? gradPred : 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3 },
+                { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 4 },
                 { type:'line', label:'주요일정', data: schData.map(function(x) { return x ? x.yPos : null; }), backgroundColor:'transparent', borderColor:'transparent', showLine:false, pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5, isSchedule:true, order:0, spanGaps:false }
             ]
         },
         options: {
-            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 60, right: 20, left: 10, bottom: 10 } }, clip: false, interaction: { mode: 'nearest', intersect: true },
+            responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: { top: 40, right: 20, left: 10, bottom: 10 } }, interaction: { mode: 'nearest', intersect: true },
             plugins: {
                 legend: { display: false },
                 datalabels: {
                     display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
-                    align: function(cx) { var idx = cx.dataIndex, planVal = dataSets.plan[idx], actVal = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
-                    anchor: function(cx) { var idx = cx.dataIndex, planVal = dataSets.plan[idx], actVal = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
+                    align: function(cx) { var idx = cx.dataIndex, planVal = viewPlan[idx], actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
+                    anchor: function(cx) { var idx = cx.dataIndex, planVal = viewPlan[idx], actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
                     offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return v.toFixed(1); }
                 },
                 tooltip: {
@@ -257,9 +263,9 @@ function renderCostTrendChart(mos) {
                         title: function(cx) { return cx[0].label; },
                         label: function(cx) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
-                            var idx = item.dataIndex, plan = dataSets.plan[idx], actual = dataSets.execActual[idx] !== null ? dataSets.execActual[idx] : dataSets.execPred[idx], diff = plan - actual;
+                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx], diff = plan - actual;
                             var diffText = diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)";
-                            return [ "계획 인건비: " + plan.toFixed(1) + " 천만", "실행 인건비" + (dataSets.execActual[idx] === null ? " (예상)" : "") + ": " + actual.toFixed(1) + " 천만", diffText ];
+                            return [ "계획 인건비: " + plan.toFixed(1) + " 천만", "실행 인건비" + (viewActual[idx] === null ? " (예상)" : "") + ": " + actual.toFixed(1) + " 천만", diffText ];
                         }
                     }
                 }
@@ -267,7 +273,7 @@ function renderCostTrendChart(mos) {
             scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } }, y: { grid: { color: 'rgba(226,232,240,0.5)' }, min: 0, max: scheduleTopY, ticks: { stepSize: 10, callback: function(v) { return v.toFixed(1) + '천만'; } } } }
         }
     });
-    renderCostSummary(endMonth, summaryPlan, summaryExec, isSummaryPred);
+    renderCostSummary(reqEnd, summaryPlan, summaryExec, isSummaryPred);
 }
 
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
@@ -288,7 +294,7 @@ function renderDashStage(pd){
     document.getElementById('dashStageLegendWrap').innerHTML=CAT_ORDER.map(function(c,i){return '<div class="legend-item '+(hlStage!==null&&hlStage!==c?'dimmed':'')+'" onclick="dTogStage(\''+c+'\')"><div class="legend-dot" style="background:'+CAT_COLORS[i]+'"></div><span style="font-size:11px;">'+c+'</span></div>';}).join('');
     CH.stageChart=new Chart(document.getElementById('stageChart').getContext('2d'),{
         type:'doughnut', data:{labels:CAT_ORDER,datasets:[{data:CAT_ORDER.map(c => mToH(cm[c]||0)),backgroundColor:CAT_ORDER.map((c,i) => (hlStage===null||hlStage===c)?CAT_COLORS[i]:'#e2e8f0'),borderWidth:2,borderColor:'#fff'}]},
-        options:{ responsive:true,maintainAspectRatio:false,cutout:'65%',layout:{padding:25}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100);if(p<5)return'';return cx.chart.data.labels[cx.dataIndex]+'\n'+fmt(v)+'h ('+p.toFixed(1)+'%)';}} }, onClick:function(e,els){ if(els.length) dTogStage(CH.stageChart.data.labels[els[0].index]); else dTogStage(null); } }
+        options:{ responsive:true,maintainAspectRatio:false,cutout:'65%',clip:false,layout:{padding:30}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{weight:'bold',size:10},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100);if(p<5)return'';return cx.chart.data.labels[cx.dataIndex]+'\n'+fmt(v)+'h ('+p.toFixed(1)+'%)';}} }, onClick:function(e,els){ if(els.length) dTogStage(CH.stageChart.data.labels[els[0].index]); else dTogStage(null); } }
     });
     document.getElementById('stageCenter').innerText=fH(t)+'h';
 }
@@ -306,7 +312,7 @@ function renderDashCompare(pd){
     document.getElementById('dashCompareLegendWrap').innerHTML=MEMBERS.map(function(n){return '<div class="legend-item '+(hlTimeline!==null&&hlTimeline!==n?'dimmed':'')+'" style="font-size:11px;" onclick="dTogTimeline(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>';}).join('');
     CH.compareChart=new Chart(document.getElementById('compareChart').getContext('2d'),{
         type:'bar', data:{labels:CAT_ORDER,datasets:ds},
-        options:{ responsive:true,maintainAspectRatio:false,layout:{padding:{top:15}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display:function(cx){ if(cx.dataset.type === 'line') return false; var stg = CAT_ORDER[cx.dataIndex]; var mem = cx.dataset.label; if(hlStage!==null && hlStage!==stg) return false; if(hlTimeline!==null && hlTimeline!==mem) return false; return cx.dataset.data[cx.dataIndex] > 0; }, color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end', formatter:function(v){return v>0?v.toFixed(1):'';} } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'15%'}}, onClick:function(e,els){ if(els.length && els[0].datasetIndex < MEMBERS.length) { dTogStage(CAT_ORDER[els[0].index]); } else { dTogStage(null); } } }
+        options:{ responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display:function(cx){ if(cx.dataset.type === 'line') return false; var stg = CAT_ORDER[cx.dataIndex]; var mem = cx.dataset.label; if(hlStage!==null && hlStage!==stg) return false; if(hlTimeline!==null && hlTimeline!==mem) return false; return cx.dataset.data[cx.dataIndex] > 0; }, color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end', formatter:function(v){return v>0?v.toFixed(1):'';} } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'15%'}}, onClick:function(e,els){ if(els.length && els[0].datasetIndex < MEMBERS.length) { dTogStage(CAT_ORDER[els[0].index]); } else { dTogStage(null); } } }
     });
 }
 
@@ -318,7 +324,7 @@ function renderDashDonut(pd){
     var l=ta.slice(0,7).map(e=>String(e[0])), d=ta.slice(0,7).map(e=>mToH(e[1]));
     CH.donutChart=new Chart(document.getElementById('donutChart').getContext('2d'),{
         type:'doughnut', data:{labels:l,datasets:[{data:d,backgroundColor:l.map((lx,i)=>(hlDonutWork===null||hlDonutWork===lx)?SUB_PAL[i]:'#e2e8f0'),borderWidth:2,borderColor:'#fff'}]},
-        options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:40}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'800'},textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100);if(p<5)return'';return cx.chart.data.labels[cx.dataIndex]+'\n'+fmt(v)+'h ('+p.toFixed(1)+'%)';},anchor:'end',align:'end'} }, onClick:function(e,els){ if(els.length) dTogDonut(CH.donutChart.data.labels[els[0].index]); else dTogDonut(null); } }
+        options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',clip:false,layout:{padding:40}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'800'},textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100);if(p<5)return'';return cx.chart.data.labels[cx.dataIndex]+'\n'+fmt(v)+'h ('+p.toFixed(1)+'%)';},anchor:'end',align:'end'} }, onClick:function(e,els){ if(els.length) dTogDonut(CH.donutChart.data.labels[els[0].index]); else dTogDonut(null); } }
     });
 }
 
@@ -333,7 +339,7 @@ function renderDashOvertimeBars(pd){
     dC('dashOvertimeBarChart');var dm={};pd.forEach(r=>{var k=r.name+'|'+r.date;dm[k]=(dm[k]||0)+r.min;});var c=[0,0,0,0];Object.values(dm).forEach(m=>{if(m>=540&&m<600)c[0]++;else if(m>=600&&m<660)c[1]++;else if(m>=660&&m<720)c[2]++;else if(m>=720)c[3]++;});
     CH.dashOvertimeBarChart=new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'),{
         type:'bar', data:{labels:OVERTIME_RANGES,datasets:[{data:c,backgroundColor:c.map((_,i)=>(hlMonthlyOt===null||hlMonthlyOt===OVERTIME_RANGES[i])?OT_COLORS[i]:'#e2e8f0'),borderRadius:4}]},
-        options:{ indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',formatter:v=>v>0?v+'일':''}}, scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(OVERTIME_RANGES[els[0].index]); else dTogMonthlyOt(null); } }
+        options:{ indexAxis:'y',responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{right:40}}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',offset:6,formatter:v=>v>0?v+'일':''}}, scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(OVERTIME_RANGES[els[0].index]); else dTogMonthlyOt(null); } }
     });
 }
 
@@ -345,7 +351,7 @@ function renderDashMonthlyOt(pd,mos){
     document.getElementById('dashMonthlyOtLegendWrap').innerHTML=bd.map((b,i)=>'<div class="legend-item '+(hlMonthlyOt!==null&&hlMonthlyOt!==b?'dimmed':'')+'" onclick="dTogMonthlyOt(\''+b+'\')"><div class="legend-dot" style="background:'+OT_COLORS[i]+'"></div><span style="font-size:12px;">'+b+'</span></div>').join('');
     CH.dashMonthlyOvertimeChart=new Chart(document.getElementById('dashMonthlyOvertimeChart').getContext('2d'),{
         type:'bar', data:{labels:mos,datasets:bd.map((b,i)=>({label:b,data:bda[i],backgroundColor:(hlMonthlyOt===null||hlMonthlyOt===b)?OT_COLORS[i]:'#e2e8f0',stack:'S0',borderRadius:2}))},
-        options:{ responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display: function(cx){ if(hlMonthlyOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlMonthlyOt && cx.dataset.data[cx.dataIndex] > 0; } }, formatter: function(v, cx) { if(hlMonthlyOt === null) { var sum = 0; cx.chart.data.datasets.forEach(ds=>{ sum += ds.data[cx.dataIndex] || 0; }); return sum > 0 ? sum + '일' : ''; } else { return v > 0 ? v + '일' : ''; } }, color: function(cx) { return hlMonthlyOt === null ? '#1e293b' : '#fff'; }, font: { size: 10, weight: 'bold' }, anchor: function(cx) { return hlMonthlyOt === null ? 'end' : 'center'; }, align: function(cx) { return hlMonthlyOt === null ? 'end' : 'center'; }, offset: function(cx){ return hlMonthlyOt===null ? 4 : 0;} } }, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label); else dTogMonthlyOt(null); } }
+        options:{ responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display: function(cx){ if(hlMonthlyOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlMonthlyOt && cx.dataset.data[cx.dataIndex] > 0; } }, formatter: function(v, cx) { if(hlMonthlyOt === null) { var sum = 0; cx.chart.data.datasets.forEach(ds=>{ sum += ds.data[cx.dataIndex] || 0; }); return sum > 0 ? sum + '일' : ''; } else { return v > 0 ? v + '일' : ''; } }, color: function(cx) { return hlMonthlyOt === null ? '#1e293b' : '#fff'; }, font: { size: 10, weight: 'bold' }, anchor: function(cx) { return hlMonthlyOt === null ? 'end' : 'center'; }, align: function(cx) { return hlMonthlyOt === null ? 'end' : 'center'; }, offset: function(cx){ return hlMonthlyOt===null ? 4 : 0;} } }, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label); else dTogMonthlyOt(null); } }
     });
 }
 
@@ -356,7 +362,7 @@ function renderDashOvertimeDonut(pd){
     document.getElementById('dashOvertimeDonutLegendWrap').innerHTML=MEMBERS.map(n=>'<div class="legend-item '+(hlOvertimeDonut!==null&&hlOvertimeDonut!==n?'dimmed':'')+'" onclick="dTogOtDonut(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>').join('');
     function dd(id,da){
         if(!da.length)return;
-        CH[id]=new Chart(document.getElementById(id).getContext('2d'),{ type:'doughnut', data:{ labels:da.map(d=>d.name), datasets:[{ data:da.map(d=>d.days), backgroundColor:da.map(d=>(hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0'), borderWidth:2,borderColor:'#fff' }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', layout:{padding:30}, plugins:{ legend:{display:false}, datalabels:{ display:true,color:'#1e293b',font:{weight:'bold',size:10}, formatter:function(v,cx){ var s=cx.dataset.data.reduce((a,b)=>a+b,0),p=s>0?Math.round(v/s*100):0; return v>0?cx.chart.data.labels[cx.dataIndex]+'\n'+v+'일 ('+p+'%)':''; }, anchor:'end',align:'end' } }, onClick:function(e,els){ if(els.length) dTogOtDonut(da[els[0].index].name); else dTogOtDonut(null); } } });
+        CH[id]=new Chart(document.getElementById(id).getContext('2d'),{ type:'doughnut', data:{ labels:da.map(d=>d.name), datasets:[{ data:da.map(d=>d.days), backgroundColor:da.map(d=>(hlOvertimeDonut===null||hlOvertimeDonut===d.name)?MC[d.name]:'#e2e8f0'), borderWidth:2,borderColor:'#fff' }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', clip:false, layout:{padding:35}, plugins:{ legend:{display:false}, datalabels:{ display:true,color:'#1e293b',font:{weight:'bold',size:10}, formatter:function(v,cx){ var s=cx.dataset.data.reduce((a,b)=>a+b,0),p=s>0?Math.round(v/s*100):0; return v>0?cx.chart.data.labels[cx.dataIndex]+'\n'+v+'일 ('+p+'%)':''; }, anchor:'end',align:'end' } }, onClick:function(e,els){ if(els.length) dTogOtDonut(da[els[0].index].name); else dTogOtDonut(null); } } });
     }
     dd('dashOvertimeDonutChart9',dm); dd('dashOvertimeDonutChart12',ds);
 }
@@ -430,26 +436,32 @@ function renderWorkingTab(nm){
     var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
     var teamCr = calcStandaloneMetrics(teamData);
 
-    var metricsCards = `
-        <div class="wp-metric-badge">
-            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.ot>=0.8?'good':cr.ot>=0.5?'warn':'danger'}"></div><span class="name">1-OT</span></div><span class="val">${cr.ot.toFixed(2)}</span>
-        </div>
-        <div class="wp-metric-badge">
-            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.shannon>=0.5?'good':'warn'}"></div><span class="name">Shannon</span></div><span class="val">${cr.shannon.toFixed(2)}</span>
-        </div>
-        <div class="wp-metric-badge">
-            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.hhi>=0.4?'good':'warn'}"></div><span class="name">HHI</span></div><span class="val">${cr.hhi.toFixed(2)}</span>
-        </div>
-        <div class="wp-metric-badge">
-            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.cv>=0.7?'good':cr.cv>=0.4?'warn':'danger'}"></div><span class="name">CV</span></div><span class="val">${cr.cv.toFixed(2)}</span>
-        </div>
-        <div class="wp-metric-badge">
-            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.hurst>=0.6?'good':'warn'}"></div><span class="name">Hurst</span></div><span class="val">${cr.hurst.toFixed(2)}</span>
-        </div>
-        <div class="wp-metric-badge">
-            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><div class="status-dot ${cr.jaccard>=0.3?'good':'warn'}"></div><span class="name">Jaccard</span></div><span class="val">${cr.jaccard.toFixed(2)}</span>
-        </div>
-    `;
+    // 신호등 로직 동기화: INSIGHT_METRICS_INFO 배열 활용
+    var metricKeys = [
+        { key: 'ot', val: cr.ot, main: '1-OT', sub: '정시업무' },
+        { key: 'shannon', val: cr.shannon || 0, main: 'Shannon', sub: '파편화도' },
+        { key: 'hhi', val: cr.hhi || 0, main: 'HHI', sub: '몰입도' },
+        { key: 'cv', val: cr.cv || 0, main: 'CV', sub: '안정성' },
+        { key: 'hurst', val: cr.hurst || 0, main: 'Hurst', sub: '주도성' }, 
+        { key: 'jaccard', val: cr.jaccard || 0, main: 'Jaccard', sub: '확장성' }
+    ];
+
+    var metricsCards = metricKeys.map((m, idx) => {
+        var evalObj = INSIGHT_METRICS_INFO[idx].eval(m.val);
+        var statusClass = evalObj.s === '좋음' ? 'good' : (evalObj.s === '보통' ? 'warn' : 'danger');
+        return `
+            <div class="wp-metric-badge">
+                <div class="wp-mb-left">
+                    <div class="status-dot ${statusClass}"></div>
+                    <div class="wp-mb-titles">
+                        <div class="wp-mb-maintitle">${m.main}</div>
+                        <div class="wp-mb-subtitle">${m.sub}</div>
+                    </div>
+                </div>
+                <span class="val">${m.val.toFixed(2)}</span>
+            </div>
+        `;
+    }).join('');
     document.getElementById('wpHeroMetricsCards').innerHTML = metricsCards;
     
     dC('wpHeroRadar');
@@ -462,7 +474,15 @@ function renderWorkingTab(nm){
                 { data: [teamCr.ot, teamCr.shannon, teamCr.hhi, teamCr.cv, teamCr.hurst, teamCr.jaccard], borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3,3], pointRadius: 0, order: 2 }
             ] 
         },
-        options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{padding:10}, plugins: { legend: { display: false }, datalabels: { display: cx=>cx.datasetIndex===0, color: c, font: {size:9, weight:'bold'}, formatter: v=>v.toFixed(2), anchor:'end', align:'end' }, tooltip: { displayColors: false, callbacks: { label: cx => cx.raw.toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:8, weight:'800'}, color: '#64748b' } } } }
+        options: { 
+            responsive: true, maintainAspectRatio: false, clip: false, layout:{padding:25}, 
+            plugins: { 
+                legend: { display: false }, 
+                datalabels: { display: cx=>cx.datasetIndex===0, color: c, font: {size:9, weight:'bold'}, formatter: v=>v.toFixed(2), anchor:'end', align:'end' }, 
+                tooltip: { displayColors: false, callbacks: { label: cx => cx.raw.toFixed(2) } } 
+            }, 
+            scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:8, weight:'800'}, color: '#64748b' } } } 
+        }
     });
 
     safeRender(function(){renderWpStackedBar(d,mo);});
@@ -485,7 +505,7 @@ function renderWpStackedBar(d,mos){
     if(lw)lw.innerHTML=sl.map((s,i)=>'<div class="legend-item '+(hlWpSub!==null&&hlWpSub!==s?'dimmed':'')+'" style="font-size:11px;padding:2px 5px;" onclick="dTogWpSub(\''+s.replace(/'/g,"\\'")+'\')"><div class="legend-dot" style="background:'+SUB_PAL[i]+'"></div>'+s+'</div>').join('');
     CH.wpStackedBar=new Chart(document.getElementById('wpStackedBar').getContext('2d'),{
         data:{ labels:mos, datasets:sl.map((s,i)=>({ type:'bar', label:s, data:mos.map(m=>mToH((mm[m]||{})[s]||0)), backgroundColor:(hlWpSub===null||hlWpSub===s)?SUB_PAL[i]:'#e2e8f0', stack:'s' })) },
-        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, tooltip: { mode: 'nearest', intersect: true }, datalabels: { display: function(cx) { if (hlWpSub === null) { var maxIdx = -1; for(var i = cx.chart.data.datasets.length - 1; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlWpSub && cx.dataset.data[cx.dataIndex] > 0; } }, formatter: function(v, cx) { if (hlWpSub === null) { var sum = 0; cx.chart.data.datasets.forEach(ds=>{ sum += ds.data[cx.dataIndex] || 0; }); return sum > 0 ? fmt(sum) + 'h' : ''; } else { return v > 0 ? fmt(v) + 'h' : ''; } }, anchor: 'end', align: 'end', color: '#64748b', font: {size: 10, weight: 'bold'} } }, scales:{ x:{stacked:true,grid:{display:false}}, y:{stacked:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'15%'} }, onClick:function(e,els){if(els.length)dTogWpSub(CH.wpStackedBar.data.datasets[els[0].datasetIndex].label);else dTogWpSub(null);} }
+        options:{ responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, tooltip: { mode: 'nearest', intersect: true }, datalabels: { display: function(cx) { if (hlWpSub === null) { var maxIdx = -1; for(var i = cx.chart.data.datasets.length - 1; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlWpSub && cx.dataset.data[cx.dataIndex] > 0; } }, formatter: function(v, cx) { if (hlWpSub === null) { var sum = 0; cx.chart.data.datasets.forEach(ds=>{ sum += ds.data[cx.dataIndex] || 0; }); return sum > 0 ? fmt(sum) + 'h' : ''; } else { return v > 0 ? fmt(v) + 'h' : ''; } }, anchor: 'end', align: 'end', color: '#64748b', font: {size: 10, weight: 'bold'} } }, scales:{ x:{stacked:true,grid:{display:false}}, y:{stacked:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'15%'} }, onClick:function(e,els){if(els.length)dTogWpSub(CH.wpStackedBar.data.datasets[els[0].datasetIndex].label);else dTogWpSub(null);} }
     });
 }
 
@@ -496,7 +516,7 @@ function renderWpDonutSub(d,t){
     document.getElementById('wpSubRankList').innerHTML=ta.slice(0,7).map((e,i)=>{var k=String(e[0]),v=e[1],p=t>0?(v/t*100).toFixed(1):0;return '<li class="top5-rank-item '+(hlWpSub!==null&&hlWpSub!==k?'dimmed':'')+'" style="cursor:pointer;padding:2px 4px;" onclick="dTogWpSub(\''+k.replace(/'/g,"\\'")+'\')"><div class="top5-rank-badge" style="background:'+SUB_PAL[i]+';width:18px;height:18px;font-size:9px;">'+(i+1)+'</div><span class="top5-rank-name" style="font-size:11px;">'+k+'</span><span style="font-size:10px;color:#94a3b8;white-space:nowrap;">'+p+'%</span></li>';}).join('');
     CH.wpDonutSub=new Chart(document.getElementById('wpDonutSub').getContext('2d'),{
         type:'doughnut', data:{labels:ta.slice(0,7).map(e=>String(e[0])),datasets:[{data:ta.slice(0,7).map(e=>mToH(e[1])),backgroundColor:ta.slice(0,7).map((e,i)=>(hlWpSub===null||hlWpSub===String(e[0]))?SUB_PAL[i]:'#e2e8f0'),borderWidth:2,borderColor:'#fff'}]},
-        options:{ responsive:true,maintainAspectRatio:false,cutout:'50%',layout:{padding:25}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:10,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ta[cx.dataIndex][0]+'\n'+p+'%';}}}, onClick:function(e,els){if(els.length)dTogWpSub(CH.wpDonutSub.data.labels[els[0].index]);else dTogWpSub(null);} }
+        options:{ responsive:true,maintainAspectRatio:false,cutout:'50%',clip:false,layout:{padding:35}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:10,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ta[cx.dataIndex][0]+'\n'+p+'%';}}}, onClick:function(e,els){if(els.length)dTogWpSub(CH.wpDonutSub.data.labels[els[0].index]);else dTogWpSub(null);} }
     });
 }
 
@@ -505,7 +525,7 @@ function renderWpDonutCat(d,t){
     document.getElementById('wpCatCenter').innerHTML='<div style="font-size:18px;font-weight:900;color:#1e293b;">'+fH(t)+'h</div><div style="font-size:12px;color:#94a3b8;">분류기준</div>';if(!ca.length)return;
     CH.wpDonutCat=new Chart(document.getElementById('wpDonutCat').getContext('2d'),{
         type:'doughnut', data:{labels:ca,datasets:[{data:ca.map(c=>mToH(cm[c])),backgroundColor:ca.map(c=>CAT_COLORS[CAT_ORDER.indexOf(c)]),borderWidth:2,borderColor:'#fff'}]},
-        options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',layout:{padding:35}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:11,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ca[cx.dataIndex]+'\n'+p+'%';}}} }
+        options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',clip:false,layout:{padding:40}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:11,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ca[cx.dataIndex]+'\n'+p+'%';}}} }
     });
 }
 
@@ -519,9 +539,24 @@ function renderWpSwitchBar(d,mos,col){
     CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{
         data:{labels:mos,datasets:[
             {type:'bar', label:'개인 전환 횟수', data:mos.map(m=>sw[m]||0),backgroundColor:col,borderRadius:6, order:2},
-            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[4,4], borderWidth:1.5, pointRadius:4, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
+            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:3, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
         ]},
-        options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:25}},plugins:{legend:{display:false},datalabels:{display:cx=>cx.raw>0,color:cx=>cx.dataset.type==='bar'?col:'#64748b',font:{weight:'bold',size:10},anchor:cx=>cx.dataset.type==='bar'?'end':'start',align:cx=>cx.dataset.type==='bar'?'end':'start',formatter:v=>v}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'20%'}}}
+        options:{
+            responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:30}},
+            plugins:{
+                legend:{display:false},
+                datalabels:{
+                    display: cx=>cx.raw>0,
+                    color: cx=>cx.dataset.type==='bar'?'#fff':'#64748b',
+                    font: {weight:'bold',size:10},
+                    anchor: cx=>cx.dataset.type==='bar'?'end':'start',
+                    align: cx=>cx.dataset.type==='bar'?'bottom':'top',
+                    offset: cx=>cx.dataset.type==='bar'? 4 : 8,
+                    formatter: v=>v
+                }
+            },
+            scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'20%'}}
+        }
     });
 }
 
@@ -532,7 +567,7 @@ function renderWpFocusBar(d,mos){
     d.forEach(r=>{ var m=r.date.slice(0,7); if(mt[m]===undefined)return; var isFocus = !nonFocus.some(k=>r.sub.includes(k)||r.cat.includes(k)); if(isFocus)mf[m]+=r.min; mt[m]+=r.min; });
     CH.wpFocusBar=new Chart(document.getElementById('wpFocusBar').getContext('2d'),{
         type:'line', data:{ labels:mos, datasets:[ { label:'집중업무 비율(%)', data:mos.map(m=>mt[m]>0?(mf[m]/mt[m]*100):0), borderColor:'#00428E', backgroundColor:hRgba('#00428E',0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:4, pointBackgroundColor:'#00428E' } ] },
-        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, plugins:{ legend:{display:false}, datalabels:{display:cx=>mos.length>10?cx.dataIndex%2===0:true, formatter:v=>v.toFixed(1)+'%', align:'top', font:{size:10, weight:'bold'}, color:'#00428E'} }, scales:{ x:{grid:{display:false}}, y:{min: 0, max: 110, grid:{color:'rgba(226,232,240,0.5)'}, ticks:{callback:v=>v > 100 ? '' : v+'%'}} } }
+        options:{ responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}}, plugins:{ legend:{display:false}, datalabels:{display:cx=>mos.length>10?cx.dataIndex%2===0:true, formatter:v=>v.toFixed(1)+'%', align:'top', font:{size:10, weight:'bold'}, color:'#00428E'} }, scales:{ x:{grid:{display:false}}, y:{min: 0, max: 110, grid:{color:'rgba(226,232,240,0.5)'}, ticks:{callback:v=>v > 100 ? '' : v+'%'}} } }
     });
 }
 
@@ -546,7 +581,7 @@ function renderWpOvertimeDetail(d){
     document.getElementById('wpOtLegendWrap').innerHTML = bd.map((b, i) => '<div class="legend-item ' + (hlWpOt!==null && hlWpOt!==b ? 'dimmed' : '') + '" onclick="dTogWpOt(\''+b+'\')"><div class="legend-dot" style="background:'+OT_COLORS[i]+'"></div><span style="font-size:11px;">'+b+'</span></div>').join('');
     CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{
         type:'bar', data:{ labels:mo, datasets:[ {label:'9~10h', data:ct['9~10h'], backgroundColor: (hlWpOt===null||hlWpOt==='9~10h')?OT_COLORS[0]:'#e2e8f0', stack:'S', borderRadius:2}, {label:'10~11h', data:ct['10~11h'], backgroundColor: (hlWpOt===null||hlWpOt==='10~11h')?OT_COLORS[1]:'#e2e8f0', stack:'S', borderRadius:2}, {label:'11~12h', data:ct['11~12h'], backgroundColor: (hlWpOt===null||hlWpOt==='11~12h')?OT_COLORS[2]:'#e2e8f0', stack:'S', borderRadius:2}, {label:'12h 이상', data:ct['12h 이상'], backgroundColor: (hlWpOt===null||hlWpOt==='12h 이상')?OT_COLORS[3]:'#e2e8f0', stack:'S', borderRadius:2} ] },
-        options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display: function(cx){ if(hlWpOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlWpOt && cx.dataset.data[cx.dataIndex] > 0; } }, color: function(cx){ return hlWpOt === null ? '#1e293b' : '#fff'; }, font: {size:10, weight:'bold'}, anchor: function(cx){ return hlWpOt === null ? 'end' : 'center'; }, align: function(cx){ return hlWpOt === null ? 'end' : 'center'; }, offset: function(cx){ return hlWpOt === null ? 4 : 0; }, formatter: function(v, cx){ if(hlWpOt === null) { var sum=0; cx.chart.data.datasets.forEach(ds=>{sum+=ds.data[cx.dataIndex]||0;}); return sum>0?sum:''; } else return v>0?v:''; } } }, scales:{ x:{stacked:true, grid:{display:false}, ticks:{font:{size:11}}}, y:{stacked:true, display:false, grace:'20%'} }, onClick: (e,els)=>{ if(els.length) dTogWpOt(CH.wpOtBar.data.datasets[els[0].datasetIndex].label); else dTogWpOt(null); } }
+        options:{ responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display: function(cx){ if(hlWpOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlWpOt && cx.dataset.data[cx.dataIndex] > 0; } }, color: function(cx){ return hlWpOt === null ? '#1e293b' : '#fff'; }, font: {size:10, weight:'bold'}, anchor: function(cx){ return hlWpOt === null ? 'end' : 'center'; }, align: function(cx){ return hlWpOt === null ? 'end' : 'center'; }, offset: function(cx){ return hlWpOt === null ? 4 : 0; }, formatter: function(v, cx){ if(hlWpOt === null) { var sum=0; cx.chart.data.datasets.forEach(ds=>{sum+=ds.data[cx.dataIndex]||0;}); return sum>0?sum:''; } else return v>0?v:''; } } }, scales:{ x:{stacked:true, grid:{display:false}, ticks:{font:{size:11}}}, y:{stacked:true, display:false, grace:'20%'} }, onClick: (e,els)=>{ if(els.length) dTogWpOt(CH.wpOtBar.data.datasets[els[0].datasetIndex].label); else dTogWpOt(null); } }
     });
 }
 
@@ -583,7 +618,7 @@ function renderAdvancedMetrics(d,da,col,pf){
         if(document.getElementById(pf + 'InsightRadar')) {
             CH[pf + 'InsightRadar'] = new Chart(document.getElementById(pf + 'InsightRadar').getContext('2d'), {
                 type: 'radar', data: { labels: INSIGHT_RADAR_LABELS, datasets: datasetsArr },
-                options: { responsive: true, maintainAspectRatio: false, layout: { padding: 25 }, plugins: { legend: { display: false }, datalabels: { display: cx => cx.datasetIndex === 0, formatter: v => Number(v).toFixed(2), color: col, font: { size: 10, weight: 'bold' }, anchor: 'end', align: 'end' }, tooltip: { callbacks: { label: cx => cx.datasetIndex === 0 ? cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2) : cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:10, weight:'800'}, color: '#64748b', padding: 15 } } } }
+                options: { responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: 40 }, plugins: { legend: { display: false }, datalabels: { display: cx => cx.datasetIndex === 0, formatter: v => Number(v).toFixed(2), color: col, font: { size: 10, weight: 'bold' }, anchor: 'end', align: 'end' }, tooltip: { callbacks: { label: cx => cx.datasetIndex === 0 ? cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2) : cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:10, weight:'800'}, color: '#64748b', padding: 15 } } } }
             });
         }
         
@@ -757,7 +792,7 @@ function renderEvalTab() {
                     type: 'line', 
                     data: { labels: trendLabels, datasets: [{ data: trendData, borderColor: c, backgroundColor: hRgba(c, 0.1), borderWidth: 2, fill: true, tension: 0.4, pointRadius: ptRadii, pointBackgroundColor: ptBgColors, pointBorderColor: ptBorders, pointBorderWidth: ptBorderWidths, pointHoverRadius: 7 }] }, 
                     options: { 
-                        responsive: true, maintainAspectRatio: false, 
+                        responsive: true, maintainAspectRatio: false, clip: false, 
                         plugins: { 
                             legend: { display: false }, 
                             datalabels: { display: true, align: 'top', anchor: 'end', offset: 4, color: (cx) => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', font: (cx) => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), formatter: (v) => Number(v).toFixed(1) }, 
@@ -773,7 +808,7 @@ function renderEvalTab() {
                 type: 'radar', 
                 data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] }, 
                 options: { 
-                    responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 10 }, 
+                    responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 40 }, 
                     plugins:{ 
                         legend:{ display:false }, datalabels: { display: false }, 
                         tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 14 }, bodyFont: { size: 13, weight: 'bold' }, padding: 12, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + Number(cx.raw).toFixed(2); } } } 
@@ -787,7 +822,7 @@ function renderEvalTab() {
                 CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), { 
                     type: 'doughnut', 
                     data: { labels: topTasksArr.map(t => t[0]), datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] }, 
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: { top: 5, bottom: 5, left: 5, right: 5 } } } 
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', clip: false, plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: 5 } } 
                 }); 
             }
             
@@ -795,7 +830,7 @@ function renderEvalTab() {
                 type: 'radar', 
                 data: { labels: INSIGHT_RADAR_LABELS, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }] }, 
                 options: { 
-                    responsive: true, maintainAspectRatio: false, 
+                    responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 20 },
                     plugins: { 
                         legend: { display: false }, datalabels: { display: false }, 
                         tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { if(cx.datasetIndex===0) return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); else return cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2); } } } 
@@ -803,6 +838,6 @@ function renderEvalTab() {
                     scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 9, weight: '800' }, color: '#64748b', padding: 8 } } } 
                 } 
             });
-        } catch (e) {}
+        } catch (e) { console.error("KPI 탭 렌더링 중 오류:", e); }
     }, 50);
 }
