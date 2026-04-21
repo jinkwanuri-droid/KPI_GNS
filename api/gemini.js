@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ success: false, error: '서버 환경 변수(GEMINI_API_KEY)가 설정되지 않았습니다.' });
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
     
     const response = await fetch(url, {
       method: 'POST',
