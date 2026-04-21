@@ -63,6 +63,7 @@ const customRadarBgPlugin = {
 };
 Chart.register(customRadarBgPlugin);
 
+// --- Dashboard 탭 (프로젝트 전체) ---
 function renderDashboardTab(){
     var all=filtered();if(!all.length)return;
     var tm=all.reduce(function(s,r){return s+r.min;},0),mos=getMos(all),pd=all.filter(function(r){return r.project==='경남 서부의료원';}),pmos=getMos(pd),adt=new Set(all.map(function(r){return r.date;})).size;
@@ -141,9 +142,9 @@ function renderOvProjectRatio(all){
             </div>
         </div>
         <div class="pj-ratio-labels">
-            <div><span style="color:#00428E;font-weight:900;">${fH(m)}h</span> (서부의료원)</div>
-            <div><span style="color:#3b82f6;font-weight:900;">${fH(o)}h</span> (타 프로젝트)</div>
-            <div><span style="color:#64748b;font-weight:900;">${fH(c)}h</span> (공통)</div>
+            <div style="flex-basis: ${pm}%; text-align: center;"><span style="color:#00428E;font-weight:900;">${fH(m)}h</span> (서부의료원)</div>
+            <div style="flex-basis: ${po}%; text-align: center;"><span style="color:#3b82f6;font-weight:900;">${fH(o)}h</span> (타 프로젝트)</div>
+            <div style="flex-basis: ${pc}%; text-align: center;"><span style="color:#64748b;font-weight:900;">${fH(c)}h</span> (공통)</div>
         </div>
     `;
     wrap.innerHTML = html;
@@ -159,7 +160,7 @@ function renderCostTrendChart(mos) {
     dC('costTrendChart'); window.lastCostMos = mos;
     if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
     
-    // 전체 기간 고정 (스프레드시트 데이터 첫 달 ~ 프로젝트 종료 예정 2026-12)
+    // 전체 프로젝트 기간(24년 3월 ~ 26년 12월)에 대한 풀 데이터 생성
     var globalStart = '2024-03';
     var globalEnd = '2026-12';
     var allFullMonths = getMonthsBetween(globalStart, globalEnd);
@@ -179,6 +180,7 @@ function renderCostTrendChart(mos) {
     var globalData = { plan: [], execActual: [], execPred: [] };
     var cumPlan = 0, cumExecActual = 0, cumExecPred = 0;
     
+    // 1단계: 26년 12월까지의 누적/월별 전체 배열 생성
     allFullMonths.forEach(function(m) {
         var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
         var mExec = allMosMap[m] ? allMosMap[m].exec : 0;
@@ -195,7 +197,7 @@ function renderCostTrendChart(mos) {
             cumExecActual += mExec; cumExecPred = cumExecActual;
             var val = window.isCostCumulative ? cumExecActual : mExec;
             globalData.execActual.push(val);
-            globalData.execPred.push(val);
+            globalData.execPred.push(val); // 점선 이어지게 시작점 설정
         } else {
             cumExecPred += avgExec;
             globalData.execActual.push(null);
@@ -203,7 +205,7 @@ function renderCostTrendChart(mos) {
         }
     });
     
-    // 선택된 필터 기간 추출 (slice)
+    // 2단계: 필터링된 mos 배열에 맞춰 자르기 (slice)
     var reqStart = mos[0], reqEnd = mos[mos.length - 1];
     var sIdx = allFullMonths.indexOf(reqStart);
     var eIdx = allFullMonths.indexOf(reqEnd);
@@ -214,7 +216,7 @@ function renderCostTrendChart(mos) {
     var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
     var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
     
-    var maxVal = Math.max(...viewPlan, ...viewActual.filter(function(v){return v!==null;}), ...viewPred.filter(function(v){return v!==null;}));
+    var maxVal = Math.max(...viewPlan, ...viewActual.filter(v=>v!==null), ...viewPred.filter(v=>v!==null));
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
     
     var schData = [];
@@ -539,7 +541,7 @@ function renderWpSwitchBar(d,mos,col){
     CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{
         data:{labels:mos,datasets:[
             {type:'bar', label:'개인 전환 횟수', data:mos.map(m=>sw[m]||0),backgroundColor:col,borderRadius:6, order:2},
-            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:3, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
+            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[4,4], borderWidth:1.5, pointRadius:4, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
         ]},
         options:{
             responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:30}},
@@ -774,6 +776,9 @@ function renderEvalTab() {
     
     var aiInitText = window.currentAiResponse || '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.';
 
+    // KPI 레이더 차트 레이블을 두 줄로 변경 (배열 형태로 넘김)
+    var splitRadarLabels = INSIGHT_RADAR_LABELS.map(l => l.split('(').map((part, index) => index === 1 ? '('+part : part));
+
     var html = '<div class="kpi-layout">' +
         '<div class="kpi-panel left-panel"><div class="kpi-profile-header">' + getAvatar(m, 50, 18) + '<div><div style="font-size:24px;font-weight:900;color:#1e293b;line-height:1.2;">' + m + '</div><div style="font-size:13px;color:#64748b;font-weight:600;">' + po + '</div></div></div><div class="kpi-big-score"><div class="title">최근 분기 종합 점수 (' + latestQ.q + ')</div><div style="display:flex;align-items:baseline;"><div class="score">' + latestScore.toFixed(2) + '</div><div class="sub">/ 5.0</div></div><div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">개인 평균(' + avgScore.toFixed(2) + ') 대비 ' + scoreDiffHtml + '</div></div><div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;"><div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">총 투입 시간</div><div style="font-size:18px;font-weight:900;color:#00428E;">' + fH(t) + 'h</div></div><div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;"><div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">9h+ 연장근무</div><div style="font-size:18px;font-weight:900;color:#f59e0b;">' + o9 + '일</div></div></div><div class="kpi-section-title" style="font-size:14px; margin-bottom:5px;">역량 점수 트렌드</div><div style="height:120px; position:relative; margin-bottom:15px;">' + (sortedEd.length > 0 ? '<canvas id="newKpiTrendChart"></canvas>' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;font-weight:600;">평가 데이터 없음</div>') + '</div><div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div><div class="kpi-detail-list">' + detailListHtml + '</div></div>' +
         '<div class="kpi-panel center-panel"><div style="text-align:center; flex:0 0 auto;"><h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2><div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div><div style="display:flex; justify-content:center; gap:15px; margin-top:12px;"><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;"><div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> 선택 기간</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;"><div style="width:12px; height:3px; background:#94a3b8; border-radius:2px;"></div> 개인 평균</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#64748b;"><div style="width:12px; height:0; border-top:2px dashed #7dd3fc; border-radius:2px;"></div> 팀 전체 평균</div></div></div><div style="flex:1; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="newKpiRadarChart"></canvas></div><div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div class="kpi-section-title" style="margin:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; vertical-align:text-bottom;"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/><path d="m12 8-4 4 4 4 4-4Z"/></svg><span style="color:#6366f1;">AI Insight</span> 종합 평가</div><div style="display:flex; gap:6px; align-items:center;"><button class="icon-btn" onclick="openAiModal(\'kpi\')" title="새창에서 크게 보기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button><button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700; cursor:pointer;">분석 요청하기</button></div></div><div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:15px; border:1px solid rgba(99,102,241,0.2); max-height:160px; overflow-y:auto;" class="custom-scroll"><div id="aiCommentBox" class="ai-insight-content" style="color:#64748b;">'+aiInitText+'</div></div></div></div>' +
@@ -804,9 +809,16 @@ function renderEvalTab() {
                 });
             }
             
-            CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), { 
+                        CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), { 
                 type: 'radar', 
-                data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] }, 
+                data: { 
+                    labels: RADAR_LABELS, 
+                    datasets: [
+                        { label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, 
+                        { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, 
+                        { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }
+                    ] 
+                }, 
                 options: { 
                     responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 40 }, 
                     plugins:{ 
