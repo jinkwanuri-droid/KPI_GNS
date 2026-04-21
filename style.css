@@ -160,26 +160,36 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .wp-contrib-bar-fill{height:100%;border-radius:4px;transition:width .8s ease;background:linear-gradient(90deg,#00428E,#38bdf8);}
 .wp-contrib-bar-fill.second{background:linear-gradient(90deg,#c026d3,#ec4899);}
 .wp-contrib-pct{font-size:11px;font-weight:800;color:#00428E;white-space:nowrap;}
+
+/* 히어로 센터 6.5:3.5 비율 분할 조정 */
 .wp-hero-center{padding:25px 25px;display:flex;flex-direction:column;gap:15px;overflow:hidden;}
-.wp-ai-box{flex:0 0 160px;background:rgba(255,255,255,.55);border:1px solid rgba(147,197,253,.3);border-radius:16px;padding:15px 20px;display:flex;flex-direction:column;gap:10px; overflow:hidden;}
+.wp-ai-box{flex: 6.5; background:rgba(255,255,255,.55);border:1px solid rgba(147,197,253,.3);border-radius:16px;padding:15px 20px;display:flex;flex-direction:column;gap:10px; overflow:hidden; min-height: 0;}
 .wp-ai-header{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:900;color:#3730a3;}
 .wp-ai-gem-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;}
-.wp-stats-row{display:grid;grid-template-columns:1fr 1.3fr 1.1fr 1.6fr;gap:12px; flex:1;}
+.wp-stats-row{display:grid;grid-template-columns:1fr 1.3fr 1.1fr 1.6fr;gap:12px; flex:3.5; min-height: 0;}
+
 .wp-stat-mini{background:rgba(255,255,255,.6);border:1px solid rgba(147,197,253,.3);border-radius:14px;padding:12px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;}
 .wp-stat-mini .label{font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px;}
 .wp-stat-mini .value{font-size:24px;font-weight:900;line-height:1;}
 .wp-stat-mini .unit{font-size:12px;font-weight:700;color:#94a3b8;margin-left:2px;}
 .wp-stat-mini .sub{font-size:11px;color:#94a3b8;margin-top:5px;font-weight:600;}
+
 .wp-hero-right{padding:25px 20px;display:flex;flex-direction:column;border-left:1px solid rgba(147,197,253,.25);overflow:hidden;}
 .wp-right-title{font-size:12px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.05em;}
-.wp-metrics-badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.wp-metric-badge{display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,.5);border:1px solid rgba(147,197,253,.25);border-radius:10px;padding:10px 12px;text-align:left;}
-.wp-metric-badge .name{color:#334155;font-size:10px;font-weight:800;}
-.wp-metric-badge .val{font-size:16px;font-weight:900;color:#1e293b;margin-top:2px;}
-.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.status-dot.good { background: #10b981; box-shadow: 0 0 4px #10b981; }
-.status-dot.warn { background: #f59e0b; box-shadow: 0 0 4px #f59e0b; }
-.status-dot.danger { background: #ef4444; box-shadow: 0 0 4px #ef4444; }
+
+/* 신규 6개 메트릭 카드 CSS */
+.wp-metrics-badges{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.wp-metric-badge{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid rgba(226,232,240,0.8);border-radius:12px;padding:12px 14px;box-shadow:0 2px 6px rgba(0,0,0,0.02);}
+.wp-mb-left{display:flex;align-items:flex-start;gap:6px;}
+.wp-mb-titles{display:flex;flex-direction:column;}
+.wp-mb-maintitle{font-size:13px;font-weight:900;color:#1e293b;line-height:1.2;}
+.wp-mb-subtitle{font-size:10px;font-weight:600;color:#94a3b8;margin-top:2px;}
+.wp-metric-badge .val{font-size:22px;font-weight:900;color:#000;letter-spacing:-0.02em;}
+
+.status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;}
+.status-dot.good { background: #10b981; }
+.status-dot.warn { background: #facc15; }
+.status-dot.danger { background: #ef4444; }
 
 .kpi-layout { display: grid; grid-template-columns: 340px 1fr 340px; gap: 20px; width: 100%; height: 100%; min-height: 750px; align-items: stretch; }
 .kpi-panel { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 25px 20px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(31,38,135,0.05); position: relative; overflow-y: auto; justify-content: space-between; gap: 15px; }
