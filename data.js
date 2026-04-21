@@ -13,12 +13,12 @@ const INSIGHT_RADAR_LABELS = ['정시업무(1-OT)','Shannon(파편화도)','HHI(
 const emojiRegex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
 
 const INSIGHT_METRICS_INFO = [
-    { key: 'ot', name: '정시업무(1-OT)', target: '1.0 (야근無)', eval: function(v){ if(v>=0.8) return {s: '좋음', c: '#10b981', i: '👍', t: '1.0(야근無)에 근접한 아주 양호한 상태입니다. 신체적 에너지 관리가 완벽하게 이뤄지고 있습니다.'}; if(v>=0.5) return {s: '보통', c: '#f59e0b', i: '⚠️', t: '야근이 종종 발생하고 있습니다. 에너지 고갈 및 집중력 저하가 우려됩니다.'}; return {s: '주의', c: '#ef4444', i: '🚨', t: '상시 초과근무 및 주말 근무가 발생하고 있습니다. 번아웃 위험이 매우 높습니다.'}; } },
-    { key: 'shannon', name: 'Shannon(파편화도)', target: '0.5~0.7 (균형)', eval: function(v){ if(v>=0.5 && v<=0.8) return {s: '좋음', c: '#10b981', i: '👍', t: '0.5~0.7이 목표인데 적절히 도달했습니다. 업무 흐름이 자주 끊기지 않고 한 가지 일에 깊게 몰입하는 질적 시간이 확보되고 있습니다.'}; if(v<0.5) return {s: '주의', c: '#ef4444', i: '🚨', t: '한 두 가지의 특정 업무에 극단적으로 몰려 있습니다.'}; return {s: '주의', c: '#f59e0b', i: '⚠️', t: '0.5~0.7이 목표인데 다소 높습니다. 업무가 너무 잘게 쪼개져 몰입 효율이 떨어집니다.'}; } },
-    { key: 'hhi', name: 'HHI(몰입도)', target: '0.4 이상 (몰입)', eval: function(v){ if(v>=0.4) return {s: '좋음', c: '#10b981', i: '👍', t: '0.4 이상으로 핵심 과업에 에너지가 단단히 집중 투입되고 있습니다.'}; return {s: '주의', c: '#ef4444', i: '🚨', t: '0.4 이상이 목표인데 현재 너무 낮습니다. 에너지가 너무 많은 프로젝트에 잘게 쪼개져 투입되고 있음을 의미합니다.'}; } },
-    { key: 'cv', name: 'CV 안정성', target: '1.0 (안정)', eval: function(v){ if(v>=0.7) return {s: '좋음', c: '#10b981', i: '👍', t: '매일 투입하는 시간의 양이 매우 일정합니다. 성실하고 예측 가능한 양적 투입이 이뤄지고 있습니다.'}; if(v>=0.4) return {s: '보통', c: '#f59e0b', i: '⚠️', t: '주 단위나 특정 요일별로 투입 시간 편차가 다소 존재합니다.'}; return {s: '주의', c: '#ef4444', i: '🚨', t: '출근과 휴무 격차가 극심하거나 아주 불규칙한 양적 투입이 이뤄지고 있습니다.'}; } },
-    { key: 'hurst', name: 'Hurst(주도성)', target: '0.6 이상 (주도)', eval: function(v){ if(v>=0.6) return {s: '좋음', c: '#10b981', i: '👍', t: '0.6 이상으로 주도성이 높습니다. 수동적으로 시키는 일만 하는 게 아니라, 본인의 리듬대로 업무를 질적으로 컨트롤하고 있습니다.'}; return {s: '주의', c: '#f59e0b', i: '⚠️', t: '수치가 낮아 자신의 리듬을 잃기 쉽고, 외부 요인에 휩쓸려 방어적으로 일할 우려가 있습니다.'}; } },
-    { key: 'jaccard', name: 'Jaccard(확장성)', target: '0.3 이상 (확장)', eval: function(v){ if(v>=0.3 && v<=0.7) return {s: '좋음', c: '#10b981', i: '👍', t: '기존 업무와 새 업무의 조화를 측정합니다. 0.5 근처로 최적의 성장을 보이며, 새로운 업무 범위로 무난히 확장하고 있습니다.'}; if(v<0.3) return {s: '보통', c: '#94a3b8', i: 'ℹ️', t: '기존에 하던 익숙한 일만 고수하며 새로운 직무 확장이 일어나지 않는 정체 상태입니다.'}; return {s: '보통', c: '#94a3b8', i: 'ℹ️', t: '기존 업무가 아예 없어지고 매번 새로운 일만 하여 다소 혼란스러울 수 있는 상태입니다.'}; } }
+    { key: 'ot', name: '1-OT', target: '1.0 (야근無)', eval: function(v){ if(v>=0.8) return {s: '좋음', c: '#10b981', i: '👍', t: '1.0(야근無)에 근접한 아주 양호한 상태입니다. 신체적 에너지 관리가 완벽하게 이뤄지고 있습니다.'}; if(v>=0.5) return {s: '보통', c: '#facc15', i: '⚠️', t: '야근이 종종 발생하고 있습니다. 에너지 고갈 및 집중력 저하가 우려됩니다.'}; return {s: '주의', c: '#ef4444', i: '🚨', t: '상시 초과근무 및 주말 근무가 발생하고 있습니다. 번아웃 위험이 매우 높습니다.'}; } },
+    { key: 'shannon', name: 'Shannon', target: '0.5~0.7 (균형)', eval: function(v){ if(v>=0.5 && v<=0.8) return {s: '좋음', c: '#10b981', i: '👍', t: '0.5~0.7이 목표인데 적절히 도달했습니다. 업무 흐름이 자주 끊기지 않고 한 가지 일에 깊게 몰입하는 질적 시간이 확보되고 있습니다.'}; if(v<0.5) return {s: '주의', c: '#ef4444', i: '🚨', t: '한 두 가지의 특정 업무에 극단적으로 몰려 있습니다.'}; return {s: '주의', c: '#facc15', i: '⚠️', t: '0.5~0.7이 목표인데 다소 높습니다. 업무가 너무 잘게 쪼개져 몰입 효율이 떨어집니다.'}; } },
+    { key: 'hhi', name: 'HHI', target: '0.4 이상 (몰입)', eval: function(v){ if(v>=0.4) return {s: '좋음', c: '#10b981', i: '👍', t: '0.4 이상으로 핵심 과업에 에너지가 단단히 집중 투입되고 있습니다.'}; return {s: '주의', c: '#ef4444', i: '🚨', t: '0.4 이상이 목표인데 현재 너무 낮습니다. 에너지가 너무 많은 프로젝트에 잘게 쪼개져 투입되고 있음을 의미합니다.'}; } },
+    { key: 'cv', name: 'CV', target: '1.0 (안정)', eval: function(v){ if(v>=0.7) return {s: '좋음', c: '#10b981', i: '👍', t: '매일 투입하는 시간의 양이 매우 일정합니다. 성실하고 예측 가능한 양적 투입이 이뤄지고 있습니다.'}; if(v>=0.4) return {s: '보통', c: '#facc15', i: '⚠️', t: '주 단위나 특정 요일별로 투입 시간 편차가 다소 존재합니다.'}; return {s: '주의', c: '#ef4444', i: '🚨', t: '출근과 휴무 격차가 극심하거나 아주 불규칙한 양적 투입이 이뤄지고 있습니다.'}; } },
+    { key: 'hurst', name: 'Hurst', target: '0.6 이상 (주도)', eval: function(v){ if(v>=0.6) return {s: '좋음', c: '#10b981', i: '👍', t: '0.6 이상으로 주도성이 높습니다. 수동적으로 시키는 일만 하는 게 아니라, 본인의 리듬대로 업무를 질적으로 컨트롤하고 있습니다.'}; return {s: '주의', c: '#facc15', i: '⚠️', t: '수치가 낮아 자신의 리듬을 잃기 쉽고, 외부 요인에 휩쓸려 방어적으로 일할 우려가 있습니다.'}; } },
+    { key: 'jaccard', name: 'Jaccard', target: '0.3 이상 (확장)', eval: function(v){ if(v>=0.3 && v<=0.7) return {s: '좋음', c: '#10b981', i: '👍', t: '기존 업무와 새 업무의 조화를 측정합니다. 0.5 근처로 최적의 성장을 보이며, 새로운 업무 범위로 무난히 확장하고 있습니다.'}; if(v<0.3) return {s: '보통', c: '#94a3b8', i: 'ℹ️', t: '기존에 하던 익숙한 일만 고수하며 새로운 직무 확장이 일어나지 않는 정체 상태입니다.'}; return {s: '보통', c: '#94a3b8', i: 'ℹ️', t: '기존 업무가 아예 없어지고 매번 새로운 일만 하여 다소 혼란스러울 수 있는 상태입니다.'}; } }
 ];
 
 var MEMBERS=[], MC={}, INITIALS={}, SCHEDULE_DATA=[], EVAL_DATA=[], RAW=[], COST_DATA=[], CH={};
@@ -65,7 +65,6 @@ function calcStandaloneMetrics(currR) {
     keys.forEach(k => { var p = sm[k]/t; hi += p*p; if(p>0) sn -= p*Math.log(p); });
     if(keys.length>1) sn = sn/Math.log(keys.length); else sn=0;
     
-    // --- 신규 1-OT 지수 공식 반영 ---
     var dailyHours = {};
     currR.forEach(r => { 
         var dKey = r.name + '|' + r.date;
@@ -197,16 +196,22 @@ function loadDataFromSheets(){
     });
 }
 
-// AI 멘트 어조 수정 지시
+function parseAiResponse(text) {
+    let svgIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; vertical-align:middle;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+    return text.replace(/### (.*?)\n/g, `<h3>${svgIcon} $1</h3>`)
+               .replace(/\*\*(.*?)\*\*/g, '<span class="highlight-text">$1</span>')
+               .replace(/\n/g, '<br>');
+}
+
 async function generateWorkingAiComment() {
     var btn = document.getElementById('btnWpAi'); var box = document.getElementById('wpAiCommentBox');
     if(!window.currentWorkingAiData) { box.innerHTML = '<span style="color:#ef4444;">분석할 데이터가 부족합니다.</span>'; return; }
     var ad = window.currentWorkingAiData;
     var prompt = `당신은 10년 차 건축설계 프로젝트 팀장입니다. 팀원 '${ad.m}'의 업무 데이터를 보고 아주 상세하고 전문적이며, 부드러운 컨설턴트 어조(~습니다, ~해요체)로 피드백을 주세요.
-요청사항: 인사말/서론 절대 금지. 반말/딱딱한 군대식 말투 금지. 아래 3가지 항목만 간결하게 작성할 것. 마크다운 적용할 것.
-- 💡 업무 효율성 (근태/몰입도)
-- 📈 설계 트렌드 변화
-- 🚀 향후 제언
+요청사항: 인사말/서론 절대 금지. 이모지(아이콘) 절대 사용 금지. 각 섹션 제목은 반드시 '### [소제목]' 형태로만 작성할 것. 내용 중 강조할 키워드는 반드시 '**키워드**' 형태로 작성할 것.
+- 💡 업무 효율성 (근태/몰입도) -> 이모지 없이 '### 업무 효율성' 으로 출력
+- 📈 설계 트렌드 변화 -> 이모지 없이 '### 설계 트렌드 변화' 로 출력
+- 🚀 향후 제언 -> 이모지 없이 '### 향후 제언' 으로 출력
 데이터: ${fH(ad.tt||0)}시간 투입, 연장 ${ad.o9||0}일, 심야 ${ad.o12||0}일. 집중업무: ${ad.tk||'-'}. 비중: ${ad.cat||'-'}. HHI: ${(ad.ah||0).toFixed(2)}, Shannon: ${(ad.as||0).toFixed(2)}`;
     btn.innerText = "분석 중..."; btn.disabled = true; btn.style.opacity = '0.7';
     box.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#6366f1; height:100%; font-weight:700;"><div class="ov-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>분석 중...</div>';
@@ -214,7 +219,7 @@ async function generateWorkingAiComment() {
         const response = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt }) });
         const result = await response.json();
         if(result.success) { 
-            window.currentWorkingAiResponse = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>');
+            window.currentWorkingAiResponse = parseAiResponse(result.text);
             box.innerHTML = window.currentWorkingAiResponse;
         } 
         else { box.innerHTML = '<span style="color:#ef4444;">오류 발생: ' + (result.error || '알 수 없는 오류') + '</span>'; }
@@ -226,10 +231,10 @@ async function generateAiComment() {
     if(!window.currentAiData) { box.innerHTML = '<span style="color:#ef4444;">분석할 데이터가 부족합니다.</span>'; return; }
     var ad = window.currentAiData;
     var prompt = `당신은 10년 차 건축설계 팀장입니다. 팀원 '${ad.m}'의 평가 데이터를 보고 아주 상세하고 전문적이며, 부드러운 컨설턴트 어조(~습니다, ~해요체)로 피드백을 주세요.
-요청사항: 인사말, 서론 절대 금지. 반말/딱딱한 군대식 말투 금지. 아래 3가지 항목만 간결하게 작성. 마크다운 적용.
-- 🎯 업무 스타일 (지표 기반)
-- 📊 점수 상관관계
-- 🌱 성장 제언
+요청사항: 인사말, 서론 절대 금지. 이모지(아이콘) 절대 사용 금지. 각 섹션 제목은 반드시 '### [소제목]' 형태로만 작성할 것. 내용 중 강조할 키워드는 반드시 '**키워드**' 형태로 작성할 것.
+- 🎯 업무 스타일 (지표 기반) -> 이모지 없이 '### 업무 스타일' 로 출력
+- 📊 점수 상관관계 -> 이모지 없이 '### 점수 상관관계' 로 출력
+- 🌱 성장 제언 -> 이모지 없이 '### 성장 제언' 으로 출력
 데이터: 점수 ${ad.score}점, 집중업무: ${ad.topTasks}.
 정시업무 ${(ad.rawCvInsight[0]||0).toFixed(2)}, Shannon파편화도 ${(ad.rawCvInsight[1]||0).toFixed(2)}, HHI몰입도 ${(ad.rawCvInsight[2]||0).toFixed(2)}, CV안정성 ${(ad.rawCvInsight[3]||0).toFixed(2)}, Hurst주도성 ${(ad.rawCvInsight[4]||0).toFixed(2)}, Jaccard확장성 ${(ad.rawCvInsight[5]||0).toFixed(2)}`;
     btn.innerText = "분석 중..."; btn.disabled = true; btn.style.opacity = '0.7';
@@ -238,7 +243,7 @@ async function generateAiComment() {
         const response = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt }) });
         const result = await response.json();
         if(result.success) { 
-            window.currentAiResponse = result.text.replace(/### (.*?)\n/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<b style="color:#1e40af;">$1</b>').replace(/\n/g, '<br>');
+            window.currentAiResponse = parseAiResponse(result.text);
             box.innerHTML = window.currentAiResponse;
         } 
         else { box.innerHTML = '<span style="color:#ef4444;">오류 발생: ' + (result.error || '알 수 없는 오류') + '</span>'; }
