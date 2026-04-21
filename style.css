@@ -213,12 +213,12 @@ body{display:flex;min-height:100vh;flex-direction:column;padding-top:85px;font-w
 .kpi-delta.flat { color: #94a3b8; }
 .kpi-section-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
 
-/* 폰트 사이즈 통일 및 가는 폰트(400) 적용 */
+/* AI 폰트 크기 및 두께 최적화 (양쪽 탭 완벽 통일) */
 .ai-insight-content { font-size:12px; line-height:1.7; color:#334155; font-weight:400; }
-.ai-insight-content h3 { font-size:13px; font-weight:800; color:#4f46e5; margin-top:10px; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.ai-insight-content h3 { font-size:13px; font-weight:800; color:#4f46e5; margin-top:8px; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
 .ai-insight-content h3:first-child { margin-top:0; }
 .ai-insight-content p { margin-bottom:8px; }
-.highlight-text { font-weight: 800; color: #4f46e5; }
+.highlight-text { font-weight: 800; color: #4f46e5; } /* 강조 키워드 전용 */
 .custom-scroll::-webkit-scrollbar { width: 4px; }
 .custom-scroll::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
 
