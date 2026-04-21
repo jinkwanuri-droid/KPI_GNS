@@ -158,7 +158,7 @@ function getMonthsBetween(start, end) {
 
 function renderCostTrendChart(mos) {
     dC('costTrendChart'); window.lastCostMos = mos;
-    if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
+    if(!COST_DATA || COST_DATA.length === 0) return;
     
     // 전체 프로젝트 기간(24년 3월 ~ 26년 12월)에 대한 풀 데이터 생성
     var globalStart = '2024-03';
@@ -168,7 +168,8 @@ function renderCostTrendChart(mos) {
     var allMosMap = {};
     COST_DATA.forEach(function(r) {
         if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0 };
-        allMosMap[r.date].plan += (r.plan / 10000); allMosMap[r.date].exec += (r.exec / 10000);
+        allMosMap[r.date].plan += (r.plan / 10000); 
+        allMosMap[r.date].exec += (r.exec / 10000);
     });
     
     var lastActualMonth = '', totalActualExec = 0, actualMonthCount = 0;
@@ -186,8 +187,7 @@ function renderCostTrendChart(mos) {
         var mExec = allMosMap[m] ? allMosMap[m].exec : 0;
         
         cumPlan += mPlan;
-        var curPlanVal = window.isCostCumulative ? cumPlan : mPlan;
-        globalData.plan.push(curPlanVal);
+        globalData.plan.push(window.isCostCumulative ? cumPlan : mPlan);
         
         if (!lastActualMonth || m < lastActualMonth) {
             cumExecActual += mExec; cumExecPred = cumExecActual;
@@ -205,8 +205,21 @@ function renderCostTrendChart(mos) {
         }
     });
     
-    // 2단계: 필터링된 mos 배열에 맞춰 자르기 (slice)
-    var reqStart = mos[0], reqEnd = mos[mos.length - 1];
+    // 2단계: 실제 필터 UI에서 선택한 시작/종료 분기를 역산하여 X축 기간 설정
+    var sy = filterYears[Math.floor(window.filterStartIndex / 4)];
+    var sq = filterQuarters[window.filterStartIndex % 4];
+    var ey = filterYears[Math.floor(window.filterEndIndex / 4)];
+    var eq = filterQuarters[window.filterEndIndex % 4];
+    
+    var smStr = sq==='Q1'?'01':sq==='Q2'?'04':sq==='Q3'?'07':'10';
+    var emStr = eq==='Q1'?'03':eq==='Q2'?'06':eq==='Q3'?'09':'12';
+    
+    var reqStart = sy + '-' + smStr;
+    var reqEnd = ey + '-' + emStr;
+    
+    if (reqStart < globalStart) reqStart = globalStart;
+    if (reqEnd > globalEnd) reqEnd = globalEnd;
+    
     var sIdx = allFullMonths.indexOf(reqStart);
     var eIdx = allFullMonths.indexOf(reqEnd);
     if(sIdx === -1) sIdx = 0; if(eIdx === -1) eIdx = allFullMonths.length - 1;
