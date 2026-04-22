@@ -202,20 +202,19 @@ function renderCostTrendChart(mos) {
     });
     
     var lastActualMonth = '';
-    var pastTotalPlan = 0;
     var pastTotalExec = 0;
+    var actualMonthCount = 0;
     
     allFullMonths.forEach(function(m) {
         if(allMosMap[m] && allMosMap[m].hasExec) {
             lastActualMonth = m;
-            pastTotalPlan += allMosMap[m].plan;
             pastTotalExec += allMosMap[m].exec;
+            actualMonthCount++;
         }
     });
 
-    // 핵심 변경점 1: 과거 데이터 기반 실행 추세(비율) 분석
-    // 지금까지의 계획 대비 실행 소진율을 계산하여 미래 예상치에 반영합니다.
-    var execTrendRatio = (pastTotalPlan > 0) ? (pastTotalExec / pastTotalPlan) : 1.0;
+    // 핵심 변경점 1: 지금까지의 '실제 월 평균 집행액(Run-rate)'을 계산하여 선형 추세 적용
+    var avgMonthlyExec = (actualMonthCount > 0) ? (pastTotalExec / actualMonthCount) : 0;
     
     var globalData = { plan: [], execActual: [], execPred: [] };
     var cumPlan = 0, cumExec = 0, cumPred = 0;
@@ -240,8 +239,8 @@ function renderCostTrendChart(mos) {
             globalData.execActual.push(valExec);
             globalData.execPred.push(valExec); 
         } else {
-            // 과거 소진율 트렌드를 반영한 합리적인 예상치 계산
-            var stepPred = mPlan * execTrendRatio; 
+            // 핵심 변경점 2: 계획선 형태를 무시하고, 과거 평균치(avgMonthlyExec)를 일정하게 더해줌 (직선형태)
+            var stepPred = avgMonthlyExec; 
             cumPred += stepPred;
             globalData.execActual.push(null);
             globalData.execPred.push(isCum ? cumPred : stepPred);
@@ -300,15 +299,11 @@ function renderCostTrendChart(mos) {
                 legend: { display: false },
                 datalabels: {
                     display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
-                    
-                    // 핵심 변경점 2: 값이 겹치면 서로 밀어내는 스마트 라벨 배치 (위/아래 자동 조정)
                     align: function(cx) {
                         var idx = cx.dataIndex;
                         var planVal = viewPlan[idx] || 0;
                         var actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx];
                         actVal = actVal || 0;
-                        
-                        // 두 점이 차트 전체 높이의 8% 이내로 가까울 경우 서로 밀어냄
                         if (Math.abs(planVal - actVal) < (maxVal * 0.08)) {
                             if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom';
                             else return actVal > planVal ? 'top' : 'bottom';
@@ -320,7 +315,6 @@ function renderCostTrendChart(mos) {
                         var planVal = viewPlan[idx] || 0;
                         var actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx];
                         actVal = actVal || 0;
-                        
                         if (Math.abs(planVal - actVal) < (maxVal * 0.08)) {
                             if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom';
                             else return actVal > planVal ? 'top' : 'bottom';
