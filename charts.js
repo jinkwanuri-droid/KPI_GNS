@@ -60,6 +60,7 @@ const customRadarBgPlugin = {
     }
 };
 Chart.register(customRadarBgPlugin);
+
 // --- Dashboard 탭 (프로젝트 전체) ---
 function renderDashboardTab(){
     var all=filtered();if(!all.length)return;
@@ -114,7 +115,7 @@ function renderProjectProgress() {
 }
 
 // ====================================================================
-// [수정1] 투입비율 차트 (서부의료원/타프로젝트/공통) 개선
+// [수정1] 투입비율 차트 (글자 겹침 완벽 방지)
 // ====================================================================
 function renderOvProjectRatio(all){
     var wrap = document.getElementById('ovPjRatioWrap');
@@ -140,10 +141,9 @@ function renderOvProjectRatio(all){
             <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:6px;">경상남도 서부의료원</span>
         </div>
         <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-            <!-- 변경점: overflow:hidden, white-space:nowrap 추가 및 > 8 조건으로 변경 -->
-            <div style="width:${pm}%; background:#8b5cf6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pm > 8 ? pm+'%' : ''}</div>
-            <div style="width:${po}%; background:#f59e0b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${po > 8 ? po+'%' : ''}</div>
-            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pc > 8 ? pc+'%' : ''}</div>
+            <div style="width:${pm}%; background:#8b5cf6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pm >= 8 ? pm+'%' : ''}</div>
+            <div style="width:${po}%; background:#f59e0b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${po >= 8 ? po+'%' : ''}</div>
+            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pc >= 8 ? pc+'%' : ''}</div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; padding: 0 5px;">
             <span style="color:#8b5cf6;">서부의료원</span>
@@ -160,13 +160,74 @@ function getMonthsBetween(start, end) {
 }
 
 // ====================================================================
-// [수정2] 인건비 추이 차트 (긍정 0.9x / 부정 1.1x 시나리오) 개선
+// [수정2] 인건비 추이 차트 (NaN 에러 방지 및 예외처리 적용)
 // ====================================================================
 function renderCostTrendChart(mos) {
+    if(typeof dC === 'function') dC('costTrendChart'); 
+    window.lastCostMos = mos;
+    if(!mos || !mos.length) return;
+    
+    var globalStart = '2024-03';
+    var globalEnd = '2026-12';
+    var allFullMonths = getMonthsBetween(globalStart, globalEnd);
+    var allMosMap = {};
+    
+    // COST_DATA가 아예 없을 경우를 대비한 안전 장치
+    var safeCostData = (typeof COST_DATA !== 'undefined') ? COST_DATA : [];
+    
+    safeCostData.forEach(function(r) {
+        if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0, hasExec: false };
+        // 데이터가 문자열이거나 빈 값일 경우 NaN으로 차트가 깨지는 현상 방지
+        var p = parseFloat(r.plan) || 0;
+        allMosMap[r.date].plan += (p / 10000);
+        if(r.exec !== null && r.exec !== undefined && r.exec !== '') {
+            var e = parseFloat(r.exec) || 0;
+            allMosMap[r.date].exec += (e / 10000);
+            allMosMap[r.date].hasExec = true;
+        }
+    });
+    
+    var lastActualMonth = '', totalActualExec = 0, actualMonthCount = 0;
+    Object.keys(allMosMap).sort().forEach(function(m) {
+        if(allMosMap[m].hasExec) { 
+            lastActualMonth = m; 
+            totalActualExec += allMosMap[m].exec; 
+            actualMonthCount++; 
+        }
+    });
+    
+    var globalData = { plan: [], execActual: [] };
+    var cumPlan = 0, cumExecActual = 0;
+    allFullMonths.forEach(function(m) {
+        var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
+        var mExec = allMosMap[m] && allMosMap[m].hasExec ? allMosMap[m].exec : 0;
+        
+        cumPlan += mPlan;
+        globalData.plan.push(window.isCostCumulative ? cumPlan : mPlan);
+        
+        if (lastActualMonth !== '' && m <= lastActualMonth) {
+            cumExecActual += mExec;
+            globalData.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
+        } else {
+            globalData.execActual.push(null);
+        }
+    });
+    
+    var reqStart = mos[0], reqEnd = mos[mos.length - 1];
+    var sIdx = allFullMonths.indexOf(reqStart);
+    var eIdx = allFullMonths.indexOf(reqEnd);
+    if(sIdx === -1) sIdx = 0; if(eIdx === -1) eIdx = allFullMonths.length - 1;
+    
+    var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
+    var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
+    var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
+
+    var optData = new Array(viewMonths.length).fill(null);
+    var pesData = new Array(viewMonths.length).fill(null);
     
     var lastActualIndex = -1;
     for (var j = 0; j < viewActual.length; j++) {
-        if (viewActual[j] != null) lastActualIndex = j;
+        if (viewActual[j] !== null) lastActualIndex = j;
     }
 
     for (var i = 0; i < viewMonths.length; i++) {
@@ -179,9 +240,14 @@ function renderCostTrendChart(mos) {
         }
     }
 
-    // 에러 방지: 안전한 최댓값 계산
-    var maxArr = [10].concat(viewPlan).concat(viewActual.filter(function(v){return v!=null;})).concat(pesData.filter(function(v){return v!=null;}));
+    // 최댓값 연산 중 NaN에 의한 렌더링 증발 현상 방지
+    var maxArr = [10];
+    viewPlan.forEach(function(v) { if(!isNaN(v)) maxArr.push(v); });
+    viewActual.forEach(function(v) { if(v!==null && !isNaN(v)) maxArr.push(v); });
+    pesData.forEach(function(v) { if(v!==null && !isNaN(v)) maxArr.push(v); });
+    
     var maxVal = Math.max.apply(null, maxArr);
+    if(isNaN(maxVal) || maxVal === -Infinity) maxVal = 100;
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
     
     var schData = [];
@@ -194,7 +260,7 @@ function renderCostTrendChart(mos) {
     });
     
     var summaryPlan = viewPlan[viewPlan.length - 1] || 0;
-    var isSummaryPred = viewActual[viewActual.length - 1] == null;
+    var isSummaryPred = viewActual[viewActual.length - 1] === null;
     var summaryExec = isSummaryPred ? (pesData[pesData.length - 1] || 0) : viewActual[viewActual.length - 1];
 
     var canvas = document.getElementById('costTrendChart');
@@ -222,7 +288,7 @@ function renderCostTrendChart(mos) {
             plugins: {
                 legend: { display: false },
                 datalabels: {
-                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw == null || cx.raw === 0) return false; return true; },
+                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
                     align: 'top', anchor: 'top', offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return Number(v||0).toFixed(1); }
                 },
                 tooltip: {
@@ -233,7 +299,7 @@ function renderCostTrendChart(mos) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], opt = optData[idx], pes = pesData[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
-                            if(actual != null) {
+                            if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
                                 lines.push(diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)");
@@ -255,14 +321,14 @@ function renderCostTrendChart(mos) {
 }
 
 // ====================================================================
-// [수정3] 기간 집행 요약 (2x2 레이아웃 & 전체예산 추가) 개선
+// [수정3] 기간 집행 요약 (실행 비율 카드 추가)
 // ====================================================================
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
     
     var finalBudget = 0;
     if (window.COST_DATA) {
-        finalBudget = window.COST_DATA.reduce(function(acc, cur) { return acc + (cur.plan || 0)/10000; }, 0);
+        finalBudget = window.COST_DATA.reduce(function(acc, cur) { return acc + (parseFloat(cur.plan) || 0)/10000; }, 0);
     }
     
     var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
@@ -708,8 +774,8 @@ function renderAdvancedMetrics(d,da,col,pf){
             if(weeklyCount === 2) F = 1.25; else if(weeklyCount === 3) F = 1.50; else if(weeklyCount >= 4) F = 2.0;
             var x = weeklyPts * F, p = 2 - (2 / (1 + Math.exp(-2.0 * x)));
             sd.push(sn); hd.push(hi); od.push(p);
-            var ws=[]; Array.from(g.d).forEach(dt2 => { ws=ws.concat(SCHEDULE_DATA.filter(s => s.date&&s.date.slice(0,10)===dt2)); });
-            if(ws.length>0){ var st = ws.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex,'').trim()); ss[i]={schTitle:st}; sh[i]={schTitle:st}; so[i]={schTitle:st}; }
+            var ws=[]; Array.from(g.d).forEach(dt2 => { ws=ws.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date&&s.date.slice(0,10)===dt2)); });
+            if(ws.length>0){ var st = ws.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(/[\u1000-\uFFFF]+/g,'').trim()); ss[i]={schTitle:st}; sh[i]={schTitle:st}; so[i]={schTitle:st}; }
         });
         var ps=new Set();
         bwk.forEach((k,i)=>{
@@ -720,8 +786,8 @@ function renderAdvancedMetrics(d,da,col,pf){
             if(nh>=3 && m>0){ var dv=vl.map(v=>v-m), cm=[], cs=0; dv.forEach(v=>{cs+=v; cm.push(cs);}); var R=Math.max.apply(null,cm)-Math.min.apply(null,cm), S=Math.sqrt(vl.reduce((a,v)=>a+Math.pow(v-m,2),0)/nh)||1; if(R>0) hs=Math.min(Math.max(Math.log(R/S)/Math.log(nh/2),0.01),0.99); }
             var cs2=new Set(Object.keys(grp(g.r,'sub'))), it=0; cs2.forEach(x => {if(ps.has(x))it++;});
             var un=new Set([...ps,...cs2]).size, jc=un===0?0:it/un; ps=cs2; cd.push(cn); hud.push(hs); jd.push(jc);
-            var bs=[]; Array.from(g.d).forEach(dt2 => { bs=bs.concat(SCHEDULE_DATA.filter(s => s.date&&s.date.slice(0,10)===dt2)); });
-            if(bs.length>0){ var st = bs.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex,'').trim()); sc[i]={schTitle:st}; shu[i]={schTitle:st}; sj[i]={schTitle:st}; }
+            var bs=[]; Array.from(g.d).forEach(dt2 => { bs=bs.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date&&s.date.slice(0,10)===dt2)); });
+            if(bs.length>0){ var st = bs.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(/[\u1000-\uFFFF]+/g,'').trim()); sc[i]={schTitle:st}; shu[i]={schTitle:st}; sj[i]={schTitle:st}; }
         });
         function dmc(id, l, xl, da, sa, cx) {
             if(!document.getElementById(id)) return;
