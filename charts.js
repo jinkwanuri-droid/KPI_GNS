@@ -115,7 +115,7 @@ function renderProjectProgress() {
 }
 
 // ====================================================================
-// [수정1] 투입비율 차트 (남/하/회 컬러 복구 및 글자 겹침 완벽 방지)
+// [수정1] 투입비율 차트 (남색/하늘색/회색 색상 복구 및 글자 겹침 방지)
 // ====================================================================
 function renderOvProjectRatio(all){
     var wrap = document.getElementById('ovPjRatioWrap');
@@ -145,9 +145,10 @@ function renderOvProjectRatio(all){
             <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:6px;">경상남도 서부의료원</span>
         </div>
         <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-            <div style="width:${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pmNum >= 10 ? pm+'%' : ''}</div>
-            <div style="width:${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${poNum >= 10 ? po+'%' : ''}</div>
-            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pcNum >= 10 ? pc+'%' : ''}</div>
+            <!-- 변경점: 넓이가 12% 미만이면 글자를 아예 숨겨서 겹치지 않게 합니다 -->
+            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pmNum >= 12 ? pm+'%' : ''}</div>
+            <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${poNum >= 12 ? po+'%' : ''}</div>
+            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pcNum >= 12 ? pc+'%' : ''}</div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; padding: 0 5px;">
             <span style="color:#00428E;">서부의료원</span>
@@ -164,7 +165,7 @@ function getMonthsBetween(start, end) {
 }
 
 // ====================================================================
-// [수정2] 인건비 추이 차트 (단월 덮어쓰기 로직 삭제 및 26년 말까지 항시 출력)
+// [수정2] 인건비 추이 차트 (0 데이터 무시 및 26년 4월부터 예상치 적용 로직 완벽 수정)
 // ====================================================================
 function renderCostTrendChart(mos) {
     if(typeof dC === 'function') dC('costTrendChart'); 
@@ -183,7 +184,7 @@ function renderCostTrendChart(mos) {
     var allMosMap = {};
     allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
     
-    // 안전한 데이터 맵핑
+    // 데이터 파싱: 값이 비어있거나 0인 경우 예상치 구간으로 인식하도록 수정
     safeCostData.forEach(function(r) {
         var m = r.date;
         if(m && m.length > 7) m = m.substring(0,7);
@@ -191,9 +192,10 @@ function renderCostTrendChart(mos) {
             var p = parseFloat(r.plan);
             if(!isNaN(p)) allMosMap[m].plan += (p / 10000);
             
-            if(r.exec !== null && r.exec !== undefined && r.exec !== '') {
+            if(r.exec !== null && r.exec !== undefined && String(r.exec).trim() !== '') {
                 var e = parseFloat(r.exec);
-                if(!isNaN(e)) {
+                // 핵심 변경점: 시트에 0이라고 적혀있어도 값이 없으면(미래 달이면) 예상치로 그리게 합니다.
+                if(!isNaN(e) && e > 0) {
                     allMosMap[m].exec += (e / 10000);
                     allMosMap[m].hasExec = true;
                 }
@@ -210,7 +212,6 @@ function renderCostTrendChart(mos) {
     var cumPlan = 0, cumExec = 0, cumOpt = 0, cumPes = 0;
     var isCum = window.isCostCumulative === true;
 
-    // 전체 프로젝트 기간(26년 12월)까지 누적/단월 및 예측값 완벽 연산
     allFullMonths.forEach(function(m) {
         var mPlan = allMosMap[m].plan;
         var mExec = allMosMap[m].hasExec ? allMosMap[m].exec : null;
@@ -231,15 +232,14 @@ function renderCostTrendChart(mos) {
             cumPes = cumExec;
             var valExec = isCum ? cumExec : mExec;
             globalData.execActual.push(valExec);
-            // 예측선이 끊기지 않고 이 지점부터 시작하도록 세팅
-            globalData.opt.push(valExec);
-            globalData.pes.push(valExec);
+            globalData.opt.push(valExec); // 예상선 연결점
+            globalData.pes.push(valExec); // 예상선 연결점
         } else {
             var stepOpt = mPlan * 0.9;
             var stepPes = mPlan * 1.1;
             cumOpt += stepOpt;
             cumPes += stepPes;
-            globalData.execActual.push(null);
+            globalData.execActual.push(null); // 이 달부터는 실행 데이터 없음 (점선 표시됨)
             globalData.opt.push(isCum ? cumOpt : stepOpt);
             globalData.pes.push(isCum ? cumPes : stepPes);
         }
@@ -247,8 +247,6 @@ function renderCostTrendChart(mos) {
     
     var sIdx = allFullMonths.indexOf(mos[0]);
     if(sIdx === -1) sIdx = 0;
-    
-    // 슬라이더 조작에 상관없이 예측 차트는 프로젝트 종료일(26년 12월)까지 보여줍니다.
     var eIdx = allFullMonths.length - 1; 
     
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
@@ -257,7 +255,6 @@ function renderCostTrendChart(mos) {
     var viewOpt = globalData.opt.slice(sIdx, eIdx + 1);
     var viewPes = globalData.pes.slice(sIdx, eIdx + 1);
 
-    // 최댓값 계산 시 NaN 제외 보호 로직
     var maxArr = [10];
     var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
     addMax(viewPlan); addMax(viewActual); addMax(viewOpt); addMax(viewPes);
@@ -324,7 +321,6 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 기간 집행 요약은 슬라이더가 위치한 마지막 달 기준으로 산출합니다.
     var targetMonthForSummary = mos[mos.length - 1];
     var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
     if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
