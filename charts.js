@@ -392,6 +392,10 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
 
     var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치 포함)</span>' : '';
     
+    // 예상값 구간일 때 라벨명을 동적으로 변경하여 혼동 방지
+    var execLabel = isPred ? '실행금액 (예상)' : '실행금액 (당시)';
+    var diffLabel = isPred ? '절감액 (계획-예상)' : '절감액 (계획-실행)';
+    
     wrap.innerHTML = `
     <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
         기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ${targetMonth}${titleSuffix})</span>
@@ -418,11 +422,11 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
             <div style="font-size:16px; font-weight:800; color:#64748b;">${totalPlan.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
         </div>
         <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:10px;">
-            <div style="font-size:11px; color:#0369a1; font-weight:700; margin-bottom:4px;">실행금액 (당시)</div>
+            <div style="font-size:11px; color:#0369a1; font-weight:700; margin-bottom:4px;">${execLabel}</div>
             <div style="font-size:16px; font-weight:800; color:#0284c7;">${totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
         </div>
         <div style="background:${diffColor}15; border:1px solid ${diffColor}40; border-radius:8px; padding:10px;">
-            <div style="font-size:11px; color:${diffColor}; font-weight:700; margin-bottom:4px;">절감액 (계획-실행)</div>
+            <div style="font-size:11px; color:${diffColor}; font-weight:700; margin-bottom:4px;">${diffLabel}</div>
             <div style="font-size:16px; font-weight:800; color:${diffColor};">${diff > 0 ? '+' : ''}${diff.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
             <div style="font-size:10px; color:${diffColor}; margin-top:2px;">${statusMsg}</div>
         </div>
@@ -757,29 +761,35 @@ function buildHeatmapHTML(dt,yr,c,tid){
 }
 function renderAdvancedMetrics(d,da,col,pf){
     try {
-        dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
+        if(typeof dC === 'function') {
+            dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
+        }
         if(!d||d.length===0)return;
-        var cr = calcStandaloneMetrics(d);
+        
+        var cr = typeof calcStandaloneMetrics === 'function' ? calcStandaloneMetrics(d) : {ot:0,shannon:0,hhi:0,cv:0,hurst:0,jaccard:0};
         var cvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), (cr.cv||0), (cr.hurst||0), (cr.jaccard||0)];
         var rawCvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), cr.cv||0, cr.hurst||0, cr.jaccard||0];
         var teamRawCvInsight = [0,0,0,0,0,0], teamCvInsight = [0,0,0,0,0,0];
-        var datasetsArr = [{ label: '선택 기간', data: cvInsight, borderColor: col, backgroundColor: hRgba(col, 0.15), borderWidth: 2, pointBackgroundColor: col, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5 }];
+        var datasetsArr = [{ label: '선택 기간', data: cvInsight, borderColor: col, backgroundColor: (typeof hRgba === 'function' ? hRgba(col, 0.15) : 'rgba(0,0,0,0.1)'), borderWidth: 2, pointBackgroundColor: col, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5 }];
+        
         if (pf === 'wp' || pf === 'pj') {
-            var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
-            var teamCr = calcStandaloneMetrics(teamData);
+            var teamData = typeof filtered === 'function' ? filtered().filter(r=>r.project==='경남 서부의료원') : [];
+            var teamCr = typeof calcStandaloneMetrics === 'function' ? calcStandaloneMetrics(teamData) : {ot:0,shannon:0,hhi:0,cv:0,hurst:0,jaccard:0};
             teamCvInsight = [teamCr.ot, (teamCr.shannon||0), (teamCr.hhi||0), (teamCr.cv||0), (teamCr.hurst||0), (teamCr.jaccard||0)];
             teamRawCvInsight = [teamCr.ot, (teamCr.shannon||0), (teamCr.hhi||0), teamCr.cv||0, teamCr.hurst||0, teamCr.jaccard||0];
             datasetsArr.push({ label: '팀 전체 평균', data: teamCvInsight, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0 });
         }
-        dC(pf + 'InsightRadar');
+        
+        if(typeof dC === 'function') dC(pf + 'InsightRadar');
         if(document.getElementById(pf + 'InsightRadar')) {
             CH[pf + 'InsightRadar'] = new Chart(document.getElementById(pf + 'InsightRadar').getContext('2d'), {
-                type: 'radar', data: { labels: INSIGHT_RADAR_LABELS, datasets: datasetsArr },
+                type: 'radar', data: { labels: (typeof INSIGHT_RADAR_LABELS !== 'undefined' ? INSIGHT_RADAR_LABELS : []), datasets: datasetsArr },
                 options: { responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: 40 }, plugins: { legend: { display: false }, datalabels: { display: cx => cx.datasetIndex === 0, formatter: v => Number(v).toFixed(2), color: col, font: { size: 10, weight: 'bold' }, anchor: 'end', align: 'end' }, tooltip: { callbacks: { label: cx => cx.datasetIndex === 0 ? cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2) : cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:10, weight:'800'}, color: '#64748b', padding: 15 } } } }
             });
         }
+        
         var tb = document.getElementById(pf + 'InsightTable');
-        if(tb) {
+        if(tb && typeof INSIGHT_METRICS_INFO !== 'undefined') {
             var tableHtml = '<table style="width:100%; border-collapse:collapse; margin-top:5px; table-layout:fixed;">';
             if (pf === 'wp') {
                 tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:11px;"><th style="padding:6px 2px; text-align:left; width:22%;">지표명</th><th style="padding:6px 2px; text-align:center; width:13%;">현재값</th><th style="padding:6px 2px; text-align:center; width:15%;">진단</th><th style="padding:6px 6px; text-align:left; width:50%;">값 해석 (목표 및 설명)</th></tr></thead><tbody>';
@@ -796,9 +806,10 @@ function renderAdvancedMetrics(d,da,col,pf){
             }
             tableHtml += '</tbody></table>'; tb.innerHTML = tableHtml;
         }
+        
         var wm={},bwm={};
         d.forEach(r=>{
-            var wi=getWeekInfo(r.date);
+            var wi = typeof getWeekInfo === 'function' ? getWeekInfo(r.date) : {key1:r.date, key2:r.date, label1:r.date, label2:r.date};
             if(!wm[wi.key1])wm[wi.key1]={l:wi.label1,r:[],d:new Set()}; wm[wi.key1].r.push(r);wm[wi.key1].d.add(r.date);
             if(!bwm[wi.key2])bwm[wi.key2]={l:wi.label2,r:[],d:new Set()}; bwm[wi.key2].r.push(r);bwm[wi.key2].d.add(r.date);
         });
@@ -806,9 +817,10 @@ function renderAdvancedMetrics(d,da,col,pf){
         var wl=[], bwl=[], sd=[], hd=[], od=[], cd=[], hud=[], jd=[];
         var ss=new Array(wk.length).fill(null), sh=new Array(wk.length).fill(null), so=new Array(wk.length).fill(null);
         var sc=new Array(bwk.length).fill(null), shu=new Array(bwk.length).fill(null), sj=new Array(bwk.length).fill(null);
+        
         wk.forEach((k,i)=>{
             var g=wm[k]; wl.push(g.l);
-            var tot=g.r.reduce((s,r)=>s+r.min,0)||1; var sm=grp(g.r,'sub'), hi=0, sn=0, ky=Object.keys(sm), N=ky.length;
+            var tot=g.r.reduce((s,r)=>s+r.min,0)||1; var sm = typeof grp === 'function' ? grp(g.r,'sub') : {}; var hi=0, sn=0, ky=Object.keys(sm), N=ky.length;
             ky.forEach(sub=>{var p=sm[sub]/tot; hi+=p*p; if(p>0)sn-=p*Math.log(p);}); if(N>1) sn=sn/Math.log(N); else sn=0;
             var weeklyPts = 0, weeklyCount = 0, dailyHours = {};
             g.r.forEach(r=>{ var dk = r.name + '|' + r.date; dailyHours[dk] = (dailyHours[dk]||0) + r.min; });
@@ -821,28 +833,40 @@ function renderAdvancedMetrics(d,da,col,pf){
             if(weeklyCount === 2) F = 1.25; else if(weeklyCount === 3) F = 1.50; else if(weeklyCount >= 4) F = 2.0;
             var x = weeklyPts * F, p = 2 - (2 / (1 + Math.exp(-2.0 * x)));
             sd.push(sn); hd.push(hi); od.push(p);
+            
             var ws=[]; Array.from(g.d).forEach(dt2 => { ws=ws.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date&&s.date.slice(0,10)===dt2)); });
-            if(ws.length>0){ var st = ws.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(/[\u1000-\uFFFF]+/g,'').trim()); ss[i]={schTitle:st}; sh[i]={schTitle:st}; so[i]={schTitle:st}; }
+            if(ws.length>0){ 
+                // 한글 텍스트를 파괴하던 정규식(.replace(/[\u1000-\uFFFF]+/g,''))을 완전히 제거했습니다.
+                var st = ws.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').trim()); 
+                ss[i]={schTitle:st}; sh[i]={schTitle:st}; so[i]={schTitle:st}; 
+            }
         });
+        
         var ps=new Set();
         bwk.forEach((k,i)=>{
             var g=bwm[k]; bwl.push(g.l);
-            var dt=grp(g.r,'date'), vl=Object.values(dt), m=vl.length>0 ? vl.reduce((a,b)=>a+b,0)/vl.length : 0;
+            var dt = typeof grp === 'function' ? grp(g.r,'date') : {}, vl=Object.values(dt), m=vl.length>0 ? vl.reduce((a,b)=>a+b,0)/vl.length : 0;
             var cv=m===0 ? 0 : Math.sqrt(vl.reduce((a,b)=>a+Math.pow(b-m,2),0)/vl.length)/m; var cn=Math.max(0,1-(cv/2.0));
             var hs=0.5, nh=vl.length;
             if(nh>=3 && m>0){ var dv=vl.map(v=>v-m), cm=[], cs=0; dv.forEach(v=>{cs+=v; cm.push(cs);}); var R=Math.max.apply(null,cm)-Math.min.apply(null,cm), S=Math.sqrt(vl.reduce((a,v)=>a+Math.pow(v-m,2),0)/nh)||1; if(R>0) hs=Math.min(Math.max(Math.log(R/S)/Math.log(nh/2),0.01),0.99); }
-            var cs2=new Set(Object.keys(grp(g.r,'sub'))), it=0; cs2.forEach(x => {if(ps.has(x))it++;});
+            var cs2=new Set(Object.keys(typeof grp === 'function' ? grp(g.r,'sub') : {})), it=0; cs2.forEach(x => {if(ps.has(x))it++;});
             var un=new Set([...ps,...cs2]).size, jc=un===0?0:it/un; ps=cs2; cd.push(cn); hud.push(hs); jd.push(jc);
+            
             var bs=[]; Array.from(g.d).forEach(dt2 => { bs=bs.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date&&s.date.slice(0,10)===dt2)); });
-            if(bs.length>0){ var st = bs.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(/[\u1000-\uFFFF]+/g,'').trim()); sc[i]={schTitle:st}; shu[i]={schTitle:st}; sj[i]={schTitle:st}; }
+            if(bs.length>0){ 
+                // 여기도 한글 파괴 정규식을 제거했습니다.
+                var st = bs.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').trim()); 
+                sc[i]={schTitle:st}; shu[i]={schTitle:st}; sj[i]={schTitle:st}; 
+            }
         });
+        
         function dmc(id, l, xl, da, sa, cx) {
             if(!document.getElementById(id)) return;
             try {
                 var sa2 = sa.map(x => x===null ? null : 1.1);
                 var cfg = { type:'line', label:'주요일정', data:sa2, backgroundColor:'transparent', borderColor:'transparent', showLine:false, pointRadius: cx2 => cx2.raw!==null ? 6 : 0, pointHoverRadius: 8, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth:1.5, isSchedule:true, order:0, spanGaps:false };
                 CH[id] = new Chart(document.getElementById(id).getContext('2d'),{
-                    type:'line', data:{labels:xl, datasets:[{data:da, label:l, borderColor:cx, backgroundColor:hRgba(cx,0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:0, pointHoverRadius:4, order:1}, cfg]},
+                    type:'line', data:{labels:xl, datasets:[{data:da, label:l, borderColor:cx, backgroundColor:(typeof hRgba === 'function' ? hRgba(cx,0.1) : 'transparent'), borderWidth:2, fill:true, tension:0.3, pointRadius:0, pointHoverRadius:4, order:1}, cfg]},
                     options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:25}}, interaction:{mode:'index',intersect:false}, plugins:{ legend:{display:false}, datalabels:{display:false}, tooltip:{ displayColors:false, filter: (it,i,its) => { var hs=its.some(x=>x.dataset.isSchedule&&x.raw!==null); if(hs)return it.dataset.isSchedule; return !it.dataset.isSchedule; }, callbacks:{ title: cx => cx[0].dataset.isSchedule ? null : (Array.isArray(cx[0].label) ? cx[0].label.join(' ') : cx[0].label), label: cx => cx.dataset.isSchedule ? sa[cx.dataIndex].schTitle : cx.dataset.label+': '+(cx.raw!=null ? Number(cx.raw).toFixed(2) : '0.00') } } }, scales:{ x:{grid:{display:false}, ticks:{maxTicksLimit:10,font:{size:9}}}, y:{ grid:{color:'rgba(226,232,240,0.5)'}, min:0, max: 1.2, ticks: { callback: val => val > 1.01 ? '' : Number(val).toFixed(1) } } } }
                 });
             } catch(e) {}
