@@ -140,9 +140,10 @@ function renderOvProjectRatio(all){
             <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:6px;">경상남도 서부의료원</span>
         </div>
         <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-            <div style="width:${pm}%; background:#8b5cf6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:bold; transition: width 0.3s ease;">${pm > 5 ? pm+'%' : ''}</div>
-            <div style="width:${po}%; background:#f59e0b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:bold; transition: width 0.3s ease;">${po > 5 ? po+'%' : ''}</div>
-            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:12px; font-weight:bold; transition: width 0.3s ease;">${pc > 5 ? pc+'%' : ''}</div>
+            <!-- 변경점: overflow:hidden, white-space:nowrap 추가 및 > 8 조건으로 변경 -->
+            <div style="width:${pm}%; background:#8b5cf6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pm > 8 ? pm+'%' : ''}</div>
+            <div style="width:${po}%; background:#f59e0b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${po > 8 ? po+'%' : ''}</div>
+            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pc > 8 ? pc+'%' : ''}</div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; padding: 0 5px;">
             <span style="color:#8b5cf6;">서부의료원</span>
@@ -162,38 +163,49 @@ function getMonthsBetween(start, end) {
 // [수정2] 인건비 추이 차트 (긍정 0.9x / 부정 1.1x 시나리오) 개선
 // ====================================================================
 function renderCostTrendChart(mos) {
+    
+    var lastActualIndex = -1;
+    for (var j = 0; j < viewActual.length; j++) {
+        if (viewActual[j] != null) lastActualIndex = j;
+    }
+
     for (var i = 0; i < viewMonths.length; i++) {
         if (i === lastActualIndex) {
-            // 실행 데이터의 마지막 지점에서 예측선 시작 (연결됨)
             optData[i] = viewActual[i];
             pesData[i] = viewActual[i];
         } else if (i > lastActualIndex) {
-            // 긍정 0.9 / 부정 1.1 시나리오 적용
             optData[i] = viewPlan[i] * 0.9;
             pesData[i] = viewPlan[i] * 1.1;
         }
     }
 
-    var maxVal = Math.max(...viewPlan, ...viewActual.filter(function(v){return v!==null;}), ...pesData.filter(function(v){return v!==null;}));
+    // 에러 방지: 안전한 최댓값 계산
+    var maxArr = [10].concat(viewPlan).concat(viewActual.filter(function(v){return v!=null;})).concat(pesData.filter(function(v){return v!=null;}));
+    var maxVal = Math.max.apply(null, maxArr);
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
+    
     var schData = [];
     viewMonths.forEach(function(m) {
-        var schedules = SCHEDULE_DATA.filter(function(s) { return s.date && s.date.startsWith(m); });
+        var schedules = (typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(function(s) { return s.date && s.date.startsWith(m); });
         if(schedules.length > 0) {
-            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').replace(emojiRegex,'').trim(); });
+            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').replace(/[\u1000-\uFFFF]+/g,'').trim(); });
             schData.push({ schTitle: st, yPos: scheduleTopY });
         } else { schData.push(null); }
     });
     
     var summaryPlan = viewPlan[viewPlan.length - 1] || 0;
-    var isSummaryPred = viewActual[viewActual.length - 1] === null;
+    var isSummaryPred = viewActual[viewActual.length - 1] == null;
     var summaryExec = isSummaryPred ? (pesData[pesData.length - 1] || 0) : viewActual[viewActual.length - 1];
 
-    var ctx = document.getElementById('costTrendChart').getContext('2d');
+    var canvas = document.getElementById('costTrendChart');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)'); gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
     
-    CH.costTrendChart = new Chart(ctx, {
+    if(window.CH && window.CH.costTrendChart) { window.CH.costTrendChart.destroy(); }
+
+    window.CH.costTrendChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: viewMonths,
@@ -210,8 +222,8 @@ function renderCostTrendChart(mos) {
             plugins: {
                 legend: { display: false },
                 datalabels: {
-                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
-                    align: 'top', anchor: 'top', offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return v.toFixed(1); }
+                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw == null || cx.raw === 0) return false; return true; },
+                    align: 'top', anchor: 'top', offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return Number(v||0).toFixed(1); }
                 },
                 tooltip: {
                     displayColors: false, backgroundColor: 'rgba(15,23,42,0.95)', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, filter: function(item, index) { return index === 0; },
@@ -220,24 +232,26 @@ function renderCostTrendChart(mos) {
                         label: function(cx) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], opt = optData[idx], pes = pesData[idx];
-                            var lines = [ "계획 인건비: " + plan.toFixed(1) + " 천만" ];
-                            if(actual !== null) {
-                                lines.push("실행 인건비: " + actual.toFixed(1) + " 천만");
-                                var diff = plan - actual;
+                            var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
+                            if(actual != null) {
+                                lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
+                                var diff = (plan||0) - actual;
                                 lines.push(diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)");
                             } else {
-                                lines.push("긍정 시나리오: " + opt.toFixed(1) + " 천만");
-                                lines.push("부정 시나리오: " + pes.toFixed(1) + " 천만");
+                                lines.push("긍정 시나리오: " + Number(opt||0).toFixed(1) + " 천만");
+                                lines.push("부정 시나리오: " + Number(pes||0).toFixed(1) + " 천만");
                             }
                             return lines;
                         }
                     }
                 }
             },
-            scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } }, y: { grid: { color: 'rgba(226,232,240,0.5)' }, min: 0, max: scheduleTopY, ticks: { stepSize: 10, callback: function(v) { return v.toFixed(1) + '천만'; } } } }
+            scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } }, y: { grid: { color: 'rgba(226,232,240,0.5)' }, min: 0, max: scheduleTopY, ticks: { stepSize: 10, callback: function(v) { return Number(v||0).toFixed(1) + '천만'; } } } }
         }
     });
-    renderCostSummary(reqEnd, summaryPlan, summaryExec, isSummaryPred);
+    if(typeof renderCostSummary === 'function') {
+        renderCostSummary(reqEnd, summaryPlan, summaryExec, isSummaryPred);
+    }
 }
 
 // ====================================================================
