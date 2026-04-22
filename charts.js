@@ -128,27 +128,23 @@ function renderOvProjectRatio(all){
     var pm = t>0 ? (m/t*100) : 0; var po = t>0 ? (o/t*100) : 0; var pc = t>0 ? (c/t*100) : 0;
     var wrap = document.getElementById('ovPjRatioWrap');
     if(!wrap) return;
-
+    
     var html = `
-        <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 8px;">
-            프로젝트 투입비율<br>
-            <strong style="font-size: 24px; color: #10b981;">${pm.toFixed(1)}%</strong> <span style="font-size: 14px; color: #1e293b;">경상남도 서부의료원</span>
-        </div>
-        <div style="display: flex; height: 24px; border-radius: 12px; overflow: hidden; width: 100%; background: #cbd5e1;">
-            <div style="width: ${pm}%; background: #10b981; color: white; text-align: center; font-size: 12px; line-height: 24px; font-weight: bold;">
-                ${pm > 5 ? pm.toFixed(1) + '%' : ''}
+        <div class="pj-ratio-bar-bg">
+            <div class="pj-ratio-fill" style="width: ${pm}%; background: #00428E;" title="경남 서부의료원: ${fH(m)}h">
+                ${pm > 8 ? pm.toFixed(1) + '%' : ''}
             </div>
-            <div style="width: ${po}%; background: #f97316; color: white; text-align: center; font-size: 12px; line-height: 24px; font-weight: bold;">
-                ${po > 5 ? po.toFixed(1) + '%' : ''}
+            <div class="pj-ratio-fill" style="width: ${po}%; background: #3b82f6;" title="타 프로젝트: ${fH(o)}h">
+                ${po > 8 ? po.toFixed(1) + '%' : ''}
             </div>
-            <div style="width: ${pc}%; background: #94a3b8; color: white; text-align: center; font-size: 12px; line-height: 24px; font-weight: bold;">
-                ${pc > 5 ? pc.toFixed(1) + '%' : ''}
+            <div class="pj-ratio-fill" style="width: ${pc}%; background: #cbd5e1; color: #334155;" title="공통업무: ${fH(c)}h">
+                ${pc > 8 ? pc.toFixed(1) + '%' : ''}
             </div>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-top: 6px; font-weight: 600;">
-            <span style="width: ${pm}%;"></span>
-            <span style="width: ${po}%; text-align: center; color: #f97316;">타 프로젝트</span>
-            <span style="width: ${pc}%; text-align: center;">공통</span>
+        <div class="pj-ratio-labels">
+            <div style="flex-basis: ${pm}%; text-align: center;"><span style="color:#00428E;font-weight:900;">${fH(m)}h</span> (서부의료원)</div>
+            <div style="flex-basis: ${po}%; text-align: center;"><span style="color:#3b82f6;font-weight:900;">${fH(o)}h</span> (타 프로젝트)</div>
+            <div style="flex-basis: ${pc}%; text-align: center;"><span style="color:#64748b;font-weight:900;">${fH(c)}h</span> (공통)</div>
         </div>
     `;
     wrap.innerHTML = html;
@@ -160,85 +156,136 @@ function getMonthsBetween(start, end) {
     return res;
 }
 
-function renderOvProjectRatio(all){
-    var m=0,o=0,c=0;
-    all.forEach(function(r){if(r.project==='경남 서부의료원')m+=r.min;else if(r.project==='타 프로젝트')o+=r.min;else c+=r.min;});
-    var t=m+o+c;
-    var pm = t>0 ? (m/t*100) : 0; var po = t>0 ? (o/t*100) : 0; var pc = t>0 ? (c/t*100) : 0;
-    var wrap = document.getElementById('ovPjRatioWrap');
-    if(!wrap) return;
+function renderCostTrendChart(mos) {
+    dC('costTrendChart'); window.lastCostMos = mos;
+    if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
+    
+    var globalStart = '2024-03';
+    var globalEnd = '2026-12';
+    var allFullMonths = getMonthsBetween(globalStart, globalEnd);
+    
+    var allMosMap = {};
+    COST_DATA.forEach(function(r) {
+        if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0 };
+        allMosMap[r.date].plan += (r.plan / 10000); allMosMap[r.date].exec += (r.exec / 10000);
+    });
+    
+    var lastActualMonth = '', totalActualExec = 0, actualMonthCount = 0;
+    Object.keys(allMosMap).sort().forEach(function(m) {
+        if(allMosMap[m].exec > 0) { lastActualMonth = m; totalActualExec += allMosMap[m].exec; actualMonthCount++; }
+    });
+    var avgExec = actualMonthCount > 0 ? (totalActualExec / actualMonthCount) : 0;
+    
+    var globalData = { plan: [], execActual: [], execPred: [] };
+    var cumPlan = 0, cumExecActual = 0, cumExecPred = 0;
+    
+    allFullMonths.forEach(function(m) {
+        var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
+        var mExec = allMosMap[m] ? allMosMap[m].exec : 0;
+        
+        cumPlan += mPlan;
+        var curPlanVal = window.isCostCumulative ? cumPlan : mPlan;
+        globalData.plan.push(curPlanVal);
+        
+        if (!lastActualMonth || m < lastActualMonth) {
+            cumExecActual += mExec; cumExecPred = cumExecActual;
+            globalData.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
+            globalData.execPred.push(null);
+        } else if (m === lastActualMonth) {
+            cumExecActual += mExec; cumExecPred = cumExecActual;
+            var val = window.isCostCumulative ? cumExecActual : mExec;
+            globalData.execActual.push(val);
+            globalData.execPred.push(val);
+        } else {
+            cumExecPred += avgExec;
+            globalData.execActual.push(null);
+            globalData.execPred.push(window.isCostCumulative ? cumExecPred : avgExec);
+        }
+    });
+    
+    var reqStart = mos[0], reqEnd = mos[mos.length - 1];
+    var sIdx = allFullMonths.indexOf(reqStart);
+    var eIdx = allFullMonths.indexOf(reqEnd);
+    if(sIdx === -1) sIdx = 0; if(eIdx === -1) eIdx = allFullMonths.length - 1;
+    
+    var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
+    var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
+    var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
+    var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
+    
+    var maxVal = Math.max(...viewPlan, ...viewActual.filter(function(v){return v!==null;}), ...viewPred.filter(function(v){return v!==null;}));
+    var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
+    
+    var schData = [];
+    viewMonths.forEach(function(m) {
+        var schedules = SCHEDULE_DATA.filter(function(s) { return s.date && s.date.startsWith(m); });
+        if(schedules.length > 0) {
+            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').replace(emojiRegex,'').trim(); });
+            schData.push({ schTitle: st, yPos: scheduleTopY });
+        } else { schData.push(null); }
+    });
 
-    var html = `
-        <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 8px;">
-            프로젝트 투입비율<br>
-            <strong style="font-size: 24px; color: #10b981;">${pm.toFixed(1)}%</strong> <span style="font-size: 14px; color: #1e293b;">경상남도 서부의료원</span>
-        </div>
-        <div style="display: flex; height: 24px; border-radius: 12px; overflow: hidden; width: 100%; background: #cbd5e1;">
-            <div style="width: ${pm}%; background: #10b981; color: white; text-align: center; font-size: 12px; line-height: 24px; font-weight: bold;">
-                ${pm > 5 ? pm.toFixed(1) + '%' : ''}
-            </div>
-            <div style="width: ${po}%; background: #f97316; color: white; text-align: center; font-size: 12px; line-height: 24px; font-weight: bold;">
-                ${po > 5 ? po.toFixed(1) + '%' : ''}
-            </div>
-            <div style="width: ${pc}%; background: #94a3b8; color: white; text-align: center; font-size: 12px; line-height: 24px; font-weight: bold;">
-                ${pc > 5 ? pc.toFixed(1) + '%' : ''}
-            </div>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-top: 6px; font-weight: 600;">
-            <span style="width: ${pm}%;"></span>
-            <span style="width: ${po}%; text-align: center; color: #f97316;">타 프로젝트</span>
-            <span style="width: ${pc}%; text-align: center;">공통</span>
-        </div>
-    `;
-    wrap.innerHTML = html;
+    var summaryPlan = viewPlan[viewPlan.length - 1] || 0;
+    var summaryExec = viewActual[viewActual.length - 1] !== null ? viewActual[viewActual.length - 1] : (viewPred[viewPred.length - 1] || 0);
+    var isSummaryPred = viewActual[viewActual.length - 1] === null;
+    
+    var ctx = document.getElementById('costTrendChart').getContext('2d');
+    var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
+    gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)'); gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
+    var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
+    gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); gradPred.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+    
+    CH.costTrendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: viewMonths,
+            datasets: [
+                { label: '실행 인건비', data: viewActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2 },
+                { label: '실행 (예상)', data: viewPred, borderColor: '#8b5cf6', backgroundColor: window.isCostCumulative ? gradPred : 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3 },
+                { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 4 },
+                { type:'line', label:'주요일정', data: schData.map(function(x) { return x ? x.yPos : null; }), backgroundColor:'transparent', borderColor:'transparent', showLine:false, pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5, isSchedule:true, order:0, spanGaps:false }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: { top: 40, right: 20, left: 10, bottom: 10 } }, interaction: { mode: 'nearest', intersect: true },
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
+                    align: function(cx) { var idx = cx.dataIndex, planVal = viewPlan[idx], actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
+                    anchor: function(cx) { var idx = cx.dataIndex, planVal = viewPlan[idx], actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
+                    offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return v.toFixed(1); }
+                },
+                tooltip: {
+                    displayColors: false, backgroundColor: 'rgba(15,23,42,0.95)', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, filter: function(item, index) { return index === 0; },
+                    callbacks: {
+                        title: function(cx) { return cx[0].label; },
+                        label: function(cx) {
+                            var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
+                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx], diff = plan - actual;
+                            var diffText = diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)";
+                            return [ "계획 인건비: " + plan.toFixed(1) + " 천만", "실행 인건비" + (viewActual[idx] === null ? " (예상)" : "") + ": " + actual.toFixed(1) + " 천만", diffText ];
+                        }
+                    }
+                }
+            },
+            scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } }, y: { grid: { color: 'rgba(226,232,240,0.5)' }, min: 0, max: scheduleTopY, ticks: { stepSize: 10, callback: function(v) { return v.toFixed(1) + '천만'; } } } }
+        }
+    });
+    renderCostSummary(reqEnd, summaryPlan, summaryExec, isSummaryPred);
 }
 
-function renderCostSummary(targetMonth, totalPlan, totalExec, isPred, totalFinalBudget) {
+function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
-    
     var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
     var diff = totalPlan - totalExec;
-    
-    var statusClass = 'good';
-    var diffLabel = '절감액';
-    if(ratio > 100) { 
-        statusClass = 'danger'; 
-        diffLabel = '초과액'; 
-        diff = Math.abs(diff); 
-    } else if (ratio > 90) { 
-        statusClass = 'warn'; 
-    }
-
-    // 상태에 따른 박스 색상 설정 (기존 style.css의 느낌을 살림)
-    var dotBg = statusClass === 'danger' ? '#fef2f2' : (statusClass === 'warn' ? '#fffbeb' : '#f0fdf4');
-    var dotBorder = statusClass === 'danger' ? '#fecaca' : (statusClass === 'warn' ? '#fde68a' : '#bbf7d0');
-    var dotColor = statusClass === 'danger' ? '#991b1b' : (statusClass === 'warn' ? '#92400e' : '#166534');
-    var dotValColor = statusClass === 'danger' ? '#b91c1c' : (statusClass === 'warn' ? '#b45309' : '#15803d');
-
-    var html = `
-        <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
-            기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ${targetMonth})</span>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-            <div class="cost-sum-box" style="padding:15px; text-align:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
-                <div class="cost-sum-title" style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">예산최종금액</div>
-                <div style="font-size:16px; font-weight:800; color:#1e293b;">${(totalFinalBudget||0).toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})}<span style="font-size:11px;margin-left:2px;">천만</span></div>
-            </div>
-            <div class="cost-sum-box" style="padding:15px; text-align:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
-                <div class="cost-sum-title" style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">계획금액 (당시)</div>
-                <div style="font-size:16px; font-weight:800; color:#1e293b;">${totalPlan.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})}<span style="font-size:11px;margin-left:2px;">천만</span></div>
-            </div>
-            <div class="cost-sum-box" style="padding:15px; text-align:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
-                <div class="cost-sum-title" style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">실행금액 (당시)${isPred ? ' <span style="color:#8b5cf6;">(예상)</span>' : ''}</div>
-                <div style="font-size:16px; font-weight:800; color:#1e293b;">${totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})}<span style="font-size:11px;margin-left:2px;">천만</span></div>
-            </div>
-            <div class="cost-sum-box" style="padding:15px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:${dotBg}; border:1px solid ${dotBorder}; border-radius:8px;">
-                <div style="font-size:12px; font-weight:800; color:${dotColor}; margin-bottom:4px;">${diffLabel}</div>
-                <div style="font-size:18px; font-weight:900; color:${dotValColor};">${diff.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})}<span style="font-size:12px;margin-left:2px;">천만</span></div>
-            </div>
-        </div>
-    `;
-    wrap.innerHTML = html;
+    var statusClass = 'good', statusMsg = '효율적 집행 (우수)', diffLabel = '예산 절감액';
+    if(ratio > 100) { statusClass = 'danger'; statusMsg = '예산 초과'; diffLabel = '예산 초과액'; } else if (ratio > 90) { statusClass = 'warn'; statusMsg = '정상 (한계 근접)'; }
+    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상)</span>' : '';
+    wrap.innerHTML = '<div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ' + targetMonth + ')</span></div>' +
+        '<div class="cost-sum-box" style="margin-bottom: 10px;"><div class="cost-sum-title">계획 대비 실행 비율' + titleSuffix + '</div><div style="display:flex; align-items:center; gap:10px;"><div class="cost-sum-val" style="margin:0; color:#00428E;">' + ratio + '%</div><div class="cost-sum-pct ' + statusClass + '">' + statusMsg + '</div></div><div style="height:4px; width:100%; background:#e2e8f0; border-radius:2px; margin-top:12px; overflow:hidden;"><div style="height:100%; width:' + Math.min(ratio, 100) + '%; background:' + (statusClass === 'danger' ? '#ef4444' : statusClass === 'warn' ? '#f59e0b' : '#10b981') + ';"></div></div></div>' +
+        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 10px;"><div class="cost-sum-box" style="padding:15px; text-align:center;"><div class="cost-sum-title">계획 금액</div><div style="font-size:16px; font-weight:800; color:#94a3b8;">' + totalPlan.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:11px;margin-left:2px;">천만</span></div></div><div class="cost-sum-box" style="padding:15px; text-align:center;"><div class="cost-sum-title">실행 금액' + titleSuffix + '</div><div style="font-size:16px; font-weight:800; color:#1e293b;">' + totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:11px;margin-left:2px;">천만</span></div></div></div>' +
+        '<div class="cost-sum-box" style="padding:15px; display:flex; justify-content:space-between; align-items:center; background:' + (diff >= 0 ? '#f0fdf4' : '#fef2f2') + '; border-color:' + (diff >= 0 ? '#bbf7d0' : '#fecaca') + ';"><div style="font-size:13px; font-weight:800; color:' + (diff >= 0 ? '#166534' : '#991b1b') + ';">' + diffLabel + '</div><div style="font-size:18px; font-weight:900; color:' + (diff >= 0 ? '#15803d' : '#b91c1c') + ';">' + Math.abs(diff).toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:12px;margin-left:2px;">천만원</span></div></div>';
 }
 
 function renderDashStage(pd){
