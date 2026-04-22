@@ -115,7 +115,7 @@ function renderProjectProgress() {
 }
 
 // ====================================================================
-// [완벽수정 1] 투입비율 차트 (글자 겹침 방지 및 색상 변경)
+// [수정1] 투입비율 차트 (남/하/회 컬러 복구 및 글자 겹침 완벽 방지)
 // ====================================================================
 function renderOvProjectRatio(all){
     var wrap = document.getElementById('ovPjRatioWrap');
@@ -133,21 +133,25 @@ function renderOvProjectRatio(all){
     var pm = (m/t*100).toFixed(1);
     var po = (o/t*100).toFixed(1);
     var pc = (c/t*100).toFixed(1);
+    
+    var pmNum = parseFloat(pm);
+    var poNum = parseFloat(po);
+    var pcNum = parseFloat(pc);
 
     wrap.innerHTML = `
     <div style="display:flex; flex-direction:column; gap:12px; padding: 10px 5px; height:100%; justify-content:center;">
         <div style="display:flex; align-items:flex-end; gap:8px;">
-            <span style="font-size:28px; font-weight:900; color:#8b5cf6;">${pm}%</span>
+            <span style="font-size:28px; font-weight:900; color:#00428E;">${pm}%</span>
             <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:6px;">경상남도 서부의료원</span>
         </div>
         <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-            <div style="width:${pm}%; background:#8b5cf6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pm >= 8 ? pm+'%' : ''}</div>
-            <div style="width:${po}%; background:#f59e0b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${po >= 8 ? po+'%' : ''}</div>
-            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pc >= 8 ? pc+'%' : ''}</div>
+            <div style="width:${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pmNum >= 10 ? pm+'%' : ''}</div>
+            <div style="width:${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${poNum >= 10 ? po+'%' : ''}</div>
+            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pcNum >= 10 ? pc+'%' : ''}</div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; padding: 0 5px;">
-            <span style="color:#8b5cf6;">서부의료원</span>
-            <span style="color:#f59e0b;">타 프로젝트</span>
+            <span style="color:#00428E;">서부의료원</span>
+            <span style="color:#3b82f6;">타 프로젝트</span>
             <span style="color:#94a3b8;">공통/기타</span>
         </div>
     </div>`;
@@ -160,7 +164,7 @@ function getMonthsBetween(start, end) {
 }
 
 // ====================================================================
-// [완벽수정 2] 인건비 추이 차트 (NaN 렌더링 에러 방지 및 항상 예측 표시)
+// [수정2] 인건비 추이 차트 (단월 덮어쓰기 로직 삭제 및 26년 말까지 항시 출력)
 // ====================================================================
 function renderCostTrendChart(mos) {
     if(typeof dC === 'function') dC('costTrendChart'); 
@@ -170,7 +174,6 @@ function renderCostTrendChart(mos) {
     if(!canvas) return;
     var ctx = canvas.getContext('2d');
 
-    // 데이터가 아예 없을 경우 방어 코드
     var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
     if(!mos || !mos.length || safeCostData.length === 0) return;
     
@@ -180,7 +183,7 @@ function renderCostTrendChart(mos) {
     var allMosMap = {};
     allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
     
-    // 1. 데이터 파싱 및 맵핑 (NaN 에러 완벽 차단)
+    // 안전한 데이터 맵핑
     safeCostData.forEach(function(r) {
         var m = r.date;
         if(m && m.length > 7) m = m.substring(0,7);
@@ -203,11 +206,11 @@ function renderCostTrendChart(mos) {
         if(allMosMap[m] && allMosMap[m].hasExec) lastActualMonth = m;
     });
     
-    // 2. 누적 및 긍정/부정 시나리오 연산
     var globalData = { plan: [], execActual: [], opt: [], pes: [] };
     var cumPlan = 0, cumExec = 0, cumOpt = 0, cumPes = 0;
     var isCum = window.isCostCumulative === true;
 
+    // 전체 프로젝트 기간(26년 12월)까지 누적/단월 및 예측값 완벽 연산
     allFullMonths.forEach(function(m) {
         var mPlan = allMosMap[m].plan;
         var mExec = allMosMap[m].hasExec ? allMosMap[m].exec : null;
@@ -228,8 +231,9 @@ function renderCostTrendChart(mos) {
             cumPes = cumExec;
             var valExec = isCum ? cumExec : mExec;
             globalData.execActual.push(valExec);
-            globalData.opt.push(valExec); // 예측 연결 지점
-            globalData.pes.push(valExec); // 예측 연결 지점
+            // 예측선이 끊기지 않고 이 지점부터 시작하도록 세팅
+            globalData.opt.push(valExec);
+            globalData.pes.push(valExec);
         } else {
             var stepOpt = mPlan * 0.9;
             var stepPes = mPlan * 1.1;
@@ -243,7 +247,8 @@ function renderCostTrendChart(mos) {
     
     var sIdx = allFullMonths.indexOf(mos[0]);
     if(sIdx === -1) sIdx = 0;
-    // 슬라이더의 종료 월과 무관하게, 추이 예측 차트는 프로젝트 전체 기간(globalEnd)까지 항상 보여주도록 설정합니다.
+    
+    // 슬라이더 조작에 상관없이 예측 차트는 프로젝트 종료일(26년 12월)까지 보여줍니다.
     var eIdx = allFullMonths.length - 1; 
     
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
@@ -252,7 +257,7 @@ function renderCostTrendChart(mos) {
     var viewOpt = globalData.opt.slice(sIdx, eIdx + 1);
     var viewPes = globalData.pes.slice(sIdx, eIdx + 1);
 
-    // 3. 차트 Y축 최댓값 연산 보호
+    // 최댓값 계산 시 NaN 제외 보호 로직
     var maxArr = [10];
     var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
     addMax(viewPlan); addMax(viewActual); addMax(viewOpt); addMax(viewPes);
@@ -319,7 +324,7 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 요약 카드는 현재 슬라이더의 마지막 달을 기준으로 산출합니다.
+    // 기간 집행 요약은 슬라이더가 위치한 마지막 달 기준으로 산출합니다.
     var targetMonthForSummary = mos[mos.length - 1];
     var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
     if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
@@ -334,9 +339,6 @@ function renderCostTrendChart(mos) {
     }
 }
 
-// ====================================================================
-// [완벽수정 3] 기간 집행 요약 (실행 비율 카드 추가 복원)
-// ====================================================================
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
     
@@ -362,7 +364,6 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
         기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ${targetMonth}${titleSuffix})</span>
     </div>
     
-    <!-- 계획 대비 실행 비율 카드 -->
     <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
         <div style="font-size:12px; color:#64748b; font-weight:700; margin-bottom:8px;">계획 대비 실행 비율</div>
         <div style="display:flex; align-items:center; gap:10px;">
@@ -374,7 +375,6 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
         </div>
     </div>
 
-    <!-- 2x2 그리드 상세 집행 내역 -->
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
             <div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">예산최종금액 (전체)</div>
