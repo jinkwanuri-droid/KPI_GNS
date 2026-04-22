@@ -10,6 +10,7 @@ Chart.defaults.plugins.tooltip.borderColor = 'rgba(99,102,241,0.2)';
 Chart.defaults.plugins.tooltip.borderWidth = 1;
 Chart.defaults.plugins.tooltip.cornerRadius = 10;
 Chart.defaults.plugins.tooltip.padding = 10;
+
 Chart.register({
     id:'verticalLine',
     beforeDatasetsDraw:function(c){
@@ -33,6 +34,7 @@ Chart.register({
         });
     }
 });
+
 const customRadarBgPlugin = {
     id: 'customRadarBg',
     beforeDraw: (chart) => {
@@ -60,13 +62,16 @@ const customRadarBgPlugin = {
     }
 };
 Chart.register(customRadarBgPlugin);
+
 // --- Dashboard 탭 (프로젝트 전체) ---
 function renderDashboardTab(){
     var all=filtered();if(!all.length)return;
     var tm=all.reduce(function(s,r){return s+r.min;},0),mos=getMos(all),pd=all.filter(function(r){return r.project==='경남 서부의료원';}),pmos=getMos(pd),adt=new Set(all.map(function(r){return r.date;})).size;
     document.getElementById('ovTotalHour').innerText=fH(tm)+'h';document.getElementById('ovTotalMember').innerText=MEMBERS.length+'명';document.getElementById('ovTotalMonth').innerText=mos.length+'개월';document.getElementById('ovActiveDays').innerText=adt+'일';
+    
     safeRender(function(){renderProjectProgress();});
     safeRender(function(){renderOvProjectRatio(all);});
+    
     var gd=document.getElementById('topKpiGrid');gd.innerHTML='';
     var gtm=pd.reduce(function(s,r){return s+r.min;},0);
     MEMBERS.forEach(function(n){
@@ -78,8 +83,9 @@ function renderDashboardTab(){
         mc.innerHTML=bg+'<div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;justify-content:center;"><div class="member-kpi-header"><div><div style="font-size:18px;font-weight:900;color:#1e293b;">'+n+'</div><div style="font-size:11px;color:#94a3b8;">'+po+'</div></div></div><div style="color:'+MC[n]+';font-size:28px;font-weight:800;margin-top:4px;">'+fH(mP)+'h <span style="font-size:13px;color:#64748b;font-weight:600;">| 총 '+fH(tt)+'h</span></div><div style="height:1px;background:rgba(226,232,240,0.8);margin:10px 0;"></div><div style="font-size:11px;color:#64748b;font-weight:600;">GNWMC 팀원 내 기여도</div><div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;"><div style="height:100%;background:'+MC[n]+';width:'+pct+'%;border-radius:4px;"></div></div><span style="font-size:11px;font-weight:700;color:'+MC[n]+';">'+pct+'%</span></div><div style="margin-top:12px;font-size:11px;color:#64748b;font-weight:600;">전체시간 대비 서부의료원 비율</div><div style="margin-top:4px;display:flex;align-items:center;gap:8px;"><div style="flex:1;display:flex;height:8px;border-radius:4px;overflow:hidden;"><div style="width:'+p1+'%;background:#00428E;"></div><div style="width:'+p2+'%;background:#3b82f6;"></div><div style="width:'+p3+'%;background:#cbd5e1;"></div></div><span style="font-size:11px;font-weight:700;color:#64748b;">'+p1.toFixed(0)+'%</span></div></div>';
         gd.appendChild(mc);
     });
+    
     if(pd.length>0){
-        safeRender(function(){renderCostTrendChart(pmos);});
+        safeRender(function(){renderCostTrendChart(pmos);}); 
         safeRender(function(){renderDashStage(pd);});
         safeRender(function(){renderDashCompare(pd);});
         safeRender(function(){renderDashDonut(pd);});
@@ -92,6 +98,7 @@ function renderDashboardTab(){
         safeRender(function(){renderAdvancedMetrics(pd,da,'#00428E','pj');});
     }
 }
+
 function renderProjectProgress() {
     var wrap = document.getElementById('projectProgressWrap'); if(!wrap) return;
     var milestones = [ { key: '설계공모', date: '2024-03-01' }, { key: '착수보고회', date: '2024-05-15' }, { key: '계획설계 적정성', date: '2024-09-30' }, { key: '건축교통통합심의', date: '2024-11-30' }, { key: '중간설계 적정성', date: '2025-01-31' }, { key: '건축허가', date: '2025-02-20' }, { key: '프로젝트 종료', date: '2025-12-31' } ];
@@ -109,47 +116,38 @@ function renderProjectProgress() {
         var dotColor = mPct <= pct ? '#1e3a8a' : '#fff';
         return '<div class="pj-prog-dot" style="left: '+mPct+'%; background: '+dotColor+';"><div class="pj-prog-tooltip">' + m.key + '<br><span style="color:#93c5fd;font-size:7.5px;">(' + m.date + ') [' + mPct.toFixed(1) + '%]</span></div></div>';
     }).join('');
+    
     var html = '<div class="pj-progress-wrap"><div class="pj-prog-header"><div><div class="pj-prog-title" style="font-size:14px; font-weight:700; color:#475569; text-transform:none; letter-spacing:0;">Project Progress</div><div class="pj-prog-pct">' + pct.toFixed(1) + '% <span style="font-size:16px;font-weight:700;color:#64748b;">to complete</span></div></div><div style="font-size:11px; color:#94a3b8; font-weight:700; display:flex; align-items:center; gap:4px; margin-bottom:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Today</div></div><div class="pj-prog-bar-bg"><div class="pj-prog-bar-fill" style="width: '+pct+'%;"></div>' + dotHtml + '</div></div>';
     wrap.innerHTML = html;
 }
 
-// ====================================================================
-// [수정1] 투입비율 차트 (서부의료원/타프로젝트/공통) 개선
-// ====================================================================
 function renderOvProjectRatio(all){
-    var wrap = document.getElementById('ovPjRatioWrap');
-    if(!wrap) return;
-
     var m=0,o=0,c=0;
     all.forEach(function(r){if(r.project==='경남 서부의료원')m+=r.min;else if(r.project==='타 프로젝트')o+=r.min;else c+=r.min;});
     var t=m+o+c;
+    var pm = t>0 ? (m/t*100) : 0; var po = t>0 ? (o/t*100) : 0; var pc = t>0 ? (c/t*100) : 0;
+    var wrap = document.getElementById('ovPjRatioWrap');
+    if(!wrap) return;
     
-    if (t === 0) {
-        wrap.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">선택된 기간에 데이터가 없습니다.</div>';
-        return;
-    }
-
-    var pm = (m/t*100).toFixed(1);
-    var po = (o/t*100).toFixed(1);
-    var pc = (c/t*100).toFixed(1);
-
-    wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:12px; padding: 10px 5px; height:100%; justify-content:center;">
-        <div style="display:flex; align-items:flex-end; gap:8px;">
-            <span style="font-size:28px; font-weight:900; color:#10b981;">${pm}%</span>
-            <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:6px;">경상남도 서부의료원</span>
+    var html = `
+        <div class="pj-ratio-bar-bg">
+            <div class="pj-ratio-fill" style="width: ${pm}%; background: #00428E;" title="경남 서부의료원: ${fH(m)}h">
+                ${pm > 8 ? pm.toFixed(1) + '%' : ''}
+            </div>
+            <div class="pj-ratio-fill" style="width: ${po}%; background: #3b82f6;" title="타 프로젝트: ${fH(o)}h">
+                ${po > 8 ? po.toFixed(1) + '%' : ''}
+            </div>
+            <div class="pj-ratio-fill" style="width: ${pc}%; background: #cbd5e1; color: #334155;" title="공통업무: ${fH(c)}h">
+                ${pc > 8 ? pc.toFixed(1) + '%' : ''}
+            </div>
         </div>
-        <div style="display:flex; height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
-            <div style="width:${pm}%; background:#10b981; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:bold; transition: width 0.3s ease;">${pm > 5 ? pm+'%' : ''}</div>
-            <div style="width:${po}%; background:#f59e0b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:bold; transition: width 0.3s ease;">${po > 5 ? po+'%' : ''}</div>
-            <div style="width:${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:12px; font-weight:bold; transition: width 0.3s ease;">${pc > 5 ? pc+'%' : ''}</div>
+        <div class="pj-ratio-labels">
+            <div style="flex-basis: ${pm}%; text-align: center;"><span style="color:#00428E;font-weight:900;">${fH(m)}h</span> (서부의료원)</div>
+            <div style="flex-basis: ${po}%; text-align: center;"><span style="color:#3b82f6;font-weight:900;">${fH(o)}h</span> (타 프로젝트)</div>
+            <div style="flex-basis: ${pc}%; text-align: center;"><span style="color:#64748b;font-weight:900;">${fH(c)}h</span> (공통)</div>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; padding: 0 5px;">
-            <span style="color:#10b981;">서부의료원</span>
-            <span style="color:#f59e0b;">타 프로젝트</span>
-            <span style="color:#94a3b8;">공통/기타</span>
-        </div>
-    </div>`;
+    `;
+    wrap.innerHTML = html;
 }
 
 function getMonthsBetween(start, end) {
@@ -158,37 +156,50 @@ function getMonthsBetween(start, end) {
     return res;
 }
 
-// ====================================================================
-// [수정2] 인건비 추이 차트 (긍정 0.9x / 부정 1.1x 시나리오) 개선
-// ====================================================================
 function renderCostTrendChart(mos) {
     dC('costTrendChart'); window.lastCostMos = mos;
     if(!mos || !mos.length || !COST_DATA || COST_DATA.length === 0) return;
+    
     var globalStart = '2024-03';
     var globalEnd = '2026-12';
     var allFullMonths = getMonthsBetween(globalStart, globalEnd);
+    
     var allMosMap = {};
     COST_DATA.forEach(function(r) {
         if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0 };
         allMosMap[r.date].plan += (r.plan / 10000); allMosMap[r.date].exec += (r.exec / 10000);
     });
+    
     var lastActualMonth = '', totalActualExec = 0, actualMonthCount = 0;
     Object.keys(allMosMap).sort().forEach(function(m) {
         if(allMosMap[m].exec > 0) { lastActualMonth = m; totalActualExec += allMosMap[m].exec; actualMonthCount++; }
     });
+    var avgExec = actualMonthCount > 0 ? (totalActualExec / actualMonthCount) : 0;
     
-    var globalData = { plan: [], execActual: [] };
-    var cumPlan = 0, cumExecActual = 0;
+    var globalData = { plan: [], execActual: [], execPred: [] };
+    var cumPlan = 0, cumExecActual = 0, cumExecPred = 0;
+    
     allFullMonths.forEach(function(m) {
         var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
         var mExec = allMosMap[m] ? allMosMap[m].exec : 0;
+        
         cumPlan += mPlan;
-        globalData.plan.push(window.isCostCumulative ? cumPlan : mPlan);
-        if (!lastActualMonth || m <= lastActualMonth) {
-            cumExecActual += mExec;
+        var curPlanVal = window.isCostCumulative ? cumPlan : mPlan;
+        globalData.plan.push(curPlanVal);
+        
+        if (!lastActualMonth || m < lastActualMonth) {
+            cumExecActual += mExec; cumExecPred = cumExecActual;
             globalData.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
+            globalData.execPred.push(null);
+        } else if (m === lastActualMonth) {
+            cumExecActual += mExec; cumExecPred = cumExecActual;
+            var val = window.isCostCumulative ? cumExecActual : mExec;
+            globalData.execActual.push(val);
+            globalData.execPred.push(val);
         } else {
+            cumExecPred += avgExec;
             globalData.execActual.push(null);
+            globalData.execPred.push(window.isCostCumulative ? cumExecPred : avgExec);
         }
     });
     
@@ -200,29 +211,11 @@ function renderCostTrendChart(mos) {
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
     var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
     var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
-
-    // --- 새로운 긍정/부정 시나리오 로직 ---
-    var optData = [];
-    var pesData = [];
-    var lastActualIndex = -1;
-    for (var i = 0; i < viewMonths.length; i++) {
-        if (viewActual[i] !== null) {
-            optData.push(null);
-            pesData.push(null);
-            lastActualIndex = i;
-        } else {
-            if (lastActualIndex === i - 1 && lastActualIndex >= 0) {
-                // 선이 끊기지 않도록 실행값 마지막에서 이어서 시작
-                optData[lastActualIndex] = viewActual[lastActualIndex];
-                pesData[lastActualIndex] = viewActual[lastActualIndex];
-            }
-            optData.push(viewPlan[i] * 0.9); // 긍정 시나리오
-            pesData.push(viewPlan[i] * 1.1); // 부정 시나리오
-        }
-    }
-
-    var maxVal = Math.max(...viewPlan, ...viewActual.filter(function(v){return v!==null;}), ...pesData.filter(function(v){return v!==null;}));
+    var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
+    
+    var maxVal = Math.max(...viewPlan, ...viewActual.filter(function(v){return v!==null;}), ...viewPred.filter(function(v){return v!==null;}));
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
+    
     var schData = [];
     viewMonths.forEach(function(m) {
         var schedules = SCHEDULE_DATA.filter(function(s) { return s.date && s.date.startsWith(m); });
@@ -231,14 +224,16 @@ function renderCostTrendChart(mos) {
             schData.push({ schTitle: st, yPos: scheduleTopY });
         } else { schData.push(null); }
     });
-    
-    var summaryPlan = viewPlan[viewPlan.length - 1] || 0;
-    var isSummaryPred = viewActual[viewActual.length - 1] === null;
-    var summaryExec = isSummaryPred ? (pesData[pesData.length - 1] || 0) : viewActual[viewActual.length - 1];
 
+    var summaryPlan = viewPlan[viewPlan.length - 1] || 0;
+    var summaryExec = viewActual[viewActual.length - 1] !== null ? viewActual[viewActual.length - 1] : (viewPred[viewPred.length - 1] || 0);
+    var isSummaryPred = viewActual[viewActual.length - 1] === null;
+    
     var ctx = document.getElementById('costTrendChart').getContext('2d');
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)'); gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
+    var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
+    gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); gradPred.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
     
     CH.costTrendChart = new Chart(ctx, {
         type: 'line',
@@ -246,9 +241,8 @@ function renderCostTrendChart(mos) {
             labels: viewMonths,
             datasets: [
                 { label: '실행 인건비', data: viewActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2 },
-                { label: '긍정 시나리오 (0.9x)', data: optData, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3 },
-                { label: '부정 시나리오 (1.1x)', data: pesData, borderColor: '#ef4444', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 4 },
-                { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 5 },
+                { label: '실행 (예상)', data: viewPred, borderColor: '#8b5cf6', backgroundColor: window.isCostCumulative ? gradPred : 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, order: 3 },
+                { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 4 },
                 { type:'line', label:'주요일정', data: schData.map(function(x) { return x ? x.yPos : null; }), backgroundColor:'transparent', borderColor:'transparent', showLine:false, pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5, isSchedule:true, order:0, spanGaps:false }
             ]
         },
@@ -258,7 +252,9 @@ function renderCostTrendChart(mos) {
                 legend: { display: false },
                 datalabels: {
                     display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
-                    align: 'top', anchor: 'top', offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return v.toFixed(1); }
+                    align: function(cx) { var idx = cx.dataIndex, planVal = viewPlan[idx], actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
+                    anchor: function(cx) { var idx = cx.dataIndex, planVal = viewPlan[idx], actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx]; if (Math.abs(planVal - actVal) < 7) { if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom'; else return actVal > planVal ? 'top' : 'bottom'; } return 'top'; },
+                    offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return v.toFixed(1); }
                 },
                 tooltip: {
                     displayColors: false, backgroundColor: 'rgba(15,23,42,0.95)', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, filter: function(item, index) { return index === 0; },
@@ -266,17 +262,9 @@ function renderCostTrendChart(mos) {
                         title: function(cx) { return cx[0].label; },
                         label: function(cx) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
-                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], opt = optData[idx], pes = pesData[idx];
-                            var lines = [ "계획 인건비: " + plan.toFixed(1) + " 천만" ];
-                            if(actual !== null) {
-                                lines.push("실행 인건비: " + actual.toFixed(1) + " 천만");
-                                var diff = plan - actual;
-                                lines.push(diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)");
-                            } else {
-                                lines.push("긍정 시나리오: " + opt.toFixed(1) + " 천만");
-                                lines.push("부정 시나리오: " + pes.toFixed(1) + " 천만");
-                            }
-                            return lines;
+                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx], diff = plan - actual;
+                            var diffText = diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)";
+                            return [ "계획 인건비: " + plan.toFixed(1) + " 천만", "실행 인건비" + (viewActual[idx] === null ? " (예상)" : "") + ": " + actual.toFixed(1) + " 천만", diffText ];
                         }
                     }
                 }
@@ -287,50 +275,17 @@ function renderCostTrendChart(mos) {
     renderCostSummary(reqEnd, summaryPlan, summaryExec, isSummaryPred);
 }
 
-// ====================================================================
-// [수정3] 기간 집행 요약 (2x2 레이아웃 & 전체예산 추가) 개선
-// ====================================================================
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
-    
-    var finalBudget = 0;
-    if (window.COST_DATA) {
-        // 기존과 동일하게 천만 단위로 나누어 계산
-        finalBudget = window.COST_DATA.reduce(function(acc, cur) { return acc + (cur.plan || 0)/10000; }, 0);
-    }
-    
     var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
     var diff = totalPlan - totalExec;
-    var statusClass = 'good', statusMsg = '효율적 집행 (우수)', diffColor = '#10b981';
-    
-    if(ratio > 100) { statusClass = 'danger'; statusMsg = '예산 초과'; diffColor = '#ef4444'; }
-    else if (ratio > 90) { statusClass = 'warn'; statusMsg = '정상 (한계 근접)'; diffColor = '#f59e0b'; }
-
-    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치 포함)</span>' : '';
-    
-    wrap.innerHTML = `
-    <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
-        기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ${targetMonth}${titleSuffix})</span>
-    </div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
-            <div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">예산최종금액 (전체)</div>
-            <div style="font-size:16px; font-weight:800; color:#0f172a;">${finalBudget.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
-        </div>
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
-            <div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">계획금액 (당시)</div>
-            <div style="font-size:16px; font-weight:800; color:#64748b;">${totalPlan.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
-        </div>
-        <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:10px;">
-            <div style="font-size:11px; color:#0369a1; font-weight:700; margin-bottom:4px;">실행금액 (당시)</div>
-            <div style="font-size:16px; font-weight:800; color:#0284c7;">${totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
-        </div>
-        <div style="background:${diffColor}15; border:1px solid ${diffColor}40; border-radius:8px; padding:10px;">
-            <div style="font-size:11px; color:${diffColor}; font-weight:700; margin-bottom:4px;">절감액 (계획-실행)</div>
-            <div style="font-size:16px; font-weight:800; color:${diffColor};">${diff > 0 ? '+' : ''}${diff.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
-            <div style="font-size:10px; color:${diffColor}; margin-top:2px;">${statusMsg}</div>
-        </div>
-    </div>`;
+    var statusClass = 'good', statusMsg = '효율적 집행 (우수)', diffLabel = '예산 절감액';
+    if(ratio > 100) { statusClass = 'danger'; statusMsg = '예산 초과'; diffLabel = '예산 초과액'; } else if (ratio > 90) { statusClass = 'warn'; statusMsg = '정상 (한계 근접)'; }
+    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상)</span>' : '';
+    wrap.innerHTML = '<div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ' + targetMonth + ')</span></div>' +
+        '<div class="cost-sum-box" style="margin-bottom: 10px;"><div class="cost-sum-title">계획 대비 실행 비율' + titleSuffix + '</div><div style="display:flex; align-items:center; gap:10px;"><div class="cost-sum-val" style="margin:0; color:#00428E;">' + ratio + '%</div><div class="cost-sum-pct ' + statusClass + '">' + statusMsg + '</div></div><div style="height:4px; width:100%; background:#e2e8f0; border-radius:2px; margin-top:12px; overflow:hidden;"><div style="height:100%; width:' + Math.min(ratio, 100) + '%; background:' + (statusClass === 'danger' ? '#ef4444' : statusClass === 'warn' ? '#f59e0b' : '#10b981') + ';"></div></div></div>' +
+        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 10px;"><div class="cost-sum-box" style="padding:15px; text-align:center;"><div class="cost-sum-title">계획 금액</div><div style="font-size:16px; font-weight:800; color:#94a3b8;">' + totalPlan.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:11px;margin-left:2px;">천만</span></div></div><div class="cost-sum-box" style="padding:15px; text-align:center;"><div class="cost-sum-title">실행 금액' + titleSuffix + '</div><div style="font-size:16px; font-weight:800; color:#1e293b;">' + totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:11px;margin-left:2px;">천만</span></div></div></div>' +
+        '<div class="cost-sum-box" style="padding:15px; display:flex; justify-content:space-between; align-items:center; background:' + (diff >= 0 ? '#f0fdf4' : '#fef2f2') + '; border-color:' + (diff >= 0 ? '#bbf7d0' : '#fecaca') + ';"><div style="font-size:13px; font-weight:800; color:' + (diff >= 0 ? '#166534' : '#991b1b') + ';">' + diffLabel + '</div><div style="font-size:18px; font-weight:900; color:' + (diff >= 0 ? '#15803d' : '#b91c1c') + ';">' + Math.abs(diff).toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '<span style="font-size:12px;margin-left:2px;">천만원</span></div></div>';
 }
 
 function renderDashStage(pd){
@@ -342,20 +297,24 @@ function renderDashStage(pd){
     });
     document.getElementById('stageCenter').innerText=fH(t)+'h';
 }
+
 function renderDashCompare(pd){
     dC('compareChart');if(!pd.length)return;
     var ds=MEMBERS.map(function(n){ return { label: n, data: CAT_ORDER.map(c => mToH(pd.filter(r => r.name===n&&r.cat===c).reduce((s,x)=>s+x.min,0))), backgroundColor: CAT_ORDER.map(c => { if(hlStage!==null && hlStage!==c) return '#e2e8f0'; if(hlTimeline!==null && hlTimeline!==n) return '#e2e8f0'; return MC[n]; }), borderRadius:4, order: 2 }; });
+    
     ds.push({
-        type: 'line', label: '실시설계(예상)',
-        data: [null, null, null, 1500],
+        type: 'line', label: '실시설계(예상)', 
+        data: [null, null, null, 1500], 
         borderColor: '#8b5cf6', backgroundColor: 'transparent', borderDash: [5,5], borderWidth: 2, pointRadius: 0, order: 1
     });
+
     document.getElementById('dashCompareLegendWrap').innerHTML=MEMBERS.map(function(n){return '<div class="legend-item '+(hlTimeline!==null&&hlTimeline!==n?'dimmed':'')+'" style="font-size:11px;" onclick="dTogTimeline(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>';}).join('');
     CH.compareChart=new Chart(document.getElementById('compareChart').getContext('2d'),{
         type:'bar', data:{labels:CAT_ORDER,datasets:ds},
         options:{ responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:40}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display:function(cx){ if(cx.dataset.type === 'line') return false; var stg = CAT_ORDER[cx.dataIndex]; var mem = cx.dataset.label; if(hlStage!==null && hlStage!==stg) return false; if(hlTimeline!==null && hlTimeline!==mem) return false; return cx.dataset.data[cx.dataIndex] > 0; }, color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end', formatter:function(v){return v>0?v.toFixed(1):'';} } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'15%'}}, onClick:function(e,els){ if(els.length && els[0].datasetIndex < MEMBERS.length) { dTogStage(CAT_ORDER[els[0].index]); } else { dTogStage(null); } } }
     });
 }
+
 function renderDashDonut(pd){
     dC('donutChart');var sm=grp(pd,'sub'),t=Object.values(sm).reduce((a,b)=>a+b,0),ta=Object.entries(sm).sort((a,b)=>b[1]-a[1]);
     document.getElementById('donutCenter').innerText=fH(t)+'h';
@@ -367,12 +326,14 @@ function renderDashDonut(pd){
         options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',clip:false,layout:{padding:40}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{display:true,color:'#1e293b',font:{size:10,weight:'800'},textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100);if(p<5)return'';return cx.chart.data.labels[cx.dataIndex]+'\n'+fmt(v)+'h ('+p.toFixed(1)+'%)';},anchor:'end',align:'end'} }, onClick:function(e,els){ if(els.length) dTogDonut(CH.donutChart.data.labels[els[0].index]); else dTogDonut(null); } }
     });
 }
+
 function renderDashTimeline(pd,mos){
     dC('timelineChart');if(!mos.length)return;
     var ds=MEMBERS.map(function(n){var mm={};pd.filter(r=>r.name===n).forEach(r=>{mm[r.date.slice(0,7)]=(mm[r.date.slice(0,7)]||0)+r.min;});var c=MC[n],ih=hlTimeline===null||hlTimeline===n;return {label:n,data:mos.map(m=>mToH(mm[m]||0)),borderColor:ih?c:'#e2e8f0',backgroundColor:ih?hRgba(c,0.15):'transparent',borderWidth:2,tension:0.3,fill:true,pointRadius:2,pointHoverRadius:5};});
     document.getElementById('timelineLegendWrap').innerHTML=MEMBERS.map(n=>'<div class="legend-item '+(hlTimeline!==null&&hlTimeline!==n?'dimmed':'')+'" onclick="dTogTimeline(\''+n+'\')"><div class="legend-dot" style="background:'+MC[n]+'"></div>'+n+'</div>').join('');
     CH.timelineChart=new Chart(document.getElementById('timelineChart').getContext('2d'),{type:'line',data:{labels:mos,datasets:ds},options:{responsive:true,maintainAspectRatio:false,layout:{padding:15},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},min:0}}}});
 }
+
 function renderDashOvertimeBars(pd){
     dC('dashOvertimeBarChart');var dm={};pd.forEach(r=>{var k=r.name+'|'+r.date;dm[k]=(dm[k]||0)+r.min;});var c=[0,0,0,0];Object.values(dm).forEach(m=>{if(m>=540&&m<600)c[0]++;else if(m>=600&&m<660)c[1]++;else if(m>=660&&m<720)c[2]++;else if(m>=720)c[3]++;});
     CH.dashOvertimeBarChart=new Chart(document.getElementById('dashOvertimeBarChart').getContext('2d'),{
@@ -380,6 +341,7 @@ function renderDashOvertimeBars(pd){
         options:{ indexAxis:'y',responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{right:40}}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:true,color:'#1e293b',font:{weight:'bold'},anchor:'end',align:'right',offset:6,formatter:v=>v>0?v+'일':''}}, scales:{x:{display:false,grace:'15%'},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'}}}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(OVERTIME_RANGES[els[0].index]); else dTogMonthlyOt(null); } }
     });
 }
+
 function renderDashMonthlyOt(pd,mos){
     dC('dashMonthlyOvertimeChart');
     var bd=['9~10h','10~11h','11~12h','12h 이상'], bda=[[],[],[],[]], pdMap={};
@@ -391,6 +353,7 @@ function renderDashMonthlyOt(pd,mos){
         options:{ responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display: function(cx){ if(hlMonthlyOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlMonthlyOt && cx.dataset.data[cx.dataIndex] > 0; } }, formatter: function(v, cx) { if(hlMonthlyOt === null) { var sum = 0; cx.chart.data.datasets.forEach(ds=>{ sum += ds.data[cx.dataIndex] || 0; }); return sum > 0 ? sum + '일' : ''; } else { return v > 0 ? v + '일' : ''; } }, color: function(cx) { return hlMonthlyOt === null ? '#1e293b' : '#fff'; }, font: { size: 10, weight: 'bold' }, anchor: function(cx) { return hlMonthlyOt === null ? 'end' : 'center'; }, align: function(cx) { return hlMonthlyOt === null ? 'end' : 'center'; }, offset: function(cx){ return hlMonthlyOt===null ? 4 : 0;} } }, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,grace:'20%'}}, onClick:function(e,els){ if(els.length) dTogMonthlyOt(CH.dashMonthlyOvertimeChart.data.datasets[els[0].datasetIndex].label); else dTogMonthlyOt(null); } }
     });
 }
+
 function renderDashOvertimeDonut(pd){
     dC('dashOvertimeDonutChart9'); dC('dashOvertimeDonutChart12');
     var dm=[],ds=[];
@@ -402,25 +365,33 @@ function renderDashOvertimeDonut(pd){
     }
     dd('dashOvertimeDonutChart9',dm); dd('dashOvertimeDonutChart12',ds);
 }
+
+
 // --- Working 탭 렌더링 ---
 function renderWorkingTab(nm){
     if(!nm&&MEMBERS.length)nm=MEMBERS[0];
     if(WP_MEMBER!==nm){hlWpSub=null;hlHeroDonut=null;}
     WP_MEMBER=nm; GLOBAL_MEMBER=nm;
+    
     var all = filtered();
     var all_d = nm ? all.filter(r=>r.name===nm) : all;
-    var tt = all_d.reduce((s,r)=>s+r.min,0);
+    var tt = all_d.reduce((s,r)=>s+r.min,0); 
+    
     var d = all_d.filter(r=>r.project==='경남 서부의료원');
     var c = MC[nm]||'#00428E', pf = RAW.find(r=>r.name===nm), po = pf?pf.pos:'';
+    
     var bi=document.getElementById('wpProfileImgBg');
     if(PROFILE_IMG[nm]){bi.src=PROFILE_IMG[nm];bi.style.display='block';}else bi.style.display='none';
     document.getElementById('wpProfileName').textContent=nm; document.getElementById('wpProfilePos').textContent=po;
+    
     var pm = d.reduce((s,r)=>s+r.min,0);
     var pp = tt>0?Math.round(pm/tt*100):0;
     var ap = all.filter(r=>r.project==='경남 서부의료원');
     var gm = ap.reduce((s,r)=>s+r.min,0);
     var mp = gm>0?Math.round(pm/gm*100):0;
+    
     document.getElementById('wpContribFill').style.width=pp+'%';document.getElementById('wpContribPct').textContent=pp+'% ('+fH(pm)+'h / '+fH(tt)+'h)';document.getElementById('wpContribFill2').style.width=mp+'%';document.getElementById('wpContribPct2').textContent=mp+'%';
+    
     var sm2=grp(d,'sub'), ta2=Object.entries(sm2).sort((a,b)=>b[1]-a[1]), tk=ta2.length>0?ta2[0][0]:'주요 업무', dtx=Array.from(new Set(d.map(r=>r.date))).sort(), o12=0, o9=0, as=0, ah=0, ac=0, cn=0;
     dtx.forEach(dt=>{
         var dy=d.filter(r=>r.date===dt);if(!dy.length)return;
@@ -436,9 +407,11 @@ function renderWorkingTab(nm){
     d.forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});
     var ad=Object.keys(dm).length, da=ad>0?mToH(pm)/ad:0, t1=0, t2=0, t3=0;
     Object.values(dm).forEach(m=>{if(m>=540&&m<660)t1++;else if(m>=660&&m<720)t2++;else if(m>=720)t3++;});
+    
     document.getElementById('wpStatMonths').textContent=mo.length;document.getElementById('wpStatActiveDays').textContent='('+ad+'일)';
     document.getElementById('wpStatTotal').textContent=fH(pm);document.getElementById('wpStatDayAvg').textContent=da.toFixed(1)+'h/일';
     document.getElementById('wpStatOt1').textContent=(t1+t2);document.getElementById('wpStatOt2').textContent=t3;
+    
     var top3Html = '';
     if(ta2.length > 0) {
         top3Html = ta2.slice(0,3).map((e,i) => `<div style="display:flex;justify-content:space-between;font-size:12px;color:#1e293b;font-weight:700;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px;">${i+1}. ${e[0]}</span><span style="color:#64748b;">${(pm>0?(e[1]/pm*100):0).toFixed(0)}%</span></div>`).join('');
@@ -446,25 +419,31 @@ function renderWorkingTab(nm){
         top3Html = '<div style="font-size:11px;color:#94a3b8;">데이터 없음</div>';
     }
     document.getElementById('wpTop3ListOnly').innerHTML = top3Html;
+
     var catStr = Object.entries(grp(d,'cat')).sort((a,b)=>b[1]-a[1]).map(x => x[0]+'('+(pm>0 ? (x[1]/pm*100).toFixed(0) : 0)+'%)').join(', ');
     window.currentWorkingAiData = { m: nm, tt: pm, apm: apm, o9: o9, o12: o12, tk: tk, as: as, ah: ah, ac: ac, cat: catStr };
+    
     if(window.currentWorkingAiResponse) {
         document.getElementById('wpAiCommentBox').innerHTML = window.currentWorkingAiResponse;
     } else {
         document.getElementById('wpAiCommentBox').innerHTML = '<div class="ai-insight-content" style="color:#64748b;">우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.</div>';
     }
+    
     if(typeof updateCustomSelectTrigger !== 'undefined') updateCustomSelectTrigger();
+    
     var cr = calcStandaloneMetrics(d);
     var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
     var teamCr = calcStandaloneMetrics(teamData);
+
     var metricKeys = [
         { key: 'ot', val: cr.ot, main: '1-OT', sub: '정시업무' },
         { key: 'shannon', val: cr.shannon || 0, main: 'Shannon', sub: '파편화도' },
         { key: 'hhi', val: cr.hhi || 0, main: 'HHI', sub: '몰입도' },
         { key: 'cv', val: cr.cv || 0, main: 'CV', sub: '안정성' },
-        { key: 'hurst', val: cr.hurst || 0, main: 'Hurst', sub: '주도성' },
+        { key: 'hurst', val: cr.hurst || 0, main: 'Hurst', sub: '주도성' }, 
         { key: 'jaccard', val: cr.jaccard || 0, main: 'Jaccard', sub: '확장성' }
     ];
+
     var metricsCards = metricKeys.map((m, idx) => {
         var evalObj = INSIGHT_METRICS_INFO[idx].eval(m.val);
         var statusClass = evalObj.s === '좋음' ? 'good' : (evalObj.s === '보통' ? 'warn' : 'danger');
@@ -482,18 +461,20 @@ function renderWorkingTab(nm){
         `;
     }).join('');
     document.getElementById('wpHeroMetricsCards').innerHTML = metricsCards;
+    
     dC('wpHeroRadar');
     CH.wpHeroRadar = new Chart(document.getElementById('wpHeroRadar').getContext('2d'), {
         type: 'radar',
-        data: {
-            labels: INSIGHT_RADAR_LABELS,
+        data: { 
+            labels: INSIGHT_RADAR_LABELS, 
             datasets: [
                 { data: [cr.ot, cr.shannon, cr.hhi, cr.cv, cr.hurst, cr.jaccard], borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointRadius: 3, order: 1 },
                 { data: [teamCr.ot, teamCr.shannon, teamCr.hhi, teamCr.cv, teamCr.hurst, teamCr.jaccard], borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3,3], pointRadius: 0, order: 2 }
-            ]
+            ] 
         },
         options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{padding:25}, plugins: { legend: { display: false }, datalabels: { display: cx=>cx.datasetIndex===0, color: c, font: {size:9, weight:'bold'}, formatter: v=>v.toFixed(2), anchor:'end', align:'end' }, tooltip: { displayColors: false, callbacks: { label: cx => cx.raw.toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:8, weight:'800'}, color: '#64748b' } } } }
     });
+
     safeRender(function(){renderWpStackedBar(d,mo);});
     safeRender(function(){renderWpHeatmapYear('2024');});
     safeRender(function(){renderWpDonutSub(d,pm);});
@@ -505,6 +486,7 @@ function renderWorkingTab(nm){
     safeRender(function(){renderWpOvertimeDetail(d);});
     safeRender(function(){renderWpGini(d,c);});
 }
+
 function renderWpStackedBar(d,mos){
     dC('wpStackedBar');
     var sm=grp(d,'sub'),sl=Object.entries(sm).sort((a,b)=>b[1]-a[1]).map(x=>String(x[0])).slice(0,8),mm={};
@@ -516,6 +498,7 @@ function renderWpStackedBar(d,mos){
         options:{ responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, tooltip: { mode: 'nearest', intersect: true }, datalabels: { display: function(cx) { if (hlWpSub === null) { var maxIdx = -1; for(var i = cx.chart.data.datasets.length - 1; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } else { return cx.dataset.label === hlWpSub && cx.dataset.data[cx.dataIndex] > 0; } }, formatter: function(v, cx) { if (hlWpSub === null) { var sum = 0; cx.chart.data.datasets.forEach(ds=>{ sum += ds.data[cx.dataIndex] || 0; }); return sum > 0 ? fmt(sum) + 'h' : ''; } else { return v > 0 ? fmt(v) + 'h' : ''; } }, anchor: 'end', align: 'end', color: '#64748b', font: {size: 10, weight: 'bold'} } }, scales:{ x:{stacked:true,grid:{display:false}}, y:{stacked:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'15%'} }, onClick:function(e,els){if(els.length)dTogWpSub(CH.wpStackedBar.data.datasets[els[0].datasetIndex].label);else dTogWpSub(null);} }
     });
 }
+
 function renderWpDonutSub(d,t){
     dC('wpDonutSub'); var sm=grp(d,'sub'),ta=Object.entries(sm).sort((a,b)=>b[1]-a[1]);
     document.getElementById('wpDonutSubCenter').innerText=fH(t)+'h';
@@ -526,6 +509,7 @@ function renderWpDonutSub(d,t){
         options:{ responsive:true,maintainAspectRatio:false,cutout:'50%',clip:false,layout:{padding:35}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:10,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ta[cx.dataIndex][0]+'\n'+p+'%';}}}, onClick:function(e,els){if(els.length)dTogWpSub(CH.wpDonutSub.data.labels[els[0].index]);else dTogWpSub(null);} }
     });
 }
+
 function renderWpDonutCat(d,t){
     dC('wpDonutCat');var cm=grp(d,'cat'),ca=CAT_ORDER.filter(c=>cm[c]>0);
     document.getElementById('wpCatCenter').innerHTML='<div style="font-size:18px;font-weight:900;color:#1e293b;">'+fH(t)+'h</div><div style="font-size:12px;color:#94a3b8;">분류기준</div>';if(!ca.length)return;
@@ -534,13 +518,16 @@ function renderWpDonutCat(d,t){
         options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',clip:false,layout:{padding:40}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:11,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ca[cx.dataIndex]+'\n'+p+'%';}}} }
     });
 }
+
 function renderWpSwitchBar(d,mos,col){
     dC('wpSwitchBar');var sw={},pv=null;d.forEach(r=>{var m=r.date.slice(0,7);if(!sw[m])sw[m]=0;if(pv!==null&&pv!==r.sub)sw[m]++;pv=r.sub;});
     var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
     var teamSw={}, teamPv={}, act={};
     teamData.forEach(r=>{ var m=r.date.slice(0,7); if(!teamSw[m])teamSw[m]=0; if(!act[m])act[m]=new Set(); act[m].add(r.name); if(teamPv[r.name]!==null && teamPv[r.name]!==r.sub) teamSw[m]++; teamPv[r.name]=r.sub; });
+    
     var barData = mos.map(m=>sw[m]||0);
     var avgData = mos.map(m=> act[m]&&act[m].size>0 ? parseFloat((teamSw[m]/act[m].size).toFixed(1)) : null);
+    
     CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{
         data:{labels:mos,datasets:[
             {type:'bar', label:'개인 전환 횟수', data:barData, backgroundColor:col, borderRadius:6, order:2},
@@ -577,6 +564,7 @@ function renderWpSwitchBar(d,mos,col){
         }
     });
 }
+
 function renderWpFocusBar(d,mos){
     dC('wpFocusBar');
     var nonFocus = ['회의', '행정', '교육', '휴가', '기타', '관리', '업무지원'];
@@ -587,12 +575,14 @@ function renderWpFocusBar(d,mos){
         options:{ responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}}, plugins:{ legend:{display:false}, datalabels:{display:cx=>mos.length>10?cx.dataIndex%2===0:true, formatter:v=>v.toFixed(1)+'%', align:'top', font:{size:10, weight:'bold'}, color:'#00428E'} }, scales:{ x:{grid:{display:false}}, y:{min: 0, max: 110, grid:{color:'rgba(226,232,240,0.5)'}, ticks:{callback:v=>v > 100 ? '' : v+'%'}} } }
     });
 }
+
 function renderWpOvertimeDetail(d){
     dC('wpOtBar'); var dm={}; d.forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});
     var od=Object.entries(dm).filter(e=>e[1]>=540).sort((a,b)=>a[0].localeCompare(b[0]));
     var mo=Array.from(new Set(od.map(e=>e[0].slice(0,7)))).sort();
     var ct={'9~10h':[],'10~11h':[],'11~12h':[],'12h 이상':[]};
     mo.forEach(m=>{ var c1=0,c2=0,c3=0,c4=0; od.forEach(e=>{ if(!e[0].startsWith(m))return; var n=e[1]; if(n<600)c1++; else if(n<660)c2++; else if(n<720)c3++; else c4++; }); ct['9~10h'].push(c1); ct['10~11h'].push(c2); ct['11~12h'].push(c3); ct['12h 이상'].push(c4); });
+    
     var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
     var teamDm = {};
     teamData.forEach(r => { var key = r.name + '|' + r.date; teamDm[key] = (teamDm[key]||0) + r.min; });
@@ -609,56 +599,61 @@ function renderWpOvertimeDetail(d){
         var otCount = teamMonthlyOtCount[m] || 0;
         return parseFloat((otCount / membersCount).toFixed(1));
     });
+
     var bd = ['9~10h','10~11h','11~12h','12h 이상'];
     document.getElementById('wpOtLegendWrap').innerHTML = bd.map((b, i) => '<div class="legend-item ' + (hlWpOt!==null && hlWpOt!==b ? 'dimmed' : '') + '" onclick="dTogWpOt(\''+b+'\')"><div class="legend-dot" style="background:'+OT_COLORS[i]+'"></div><span style="font-size:11px;">'+b+'</span></div>').join('') + '<div class="legend-item"><div class="legend-dot" style="background:transparent; border-top:2px dashed #94a3b8; height:0; width:12px;"></div><span style="font-size:11px;">팀 평균</span></div>';
+    
     CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{
-        data:{
-            labels:mo,
-            datasets:[
-                {type:'bar', label:'9~10h', data:ct['9~10h'], backgroundColor: (hlWpOt===null||hlWpOt==='9~10h')?OT_COLORS[0]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
-                {type:'bar', label:'10~11h', data:ct['10~11h'], backgroundColor: (hlWpOt===null||hlWpOt==='10~11h')?OT_COLORS[1]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
-                {type:'bar', label:'11~12h', data:ct['11~12h'], backgroundColor: (hlWpOt===null||hlWpOt==='11~12h')?OT_COLORS[2]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
+        data:{ 
+            labels:mo, 
+            datasets:[ 
+                {type:'bar', label:'9~10h', data:ct['9~10h'], backgroundColor: (hlWpOt===null||hlWpOt==='9~10h')?OT_COLORS[0]:'#e2e8f0', stack:'S', borderRadius:2, order:2}, 
+                {type:'bar', label:'10~11h', data:ct['10~11h'], backgroundColor: (hlWpOt===null||hlWpOt==='10~11h')?OT_COLORS[1]:'#e2e8f0', stack:'S', borderRadius:2, order:2}, 
+                {type:'bar', label:'11~12h', data:ct['11~12h'], backgroundColor: (hlWpOt===null||hlWpOt==='11~12h')?OT_COLORS[2]:'#e2e8f0', stack:'S', borderRadius:2, order:2}, 
                 {type:'bar', label:'12h 이상', data:ct['12h 이상'], backgroundColor: (hlWpOt===null||hlWpOt==='12h 이상')?OT_COLORS[3]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
                 {type:'line', label:'팀 평균', data:teamAvgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:3, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
-            ]
+            ] 
         },
-        options:{
-            responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}},
-            interaction: { mode: 'index', intersect: false },
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    display: function(cx){
+        options:{ 
+            responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}}, 
+            interaction: { mode: 'index', intersect: false }, 
+            plugins:{ 
+                legend:{display:false}, 
+                datalabels:{ 
+                    display: function(cx){ 
                         if(cx.dataset.type === 'line') return cx.raw !== null && cx.raw > 0;
-                        if(hlWpOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; }
-                        else { return cx.dataset.label === hlWpOt && cx.dataset.data[cx.dataIndex] > 0; }
-                    },
-                    color: cx => cx.dataset.type === 'line' ? '#64748b' : (hlWpOt === null ? '#1e293b' : '#fff'),
-                    font: {size:10, weight:'bold'},
-                    anchor: cx => cx.dataset.type === 'line' ? 'end' : (hlWpOt === null ? 'end' : 'center'),
-                    align: cx => cx.dataset.type === 'line' ? 'top' : (hlWpOt === null ? 'end' : 'center'),
-                    offset: cx => cx.dataset.type === 'line' ? 6 : (hlWpOt === null ? 4 : 0),
-                    formatter: function(v, cx){
-                        if(cx.dataset.type === 'line') return v;
-                        if(hlWpOt === null) { var sum=0; for(var i=0; i<=3; i++){ sum += cx.chart.data.datasets[i].data[cx.dataIndex]||0; } return sum>0?sum:''; }
-                        else return v>0?v:'';
-                    }
-                }
-            },
-            scales:{ x:{stacked:true, grid:{display:false}, ticks:{font:{size:11}}}, y:{stacked:true, display:false, grace:'20%'} },
-            onClick: (e,els)=>{ if(els.length && els[0].datasetIndex <= 3) dTogWpOt(CH.wpOtBar.data.datasets[els[0].datasetIndex].label); else dTogWpOt(null); }
+                        if(hlWpOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; } 
+                        else { return cx.dataset.label === hlWpOt && cx.dataset.data[cx.dataIndex] > 0; } 
+                    }, 
+                    color: cx => cx.dataset.type === 'line' ? '#64748b' : (hlWpOt === null ? '#1e293b' : '#fff'), 
+                    font: {size:10, weight:'bold'}, 
+                    anchor: cx => cx.dataset.type === 'line' ? 'end' : (hlWpOt === null ? 'end' : 'center'), 
+                    align: cx => cx.dataset.type === 'line' ? 'top' : (hlWpOt === null ? 'end' : 'center'), 
+                    offset: cx => cx.dataset.type === 'line' ? 6 : (hlWpOt === null ? 4 : 0), 
+                    formatter: function(v, cx){ 
+                        if(cx.dataset.type === 'line') return v; 
+                        if(hlWpOt === null) { var sum=0; for(var i=0; i<=3; i++){ sum += cx.chart.data.datasets[i].data[cx.dataIndex]||0; } return sum>0?sum:''; } 
+                        else return v>0?v:''; 
+                    } 
+                } 
+            }, 
+            scales:{ x:{stacked:true, grid:{display:false}, ticks:{font:{size:11}}}, y:{stacked:true, display:false, grace:'20%'} }, 
+            onClick: (e,els)=>{ if(els.length && els[0].datasetIndex <= 3) dTogWpOt(CH.wpOtBar.data.datasets[els[0].datasetIndex].label); else dTogWpOt(null); } 
         }
     });
 }
+
 function renderWpGini(d,c){
     dC('wpGiniChart');var dm={};d.forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});var vl=Object.values(dm).sort((a,b)=>a-b),n=vl.length,gn=0;if(n>1){var sm=vl.reduce((a,b)=>a+b,0),cs=0;vl.forEach(v=>{cs+=v;gn+=cs;});gn=(2*gn/(n*sm))-(n+1)/n;}var lz=[{x:0,y:0}],cmv=0,tv=vl.reduce((a,b)=>a+b,0)||1;vl.forEach((v,i)=>{cmv+=v;lz.push({x:(i+1)/n,y:cmv/tv});});
     CH.wpGiniChart=new Chart(document.getElementById('wpGiniChart').getContext('2d'),{type:'line',data:{datasets:[{label:'로렌츠 커브',data:lz,borderColor:c,backgroundColor:hRgba(c,0.1),borderWidth:2,fill:true,tension:0,pointRadius:0},{label:'완전균등선',data:[{x:0,y:0},{x:1,y:1}],borderColor:'#94a3b8',borderDash:[4,4],borderWidth:1,fill:false,tension:0,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{type:'linear',min:0,max:1,ticks:{maxTicksLimit:5,callback:v=>(v*100).toFixed(0)+'%'}},y:{min:0,max:1,ticks:{maxTicksLimit:5,callback:v=>(v*100).toFixed(0)+'%'}}}}});
     var gl=gn<0.3?'균등 분배':gn<0.5?'보통':gn<0.7?'편중':'심한 편중';
     document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';
 }
+
 function buildHeatmapHTML(dt,yr,c,tid){
     var dm={};dt.filter(r=>r.date.startsWith(yr+'-')).forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});var mt=Array.from({length:6},()=>new Array(12).fill(0)),hm=new Array(12).fill(false),mx=1;Object.keys(dm).forEach(d=>{var s=dm[d],p=d.split('-'),m=parseInt(p[1])-1,dy=parseInt(p[2]),fd=new Date(parseInt(yr),m,1).getDay(),w=Math.ceil((dy+fd)/7)-1;if(w>=0&&w<6){mt[w][m]+=s;hm[m]=true;if(mt[w][m]>mx)mx=mt[w][m];}});var th='<thead><tr><th style="width:30px;"></th>';MONTH_KO.forEach((l,i)=>{th+='<th style="font-size:11px;font-weight:'+(hm[i]?'800':'500')+';color:'+(hm[i]?c:'#cbd5e1')+';">'+l+'</th>';});th+='</tr></thead><tbody>';for(var w=0;w<6;w++){th+='<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">'+(w+1)+'주</td>';for(var mo=0;mo<12;mo++){if(!hm[mo])th+='<td><div class="hm-cell" style="background:transparent;"></div></td>';else if(mt[w][mo]<=0)th+='<td><div class="hm-cell" style="background:#F0F5FA;opacity:'+(hlHeatBin!==null?0.2:1)+';"></div></td>';else{var vl=mt[w][mo],rt=vl/mx,bn=Math.ceil(rt*5),id=hlHeatBin!==null&&hlHeatBin!==bn,al=0.2+(bn-1)*0.2,tc=al>=0.55?'#fff':'#1e293b';th+='<td><div class="hm-cell" onclick="toggleHeatBin('+bn+',\''+yr+'\',\''+tid+'\')" style="background:'+hRgba(c,al)+';color:'+tc+';opacity:'+(id?0.2:1)+';" title="'+fH(vl)+'h">'+fH(vl)+'</div></td>';}}th+='</tr>';}var el=document.getElementById(tid);if(el)el.innerHTML=th+'</tbody>';
 }
+
 function renderAdvancedMetrics(d,da,col,pf){
     try {
         dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
@@ -666,6 +661,7 @@ function renderAdvancedMetrics(d,da,col,pf){
         var cr = calcStandaloneMetrics(d);
         var cvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), (cr.cv||0), (cr.hurst||0), (cr.jaccard||0)];
         var rawCvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), cr.cv||0, cr.hurst||0, cr.jaccard||0];
+        
         var teamRawCvInsight = [0,0,0,0,0,0], teamCvInsight = [0,0,0,0,0,0];
         var datasetsArr = [{ label: '선택 기간', data: cvInsight, borderColor: col, backgroundColor: hRgba(col, 0.15), borderWidth: 2, pointBackgroundColor: col, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5 }];
         if (pf === 'wp' || pf === 'pj') {
@@ -675,6 +671,7 @@ function renderAdvancedMetrics(d,da,col,pf){
             teamRawCvInsight = [teamCr.ot, (teamCr.shannon||0), (teamCr.hhi||0), teamCr.cv||0, teamCr.hurst||0, teamCr.jaccard||0];
             datasetsArr.push({ label: '팀 전체 평균', data: teamCvInsight, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0 });
         }
+        
         dC(pf + 'InsightRadar');
         if(document.getElementById(pf + 'InsightRadar')) {
             CH[pf + 'InsightRadar'] = new Chart(document.getElementById(pf + 'InsightRadar').getContext('2d'), {
@@ -682,6 +679,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                 options: { responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: 40 }, plugins: { legend: { display: false }, datalabels: { display: cx => cx.datasetIndex === 0, formatter: v => Number(v).toFixed(2), color: col, font: { size: 10, weight: 'bold' }, anchor: 'end', align: 'end' }, tooltip: { callbacks: { label: cx => cx.datasetIndex === 0 ? cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2) : cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:10, weight:'800'}, color: '#64748b', padding: 15 } } } }
             });
         }
+        
         var tb = document.getElementById(pf + 'InsightTable');
         if(tb) {
             var tableHtml = '<table style="width:100%; border-collapse:collapse; margin-top:5px; table-layout:fixed;">';
@@ -700,6 +698,7 @@ function renderAdvancedMetrics(d,da,col,pf){
             }
             tableHtml += '</tbody></table>'; tb.innerHTML = tableHtml;
         }
+        
         var wm={},bwm={};
         d.forEach(r=>{
             var wi=getWeekInfo(r.date);
@@ -710,10 +709,12 @@ function renderAdvancedMetrics(d,da,col,pf){
         var wl=[], bwl=[], sd=[], hd=[], od=[], cd=[], hud=[], jd=[];
         var ss=new Array(wk.length).fill(null), sh=new Array(wk.length).fill(null), so=new Array(wk.length).fill(null);
         var sc=new Array(bwk.length).fill(null), shu=new Array(bwk.length).fill(null), sj=new Array(bwk.length).fill(null);
+        
         wk.forEach((k,i)=>{
             var g=wm[k]; wl.push(g.l);
             var tot=g.r.reduce((s,r)=>s+r.min,0)||1; var sm=grp(g.r,'sub'), hi=0, sn=0, ky=Object.keys(sm), N=ky.length;
             ky.forEach(sub=>{var p=sm[sub]/tot; hi+=p*p; if(p>0)sn-=p*Math.log(p);}); if(N>1) sn=sn/Math.log(N); else sn=0;
+            
             var weeklyPts = 0, weeklyCount = 0, dailyHours = {};
             g.r.forEach(r=>{ var dk = r.name + '|' + r.date; dailyHours[dk] = (dailyHours[dk]||0) + r.min; });
             Object.values(dailyHours).forEach(mins=>{
@@ -724,10 +725,12 @@ function renderAdvancedMetrics(d,da,col,pf){
             var F = 1.0;
             if(weeklyCount === 2) F = 1.25; else if(weeklyCount === 3) F = 1.50; else if(weeklyCount >= 4) F = 2.0;
             var x = weeklyPts * F, p = 2 - (2 / (1 + Math.exp(-2.0 * x)));
+            
             sd.push(sn); hd.push(hi); od.push(p);
             var ws=[]; Array.from(g.d).forEach(dt2 => { ws=ws.concat(SCHEDULE_DATA.filter(s => s.date&&s.date.slice(0,10)===dt2)); });
             if(ws.length>0){ var st = ws.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex,'').trim()); ss[i]={schTitle:st}; sh[i]={schTitle:st}; so[i]={schTitle:st}; }
         });
+        
         var ps=new Set();
         bwk.forEach((k,i)=>{
             var g=bwm[k]; bwl.push(g.l);
@@ -740,6 +743,7 @@ function renderAdvancedMetrics(d,da,col,pf){
             var bs=[]; Array.from(g.d).forEach(dt2 => { bs=bs.concat(SCHEDULE_DATA.filter(s => s.date&&s.date.slice(0,10)===dt2)); });
             if(bs.length>0){ var st = bs.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').replace(emojiRegex,'').trim()); sc[i]={schTitle:st}; shu[i]={schTitle:st}; sj[i]={schTitle:st}; }
         });
+        
         function dmc(id, l, xl, da, sa, cx) {
             if(!document.getElementById(id)) return;
             try {
@@ -754,6 +758,7 @@ function renderAdvancedMetrics(d,da,col,pf){
         dmc(pf+'OtChart','정시업무(1-OT)',wl,od,so,'#ef4444'); dmc(pf+'ShannonChart','Shannon',wl,sd,ss,'#14b8a6'); dmc(pf+'HhiChart','HHI',wl,hd,sh,'#f59e0b'); dmc(pf+'CvChart','CV(Norm)',bwl,cd,sc,'#8b5cf6'); dmc(pf+'HurstChart','Hurst',bwl,hud,shu,'#ec4899'); dmc(pf+'JaccardChart','Jaccard',bwl,jd,sj,'#3b82f6');
     } catch(e) {}
 }
+
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
     if (!m) return;
@@ -762,22 +767,27 @@ function renderEvalTab() {
     var sortedEd = ed.slice().sort((a,b)=>a.q.localeCompare(b.q));
     var fq = filteredEvalQs();
     var fd = ed.filter(d=>fq.includes(d.q)).sort((a,b)=>a.q.localeCompare(b.q));
+    
     var wd = filtered().filter(r=>r.name === m && r.project === '경남 서부의료원');
     var pf = RAW.find(r=>r.name === m), po = pf ? pf.pos : '';
     var c = MC[m] || '#00428E';
+    
     dC('newKpiTrendChart'); dC('newKpiRadarChart'); dC('newKpiDonutChart'); dC('kpiInsightRadar');
+    
     var hasEval = fd.length > 0;
     var latestQ = hasEval ? fd[fd.length - 1] : { q: '평가 없음', vals: [0,0,0,0,0] };
     var latestScore = latestQ.vals.reduce((a,b)=>a+b,0) / 5;
     var avgVals = ed.length > 0 ? RADAR_LABELS.map((_, i) => ed.reduce((s, d) => s + d.vals[i], 0) / ed.length) : [0,0,0,0,0];
     var avgScore = ed.length > 0 ? avgVals.reduce((a,b)=>a+b,0) / 5 : 0;
     var allEvalAvgVals = EVAL_DATA.length > 0 ? RADAR_LABELS.map((_, i) => EVAL_DATA.reduce((s, d) => s + d.vals[i], 0) / EVAL_DATA.length) : [0,0,0,0,0];
-    var t = wd.reduce((s, r) => s + r.min, 0);
+    
+    var t = wd.reduce((s, r) => s + r.min, 0); 
     var dm = {}; wd.forEach(r => dm[r.date] = (dm[r.date] || 0) + r.min);
     var o9 = 0, o12 = 0; Object.values(dm).forEach(x => { if(x >= 720) o12++; else if(x >= 540) o9++; });
     var sm = grp(wd, 'sub');
     var topTasksArr = Object.entries(sm).sort((a,b) => b[1]-a[1]).slice(0, 5);
     var topTasksStr = topTasksArr.slice(0,3).map(tk => tk[0]).join(', ');
+    
     var bestQ = null, bestScore = 0;
     if (ed.length > 0) {
         bestQ = ed.reduce((best, curr) => { var currScore = curr.vals.reduce((a,b)=>a+b,0)/5; var bScore = best.vals.reduce((a,b)=>a+b,0)/5; return currScore >= bScore ? curr : best; });
@@ -796,83 +806,97 @@ function renderEvalTab() {
             }).join('');
         }
     }
+    
     var scoreDiff = latestScore - avgScore;
     var scoreDiffHtml = !hasEval ? '<span style="color:#94a3b8">-</span>' : (scoreDiff >= 0 ? '<span style="color:#10b981">▲ ' + scoreDiff.toFixed(2) + '</span>' : '<span style="color:#ef4444">▼ ' + Math.abs(scoreDiff).toFixed(2) + '</span>');
     var topTasksHtml = topTasksArr.length === 0 ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;">데이터 없음</div>' : topTasksArr.map((tk, i) => { var p = t > 0 ? (tk[1]/t*100).toFixed(1) : 0; return '<div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;"><div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:' + SUB_PAL[i] + '"></div><span style="font-weight:700; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">' + tk[0] + '</span></div><div style="font-weight:800; color:#64748b;">' + p + '%</div></div>'; }).join('');
+    
     var detailListHtml = '<div class="kpi-detail-container">' + RADAR_LABELS.map((label, i) => {
         var val = latestQ.vals[i]; var avg = avgVals[i]; var diff = val - avg;
         var arrow = !hasEval ? '─' : (diff > 0 ? '▲' : diff < 0 ? '▼' : '─');
         var cls = !hasEval ? 'flat' : (diff > 0.05 ? 'up' : diff < -0.05 ? 'down' : 'flat');
         return '<div class="kpi-detail-item"><div class="label">' + label + '</div><div class="values"><div class="score">' + val.toFixed(1) + '</div><div class="kpi-delta ' + cls + '">' + arrow + ' ' + (!hasEval ? '-' : Math.abs(diff).toFixed(1)) + '</div></div></div>';
     }).join('') + '</div>';
+    
     var currData = RAW.filter(r => r.name === m && getQ(r.date) === latestQ.q && r.project === '경남 서부의료원');
     var teamCurrData = RAW.filter(r => getQ(r.date) === latestQ.q && r.project === '경남 서부의료원');
+    
     var cr = calcStandaloneMetrics(currData);
     var teamCr = calcStandaloneMetrics(teamCurrData);
     var cvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), (cr.cv||0), (cr.hurst||0), (cr.jaccard||0)];
     var rawCvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), cr.cv||0, cr.hurst||0, cr.jaccard||0];
     var teamCvInsight = [teamCr.ot, (teamCr.shannon||0), (teamCr.hhi||0), (teamCr.cv||0), (teamCr.hurst||0), (teamCr.jaccard||0)];
     var teamRawCvInsight = [teamCr.ot, (teamCr.shannon||0), (teamCr.hhi||0), teamCr.cv||0, teamCr.hurst||0, teamCr.jaccard||0];
+    
     window.currentAiData = { m: m, q: latestQ.q, score: latestScore.toFixed(2), vals: latestQ.vals, topTasks: topTasksStr, over9h: o9, over12h: o12, rawCvInsight: rawCvInsight };
+    
     var aiInitText = window.currentAiResponse || '우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.';
+
     var splitRadarLabels = INSIGHT_RADAR_LABELS.map(l => l.split('(').map((part, index) => index === 1 ? '('+part : part));
+
     var html = '<div class="kpi-layout">' +
         '<div class="kpi-panel left-panel"><div class="kpi-profile-header">' + getAvatar(m, 50, 18) + '<div><div style="font-size:24px;font-weight:900;color:#1e293b;line-height:1.2;">' + m + '</div><div style="font-size:13px;color:#64748b;font-weight:600;">' + po + '</div></div></div><div class="kpi-big-score"><div class="title">최근 분기 종합 점수 (' + latestQ.q + ')</div><div style="display:flex;align-items:baseline;"><div class="score">' + latestScore.toFixed(2) + '</div><div class="sub">/ 5.0</div></div><div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">개인 평균(' + avgScore.toFixed(2) + ') 대비 ' + scoreDiffHtml + '</div></div><div class="kpi-section-title" style="font-size:14px; margin-bottom:10px;">근무 요약 (GNWMC)</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;"><div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">총 투입 시간</div><div style="font-size:18px;font-weight:900;color:#00428E;">' + fH(t) + 'h</div></div><div style="background:rgba(255,255,255,0.6); padding:15px; border-radius:12px; text-align:center;"><div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">9h+ 연장근무</div><div style="font-size:18px;font-weight:900;color:#f59e0b;">' + o9 + '일</div></div></div><div class="kpi-section-title" style="font-size:14px; margin-bottom:5px;">역량 점수 트렌드</div><div style="height:120px; position:relative; margin-bottom:15px;">' + (sortedEd.length > 0 ? '<canvas id="newKpiTrendChart"></canvas>' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;font-weight:600;">평가 데이터 없음</div>') + '</div><div class="kpi-section-title" style="margin-bottom:0;">최근 분기 역량 분석</div><div class="kpi-detail-list">' + detailListHtml + '</div></div>' +
         '<div class="kpi-panel center-panel"><div style="text-align:center; flex:0 0 auto;"><h2 style="font-size:24px; font-weight:900; color:#1e293b; letter-spacing:-0.03em;">Multidimensional Analysis</h2><div style="font-size:13px; color:#64748b; font-weight:600; margin-top:4px;">역량 다각도 분석 및 비교</div><div style="display:flex; justify-content:center; gap:15px; margin-top:12px;"><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#334155;"><div style="width:12px; height:3px; background:' + c + '; border-radius:2px;"></div> 선택 기간</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#94a3b8;"><div style="width:12px; height:3px; background:#94a3b8; border-radius:2px;"></div> 개인 평균</div><div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#64748b;"><div style="width:12px; height:0; border-top:2px dashed #7dd3fc; border-radius:2px;"></div> 팀 전체 평균</div></div></div><div style="flex:1; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="newKpiRadarChart"></canvas></div><div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:10px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div class="kpi-section-title" style="margin:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; vertical-align:text-bottom;"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/><path d="m12 8-4 4 4 4 4-4Z"/></svg><span style="color:#6366f1;">AI Insight</span> 종합 평가</div><div style="display:flex; gap:6px; align-items:center;"><button class="icon-btn" onclick="openAiModal(\'kpi\')" title="새창에서 크게 보기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button><button id="btnGenerateAI" onclick="generateAiComment()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700; cursor:pointer;">분석 요청하기</button></div></div><div style="background:linear-gradient(135deg, rgba(238,242,255,0.7), rgba(224,231,255,0.5)); border-radius:16px; padding:15px; border:1px solid rgba(99,102,241,0.2); max-height:160px; overflow-y:auto;" class="custom-scroll"><div id="aiCommentBox" class="ai-insight-content" style="color:#64748b;">'+aiInitText+'</div></div></div></div>' +
         '<div class="kpi-panel right-panel" style="display:flex; flex-direction:column; justify-content:flex-start; padding:25px 20px;"><div style="flex:0 0 auto; display:flex; flex-direction:column;"><div class="kpi-section-title" style="margin-bottom:10px;">Highest Record</div><div style="background:rgba(255,255,255,0.7); border-radius:16px; padding:18px; border:1px solid rgba(226,232,240,0.8);"><div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; border-bottom:1px dashed rgba(203,213,225,0.6); padding-bottom:10px;"><div style="font-size:14px; font-weight:900; color:#1e293b;">' + (bestQ ? bestQ.q : '-') + '</div><div style="font-size:22px; font-weight:900; color:' + c + ';">' + bestScore.toFixed(2) + '<span style="font-size:12px; color:#94a3b8;"> / 5.0</span></div></div><div style="font-size:11px; color:#94a3b8; font-weight:700; margin-bottom:8px;">해당 분기 주요 업무 TOP 3</div>' + bestTopTasksHtml + '</div></div><div style="flex:0 0 auto; display:flex; flex-direction:column; margin-top:25px;"><div class="kpi-section-title" style="margin-bottom:10px;">주요 업무 비중 <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(선택 기간)</span></div><div style="display:flex; align-items:center; height:120px; gap:15px;"><div style="width:110px; height:110px; position:relative; flex-shrink:0;"><canvas id="newKpiDonutChart"></canvas></div><div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">' + topTasksHtml + '</div></div></div><div style="flex:1; display:flex; flex-direction:column; min-height:220px; margin-top:25px;"><div class="kpi-section-title" style="margin-bottom:0;">Work Insight <span style="font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;">(' + latestQ.q + ')</span></div><div style="flex:1; position:relative; min-height:180px; display:flex; align-items:center; justify-content:center; padding:15px;"><canvas id="kpiInsightRadar"></canvas></div></div></div></div>';
+    
     view.innerHTML = html;
+    
     setTimeout(() => {
         try {
             if(sortedEd.length > 0) {
                 var trendLabels = sortedEd.map(d => d.q), trendData = sortedEd.map(d => d.vals.reduce((a,b)=>a+b,0)/5);
                 var ptRadii = trendLabels.map(q => fq.includes(q) ? 5 : 3), ptBgColors = trendLabels.map(q => fq.includes(q) ? c : '#fff');
                 var ptBorders = trendLabels.map(q => fq.includes(q) ? '#fff' : c), ptBorderWidths = trendLabels.map(q => fq.includes(q) ? 2 : 1.5);
-                CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), {
-                    type: 'line',
-                    data: { labels: trendLabels, datasets: [{ data: trendData, borderColor: c, backgroundColor: hRgba(c, 0.1), borderWidth: 2, fill: true, tension: 0.4, pointRadius: ptRadii, pointBackgroundColor: ptBgColors, pointBorderColor: ptBorders, pointBorderWidth: ptBorderWidths, pointHoverRadius: 7 }] },
-                    options: {
-                        responsive: true, maintainAspectRatio: false, clip: false,
-                        plugins: {
-                            legend: { display: false },
-                            datalabels: { display: true, align: 'top', anchor: 'end', offset: 4, color: (cx) => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', font: (cx) => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), formatter: (v) => Number(v).toFixed(1) },
-                            tooltip: { callbacks: { title: function(cx) { return cx[0].label + ' 상세 역량'; }, label: function(cx) { var item = sortedEd[cx.dataIndex]; if(!item) return ''; var lines = ['종합 평균: ' + Number(cx.raw).toFixed(2), '----------------']; RADAR_LABELS.forEach((lbl, i) => lines.push(lbl + ': ' + Number(item.vals[i]).toFixed(1))); return lines; } } }
-                        },
-                        scales: { x: { display: false }, y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 } },
-                        layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } }
-                    }
+                
+                CH['newKpiTrendChart'] = new Chart(document.getElementById('newKpiTrendChart').getContext('2d'), { 
+                    type: 'line', 
+                    data: { labels: trendLabels, datasets: [{ data: trendData, borderColor: c, backgroundColor: hRgba(c, 0.1), borderWidth: 2, fill: true, tension: 0.4, pointRadius: ptRadii, pointBackgroundColor: ptBgColors, pointBorderColor: ptBorders, pointBorderWidth: ptBorderWidths, pointHoverRadius: 7 }] }, 
+                    options: { 
+                        responsive: true, maintainAspectRatio: false, clip: false, 
+                        plugins: { 
+                            legend: { display: false }, 
+                            datalabels: { display: true, align: 'top', anchor: 'end', offset: 4, color: (cx) => fq.includes(trendLabels[cx.dataIndex]) ? c : '#94a3b8', font: (cx) => ({ size: fq.includes(trendLabels[cx.dataIndex]) ? 12 : 10, weight: fq.includes(trendLabels[cx.dataIndex]) ? '900' : '600' }), formatter: (v) => Number(v).toFixed(1) }, 
+                            tooltip: { callbacks: { title: function(cx) { return cx[0].label + ' 상세 역량'; }, label: function(cx) { var item = sortedEd[cx.dataIndex]; if(!item) return ''; var lines = ['종합 평균: ' + Number(cx.raw).toFixed(2), '----------------']; RADAR_LABELS.forEach((lbl, i) => lines.push(lbl + ': ' + Number(item.vals[i]).toFixed(1))); return lines; } } } 
+                        }, 
+                        scales: { x: { display: false }, y: { display: false, min: Math.max(0, Math.min(...trendData) - 0.5), max: 5.5 } }, 
+                        layout: { padding: { top: 20, bottom: 10, left: 15, right: 15 } } 
+                    } 
                 });
             }
-            CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), {
-                type: 'radar',
-                data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 40 },
-                    plugins:{
-                        legend:{ display:false }, datalabels: { display: false },
-                        tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 14 }, bodyFont: { size: 13, weight: 'bold' }, padding: 12, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + Number(cx.raw).toFixed(2); } } }
-                    },
-                    scales: { r: { min: 0, max: 5, grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 }, angleLines: { display: false }, ticks: { display: false, stepSize: 1 }, pointLabels: { font: { size: 14, weight: '800' }, color: '#475569', padding: 20 } } },
-                    elements: { line: { tension: 0.35 } }
-                }
+            
+            CH['newKpiRadarChart'] = new Chart(document.getElementById('newKpiRadarChart').getContext('2d'), { 
+                type: 'radar', 
+                data: { labels: RADAR_LABELS, datasets: [{ label: '선택 기간 (' + latestQ.q + ')', data: latestQ.vals, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2.5, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointRadius: 4, pointHoverRadius: 6, order: 1 }, { label: '팀 전체 평균', data: allEvalAvgVals, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }, { label: '개인 평균', data: avgVals, borderColor: '#cbd5e1', backgroundColor: 'rgba(148, 163, 184, 0.08)', borderWidth: 1.5, borderDash: [], pointBackgroundColor: '#cbd5e1', pointRadius: 2, pointHoverRadius: 4, order: 3 }] }, 
+                options: { 
+                    responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 40 }, 
+                    plugins:{ 
+                        legend:{ display:false }, datalabels: { display: false }, 
+                        tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 14 }, bodyFont: { size: 13, weight: 'bold' }, padding: 12, callbacks: { label: function(cx) { return cx.dataset.label + ': ' + Number(cx.raw).toFixed(2); } } } 
+                    }, 
+                    scales: { r: { min: 0, max: 5, grid: { circular: false, color: 'rgba(203,213,225,0.4)', lineWidth: 1.5 }, angleLines: { display: false }, ticks: { display: false, stepSize: 1 }, pointLabels: { font: { size: 14, weight: '800' }, color: '#475569', padding: 20 } } }, 
+                    elements: { line: { tension: 0.35 } } 
+                } 
             });
-            if(topTasksArr.length > 0) {
-                CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), {
-                    type: 'doughnut',
-                    data: { labels: topTasksArr.map(t => t[0]), datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', clip: false, plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: 5 } }
-                });
+            
+            if(topTasksArr.length > 0) { 
+                CH['newKpiDonutChart'] = new Chart(document.getElementById('newKpiDonutChart').getContext('2d'), { 
+                    type: 'doughnut', 
+                    data: { labels: topTasksArr.map(t => t[0]), datasets: [{ data: topTasksArr.map(t => mToH(t[1])), backgroundColor: SUB_PAL.slice(0, topTasksArr.length), borderWidth: 2, borderColor: '#fff' }] }, 
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', clip: false, plugins: { legend: { display: false }, datalabels: { display: false } }, layout: { padding: 5 } } 
+                }); 
             }
-            CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), {
-                type: 'radar',
-                data: { labels: splitRadarLabels, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }] },
-                options: {
+            
+            CH['kpiInsightRadar'] = new Chart(document.getElementById('kpiInsightRadar').getContext('2d'), { 
+                type: 'radar', 
+                data: { labels: splitRadarLabels, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }] }, 
+                options: { 
                     responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 40 },
-                    plugins: {
-                        legend: { display: false }, datalabels: { display: true, align: 'end', anchor: 'end', color: c, font: {size:10, weight:'bold'}, formatter: v => Number(v).toFixed(2) },
-                        tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { if(cx.datasetIndex===0) return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); else return cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2); } } }
-                    },
-                    scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 10, weight: '800' }, color: '#64748b', padding: 15 } } }
-                }
+                    plugins: { 
+                        legend: { display: false }, datalabels: { display: true, align: 'end', anchor: 'end', color: c, font: {size:10, weight:'bold'}, formatter: v => Number(v).toFixed(2) }, 
+                        tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { if(cx.datasetIndex===0) return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); else return cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2); } } } 
+                    }, 
+                    scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 10, weight: '800' }, color: '#64748b', padding: 15 } } } 
+                } 
             });
         } catch (e) { console.error("KPI 탭 렌더링 중 오류:", e); }
     }, 50);
