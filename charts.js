@@ -202,9 +202,20 @@ function renderCostTrendChart(mos) {
     });
     
     var lastActualMonth = '';
+    var pastTotalPlan = 0;
+    var pastTotalExec = 0;
+    
     allFullMonths.forEach(function(m) {
-        if(allMosMap[m] && allMosMap[m].hasExec) lastActualMonth = m;
+        if(allMosMap[m] && allMosMap[m].hasExec) {
+            lastActualMonth = m;
+            pastTotalPlan += allMosMap[m].plan;
+            pastTotalExec += allMosMap[m].exec;
+        }
     });
+
+    // 핵심 변경점 1: 과거 데이터 기반 실행 추세(비율) 분석
+    // 지금까지의 계획 대비 실행 소진율을 계산하여 미래 예상치에 반영합니다.
+    var execTrendRatio = (pastTotalPlan > 0) ? (pastTotalExec / pastTotalPlan) : 1.0;
     
     var globalData = { plan: [], execActual: [], execPred: [] };
     var cumPlan = 0, cumExec = 0, cumPred = 0;
@@ -227,10 +238,10 @@ function renderCostTrendChart(mos) {
             cumPred = cumExec;
             var valExec = isCum ? cumExec : mExec;
             globalData.execActual.push(valExec);
-            globalData.execPred.push(valExec); // 예상선이 끊기지 않게 연결점 세팅
+            globalData.execPred.push(valExec); 
         } else {
-            // 예상값 1개로 통합 (기본적으로 계획 인건비와 동일한 수준으로 상승한다고 가정)
-            var stepPred = mPlan; 
+            // 과거 소진율 트렌드를 반영한 합리적인 예상치 계산
+            var stepPred = mPlan * execTrendRatio; 
             cumPred += stepPred;
             globalData.execActual.push(null);
             globalData.execPred.push(isCum ? cumPred : stepPred);
@@ -262,12 +273,10 @@ function renderCostTrendChart(mos) {
         } else { schData.push(null); }
     });
 
-    // 1. 실행 인건비 그라데이션 (파란색)
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
 
-    // 2. 실행 예상 그라데이션 추가 (보라색)
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
     gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); 
     gradPred.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
@@ -280,7 +289,6 @@ function renderCostTrendChart(mos) {
             labels: viewMonths,
             datasets: [
                 { label: '실행 인건비', data: viewActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2, spanGaps: false },
-                // 예상선을 1개로 줄이고 보라색 색상과 그라데이션 적용
                 { label: '실행 (예상)', data: viewPred, borderColor: '#8b5cf6', backgroundColor: window.isCostCumulative ? gradPred : 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: false, order: 3 },
                 { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 4 },
                 { type:'line', label:'주요일정', data: schData.map(function(x) { return x ? x.yPos : null; }), backgroundColor:'transparent', borderColor:'transparent', showLine:false, pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5, isSchedule:true, order:0, spanGaps:false }
@@ -292,7 +300,34 @@ function renderCostTrendChart(mos) {
                 legend: { display: false },
                 datalabels: {
                     display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
-                    align: 'top', anchor: 'top', offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return Number(v||0).toFixed(1); }
+                    
+                    // 핵심 변경점 2: 값이 겹치면 서로 밀어내는 스마트 라벨 배치 (위/아래 자동 조정)
+                    align: function(cx) {
+                        var idx = cx.dataIndex;
+                        var planVal = viewPlan[idx] || 0;
+                        var actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx];
+                        actVal = actVal || 0;
+                        
+                        // 두 점이 차트 전체 높이의 8% 이내로 가까울 경우 서로 밀어냄
+                        if (Math.abs(planVal - actVal) < (maxVal * 0.08)) {
+                            if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom';
+                            else return actVal > planVal ? 'top' : 'bottom';
+                        }
+                        return 'top';
+                    },
+                    anchor: function(cx) {
+                        var idx = cx.dataIndex;
+                        var planVal = viewPlan[idx] || 0;
+                        var actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx];
+                        actVal = actVal || 0;
+                        
+                        if (Math.abs(planVal - actVal) < (maxVal * 0.08)) {
+                            if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom';
+                            else return actVal > planVal ? 'top' : 'bottom';
+                        }
+                        return 'top';
+                    },
+                    offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return Number(v||0).toFixed(1); }
                 },
                 tooltip: {
                     displayColors: false, backgroundColor: 'rgba(15,23,42,0.95)', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, filter: function(item, index) { return index === 0; },
@@ -303,7 +338,6 @@ function renderCostTrendChart(mos) {
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], pred = viewPred[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
                             
-                            // 툴팁도 예상선 1개 표기에 맞춰 수정
                             if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
