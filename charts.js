@@ -179,8 +179,7 @@ function renderCostTrendChart(mos) {
     if(!mos || !mos.length || safeCostData.length === 0) return;
     
     var globalStart = '2024-03';
-    // 1. 차트 범위를 2026년 11월까지만 표시하도록 수정
-    var globalEnd = '2026-11';
+    var globalEnd = '2026-12';
     var allFullMonths = getMonthsBetween(globalStart, globalEnd);
     var allMosMap = {};
     allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
@@ -214,6 +213,7 @@ function renderCostTrendChart(mos) {
         }
     });
 
+    // 핵심 변경점 1: 지금까지의 '실제 월 평균 집행액(Run-rate)'을 계산하여 선형 추세 적용
     var avgMonthlyExec = (actualMonthCount > 0) ? (pastTotalExec / actualMonthCount) : 0;
     
     var globalData = { plan: [], execActual: [], execPred: [] };
@@ -239,13 +239,8 @@ function renderCostTrendChart(mos) {
             globalData.execActual.push(valExec);
             globalData.execPred.push(valExec); 
         } else {
+            // 핵심 변경점 2: 계획선 형태를 무시하고, 과거 평균치(avgMonthlyExec)를 일정하게 더해줌 (직선형태)
             var stepPred = avgMonthlyExec; 
-            
-            // 3. 2026년 8월부터는 예상치(추세)를 80% 수준으로 조정
-            if (m >= '2026-08') {
-                stepPred = avgMonthlyExec * 0.8;
-            }
-            
             cumPred += stepPred;
             globalData.execActual.push(null);
             globalData.execPred.push(isCum ? cumPred : stepPred);
@@ -304,14 +299,12 @@ function renderCostTrendChart(mos) {
                 legend: { display: false },
                 datalabels: {
                     display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
-                    
-                    // 2. 값이 겹칠 때 서로 밀어내는 감도(임계값)를 대폭 상향 (0.08 -> 0.15)
                     align: function(cx) {
                         var idx = cx.dataIndex;
                         var planVal = viewPlan[idx] || 0;
                         var actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx];
                         actVal = actVal || 0;
-                        if (Math.abs(planVal - actVal) < (maxVal * 0.15)) {
+                        if (Math.abs(planVal - actVal) < (maxVal * 0.08)) {
                             if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom';
                             else return actVal > planVal ? 'top' : 'bottom';
                         }
@@ -322,16 +315,13 @@ function renderCostTrendChart(mos) {
                         var planVal = viewPlan[idx] || 0;
                         var actVal = viewActual[idx] !== null ? viewActual[idx] : viewPred[idx];
                         actVal = actVal || 0;
-                        if (Math.abs(planVal - actVal) < (maxVal * 0.15)) {
+                        if (Math.abs(planVal - actVal) < (maxVal * 0.08)) {
                             if (cx.datasetIndex === 2) return planVal >= actVal ? 'top' : 'bottom';
                             else return actVal > planVal ? 'top' : 'bottom';
                         }
                         return 'top';
                     },
-                    offset: 8, // 글자가 겹치지 않게 선과의 간격도 약간 넓힘
-                    color: function(cx) { return cx.dataset.borderColor; }, 
-                    font: { size: 10, weight: 'bold' }, 
-                    formatter: function(v) { return Number(v||0).toFixed(1); }
+                    offset: 6, color: function(cx) { return cx.dataset.borderColor; }, font: { size: 10, weight: 'bold' }, formatter: function(v) { return Number(v||0).toFixed(1); }
                 },
                 tooltip: {
                     displayColors: false, backgroundColor: 'rgba(15,23,42,0.95)', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, filter: function(item, index) { return index === 0; },
