@@ -168,117 +168,6 @@ function getMonthsBetween(start, end) {
 // [수정2] 인건비 추이 차트 (0 데이터 무시 및 26년 4월부터 예상치 적용 로직 완벽 수정)
 // ====================================================================
 function renderCostTrendChart(mos) {
-    if(typeof dC === 'function') dC('costTrendChart'); 
-    window.lastCostMos = mos;
-    
-    var canvas = document.getElementById('costTrendChart');
-    if(!canvas) return;
-    var ctx = canvas.getContext('2d');
-
-    var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
-    if(!mos || !mos.length || safeCostData.length === 0) return;
-    
-    var globalStart = '2024-03';
-    // 1. 차트 범위를 2026년 11월까지만 표시하도록 수정
-    var globalEnd = '2026-11';
-    var allFullMonths = getMonthsBetween(globalStart, globalEnd);
-    var allMosMap = {};
-    allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
-    
-    safeCostData.forEach(function(r) {
-        var m = r.date;
-        if(m && m.length > 7) m = m.substring(0,7);
-        if(allMosMap[m] !== undefined) {
-            var p = parseFloat(r.plan);
-            if(!isNaN(p)) allMosMap[m].plan += (p / 10000);
-            
-            if(r.exec !== null && r.exec !== undefined && String(r.exec).trim() !== '') {
-                var e = parseFloat(r.exec);
-                if(!isNaN(e) && e > 0) {
-                    allMosMap[m].exec += (e / 10000);
-                    allMosMap[m].hasExec = true;
-                }
-            }
-        }
-    });
-    
-    var lastActualMonth = '';
-    var pastTotalExec = 0;
-    var actualMonthCount = 0;
-    
-    allFullMonths.forEach(function(m) {
-        if(allMosMap[m] && allMosMap[m].hasExec) {
-            lastActualMonth = m;
-            pastTotalExec += allMosMap[m].exec;
-            actualMonthCount++;
-        }
-    });
-
-    var avgMonthlyExec = (actualMonthCount > 0) ? (pastTotalExec / actualMonthCount) : 0;
-    
-    var globalData = { plan: [], execActual: [], execPred: [] };
-    var cumPlan = 0, cumExec = 0, cumPred = 0;
-    var isCum = window.isCostCumulative === true;
-
-    allFullMonths.forEach(function(m) {
-        var mPlan = allMosMap[m].plan;
-        var mExec = allMosMap[m].hasExec ? allMosMap[m].exec : null;
-
-        cumPlan += mPlan;
-        globalData.plan.push(isCum ? cumPlan : mPlan);
-
-        if (lastActualMonth === '' || m < lastActualMonth) {
-            cumExec += (mExec || 0);
-            cumPred = cumExec;
-            globalData.execActual.push(isCum ? cumExec : mExec);
-            globalData.execPred.push(null);
-        } else if (m === lastActualMonth) {
-            cumExec += (mExec || 0);
-            cumPred = cumExec;
-            var valExec = isCum ? cumExec : mExec;
-            globalData.execActual.push(valExec);
-            globalData.execPred.push(valExec); 
-        } else {
-            var stepPred = avgMonthlyExec; 
-            
-            // 3. 2026년 8월부터는 예상치(추세)를 80% 수준으로 조정
-            if (m >= '2026-08') {
-                stepPred = avgMonthlyExec * 0.8;
-            }
-            
-            cumPred += stepPred;
-            globalData.execActual.push(null);
-            globalData.execPred.push(isCum ? cumPred : stepPred);
-        }
-    });
-    
-    var sIdx = allFullMonths.indexOf(mos[0]);
-    if(sIdx === -1) sIdx = 0;
-    var eIdx = allFullMonths.length - 1; 
-    
-    var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
-    var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
-    var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
-    var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
-
-    var maxArr = [10];
-    var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
-    addMax(viewPlan); addMax(viewActual); addMax(viewPred);
-    var maxVal = Math.max.apply(null, maxArr);
-    if(isNaN(maxVal) || maxVal === -Infinity) maxVal = 100;
-    var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
-    
-    var schData = [];
-    viewMonths.forEach(function(m) {
-        var schedules = (typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(function(s) { return s.date && s.date.startsWith(m); });
-        if(schedules.length > 0) {
-            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').trim(); });
-            schData.push({ schTitle: st, yPos: scheduleTopY });
-        } else { schData.push(null); }
-    });
-
-    var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
-    gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
 
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
@@ -304,8 +193,6 @@ function renderCostTrendChart(mos) {
                 legend: { display: false },
                 datalabels: {
                     display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
-                    
-                    // 2. 값이 겹칠 때 서로 밀어내는 감도(임계값)를 대폭 상향 (0.08 -> 0.15)
                     align: function(cx) {
                         var idx = cx.dataIndex;
                         var planVal = viewPlan[idx] || 0;
@@ -328,7 +215,7 @@ function renderCostTrendChart(mos) {
                         }
                         return 'top';
                     },
-                    offset: 8, // 글자가 겹치지 않게 선과의 간격도 약간 넓힘
+                    offset: 8, 
                     color: function(cx) { return cx.dataset.borderColor; }, 
                     font: { size: 10, weight: 'bold' }, 
                     formatter: function(v) { return Number(v||0).toFixed(1); }
@@ -341,7 +228,6 @@ function renderCostTrendChart(mos) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], pred = viewPred[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
-                            
                             if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
@@ -358,7 +244,8 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    var targetMonthForSummary = mos[mos.length - 1];
+    // 핵심 변경점: 데이터의 끝(3월)이 아니라, 차트가 그려진 끝점(11월 등)을 기준으로 요약 카드를 계산합니다.
+    var targetMonthForSummary = viewMonths[viewMonths.length - 1];
     var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
     if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
     
@@ -390,11 +277,11 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
         statusClass = 'warn'; statusMsg = '정상 (한계 근접)'; diffColor = '#f59e0b'; barColor = '#f59e0b';
     }
 
-    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치 포함)</span>' : '';
-    
-    // 예상값 구간일 때 라벨명을 동적으로 변경하여 혼동 방지
+    // 예측치일 경우의 텍스트들을 정의합니다.
+    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치)</span>' : '';
     var execLabel = isPred ? '실행금액 (예상)' : '실행금액 (당시)';
     var diffLabel = isPred ? '절감액 (계획-예상)' : '절감액 (계획-실행)';
+    var ratioTitle = isPred ? '계획 대비 실행 비율 <span style="color:#8b5cf6; font-size:11px; font-weight:800;">(예상값)</span>' : '계획 대비 실행 비율';
     
     wrap.innerHTML = `
     <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
@@ -402,7 +289,7 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     </div>
     
     <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-        <div style="font-size:12px; color:#64748b; font-weight:700; margin-bottom:8px;">계획 대비 실행 비율</div>
+        <div style="font-size:12px; color:#64748b; font-weight:700; margin-bottom:8px;">${ratioTitle}</div>
         <div style="display:flex; align-items:center; gap:10px;">
             <div style="font-size:24px; font-weight:900; color:#00428E; margin:0;">${ratio}%</div>
             <div style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; background:${barColor}20; color:${barColor};">${statusMsg}</div>
