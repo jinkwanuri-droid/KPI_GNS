@@ -115,7 +115,7 @@ function renderProjectProgress() {
 }
 
 // ====================================================================
-// [수정1] 투입비율 차트 (글자 겹침 완벽 방지)
+// [완벽수정 1] 투입비율 차트 (글자 겹침 방지 및 색상 변경)
 // ====================================================================
 function renderOvProjectRatio(all){
     var wrap = document.getElementById('ovPjRatioWrap');
@@ -160,92 +160,102 @@ function getMonthsBetween(start, end) {
 }
 
 // ====================================================================
-// [수정2] 인건비 추이 차트 (NaN 에러 방지 및 예외처리 적용)
+// [완벽수정 2] 인건비 추이 차트 (NaN 렌더링 에러 방지 및 항상 예측 표시)
 // ====================================================================
 function renderCostTrendChart(mos) {
     if(typeof dC === 'function') dC('costTrendChart'); 
     window.lastCostMos = mos;
-    if(!mos || !mos.length) return;
+    
+    var canvas = document.getElementById('costTrendChart');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+
+    // 데이터가 아예 없을 경우 방어 코드
+    var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
+    if(!mos || !mos.length || safeCostData.length === 0) return;
     
     var globalStart = '2024-03';
     var globalEnd = '2026-12';
     var allFullMonths = getMonthsBetween(globalStart, globalEnd);
     var allMosMap = {};
+    allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
     
-    // COST_DATA가 아예 없을 경우를 대비한 안전 장치
-    var safeCostData = (typeof COST_DATA !== 'undefined') ? COST_DATA : [];
-    
+    // 1. 데이터 파싱 및 맵핑 (NaN 에러 완벽 차단)
     safeCostData.forEach(function(r) {
-        if(!allMosMap[r.date]) allMosMap[r.date] = { plan: 0, exec: 0, hasExec: false };
-        // 데이터가 문자열이거나 빈 값일 경우 NaN으로 차트가 깨지는 현상 방지
-        var p = parseFloat(r.plan) || 0;
-        allMosMap[r.date].plan += (p / 10000);
-        if(r.exec !== null && r.exec !== undefined && r.exec !== '') {
-            var e = parseFloat(r.exec) || 0;
-            allMosMap[r.date].exec += (e / 10000);
-            allMosMap[r.date].hasExec = true;
+        var m = r.date;
+        if(m && m.length > 7) m = m.substring(0,7);
+        if(allMosMap[m] !== undefined) {
+            var p = parseFloat(r.plan);
+            if(!isNaN(p)) allMosMap[m].plan += (p / 10000);
+            
+            if(r.exec !== null && r.exec !== undefined && r.exec !== '') {
+                var e = parseFloat(r.exec);
+                if(!isNaN(e)) {
+                    allMosMap[m].exec += (e / 10000);
+                    allMosMap[m].hasExec = true;
+                }
+            }
         }
     });
     
-    var lastActualMonth = '', totalActualExec = 0, actualMonthCount = 0;
-    Object.keys(allMosMap).sort().forEach(function(m) {
-        if(allMosMap[m].hasExec) { 
-            lastActualMonth = m; 
-            totalActualExec += allMosMap[m].exec; 
-            actualMonthCount++; 
-        }
-    });
-    
-    var globalData = { plan: [], execActual: [] };
-    var cumPlan = 0, cumExecActual = 0;
+    var lastActualMonth = '';
     allFullMonths.forEach(function(m) {
-        var mPlan = allMosMap[m] ? allMosMap[m].plan : 0;
-        var mExec = allMosMap[m] && allMosMap[m].hasExec ? allMosMap[m].exec : 0;
-        
+        if(allMosMap[m] && allMosMap[m].hasExec) lastActualMonth = m;
+    });
+    
+    // 2. 누적 및 긍정/부정 시나리오 연산
+    var globalData = { plan: [], execActual: [], opt: [], pes: [] };
+    var cumPlan = 0, cumExec = 0, cumOpt = 0, cumPes = 0;
+    var isCum = window.isCostCumulative === true;
+
+    allFullMonths.forEach(function(m) {
+        var mPlan = allMosMap[m].plan;
+        var mExec = allMosMap[m].hasExec ? allMosMap[m].exec : null;
+
         cumPlan += mPlan;
-        globalData.plan.push(window.isCostCumulative ? cumPlan : mPlan);
-        
-        if (lastActualMonth !== '' && m <= lastActualMonth) {
-            cumExecActual += mExec;
-            globalData.execActual.push(window.isCostCumulative ? cumExecActual : mExec);
+        globalData.plan.push(isCum ? cumPlan : mPlan);
+
+        if (lastActualMonth === '' || m < lastActualMonth) {
+            cumExec += (mExec || 0);
+            cumOpt = cumExec;
+            cumPes = cumExec;
+            globalData.execActual.push(isCum ? cumExec : mExec);
+            globalData.opt.push(null);
+            globalData.pes.push(null);
+        } else if (m === lastActualMonth) {
+            cumExec += (mExec || 0);
+            cumOpt = cumExec;
+            cumPes = cumExec;
+            var valExec = isCum ? cumExec : mExec;
+            globalData.execActual.push(valExec);
+            globalData.opt.push(valExec); // 예측 연결 지점
+            globalData.pes.push(valExec); // 예측 연결 지점
         } else {
+            var stepOpt = mPlan * 0.9;
+            var stepPes = mPlan * 1.1;
+            cumOpt += stepOpt;
+            cumPes += stepPes;
             globalData.execActual.push(null);
+            globalData.opt.push(isCum ? cumOpt : stepOpt);
+            globalData.pes.push(isCum ? cumPes : stepPes);
         }
     });
     
-    var reqStart = mos[0], reqEnd = mos[mos.length - 1];
-    var sIdx = allFullMonths.indexOf(reqStart);
-    var eIdx = allFullMonths.indexOf(reqEnd);
-    if(sIdx === -1) sIdx = 0; if(eIdx === -1) eIdx = allFullMonths.length - 1;
+    var sIdx = allFullMonths.indexOf(mos[0]);
+    if(sIdx === -1) sIdx = 0;
+    // 슬라이더의 종료 월과 무관하게, 추이 예측 차트는 프로젝트 전체 기간(globalEnd)까지 항상 보여주도록 설정합니다.
+    var eIdx = allFullMonths.length - 1; 
     
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
     var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
     var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
+    var viewOpt = globalData.opt.slice(sIdx, eIdx + 1);
+    var viewPes = globalData.pes.slice(sIdx, eIdx + 1);
 
-    var optData = new Array(viewMonths.length).fill(null);
-    var pesData = new Array(viewMonths.length).fill(null);
-    
-    var lastActualIndex = -1;
-    for (var j = 0; j < viewActual.length; j++) {
-        if (viewActual[j] !== null) lastActualIndex = j;
-    }
-
-    for (var i = 0; i < viewMonths.length; i++) {
-        if (i === lastActualIndex) {
-            optData[i] = viewActual[i];
-            pesData[i] = viewActual[i];
-        } else if (i > lastActualIndex) {
-            optData[i] = viewPlan[i] * 0.9;
-            pesData[i] = viewPlan[i] * 1.1;
-        }
-    }
-
-    // 최댓값 연산 중 NaN에 의한 렌더링 증발 현상 방지
+    // 3. 차트 Y축 최댓값 연산 보호
     var maxArr = [10];
-    viewPlan.forEach(function(v) { if(!isNaN(v)) maxArr.push(v); });
-    viewActual.forEach(function(v) { if(v!==null && !isNaN(v)) maxArr.push(v); });
-    pesData.forEach(function(v) { if(v!==null && !isNaN(v)) maxArr.push(v); });
-    
+    var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
+    addMax(viewPlan); addMax(viewActual); addMax(viewOpt); addMax(viewPes);
     var maxVal = Math.max.apply(null, maxArr);
     if(isNaN(maxVal) || maxVal === -Infinity) maxVal = 100;
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
@@ -254,18 +264,11 @@ function renderCostTrendChart(mos) {
     viewMonths.forEach(function(m) {
         var schedules = (typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(function(s) { return s.date && s.date.startsWith(m); });
         if(schedules.length > 0) {
-            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').replace(/[\u1000-\uFFFF]+/g,'').trim(); });
+            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').trim(); });
             schData.push({ schTitle: st, yPos: scheduleTopY });
         } else { schData.push(null); }
     });
-    
-    var summaryPlan = viewPlan[viewPlan.length - 1] || 0;
-    var isSummaryPred = viewActual[viewActual.length - 1] === null;
-    var summaryExec = isSummaryPred ? (pesData[pesData.length - 1] || 0) : viewActual[viewActual.length - 1];
 
-    var canvas = document.getElementById('costTrendChart');
-    if(!canvas) return;
-    var ctx = canvas.getContext('2d');
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)'); gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
     
@@ -276,9 +279,9 @@ function renderCostTrendChart(mos) {
         data: {
             labels: viewMonths,
             datasets: [
-                { label: '실행 인건비', data: viewActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2 },
-                { label: '긍정 시나리오 (0.9x)', data: optData, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: true, order: 3 },
-                { label: '부정 시나리오 (1.1x)', data: pesData, borderColor: '#ef4444', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: true, order: 4 },
+                { label: '실행 인건비', data: viewActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2, spanGaps: false },
+                { label: '긍정 시나리오 (0.9x)', data: viewOpt, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: false, order: 3 },
+                { label: '부정 시나리오 (1.1x)', data: viewPes, borderColor: '#ef4444', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: false, order: 4 },
                 { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 5 },
                 { type:'line', label:'주요일정', data: schData.map(function(x) { return x ? x.yPos : null; }), backgroundColor:'transparent', borderColor:'transparent', showLine:false, pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5, isSchedule:true, order:0, spanGaps:false }
             ]
@@ -297,7 +300,7 @@ function renderCostTrendChart(mos) {
                         title: function(cx) { return cx[0].label; },
                         label: function(cx) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
-                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], opt = optData[idx], pes = pesData[idx];
+                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], opt = viewOpt[idx], pes = viewPes[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
                             if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
@@ -315,13 +318,24 @@ function renderCostTrendChart(mos) {
             scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12, maxRotation: 0 } }, y: { grid: { color: 'rgba(226,232,240,0.5)' }, min: 0, max: scheduleTopY, ticks: { stepSize: 10, callback: function(v) { return Number(v||0).toFixed(1) + '천만'; } } } }
         }
     });
+
+    // 요약 카드는 현재 슬라이더의 마지막 달을 기준으로 산출합니다.
+    var targetMonthForSummary = mos[mos.length - 1];
+    var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
+    if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
+    
+    var sPlan = globalData.plan[sEndIdx] || 0;
+    var sExec = globalData.execActual[sEndIdx];
+    var isPred = sExec === null;
+    if(isPred) sExec = globalData.pes[sEndIdx] || 0;
+
     if(typeof renderCostSummary === 'function') {
-        renderCostSummary(reqEnd, summaryPlan, summaryExec, isSummaryPred);
+        renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
     }
 }
 
 // ====================================================================
-// [수정3] 기간 집행 요약 (실행 비율 카드 추가)
+// [완벽수정 3] 기간 집행 요약 (실행 비율 카드 추가 복원)
 // ====================================================================
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
