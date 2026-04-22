@@ -334,6 +334,7 @@ function renderCostTrendChart(mos) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], pred = viewPred[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
+                            
                             if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
@@ -350,8 +351,8 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 핵심 변경점: 데이터의 끝(3월)이 아니라, 차트가 그려진 끝점(11월 등)을 기준으로 요약 카드를 계산합니다.
-    var targetMonthForSummary = viewMonths[viewMonths.length - 1];
+    // 핵심 변경점: 슬라이더 필터 배열(mos)의 마지막 값을 기준으로 요약 카드를 연동합니다!
+    var targetMonthForSummary = mos[mos.length - 1];
     var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
     if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
     
