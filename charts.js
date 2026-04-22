@@ -375,17 +375,20 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     }
     
     var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
+    var ratioNum = parseFloat(ratio);
     var diff = totalPlan - totalExec;
     
-    var statusClass = 'good', statusMsg = '효율적 집행 (우수)', diffColor = '#10b981', barColor = '#10b981';
-    if(ratio > 100) { 
-        statusClass = 'danger'; statusMsg = '예산 초과'; diffColor = '#ef4444'; barColor = '#ef4444';
-    } else if (ratio > 90) { 
-        statusClass = 'warn'; statusMsg = '정상 (한계 근접)'; diffColor = '#f59e0b'; barColor = '#f59e0b';
+    // 상태별 변수 초기화 (기본: 안전/초록색)
+    var statusClass = 'good', statusMsg = '안전', diffColor = '#10b981', barColor = '#10b981';
+    
+    // 조건: 95% 이상 위기, 91% 이상 95% 미만 경계, 91% 미만 안전
+    if(ratioNum >= 95) { 
+        statusClass = 'danger'; statusMsg = '위기'; diffColor = '#ef4444'; barColor = '#ef4444';
+    } else if (ratioNum >= 91) { 
+        statusClass = 'warn'; statusMsg = '경계'; diffColor = '#f59e0b'; barColor = '#f59e0b';
     }
 
-    // 예측치일 경우의 텍스트들을 정의합니다.
-    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치)</span>' : '';
+    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치 포함)</span>' : '';
     var execLabel = isPred ? '실행금액 (예상)' : '실행금액 (당시)';
     var diffLabel = isPred ? '절감액 (계획-예상)' : '절감액 (계획-실행)';
     var ratioTitle = isPred ? '계획 대비 실행 비율 <span style="color:#8b5cf6; font-size:11px; font-weight:800;">(예상값)</span>' : '계획 대비 실행 비율';
@@ -402,7 +405,7 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
             <div style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; background:${barColor}20; color:${barColor};">${statusMsg}</div>
         </div>
         <div style="height:6px; width:100%; background:#f1f5f9; border-radius:3px; margin-top:12px; overflow:hidden;">
-            <div style="height:100%; width:${Math.min(ratio, 100)}%; background:${barColor}; border-radius:3px; transition: width 0.5s ease;"></div>
+            <div style="height:100%; width:${Math.min(ratioNum, 100)}%; background:${barColor}; border-radius:3px; transition: width 0.5s ease;"></div>
         </div>
     </div>
 
