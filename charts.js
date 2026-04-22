@@ -184,7 +184,6 @@ function renderCostTrendChart(mos) {
     var allMosMap = {};
     allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
     
-    // 데이터 파싱: 값이 비어있거나 0인 경우 예상치 구간으로 인식하도록 수정
     safeCostData.forEach(function(r) {
         var m = r.date;
         if(m && m.length > 7) m = m.substring(0,7);
@@ -194,7 +193,6 @@ function renderCostTrendChart(mos) {
             
             if(r.exec !== null && r.exec !== undefined && String(r.exec).trim() !== '') {
                 var e = parseFloat(r.exec);
-                // 핵심 변경점: 시트에 0이라고 적혀있어도 값이 없으면(미래 달이면) 예상치로 그리게 합니다.
                 if(!isNaN(e) && e > 0) {
                     allMosMap[m].exec += (e / 10000);
                     allMosMap[m].hasExec = true;
@@ -208,8 +206,8 @@ function renderCostTrendChart(mos) {
         if(allMosMap[m] && allMosMap[m].hasExec) lastActualMonth = m;
     });
     
-    var globalData = { plan: [], execActual: [], opt: [], pes: [] };
-    var cumPlan = 0, cumExec = 0, cumOpt = 0, cumPes = 0;
+    var globalData = { plan: [], execActual: [], execPred: [] };
+    var cumPlan = 0, cumExec = 0, cumPred = 0;
     var isCum = window.isCostCumulative === true;
 
     allFullMonths.forEach(function(m) {
@@ -221,27 +219,21 @@ function renderCostTrendChart(mos) {
 
         if (lastActualMonth === '' || m < lastActualMonth) {
             cumExec += (mExec || 0);
-            cumOpt = cumExec;
-            cumPes = cumExec;
+            cumPred = cumExec;
             globalData.execActual.push(isCum ? cumExec : mExec);
-            globalData.opt.push(null);
-            globalData.pes.push(null);
+            globalData.execPred.push(null);
         } else if (m === lastActualMonth) {
             cumExec += (mExec || 0);
-            cumOpt = cumExec;
-            cumPes = cumExec;
+            cumPred = cumExec;
             var valExec = isCum ? cumExec : mExec;
             globalData.execActual.push(valExec);
-            globalData.opt.push(valExec); // 예상선 연결점
-            globalData.pes.push(valExec); // 예상선 연결점
+            globalData.execPred.push(valExec); // 예상선이 끊기지 않게 연결점 세팅
         } else {
-            var stepOpt = mPlan * 0.9;
-            var stepPes = mPlan * 1.1;
-            cumOpt += stepOpt;
-            cumPes += stepPes;
-            globalData.execActual.push(null); // 이 달부터는 실행 데이터 없음 (점선 표시됨)
-            globalData.opt.push(isCum ? cumOpt : stepOpt);
-            globalData.pes.push(isCum ? cumPes : stepPes);
+            // 예상값 1개로 통합 (기본적으로 계획 인건비와 동일한 수준으로 상승한다고 가정)
+            var stepPred = mPlan; 
+            cumPred += stepPred;
+            globalData.execActual.push(null);
+            globalData.execPred.push(isCum ? cumPred : stepPred);
         }
     });
     
@@ -252,12 +244,11 @@ function renderCostTrendChart(mos) {
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
     var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
     var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
-    var viewOpt = globalData.opt.slice(sIdx, eIdx + 1);
-    var viewPes = globalData.pes.slice(sIdx, eIdx + 1);
+    var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
 
     var maxArr = [10];
     var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
-    addMax(viewPlan); addMax(viewActual); addMax(viewOpt); addMax(viewPes);
+    addMax(viewPlan); addMax(viewActual); addMax(viewPred);
     var maxVal = Math.max.apply(null, maxArr);
     if(isNaN(maxVal) || maxVal === -Infinity) maxVal = 100;
     var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
@@ -271,8 +262,15 @@ function renderCostTrendChart(mos) {
         } else { schData.push(null); }
     });
 
+    // 1. 실행 인건비 그라데이션 (파란색)
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
-    gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)'); gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
+    gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
+    gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
+
+    // 2. 실행 예상 그라데이션 추가 (보라색)
+    var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
+    gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); 
+    gradPred.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
     
     if(window.CH && window.CH.costTrendChart) { window.CH.costTrendChart.destroy(); }
 
@@ -282,9 +280,9 @@ function renderCostTrendChart(mos) {
             labels: viewMonths,
             datasets: [
                 { label: '실행 인건비', data: viewActual, borderColor: '#00428E', backgroundColor: window.isCostCumulative ? gradActual : 'transparent', borderWidth: 2.5, fill: window.isCostCumulative, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, order: 2, spanGaps: false },
-                { label: '긍정 시나리오 (0.9x)', data: viewOpt, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: false, order: 3 },
-                { label: '부정 시나리오 (1.1x)', data: viewPes, borderColor: '#ef4444', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: false, order: 4 },
-                { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 5 },
+                // 예상선을 1개로 줄이고 보라색 색상과 그라데이션 적용
+                { label: '실행 (예상)', data: viewPred, borderColor: '#8b5cf6', backgroundColor: window.isCostCumulative ? gradPred : 'transparent', borderWidth: 2.5, borderDash: [4, 4], fill: window.isCostCumulative, tension: 0.3, pointRadius: 2, pointHoverRadius: 5, spanGaps: false, order: 3 },
+                { label: '계획 인건비', data: viewPlan, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, tension: 0.3, pointRadius: 2, pointHoverRadius: 4, order: 4 },
                 { type:'line', label:'주요일정', data: schData.map(function(x) { return x ? x.yPos : null; }), backgroundColor:'transparent', borderColor:'transparent', showLine:false, pointRadius: function(cx) { return cx.raw !== null ? 4.5 : 0; }, pointHoverRadius: 7, pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth: 1.5, isSchedule:true, order:0, spanGaps:false }
             ]
         },
@@ -302,15 +300,16 @@ function renderCostTrendChart(mos) {
                         title: function(cx) { return cx[0].label; },
                         label: function(cx) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
-                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], opt = viewOpt[idx], pes = viewPes[idx];
+                            var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], pred = viewPred[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
+                            
+                            // 툴팁도 예상선 1개 표기에 맞춰 수정
                             if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
                                 lines.push(diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)");
                             } else {
-                                lines.push("긍정 시나리오: " + Number(opt||0).toFixed(1) + " 천만");
-                                lines.push("부정 시나리오: " + Number(pes||0).toFixed(1) + " 천만");
+                                lines.push("실행 (예상): " + Number(pred||0).toFixed(1) + " 천만");
                             }
                             return lines;
                         }
@@ -328,7 +327,7 @@ function renderCostTrendChart(mos) {
     var sPlan = globalData.plan[sEndIdx] || 0;
     var sExec = globalData.execActual[sEndIdx];
     var isPred = sExec === null;
-    if(isPred) sExec = globalData.pes[sEndIdx] || 0;
+    if(isPred) sExec = globalData.execPred[sEndIdx] || 0;
 
     if(typeof renderCostSummary === 'function') {
         renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
