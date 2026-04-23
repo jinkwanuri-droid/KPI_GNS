@@ -741,6 +741,7 @@ function renderWpSwitchBar(d,mos,col){
         }
     });
 }
+
 function renderWpFocusBar(d,mos){
     dC('wpFocusBar');
     var nonFocus = ['회의', '행정', '교육', '휴가', '기타', '관리', '업무지원'];
