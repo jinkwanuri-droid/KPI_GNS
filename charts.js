@@ -646,42 +646,61 @@ function renderWpDonutCat(d,t){
     });
 }
 function renderWpSwitchBar(d,mos,col){
-    dC('wpSwitchBar');var sw={},pv=null;d.forEach(r=>{var m=r.date.slice(0,7);if(!sw[m])sw[m]=0;if(pv!==null&&pv!==r.sub)sw[m]++;pv=r.sub;});
-    var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
+    if(typeof dC === 'function') dC('wpSwitchBar');
+    var sw={},pv=null;
+    d.forEach(r=>{
+        var m=r.date.slice(0,7);
+        if(!sw[m])sw[m]=0;
+        if(pv!==null&&pv!==r.sub)sw[m]++;
+        pv=r.sub;
+    });
+    
+    var teamData = typeof filtered === 'function' ? filtered().filter(r=>r.project==='경남 서부의료원') : [];
     var teamSw={}, teamPv={}, act={};
-    teamData.forEach(r=>{ var m=r.date.slice(0,7); if(!teamSw[m])teamSw[m]=0; if(!act[m])act[m]=new Set(); act[m].add(r.name); if(teamPv[r.name]!==null && teamPv[r.name]!==r.sub) teamSw[m]++; teamPv[r.name]=r.sub; });
+    teamData.forEach(r=>{ 
+        var m=r.date.slice(0,7); 
+        if(!teamSw[m])teamSw[m]=0; 
+        if(!act[m])act[m]=new Set(); 
+        act[m].add(r.name); 
+        if(teamPv[r.name]!==null && teamPv[r.name]!==r.sub) teamSw[m]++; 
+        teamPv[r.name]=r.sub; 
+    });
+    
     var barData = mos.map(m=>sw[m]||0);
     var avgData = mos.map(m=> act[m]&&act[m].size>0 ? parseFloat((teamSw[m]/act[m].size).toFixed(1)) : null);
+    
+    var maxVal = Math.max(...barData.concat(avgData.filter(v=>v!==null)));
+    
     CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{
         data:{labels:mos,datasets:[
             {type:'bar', label:'개인 전환 횟수', data:barData, backgroundColor:col, borderRadius:6, order:2},
-            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:3, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
+            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:4, pointBackgroundColor:'#fff', pointBorderColor:'#94a3b8', order:1}
         ]},
         options:{
-            responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:30}},
+            responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:35}},
             interaction: { mode: 'index', intersect: false },
             plugins:{
                 legend:{ display:true, position:'top', align:'end', labels:{usePointStyle:true, boxWidth:8, font:{size:10, weight:'bold'}} },
                 datalabels:{
                     display: cx => cx.raw !== null && cx.raw > 0,
-                    color: cx => cx.dataset.type==='bar'?'#fff':'#64748b',
-                    font: {weight:'bold',size:10},
-                    anchor: cx => {
-                        var bVal = barData[cx.dataIndex] || 0;
-                        var lVal = avgData[cx.dataIndex] || 0;
-                        var diff = Math.abs(bVal - lVal);
-                        if(cx.dataset.type === 'bar') return diff < 1.5 ? 'center' : 'end';
-                        return diff < 1.5 ? 'end' : 'start';
-                    },
+                    color: cx => cx.dataset.type==='bar' ? col : '#64748b',
+                    font: {weight:'900', size:11},
+                    anchor: 'end',
+                    // 값 겹침 방지 스마트 라벨링 로직
                     align: cx => {
                         var bVal = barData[cx.dataIndex] || 0;
                         var lVal = avgData[cx.dataIndex] || 0;
-                        var diff = Math.abs(bVal - lVal);
-                        if(cx.dataset.type === 'bar') return diff < 1.5 ? 'center' : 'bottom';
-                        return 'top';
+                        if(cx.dataset.type === 'bar') return 'end';
+                        return lVal >= bVal ? 'end' : 'start';
                     },
-                    offset: cx => cx.dataset.type==='bar' ? 2 : 6,
-                    formatter: v => v
+                    offset: cx => {
+                        var bVal = barData[cx.dataIndex] || 0;
+                        var lVal = avgData[cx.dataIndex] || 0;
+                        if(cx.dataset.type === 'bar') return 2;
+                        // 선과 막대 값이 너무 가까우면 선 라벨을 더 높이 띄움
+                        return (lVal >= bVal && Math.abs(lVal - bVal) < (maxVal * 0.1)) ? 14 : 4;
+                    },
+                    formatter: v => Number(v).toFixed(1).replace('.0', '')
                 }
             },
             scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'20%'}}
@@ -997,12 +1016,17 @@ function renderEvalTab() {
                 type: 'radar',
                 data: { labels: splitRadarLabels, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }] },
                 options: {
-                    responsive: true, maintainAspectRatio: false, clip: false, layout:{ padding: 40 },
+                    responsive: true, maintainAspectRatio: false, clip: false, 
+                    layout: { padding: 15 }, // 패딩을 40에서 15로 줄여 차트 20% 확대
                     plugins: {
-                        legend: { display: false }, datalabels: { display: true, align: 'end', anchor: 'end', color: c, font: {size:10, weight:'bold'}, formatter: v => Number(v).toFixed(2) },
+                        legend: { display: false }, 
+                        datalabels: { 
+                            display: cx => cx.datasetIndex === 0, // 내 데이터(0번째)만 값 레이블 표시
+                            align: 'end', anchor: 'end', color: c, font: {size:11, weight:'900'}, formatter: v => Number(v).toFixed(2) 
+                        },
                         tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { if(cx.datasetIndex===0) return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); else return cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2); } } }
                     },
-                    scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 10, weight: '800' }, color: '#64748b', padding: 15 } } }
+                    scales: { r: { min: 0, max: 1.2, grid: { color: 'rgba(203,213,225,0.4)', lineWidth: 1 }, angleLines: { color: 'rgba(203,213,225,0.4)' }, ticks: { display: false, stepSize: 0.3 }, pointLabels: { font: { size: 11, weight: '800' }, color: '#64748b', padding: 10 } } }
                 }
             });
         } catch (e) { console.error("KPI 탭 렌더링 중 오류:", e); }
