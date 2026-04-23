@@ -139,21 +139,19 @@ function renderOvProjectRatio(all){
     var poNum = parseFloat(po);
     var pcNum = parseFloat(pc);  
     
+    // 💡 최상위 div의 margin-top을 5px에서 30px로 늘려 위쪽 통계 카드와의 여백 확보
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:12px; padding: 5px; height:100%; justify-content:center; margin-top: 5px;">
-        <!-- 수치 영역 (중복 타이틀 제거) -->
+    <div style="display:flex; flex-direction:column; gap:16px; padding: 5px; height:100%; justify-content:center; margin-top: 30px;">
         <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
             <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
             <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
         </div>
-        <!-- 차트 및 하단 라벨 영역 -->
         <div style="display:flex; flex-direction:column; gap:8px;">
             <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
                 <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 12 ? pm+'%' : ''}</div>
                 <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 12 ? po+'%' : ''}</div>
                 <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 12 ? pc+'%' : ''}</div>
             </div>
-            <!-- 라벨 위치 막대 너비와 동일하게 동기화 -->
             <div style="display:flex; width:100%; font-size:11px; font-weight:600; color:#64748b; text-align:center;">
                 <div style="width: ${pm}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${pmNum > 0 ? '서부의료원' : ''}</div>
                 <div style="width: ${po}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${poNum > 0 ? '타 프로젝트' : ''}</div>
@@ -661,6 +659,7 @@ function renderWpSwitchBar(d, mos, col) {
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
     
     CH.wpSwitchBar = new Chart(document.getElementById('wpSwitchBar').getContext('2d'), {
+        type: 'bar',
         data: {
             labels: mos,
             datasets: [
@@ -687,12 +686,13 @@ function renderWpSwitchBar(d, mos, col) {
                 }
             ]
         },
+        plugins: [ChartDataLabels], // 💡 플러그인 강제 주입
         options: {
             responsive: true, 
             maintainAspectRatio: false, 
             clip: false, 
-            // 💡 1. 상단 여백을 극단적으로 줄입니다. (10px)
-            layout: { padding: { top: 10, bottom: 0 } }, 
+            // 💡 상단 여백(top)을 0으로 만들어 범례와 차트를 바짝 붙임
+            layout: { padding: { top: 0, bottom: 5, left: 0, right: 0 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { 
@@ -701,28 +701,20 @@ function renderWpSwitchBar(d, mos, col) {
                     align: 'end', 
                     labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } 
                 },
-                // 💡 2. 가장 강력한 위치(options.plugins)에서 레이블을 강제합니다.
+                // 💡 값 레이블 설정 (짙은 파란색 강제 지정)
                 datalabels: { 
-                    display: function(cx) {
-                        // 막대 차트(개인 전환 횟수)이고 값이 0보다 클 때만 무조건 표시
-                        return cx.dataset.type === 'bar' && cx.raw > 0;
-                    },
-                    color: col,
+                    display: function(cx) { return cx.dataset.type === 'bar' && cx.raw > 0; },
+                    color: '#1e3a8a', // 짙은 파란색
                     font: { weight: '900', size: 11 },
                     anchor: 'end',
-                    align: 'top', // 막대 위쪽으로 띄움
+                    align: 'top',
                     offset: 2,
                     formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
                 }
             },
             scales: { 
                 x: { grid: { display: false } }, 
-                y: { 
-                    beginAtZero: true, 
-                    grid: { color: 'rgba(226,232,240,0.5)' }, 
-                    // 💡 3. 위쪽 빈 공간(grace)을 최소한(15%)으로 설정해 차트를 길게 늘립니다.
-                    grace: '15%' 
-                } 
+                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } 
             }
         }
     });
