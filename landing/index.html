@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GNWMC KPI Dashboard</title>
+<title>GNWMC KPI Dashboard - Product Launch</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
 <style>
   :root {
@@ -27,664 +27,501 @@
 
   /* --- 커스텀 부드러운 스크롤 --- */
   html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    background: var(--bg-deep);
-    color: var(--text-main);
-    font-family: 'Pretendard', sans-serif;
-    cursor: default;
+    width: 100%; height: 100%; overflow: hidden;
+    background: var(--bg-deep); color: var(--text-main);
+    font-family: 'Pretendard', sans-serif; cursor: default;
   }
   .fullpage-wrapper {
-    width: 100%; height: 100%;
-    position: relative;
-    transition: transform 1.5s cubic-bezier(0.65, 0, 0.15, 1);
-    will-change: transform;
-    z-index: 10;
+    width: 100%; height: 100%; position: relative;
+    transition: transform 1.2s cubic-bezier(0.65, 0, 0.15, 1);
+    will-change: transform; z-index: 10;
   }
   section, footer {
     width: 100%; height: 100vh;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 60px 40px;
-    position: relative;
+    padding: 60px 40px; position: relative;
   }
-
   .section-inner { width: 100%; max-width: 1200px; position: relative; z-index: 2; }
-  
+
   /* ─── CANVAS BG (Ambient Light) ─── */
-  #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-  .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; animation: drift ease-in-out infinite alternate; }
+  #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(120px); pointer-events: none; animation: drift ease-in-out infinite alternate; }
   .orb-1 { width: 700px; height: 700px; background: rgba(59, 130, 246, 0.25); top: -100px; left: -100px; animation-duration: 20s; }
   .orb-2 { width: 600px; height: 600px; background: rgba(139, 92, 246, 0.2); bottom: -100px; right: -50px; animation-duration: 25s; animation-delay: -5s; }
   .orb-3 { width: 500px; height: 500px; background: rgba(96, 165, 250, 0.2); top: 30%; left: 40%; animation-duration: 22s; animation-delay: -2s; }
-
   @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.15); } }
-  
+
   /* ─── DUST PARTICLES ─── */
-  #dust-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+  #dust-container { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.6; box-shadow: 0 0 6px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
   @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateY(-10vh) translateX(20px) rotate(360deg); opacity: 0; } }
-  
-  /* ─── 전역 물결 배경 (Global Wave) ─── */
-  .wave-bg-global {
-    position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh;
-    transform: translateY(-50%); z-index: 0; opacity: 0.18; pointer-events: none;
-    display: flex; align-items: center;
-  }
+
+  /* ─── 전역 물결 배경 ─── */
+  .wave-bg-global { position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh; transform: translateY(-50%); z-index: 0; opacity: 0.15; pointer-events: none; display: flex; align-items: center; }
   .wave-bg-global svg { width: 100%; height: 600px; }
   .wave-path-1 { animation: waveSlide 3s ease-in-out infinite alternate; }
   .wave-path-2 { animation: waveSlide 4s ease-in-out infinite alternate-reverse; }
-  .wave-path-3 { animation: waveSlide 2.5s ease-in-out infinite alternate; }
-  .wave-path-4 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
-  .wave-path-5 { animation: waveSlide 3.5s ease-in-out infinite alternate; }
-  .wave-path-6 { animation: waveSlide 4.5s ease-in-out infinite alternate-reverse; }
   @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-40px); } }
-  
-  /* ─── NAV (상단바) ─── */
+
+  /* ─── NAV ─── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 21px 60px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+    padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 100%);
     pointer-events: none;
   }
   .nav-logo, .nav-links { pointer-events: auto; }
-
-  .nav-logo { display: flex; flex-direction: column; gap: 2px; }
-  .nav-logo-main {
-    font-weight: 900; font-size: 24px; letter-spacing: normal;
-    background: linear-gradient(135deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .nav-logo-sub { font-size: 11px; font-weight: 600; letter-spacing: normal; color: var(--text-sub); }
-
-  .nav-links { position: relative; display: flex; gap: 4px; margin-right: 20px; align-items: center; }
-  .nav-links a { position: relative; z-index: 2; padding: 10px 20px; border-radius: 20px; font-size: 15px; font-weight: 600; color: var(--text-sub); text-decoration: none; transition: color 0.3s; }
+  .nav-logo-main { font-weight: 900; font-size: 22px; background: linear-gradient(135deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; }
+  .nav-logo-sub { font-size: 10px; font-weight: 600; color: var(--text-sub); }
+  .nav-links { position: relative; display: flex; gap: 2px; align-items: center; }
+  .nav-links a { position: relative; z-index: 2; padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; color: var(--text-sub); text-decoration: none; transition: color 0.3s; }
   .nav-links a.active, .nav-links a:hover { color: var(--blue-1); }
-  .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255, 255, 255, 0.8); border-radius: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06), inset 0 0 0 1px rgba(255,255,255,0.6); z-index: 1; pointer-events: none; transition: transform 0.4s cubic-bezier(0.25, 1, 0.32, 1), width 0.4s cubic-bezier(0.25, 1, 0.32, 1); }
-  
-  /* ─── COMMON SECTION HEADER ─── */
+  .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08), inset 0 0 0 1px rgba(255,255,255,0.8); z-index: 1; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 1, 0.32, 1); }
+
+  /* ─── COMMON TYPOGRAPHY ─── */
   .section-header { text-align: center; margin-bottom: 40px; }
-  .section-eyebrow, .problem-kicker, .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: normal; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
-  .section-title { font-weight: 900; font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); }
-  .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 500px; margin: 0 auto; line-height: 1.6; }
-  
-  /* ─── HERO ─── */
-  #hero { text-align: center; }
-  .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); }
+  .section-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
+  .section-title { font-weight: 900; font-size: clamp(32px, 4vw, 44px); letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); }
+  .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 550px; margin: 0 auto; line-height: 1.6; word-break: keep-all; }
+
+  /* ─── 1. HERO ─── */
+  .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
   .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
-
-  .hero-title { font-size: clamp(32px, 5.5vw, 68px); line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
-  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.75); }
-  .hero-title .med-text { font-weight: 500; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-  .hero-subtitle { font-size: 22px; font-weight: 500; color: var(--text-sub); margin-bottom: 12px; }
-  .hero-subtitle strong { font-weight: 800; color: var(--text-main); }
-  .hero-sub2 { font-size: 16px; color: var(--text-muted); margin-bottom: 40px; font-weight: 400; }
-
-  .scroll-hint { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 12px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; animation: bounceY 2s ease-in-out infinite; }
-  .scroll-mouse { width: 24px; height: 38px; border: 2px solid rgba(148, 163, 184, 0.4); border-radius: 12px; display: flex; justify-content: center; padding-top: 6px; }
-  .scroll-dot { width: 4px; height: 8px; background: var(--blue-2); border-radius: 2px; animation: scrollDot 2s ease-in-out infinite; }
-  @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.4} }
+  .hero-title { font-size: clamp(36px, 5vw, 64px); line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
+  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.7); }
+  .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-subtitle { font-size: 20px; color: var(--text-sub); margin-bottom: 12px; font-weight: 400; }
+  .hero-subtitle strong { font-weight: 700; color: var(--text-main); }
+  .scroll-hint { margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.2em; animation: bounceY 2s infinite; }
+  .scroll-mouse { width: 22px; height: 36px; border: 2px solid rgba(148, 163, 184, 0.5); border-radius: 12px; display: flex; justify-content: center; padding-top: 6px; }
+  .scroll-dot { width: 4px; height: 6px; background: var(--blue-2); border-radius: 2px; animation: scrollDot 2s infinite; }
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-  
-  /* ─── SECTION: PROBLEM ─── */
-  #problem { text-align: center; }
-  .problem-kicker { margin-bottom: 24px; color: var(--blue-1); }
-  .problem-quote { font-size: clamp(24px, 3.5vw, 42px); font-weight: 800; line-height: 1.45; max-width: 900px; margin: 0 auto 20px; color: var(--text-main); letter-spacing: -0.02em; position: relative; z-index: 2; }
+  @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.2} }
+
+  /* ─── 2. PROBLEM ─── */
+  .problem-quote { font-size: clamp(24px, 3.5vw, 40px); font-weight: 800; line-height: 1.4; max-width: 900px; margin: 0 auto 20px; color: var(--text-main); text-align: center; }
   .problem-quote .hl { background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .problem-sub { font-size: 18px; color: var(--text-sub); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 500; position: relative; z-index: 2; }
-  .challenge-circles { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; z-index: 2; }
-  .challenge-circle {
-    width: 290px; height: 290px; border-radius: 50%;
-    background: var(--glass-bg); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    box-shadow: var(--glass-shadow);
-    display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
-    padding: 36px 28px; text-align: center;
-    transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
-  }
-  .challenge-circle:hover { transform: translateY(-10px); background: rgba(255,255,255,0.85); box-shadow: 0 16px 32px rgba(37,99,235,0.1); }
+  .challenge-circles { display: flex; justify-content: center; gap: 24px; margin-top: 40px; }
+  .challenge-circle { width: 280px; height: 280px; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--glass-shadow); display: flex; flex-direction: column; align-items: center; padding: 40px 24px; text-align: center; transition: transform 0.4s; }
+  .challenge-circle:hover { transform: translateY(-10px); background: rgba(255,255,255,0.9); }
+  .circle-title { font-size: 18px; font-weight: 800; color: var(--blue-1); margin: 16px 0 8px; }
+  .circle-desc { font-size: 14px; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
 
-  .circle-icon { width: 36px; height: 36px; margin-bottom: 12px; stroke: url(#gradIcon); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .circle-title { font-size: 19px; font-weight: 800; color: var(--blue-1); margin-bottom: 16px; line-height: 1.35; word-break: keep-all; }
-  .circle-point { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
-  .circle-divider { width: 40px; height: 2px; background: rgba(59,130,246,0.3); border: none; margin: 0 auto 12px; }
-  .circle-desc { font-size: 14px; font-weight: 400; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
-  
-  /* ─── SECTION: PHILOSOPHY (Slider 3단 & 네비게이션) ─── */
-  #philosophy .section-inner { position: relative; max-width: 1200px; }
-  .slider-viewport { width: 100%; overflow: hidden; position: relative; padding: 10px 0; }
+  /* ─── 3. PARADIGM SHIFT (VS) ─── */
+  .vs-container { display: flex; gap: 40px; position: relative; max-width: 1000px; margin: 0 auto; }
+  .vs-card { flex: 1; padding: 48px 40px; border-radius: 24px; position: relative; }
+  .vs-card.old { background: rgba(226, 232, 240, 0.4); border: 1px solid rgba(255,255,255,0.5); }
+  .vs-card.new { background: var(--glass-bg); border: 1px solid var(--blue-3); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .vs-badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: var(--text-main); color: white; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; z-index: 5; border: 4px solid var(--bg-deep); }
+  .vs-header { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em; }
+  .old .vs-header { color: var(--text-muted); }
+  .new .vs-header { color: var(--blue-1); }
+  .vs-title { font-size: 28px; font-weight: 800; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); }
+  .vs-list { list-style: none; }
+  .vs-list li { margin-bottom: 16px; font-size: 16px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 500; }
+  .old .vs-list li::before { content: '✕'; color: #ef4444; font-weight: bold; }
+  .new .vs-list li::before { content: '✓'; color: var(--blue-1); font-weight: bold; }
+
+  /* ─── 4. PHILOSOPHY (Slider) ─── */
+  .slider-viewport { width: 100%; overflow: hidden; padding: 10px 0; }
   .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 300%; }
+  .slide-page { width: 33.333%; padding: 0 20px; }
+  .phil-step { display: flex; align-items: center; gap: 24px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.04); transition: transform 0.3s; border-radius: 20px; }
+  .phil-step:hover { background: rgba(255,255,255,0.8); transform: scale(1.02); }
+  .phil-num { font-weight: 900; font-size: 48px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .phil-heading { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+  .phil-body { font-size: 15px; color: var(--text-sub); line-height: 1.6; }
+  .slider-dots { display: flex; justify-content: center; gap: 10px; margin-top: 30px; }
+  .slider-dot { width: 8px; height: 8px; border-radius: 4px; background: rgba(148, 163, 184, 0.4); cursor: pointer; transition: 0.4s; }
+  .slider-dot.active { width: 32px; background: var(--blue-1); }
 
-  .slide-page { width: 33.333%; padding: 0 10px; display: flex; flex-direction: column; gap: 8px; position: relative; align-items: center; }
+  /* ─── 5. HOW IT WORKS (Data Flow) ─── */
+  .workflow-container { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 1000px; margin: 60px auto 0; }
+  .workflow-line { position: absolute; top: 40px; left: 10%; right: 10%; height: 3px; background: rgba(59,130,246,0.15); z-index: 1; }
+  .workflow-progress { position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, var(--blue-1)); animation: flowAnim 3s linear infinite; }
+  @keyframes flowAnim { 0% { left: -50%; opacity: 0; } 50% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+  .workflow-node { z-index: 2; display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .node-icon-box { width: 80px; height: 80px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--white); box-shadow: 0 10px 25px rgba(37,99,235,0.1); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; font-size: 28px; transition: transform 0.3s; }
+  .workflow-node:hover .node-icon-box { transform: translateY(-8px); background: var(--white); }
+  .node-title { font-weight: 800; font-size: 18px; color: var(--text-main); margin-bottom: 8px; }
+  .node-desc { font-size: 14px; color: var(--text-sub); text-align: center; line-height: 1.5; word-break: keep-all; padding: 0 20px; }
 
-  .slide-subtitle {
-    display: inline-block; font-size: 14px; font-weight: 800; letter-spacing: 0.15em; color: var(--blue-1);
-    background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    padding: 6px 24px; border-radius: 999px; margin-bottom: 16px; text-align: center;
-  }
+  /* ─── 6. KPIs ─── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .kpi-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; box-shadow: var(--glass-shadow); transition: 0.4s; }
+  .kpi-card:hover { transform: translateY(-8px); background: var(--white); }
+  .kpi-index { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 4px; }
+  .kpi-name { font-size: 22px; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
+  .kpi-subtitle { font-size: 13px; font-weight: 700; color: var(--blue-2); margin-bottom: 12px; }
+  .kpi-desc { font-size: 14px; color: var(--text-sub); line-height: 1.5; margin-bottom: 16px; }
+  .math-font { display: inline-block; padding: 8px 12px; background: rgba(255,255,255,0.8); border-radius: 8px; font-family: 'Cambria', serif; font-style: italic; font-weight: 700; color: var(--blue-1); border: 1px solid rgba(0,0,0,0.05); }
 
-  .slider-dots { display: flex; justify-content: center; gap: 10px; margin-top: 24px; }
-  .slider-dot { width: 8px; height: 8px; border-radius: 4px; background: rgba(148, 163, 184, 0.4); cursor: pointer; transition: all 0.4s cubic-bezier(0.23,1,0.32,1); }
-  .slider-dot:hover { background: rgba(148, 163, 184, 0.8); }
-  .slider-dot.active { width: 28px; background: var(--blue-1); }
-  .phil-step { width: 100%; display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 20px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.03); transition: all 0.4s; border-radius: 20px; }
-  .phil-step:last-child { border-bottom: none; }
-  .phil-step:hover { background: rgba(255,255,255,0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.04); transform: scale(1.01); }
-  .phil-num { font-weight: 900; font-size: 56px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; opacity: 0.9; }
-  .phil-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  .phil-heading { font-weight: 800; font-size: 22px; letter-spacing: -0.01em; color: var(--text-main); }
+  /* ─── 7. DASHBOARD SNEAK PEEK ─── */
+  .mockup-wrapper { width: 100%; max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 24px; box-shadow: 0 24px 48px rgba(15,23,42,0.08); backdrop-filter: blur(20px); position: relative; overflow: hidden; }
+  .mockup-header { display: flex; gap: 8px; margin-bottom: 20px; }
+  .mockup-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; }
+  .mockup-dot:nth-child(1) { background: #fca5a5; } .mockup-dot:nth-child(2) { background: #fde047; } .mockup-dot:nth-child(3) { background: #86efac; }
+  .mockup-body { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+  .mockup-panel { background: rgba(255,255,255,0.5); border-radius: 16px; padding: 20px; min-height: 200px; display: flex; flex-direction: column; gap: 12px; }
+  .skeleton-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(203,213,225,0.3) 25%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0.3) 75%); background-size: 200% 100%; animation: skeletonLoad 2s infinite; }
+  .skeleton-line.w-short { width: 40%; } .skeleton-line.w-med { width: 70%; } .skeleton-line.w-long { width: 100%; }
+  .mockup-chart { flex-grow: 1; border-radius: 12px; background: rgba(59,130,246,0.1); border: 1px dashed rgba(59,130,246,0.3); display: flex; justify-content: center; align-items: center; color: var(--blue-2); font-weight: 700; font-size: 14px; }
+  @keyframes skeletonLoad { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-  .phil-body { font-size: 16px; font-weight: 400; color: var(--text-sub); line-height: 1.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-  .slider-btn {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    width: 72px; height: 72px; border-radius: 50%;
-    background: transparent; border: none; box-shadow: none;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; z-index: 10; opacity: 0.4; transition: all 0.3s;
-  }
-  .slider-btn:hover { opacity: 1; }
-  .slider-btn svg { width: 48px; height: 48px; stroke: var(--blue-1); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .slider-btn.prev { left: -80px; display: none; }
-  .slider-btn.next { right: -80px; }
-  
-  /* ─── SECTION: KPI GRID & TOOLTIPS ─── */
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
-  .kpi-card { position: relative; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 28px 24px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: var(--glass-shadow); transition: all 0.4s cubic-bezier(0.23,1,0.32,1); display: flex; flex-direction: column; justify-content: space-between; }
-  .kpi-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,1); background: rgba(255,255,255,0.85); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08); }
-  .kpi-card-top { display: flex; flex-direction: column; margin-bottom: 20px; }
-  .kpi-index { font-weight: 400; font-size: 11px; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 6px; }
-  .kpi-name { font-weight: 900; font-size: 24px; letter-spacing: -0.01em; margin-bottom: 6px; color: var(--text-main); }
-  .kpi-subtitle { font-weight: 700; font-size: 13px; letter-spacing: 0.02em; color: var(--blue-2); margin-bottom: 16px; }
-  .kpi-desc { font-weight: 400; font-size: 13.5px; color: var(--text-sub); line-height: 1.6; flex-grow: 1; word-break: keep-all; }
+  /* ─── 8. PSYCHOLOGICAL SAFETY (조직문화) ─── */
+  #culture { text-align: center; }
+  .culture-icon { font-size: 48px; margin-bottom: 24px; animation: floatIcon 3s ease-in-out infinite alternate; }
+  .culture-quote { font-size: clamp(28px, 4vw, 44px); font-weight: 900; line-height: 1.4; color: var(--text-main); margin-bottom: 24px; letter-spacing: -0.02em; }
+  .culture-quote span { background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .culture-desc { font-size: 18px; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 500; }
+  @keyframes floatIcon { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
-  .kpi-formula-box { margin-top: auto; position: relative; cursor: help; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255,255,255,0.9); border-radius: 12px; padding: 14px; text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-  .math-font { font-family: 'Cambria', 'Times New Roman', serif; font-style: italic; font-weight: 700; font-size: 17px; color: var(--blue-1); }
-  .kpi-card.silver .math-font { color: var(--purple-1); }
-  .kpi-card.silver .kpi-subtitle { color: var(--purple-2); }
-  .formula-tooltip { position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%) translateY(10px); width: 320px; background: rgba(30, 41, 59, 0.95); color: #f8fafc; padding: 16px; border-radius: 12px; font-size: 13px; font-weight: 400; font-family: 'Pretendard', sans-serif; font-style: normal; text-align: left; line-height: 1.6; word-break: keep-all; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 100; }
-  .formula-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 7px; border-style: solid; border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent; }
-  .kpi-formula-box:hover .formula-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-  .tooltip-item { margin-bottom: 8px; } .tooltip-item:last-child { margin-bottom: 0; }
-  .tooltip-item strong { color: #60a5fa; margin-right: 4px; font-weight: 700; }
-  .kpi-card.silver .tooltip-item strong { color: #a78bfa; }
-  
-  /* ─── SECTION: IMPACT ─── */
-  .impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
-  .impact-card {
-    position: relative; overflow: hidden; border-radius: 24px; padding: 40px 32px;
-    transition: all 0.4s; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 12px 32px rgba(15,23,42,0.04);
-    display: flex; flex-direction: column;
-  }
-  .impact-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(15,23,42,0.08); }
-  .impact-card::before { content: ''; position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.12; z-index: 0; transition: opacity 0.4s; }
-  .impact-card:hover::before { opacity: 0.2; }
-  .impact-card:nth-child(1)::before { background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80'); }
-  .impact-card:nth-child(2)::before { background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=80'); }
-  .impact-card:nth-child(3)::before { background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80'); }
+  /* ─── 9. IMPACT ─── */
+  .impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .impact-card { background: var(--glass-bg); padding: 40px 32px; border-radius: 24px; border: 1px solid var(--white); box-shadow: var(--glass-shadow); transition: 0.4s; }
+  .impact-card:hover { transform: translateY(-8px); background: var(--white); box-shadow: 0 20px 40px rgba(37,99,235,0.1); }
+  .impact-role { font-size: 14px; font-weight: 800; color: var(--blue-1); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .impact-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); }
+  .impact-list { padding-left: 20px; font-size: 15px; color: var(--text-sub); line-height: 1.6; }
+  .impact-list li { margin-bottom: 8px; }
 
-  .impact-glass-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1; }
-  .impact-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
-
-  .impact-role { font-size: 15px; font-weight: 800; letter-spacing: normal; color: var(--blue-1); margin-bottom: 12px; }
-  .impact-title { font-weight: 800; font-size: 22px; line-height: 1.35; margin-bottom: 20px; color: var(--text-main); letter-spacing: -0.01em; }
-
-  .impact-list { margin: 0; padding-left: 20px; font-size: 15px; font-weight: 400; color: var(--text-sub); line-height: 1.7; word-break: keep-all; flex-grow: 1; }
-  .impact-list li { margin-bottom: 10px; }
-  .impact-list li:last-child { margin-bottom: 0; }
-  
-  /* ─── SECTION: LINK (Magic Button - 70% Size & Glowing Ring) ─── */
+  /* ─── 10. LINK & FOOTER ─── */
   #link { text-align: center; }
-
   .btn-magic {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 14px 32px; /* 70% Size 조정 */
-    border-radius: 50px; /* 완전한 알약(Pill) 모양 */
-    font-size: 15px; font-weight: 700; letter-spacing: 0.02em; color: #ffffff;
-    text-decoration: none;
-    /* 버튼 배경: 진한 보라색 그라데이션 */
+    padding: 16px 36px; border-radius: 50px; font-size: 16px; font-weight: 800; color: #ffffff; text-decoration: none;
     background: linear-gradient(180deg, #9333ea 0%, #6366f1 100%);
-    /* 빛나는 내부 글로우 및 두꺼운 반투명 외부 링 효과 */
-    box-shadow:
-      inset 0 1px 1px rgba(255,255,255,0.3),
-      inset 0 -2px 4px rgba(0,0,0,0.2),
-      0 0 0 6px rgba(139, 92, 246, 0.25), /* 외부 투명 보라색 테두리 */
-      0 8px 24px rgba(139, 92, 246, 0.4); /* 부드러운 드롭 섀도우 */
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.2), 0 0 0 6px rgba(139, 92, 246, 0.25), 0 12px 24px rgba(139, 92, 246, 0.4);
+    transition: all 0.3s;
   }
+  .btn-magic:hover { transform: translateY(-4px) scale(1.02); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 0 0 8px rgba(139, 92, 246, 0.35), 0 16px 32px rgba(139, 92, 246, 0.5); }
+  .btn-magic svg { width: 20px; height: 20px; fill: #ffffff; }
 
-  .btn-magic:hover {
-    transform: translateY(-3px) scale(1.02);
-    /* 호버 시 아우라와 그림자 확장 */
-    box-shadow:
-      inset 0 1px 1px rgba(255,255,255,0.4),
-      inset 0 -2px 4px rgba(0,0,0,0.2),
-      0 0 0 8px rgba(139, 92, 246, 0.35),
-      0 12px 32px rgba(139, 92, 246, 0.5);
-  }
+  footer { height: auto; padding: 40px; background: rgba(255,255,255,0.5); border-top: 1px solid rgba(255,255,255,0.8); }
+  .footer-inner { width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; }
+  .footer-logo { font-weight: 900; font-size: 20px; color: var(--text-main); }
+  .footer-copy { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
-  /* 반짝이 아이콘 SVG 스타일 */
-  .btn-magic svg {
-    width: 18px; height: 18px;
-    fill: #ffffff;
-  }
-  
-  /* ─── FOOTER ─── */
-  footer { border-top: 1px solid rgba(255,255,255,0.6); padding: 60px; background: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; width: 100%; flex-shrink: 0; }
-  .footer-logo { font-weight: 900; font-size: 22px; color: var(--text-main); }
-  .footer-copy { font-size: 14px; font-weight: 400; color: var(--text-muted); margin-top: 8px; }
-  .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+  /* Reveal Animation */
+  .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
   .reveal.visible { opacity: 1; transform: translateY(0); }
-  .reveal-delay-1 { transition-delay: 0.1s; } .reveal-delay-2 { transition-delay: 0.2s; } .reveal-delay-3 { transition-delay: 0.3s; }
+  .delay-1 { transition-delay: 0.1s; } .delay-2 { transition-delay: 0.2s; } .delay-3 { transition-delay: 0.3s; }
 </style>
 </head>
 <body>
-<!-- 아이콘/그라데이션 정의 -->
-<svg style="display: none;">
-  <defs>
-    <linearGradient id="gradIcon" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3b82f6" />
-      <stop offset="100%" stop-color="#8b5cf6" />
-    </linearGradient>
-  </defs>
-  <symbol id="icon-note" viewBox="0 0 24 24">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-    <polyline points="14 2 14 8 20 8"></polyline>
-    <line x1="16" y1="13" x2="8" y2="13"></line>
-    <line x1="16" y1="17" x2="8" y2="17"></line>
-    <polyline points="10 9 9 9 8 9"></polyline>
-  </symbol>
-  <symbol id="icon-eval" viewBox="0 0 24 24">
-    <path d="M9 11l3 3L22 4"></path>
-    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-  </symbol>
-  <symbol id="icon-career" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10"></circle>
-    <circle cx="12" cy="12" r="6"></circle>
-    <circle cx="12" cy="12" r="2"></circle>
-  </symbol>
-</svg>
-<!-- Ambient Orbs -->
+
+<!-- Ambient Orbs & Dust -->
 <div id="bg-canvas">
   <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 </div>
-<!-- Floating Dust Particles (70개) -->
 <div id="dust-container"></div>
-<!-- 전역 다중 라인 물결 SVG 배경 -->
+
+<!-- Background Wave -->
 <div class="wave-bg-global">
   <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
     <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.6"></path>
-    <path class="wave-path-2" fill="none" stroke="#60a5fa" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.4"></path>
-    <path class="wave-path-3" fill="none" stroke="#a78bfa" stroke-width="0.5" d="M0,100 C400,350,600,20,900,100 C1200,180,1300,50,1440,100" opacity="0.5"></path>
-    <path class="wave-path-4" fill="none" stroke="#8b5cf6" stroke-width="0.4" d="M0,250 C300,100,600,280,900,150 C1200,20,1300,250,1440,150" opacity="0.4"></path>
-    <path class="wave-path-5" fill="none" stroke="#2563eb" stroke-width="0.6" d="M0,80 C350,200,500,50,800,220 C1100,390,1250,100,1440,120" opacity="0.3"></path>
-    <path class="wave-path-6" fill="none" stroke="#8b5cf6" stroke-width="1.5" d="M0,180 C400,0,600,320,900,180 C1200,40,1300,280,1440,180" opacity="0.35"></path>
+    <path class="wave-path-2" fill="none" stroke="#8b5cf6" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.4"></path>
   </svg>
 </div>
-<!-- NAV -->
+
+<!-- Navigation -->
 <nav>
   <div class="nav-logo">
     <span class="nav-logo-main">GNWMC</span>
-    <span class="nav-logo-sub">Human Insight · Data Traced</span>
+    <span class="nav-logo-sub">Human Insight Dashboard</span>
   </div>
   <div class="nav-links">
     <div class="nav-indicator"></div>
     <a href="#hero" class="active">홈</a>
     <a href="#problem">문제인식</a>
+    <a href="#paradigm">패러다임</a>
     <a href="#philosophy">철학</a>
-    <a href="#kpis">6 KPI</a>
+    <a href="#workflow">작동원리</a>
+    <a href="#kpis">KPI</a>
+    <a href="#sneakpeek">프리뷰</a>
+    <a href="#culture">조직문화</a>
     <a href="#impact">기대효과</a>
+    <a href="#link">시작하기</a>
   </div>
 </nav>
-<!-- 전체 풀페이지 래퍼 -->
+
+<!-- Fullpage Wrapper -->
 <div class="fullpage-wrapper" id="fullpage">
 
-  <!-- HERO -->
+  <!-- 1. HERO -->
   <section id="hero">
     <div class="section-inner" style="text-align: center;">
       <div class="hero-eyebrow reveal">HUMAN INSIGHT · DATA TRACED</div>
-      <h1 class="hero-title reveal reveal-delay-1">
-        <span class="light-text">More Than</span> <strong class="med-text">Evaluation.</strong><br>
+      <h1 class="hero-title reveal delay-1">
+        <span class="light-text">More Than</span> <strong class="bold-text">Evaluation.</strong><br>
         <span class="light-text">We make</span> <strong class="bold-text">Human Insight.</strong>
       </h1>
-      <p class="hero-subtitle reveal reveal-delay-2">어제의 데이터가 아니라, 내일의 성장을 위한 <strong>인사이트.</strong></p>
-      <p class="hero-sub2 reveal reveal-delay-3">경상남도 서부의료원 팀원 KPI DASHBOARD</p>
-
-      <div class="scroll-hint reveal reveal-delay-3">
+      <p class="hero-subtitle reveal delay-2">어제의 기록이 아니라, 내일의 성장을 위한 <strong>객관적 거울.</strong></p>
+      <div class="scroll-hint reveal delay-3">
         <div class="scroll-mouse"><div class="scroll-dot"></div></div>
         Scroll Down
       </div>
     </div>
   </section>
-  <!-- PROBLEM -->
-  <section id="problem">
-    <div class="section-inner" style="text-align: center;">
-      <p class="problem-kicker reveal">The Challenge</p>
-      <h2 class="problem-quote reveal reveal-delay-1">
-        도면의 오차는 <span class="hl">mm 단위</span>로 잡으면서,<br>
-        사람의 성과는 <span class="hl">눈대중</span>으로 재고 있지 않습니까?
-      </h2>
-      <p class="problem-sub reveal reveal-delay-2">
-        분기말의 희미한 기억, 버려지는 업무일지.<br>
-        감(感)에 의존하는 평가는 이제 끝내야 합니다.
-      </p>
 
-      <div class="challenge-circles reveal reveal-delay-3">
+  <!-- 2. PROBLEM -->
+  <section id="problem">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-eyebrow reveal">The Challenge</p>
+        <h2 class="problem-quote reveal delay-1">
+          도면의 오차는 <span class="hl">mm 단위</span>로 잡으면서,<br>
+          사람의 성과는 <span class="hl">눈대중</span>으로 재고 있지 않습니까?
+        </h2>
+        <p class="section-desc reveal delay-2">분기말의 희미한 기억에 의존하는 평가, 매일 버려지는 소중한 업무 기록들. 감(感)에 의존하는 평가는 이제 끝내야 합니다.</p>
+      </div>
+      <div class="challenge-circles reveal delay-3">
         <div class="challenge-circle">
-          <svg class="circle-icon"><use href="#icon-note"></use></svg>
-          <h4 class="circle-title">매일 낭비되는 HUB<br>업무일지 데이터 활용</h4>
-          <div class="circle-point">업무일지의 형해화</div>
-          <hr class="circle-divider">
-          <p class="circle-desc">매일 1,500명이 1분씩 쓰는 기록이 단순 출퇴근 확인용으로 전락하여 소중한 데이터가 버려지고 있습니다.</p>
+          <div class="circle-title">버려지는 데이터</div>
+          <div class="circle-desc">단순 출퇴근용으로 전락한 1,500명의 소중한 데일리 업무 기록들.</div>
         </div>
         <div class="challenge-circle">
-          <svg class="circle-icon"><use href="#icon-eval"></use></svg>
-          <h4 class="circle-title">기억에 의존한<br>분기별 인사평가</h4>
-          <div class="circle-point">최신 편향(Recency Bias)</div>
-          <hr class="circle-divider">
-          <p class="circle-desc">평가 직전 1~2주의 성과나 기억이 3개월 전체의 인상을 좌우하는 문제가 빈번히 발생합니다.</p>
+          <div class="circle-title">기억의 오류</div>
+          <div class="circle-desc">최근 1~2주의 기억이 3개월 전체의 평가를 지배하는 최신 편향 문제.</div>
         </div>
         <div class="challenge-circle">
-          <svg class="circle-icon"><use href="#icon-career"></use></svg>
-          <h4 class="circle-title">커리어패스에 대한<br>인사이트 도출 한계</h4>
-          <div class="circle-point">정성적 피드백의 한계</div>
-          <hr class="circle-divider">
-          <p class="circle-desc">"고생 많았다"는 격려만으로는 성장의 동력을 얻고 구체적인 커리어를 설계하기 어렵습니다.</p>
+          <div class="circle-title">피드백의 한계</div>
+          <div class="circle-desc">정확한 근거 없는 "고생했다"는 위로만으로는 성장을 코칭할 수 없습니다.</div>
         </div>
       </div>
     </div>
   </section>
-  <!-- PHILOSOPHY -->
+
+  <!-- 3. PARADIGM SHIFT (NEW) -->
+  <section id="paradigm">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-eyebrow reveal">Paradigm Shift</p>
+        <h2 class="section-title reveal delay-1">평가를 위한 감시에서,<br>성장을 위한 거울로.</h2>
+      </div>
+      <div class="vs-container reveal delay-2">
+        <div class="vs-badge">VS</div>
+        <div class="vs-card old">
+          <div class="vs-header">과거의 방식</div>
+          <div class="vs-title">주관적이고<br>단편적인 평가</div>
+          <ul class="vs-list">
+            <li>분기별 1회성 기억 의존</li>
+            <li>정성적이고 모호한 피드백</li>
+            <li>평가자와 피평가자 간의 불신</li>
+            <li>결과 중심의 일방적 압박</li>
+          </ul>
+        </div>
+        <div class="vs-card new">
+          <div class="vs-header">대시보드 도입 후</div>
+          <div class="vs-title">객관적이고<br>연속적인 인사이트</div>
+          <ul class="vs-list">
+            <li>매일 누적되는 데이터 기반</li>
+            <li>수치화된 객관적 코칭 근거</li>
+            <li>데이터를 통한 상호 신뢰 형성</li>
+            <li>과정과 밸런스 중심의 성장 지원</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PHILOSOPHY -->
   <section id="philosophy">
-    <div class="section-inner" style="max-width: 1200px;">
+    <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">Core Philosophy</p>
-        <h2 class="section-title reveal reveal-delay-1">3단계 성장 프로세스</h2>
-        <p class="section-desc reveal reveal-delay-2">새로운 입력 없이, 기존 데이터에서 인사이트를 자동 추출합니다.</p>
+        <h2 class="section-title reveal delay-1">3단계 성장 프로세스</h2>
       </div>
-
-      <button class="slider-btn prev" onclick="moveSlide(-1)">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-      <button class="slider-btn next" onclick="moveSlide(1)">
-        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
-      <div class="slider-viewport reveal reveal-delay-3">
+      <div class="slider-viewport reveal delay-2">
         <div class="slider-track" id="phil-track">
-
-          <!-- Page 1 (GOALS) -->
           <div class="slide-page">
-            <div class="slide-subtitle">GOALS</div>
-            <div class="phil-step">
-              <div class="phil-num">01</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">조용한 데이터 추출</h3>
-                <p class="phil-body" title="기존에 쓰던 업무일지 그대로 대시보드가 조용히 데이터를 추출합니다. 부수적인 노력이나 업무흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.">기존에 쓰던 업무일지 그대로 대시보드가 조용히 데이터를 추출합니다. 부수적인 노력이나 업무흐름을 방해하지 않고 워크플로우에 자연스럽게 녹아듭니다.</p>
-              </div>
-            </div>
-            <div class="phil-step">
-              <div class="phil-num">02</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">감(感)을 수치(Data)로</h3>
-                <p class="phil-body" title="야근시간, 분류별 업무투입시간 등 데이터를 기반으로 한 피드백의 기초를 마련합니다.">야근시간, 분류별 업무투입시간 등 데이터를 기반으로 한 피드백의 기초를 마련합니다.</p>
-              </div>
-            </div>
-            <div class="phil-step">
-              <div class="phil-num">03</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">데이터 기반의 숨어있는 함축된 정보 도출</h3>
-                <p class="phil-body" title="Shannon, Hurst, Jaccard 등 검증된 수학적 모델을 통해 업무 패턴과 리소스 밸런스를 입체적으로 분석하고 수치화하여 유의미한 정보를 도출해 냅니다.">Shannon, Hurst, Jaccard 등 검증된 수학적 모델을 통해 업무 패턴과 리소스 밸런스를 입체적으로 분석하고 수치화하여 유의미한 정보를 도출해 냅니다.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Page 2 (PRESENT) -->
-          <div class="slide-page">
-            <div class="slide-subtitle">PRESENT</div>
-            <div class="phil-step">
-              <div class="phil-num">01</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">링크를 통한 자동 데이터 업데이트</h3>
-                <p class="phil-body" title="시스템 구축으로 장기적으로 해당 데이터들이 업데이트 될 수 있는 환경을 만듭니다.">시스템 구축으로 장기적으로 해당 데이터들이 업데이트 될 수 있는 환경을 만듭니다.</p>
-              </div>
-            </div>
-            <div class="phil-step">
-              <div class="phil-num">02</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">업무 패턴 분석</h3>
-                <p class="phil-body" title="개인별 업무 집중 영역 및 변화 추이 식별하고, 팀 포트폴리오 시각화를 통해 팀 전체 리소스 배분의 균형점을 확인합니다.">개인별 업무 집중 영역 및 변화 추이 식별하고, 팀 포트폴리오 시각화를 통해 팀 전체 리소스 배분의 균형점을 확인합니다.</p>
-              </div>
-            </div>
-            <div class="phil-step">
-              <div class="phil-num">03</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">팩트 기반의 피드백</h3>
-                <p class="phil-body" title="막연한 말 대신 명확한 데이터로 지난 분기를 피드백하고 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.">막연한 말 대신 명확한 데이터로 지난 분기를 피드백하고 다음 분기를 설계합니다. 팩트에 근거한 성장 계획은 구성원 모두에게 투명한 신뢰를 제공합니다.</p>
-              </div>
-            </div>
-          </div>
-          <!-- Page 3 (FUTURE) -->
-          <div class="slide-page">
-            <div class="slide-subtitle">FUTURE</div>
-            <div class="phil-step">
-              <div class="phil-num">01</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">데이터의 선순환 구조</h3>
-                <p class="phil-body" title="데이터 기반 피드백 ➔ 업무일지의 작성의 중요성 인지 ➔ 데이터 품질 향상 ➔ 더욱 정확한 피드백 ➔ 작성 동기 부여로 이어지는 데이터의 건전성과 피드백 간의 선순환을 만듭니다.">데이터 기반 피드백 ➔ 업무일지의 작성의 중요성 인지 ➔ 데이터 품질 향상 ➔ 더욱 정확한 피드백 ➔ 작성 동기 부여로 이어지는 데이터의 건전성과 피드백 간의 선순환을 만듭니다.</p>
-              </div>
-            </div>
-            <div class="phil-step">
-              <div class="phil-num">02</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">데이터를 통한 휴먼 인사이트</h3>
-                <p class="phil-body" title="지난 분기의 부족한 점, 초과달성한 점, 업무환경에 대한 피드백으로 단순 수치를 넘어서는 트렌드와 스타일에 대한 고찰을 통해 앞으로의 방향성을 고민하게 합니다.">지난 분기의 부족한 점, 초과달성한 점, 업무환경에 대한 피드백으로 단순 수치를 넘어서는 트렌드와 스타일에 대한 고찰을 통해 앞으로의 방향성을 고민하게 합니다.</p>
-              </div>
-            </div>
-            <div class="phil-step">
-              <div class="phil-num">03</div>
-              <div class="phil-content">
-                <h3 class="phil-heading">프로젝트 팀 이상의 인사이트를 위한 기반 마련</h3>
-                <p class="phil-body" title="현재는 프로젝트 팀 단위지만 더욱 확장될 경우 실 단위 이상의 인사이트와 업무 트렌드, 더 나아가 실행률과의 상관관계에 대한 고찰이 가능한 기반을 마련합니다.">현재는 프로젝트 팀 단위지만 더욱 확장될 경우 실 단위 이상의 인사이트와 업무 트렌드, 더 나아가 실행률과의 상관관계에 대한 고찰이 가능한 기반을 마련합니다.</p>
-              </div>
-            </div>
+            <div class="phil-step"><div class="phil-num">01</div><div><div class="phil-heading">조용한 데이터 추출</div><div class="phil-body">기존 업무일지를 그대로 사용합니다. 새로운 입력이나 방해 없이 워크플로우에 녹아듭니다.</div></div></div>
+            <div class="phil-step"><div class="phil-num">02</div><div><div class="phil-heading">감(感)을 수치(Data)로</div><div class="phil-body">직관적인 업무 투입시간, 야근 빈도 등을 수치화하여 피드백의 탄탄한 기초를 마련합니다.</div></div></div>
+            <div class="phil-step"><div class="phil-num">03</div><div><div class="phil-heading">숨겨진 인사이트 도출</div><div class="phil-body">수학적 모델을 통해 업무 패턴, 리소스 밸런스를 입체적으로 분석하고 시각화합니다.</div></div></div>
           </div>
         </div>
       </div>
-
-      <div class="slider-dots reveal reveal-delay-3">
-        <div class="slider-dot active" onclick="goToSlide(0)"></div>
-        <div class="slider-dot" onclick="goToSlide(1)"></div>
-        <div class="slider-dot" onclick="goToSlide(2)"></div>
-      </div>
-
     </div>
   </section>
-  <!-- KPIs -->
+
+  <!-- 5. HOW IT WORKS (NEW) -->
+  <section id="workflow">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-eyebrow reveal">How it Works</p>
+        <h2 class="section-title reveal delay-1">새로운 툴을 배울 필요 없습니다.</h2>
+        <p class="section-desc reveal delay-2">기존 하던 방식 그대로 일하십시오. 분석과 시각화는 시스템이 조용히 처리합니다.</p>
+      </div>
+      <div class="workflow-container reveal delay-3">
+        <div class="workflow-line"><div class="workflow-progress"></div></div>
+        <div class="workflow-node">
+          <div class="node-icon-box">📝</div>
+          <div class="node-title">1. 기존 시스템 기록</div>
+          <div class="node-desc">매일 퇴근 전 작성하는<br>HUB 업무일지 데이터</div>
+        </div>
+        <div class="workflow-node">
+          <div class="node-icon-box">⚙️</div>
+          <div class="node-title">2. 백그라운드 분석</div>
+          <div class="node-desc">Shannon, Hurst 등<br>6가지 수학적 모델 연산</div>
+        </div>
+        <div class="workflow-node">
+          <div class="node-icon-box">📊</div>
+          <div class="node-title">3. 인사이트 도출</div>
+          <div class="node-desc">개인별/팀별 직관적인<br>대시보드 UI로 실시간 반영</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. KPIs -->
   <section id="kpis">
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">6 Core Metrics</p>
-        <h2 class="section-title reveal reveal-delay-1">핵심 KPI 지표</h2>
-        <p class="section-desc reveal reveal-delay-2">수학적으로 검증된 6가지 지표로 성과의 전 방위를 측정합니다.</p>
+        <h2 class="section-title reveal delay-1">성과를 측정하는 수학적 기준</h2>
       </div>
       <div class="kpi-grid">
         <div class="kpi-card reveal">
-          <div class="kpi-card-top">
-            <div class="kpi-index">Shannon Entropy Index</div>
-            <div class="kpi-name">섀넌 지수</div>
-            <div class="kpi-subtitle">파편화도 · 질적 몰입도</div>
-            <div class="kpi-desc">업무의 연속성과 질적 집중도를 측정합니다. 정보 엔트로피 이론을 기반으로 업무가 얼마나 다양하게 분산되었는지를 수치화합니다.</div>
-          </div>
-          <div class="kpi-formula-box">
-            <span class="math-font">H = −Σ pᵢ ln pᵢ</span>
-            <div class="formula-tooltip">
-              <div class="tooltip-item"><strong>데이터:</strong> 각 프로젝트(업무)별 투입 시간의 비율(pᵢ)</div>
-              <div class="tooltip-item"><strong>계산:</strong> 해당 비율과 그 자연로그 값을 곱한 뒤 모두 더하여 음수로 변환합니다.</div>
-              <div class="tooltip-item"><strong>의미:</strong> 수치가 클수록 한 가지 일에 집중하지 못하고 여러 업무로 <strong>파편화되어 있음</strong>을 뜻합니다.</div>
-            </div>
-          </div>
+          <div class="kpi-index">Shannon Entropy</div>
+          <div class="kpi-name">섀넌 지수</div>
+          <div class="kpi-subtitle">파편화도 · 질적 몰입도</div>
+          <div class="kpi-desc">업무가 얼마나 여러 갈래로 분산되었는지 파악하여, 몰입을 방해하는 요소를 찾습니다.</div>
+          <div class="math-font">H = −Σ pᵢ ln pᵢ</div>
         </div>
-        <div class="kpi-card reveal reveal-delay-1">
-          <div class="kpi-card-top">
-            <div class="kpi-index">Hurst Exponent</div>
-            <div class="kpi-name">허스트 지수</div>
-            <div class="kpi-subtitle">주도성 · 질적 통제력</div>
-            <div class="kpi-desc">업무가 외부 요청에 의해 휘둘리는지, 아니면 팀원이 스스로의 리듬대로 끌고 가는지(지속성)를 보여줍니다. 높을수록 '업무 주도권'을 쥐고 있음을 뜻합니다.</div>
-          </div>
-          <div class="kpi-formula-box">
-            <span class="math-font">E[R/S] = C nᴴ</span>
-            <div class="formula-tooltip">
-              <div class="tooltip-item"><strong>데이터:</strong> 일정 기간(n) 동안의 업무 투입량 시계열 데이터</div>
-              <div class="tooltip-item"><strong>계산:</strong> 누적 편차의 범위(R)를 표준편차(S)로 나눈 값이 시간의 흐름에 따라 증가하는지 회귀 분석합니다.</div>
-              <div class="tooltip-item"><strong>의미:</strong> H > 0.5이면 팀원이 스스로 리듬을 유지하며 <strong>주도적으로 가속도를 붙이고 있음</strong>을 뜻합니다.</div>
-            </div>
-          </div>
+        <div class="kpi-card reveal delay-1">
+          <div class="kpi-index">Hurst Exponent</div>
+          <div class="kpi-name">허스트 지수</div>
+          <div class="kpi-subtitle">주도성 · 질적 통제력</div>
+          <div class="kpi-desc">수동적 업무 처리가 아닌, 팀원 스스로 업무 리듬을 끌고 나가는 주도성을 측정합니다.</div>
+          <div class="math-font">E[R/S] = C nᴴ</div>
         </div>
-        <div class="kpi-card reveal reveal-delay-2">
-          <div class="kpi-card-top">
-            <div class="kpi-index">Jaccard Index</div>
-            <div class="kpi-name">자카드 지수</div>
-            <div class="kpi-subtitle">확장성 · 질적 성장성</div>
-            <div class="kpi-desc">단순히 같은 일을 반복하는지, 아니면 새로운 기술이나 영역을 탐색하고 있는지를 보여주는 '성장의 궤적'입니다. 지표 정체는 매너리즘을 시사합니다.</div>
-          </div>
-          <div class="kpi-formula-box">
-            <span class="math-font">J = |A ∩ B| / |A ∪ B|</span>
-            <div class="formula-tooltip">
-              <div class="tooltip-item"><strong>데이터:</strong> 어제의 업무 키워드 집합(A)과 오늘의 업무 키워드 집합(B)</div>
-              <div class="tooltip-item"><strong>계산:</strong> (두 날 모두 수행한 업무 수) / (두 날 중 한 번이라도 수행한 전체 업무 수)</div>
-              <div class="tooltip-item"><strong>의미:</strong> 0에 가까울수록 어제와 다른 새로운 일을 했다는 뜻이며, <strong>"새로운 영역으로의 확장성"</strong>을 측정합니다.</div>
-            </div>
-          </div>
+        <div class="kpi-card reveal delay-2">
+          <div class="kpi-index">Jaccard Index</div>
+          <div class="kpi-name">자카드 지수</div>
+          <div class="kpi-subtitle">확장성 · 질적 성장성</div>
+          <div class="kpi-desc">반복 업무의 늪에 빠지지 않고, 새로운 영역을 탐색하고 있는지를 나타내는 성장의 궤적입니다.</div>
+          <div class="math-font">J = |A ∩ B| / |A ∪ B|</div>
         </div>
-        <div class="kpi-card silver reveal reveal-delay-1">
-          <div class="kpi-card-top">
-            <div class="kpi-index">Overtime Index</div>
-            <div class="kpi-name">정시업무 지수</div>
-            <div class="kpi-subtitle">정시업무 · 양적 에너지 잔량</div>
-            <div class="kpi-desc">초과근무 비율을 역산하여 에너지 잔량을 측정합니다. 지속 가능한 업무 투입의 핵심 지표로, 급격히 떨어지면 '번아웃'에 대한 긴급 케어가 필요함을 뜻합니다.</div>
-          </div>
-          <div class="kpi-formula-box">
-            <span class="math-font">Idx = 1 − (T_ot / T_total)</span>
-            <div class="formula-tooltip">
-              <div class="tooltip-item"><strong>데이터:</strong> 초과근무 시간(T_ot)과 총 근무 시간(T_total)</div>
-              <div class="tooltip-item"><strong>계산:</strong> 총 근무 시간 중 야근이 차지하는 비중을 구한 뒤 1에서 뺍니다.</div>
-              <div class="tooltip-item"><strong>의미:</strong> 1(100%)에 수렴할수록 번아웃 위험이 적은 <strong>건강한 에너지 상태</strong>임을 의미합니다.</div>
-            </div>
-          </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. SNEAK PEEK (NEW) -->
+  <section id="sneakpeek">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-eyebrow reveal">Sneak Peek</p>
+        <h2 class="section-title reveal delay-1">복잡한 데이터, 직관적인 시각화</h2>
+        <p class="section-desc reveal delay-2">수백 줄의 엑셀 데이터를 경영진과 팀원 모두가 한눈에 이해할 수 있는 아름다운 차트로 변환합니다.</p>
+      </div>
+      <div class="mockup-wrapper reveal delay-3">
+        <div class="mockup-header">
+          <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
         </div>
-        <div class="kpi-card silver reveal reveal-delay-2">
-          <div class="kpi-card-top">
-            <div class="kpi-index">HHI</div>
-            <div class="kpi-name">허쉬만-허핀달 지수</div>
-            <div class="kpi-subtitle">몰입도 · 양적 화력 집중도</div>
-            <div class="kpi-desc">한두 개의 핵심 프로젝트에 에너지를 쏟고 있는지 봅니다. 팀원의 '에너지 효율성'을 보여주며, 가장 중요한 일에 화력을 집중하고 있는지 점검합니다.</div>
+        <div class="mockup-body">
+          <div class="mockup-panel">
+            <div class="skeleton-line w-short"></div>
+            <div class="skeleton-line w-long"></div>
+            <div class="skeleton-line w-med"></div>
+            <div style="margin-top:20px;" class="skeleton-line w-long"></div>
+            <div class="skeleton-line w-med"></div>
           </div>
-          <div class="kpi-formula-box">
-            <span class="math-font">HHI = Σ sᵢ²</span>
-            <div class="formula-tooltip">
-              <div class="tooltip-item"><strong>데이터:</strong> 개별 프로젝트에 투입된 시간 점유율(sᵢ)</div>
-              <div class="tooltip-item"><strong>계산:</strong> 각 프로젝트 비중의 제곱을 모두 더합니다.</div>
-              <div class="tooltip-item"><strong>의미:</strong> 특정 업무에 집중할수록 수치가 커집니다. <strong>"에너지를 분산하지 않고 한곳에 제대로 쏟았는가"</strong>를 보여줍니다.</div>
-            </div>
-          </div>
-        </div>
-        <div class="kpi-card silver reveal reveal-delay-3">
-          <div class="kpi-card-top">
-            <div class="kpi-index">Coefficient of Variation</div>
-            <div class="kpi-name">변동계수</div>
-            <div class="kpi-subtitle">안정성 · 양적 투입 리듬</div>
-            <div class="kpi-desc">업무 투입량이 매일 일정한지 봅니다. 변동폭이 크다면 예측 가능성이 떨어져 심리적 불안도가 높을 수 있습니다. 안정감을 제공하는 근거로 활용됩니다.</div>
-          </div>
-          <div class="kpi-formula-box">
-            <span class="math-font">CV = σ / μ</span>
-            <div class="formula-tooltip">
-              <div class="tooltip-item"><strong>데이터:</strong> 일정 기간 동안의 일일 업무 투입 시간</div>
-              <div class="tooltip-item"><strong>계산:</strong> 표준편차(σ)를 평균(μ)으로 나눕니다.</div>
-              <div class="tooltip-item"><strong>의미:</strong> 값이 낮을수록 기복 없이 꾸준하게 일했다는 뜻이며, <strong>"업무 리듬이 얼마나 규칙적이고 안정적인가"</strong>를 진단합니다.</div>
-            </div>
+          <div class="mockup-panel" style="background: rgba(255,255,255,0.8);">
+            <div class="mockup-chart">Interactive Radial Chart Area</div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- IMPACT -->
+
+  <!-- 8. PSYCHOLOGICAL SAFETY (NEW) -->
+  <section id="culture">
+    <div class="section-inner">
+      <div class="culture-icon reveal">🛡️</div>
+      <h2 class="culture-quote reveal delay-1">
+        우리는 사람을 <span>통제</span>하지 않습니다.<br>
+        데이터를 통해 <span>성장</span>을 돕습니다.
+      </h2>
+      <p class="culture-desc reveal delay-2">
+        이 대시보드는 누군가를 감시하거나 깎아내리기 위한 '빅브라더' 툴이 아닙니다.<br>
+        팀원의 남몰래 쌓인 야근을 감지하여 번아웃을 예방하고, 잘하고 있는 분야를 찾아<br>
+        다음 분기의 커리어를 함께 설계하기 위한 <strong>투명한 코칭 도구</strong>입니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- 9. IMPACT -->
   <section id="impact">
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">Expected Impact</p>
-        <h2 class="section-title reveal reveal-delay-1">타겟별 기대효과</h2>
-        <p class="section-desc reveal reveal-delay-2">모든 구성원이 데이터 기반의 투명한 성장을 경험합니다.</p>
+        <h2 class="section-title reveal delay-1">모두가 경험하는 투명한 성장</h2>
       </div>
       <div class="impact-cards">
         <div class="impact-card reveal">
-          <div class="impact-glass-overlay"></div>
-          <div class="impact-content">
-            <div class="impact-role">for Team Member</div>
-            <h3 class="impact-title">투명한 데이터 포트폴리오</h3>
-            <ul class="impact-list">
-              <li>내 업무 이력이 투명한 데이터 포트폴리오로 완성됩니다. 평가 시즌에 기억을 더듬을 필요 없이, 시스템이 모든 것을 기록합니다.</li>
-              <li>나의 과거 데이터를 통한 피드백, 앞으로의 방향성 구축에 기초자료가 됩니다.</li>
-            </ul>
-          </div>
+          <div class="impact-role">for Team Member</div>
+          <div class="impact-title">나만의 데이터 포트폴리오</div>
+          <ul class="impact-list">
+            <li>기억을 쥐어짤 필요 없는 자동 기록</li>
+            <li>나의 업무 성향과 강점 발견</li>
+            <li>합당한 보상과 코칭 요구의 근거</li>
+          </ul>
         </div>
-        <div class="impact-card reveal reveal-delay-1">
-          <div class="impact-glass-overlay"></div>
-          <div class="impact-content">
-            <div class="impact-role">for Project Leader</div>
-            <h3 class="impact-title">객관적 데이터 근거 피드백</h3>
-            <ul class="impact-list">
-              <li>평가 시즌의 스트레스 해소. 막연한 인상이 아닌 확실한 데이터 근거의 객관적 피드백으로 팀원들과 깊은 신뢰를 구축합니다.</li>
-              <li>AI를 활용한 데이터 분석이 가능하고, 원하는 비전과 목적에 맞게 찾고자 하는 데이터를 분류하여 볼 수 있습니다.</li>
-            </ul>
-          </div>
+        <div class="impact-card reveal delay-1">
+          <div class="impact-role">for Leader</div>
+          <div class="impact-title">데이터 기반의 객관적 코칭</div>
+          <ul class="impact-list">
+            <li>평가 시즌의 감정적 스트레스 해소</li>
+            <li>명확한 팩트에 기반한 피드백 제공</li>
+            <li>팀 리소스의 쏠림 현상 조기 진단</li>
+          </ul>
         </div>
-        <div class="impact-card reveal reveal-delay-2">
-          <div class="impact-glass-overlay"></div>
-          <div class="impact-content">
-            <div class="impact-role">for Executive</div>
-            <h3 class="impact-title">데이터 기반 인력 배치</h3>
-            <ul class="impact-list">
-              <li>프로젝트 국면별 투입 리소스를 미리 예측합니다.</li>
-              <li>데이터를 기반으로 한 전략적 인력 배치로 조직의 성장 역량을 극대화합니다.</li>
-            </ul>
-          </div>
+        <div class="impact-card reveal delay-2">
+          <div class="impact-role">for Executive</div>
+          <div class="impact-title">전략적 인력 배치</div>
+          <ul class="impact-list">
+            <li>국면별 투입 리소스 트렌드 예측</li>
+            <li>데이터 기반의 최적화된 팀 빌딩</li>
+            <li>조직 전체의 퍼포먼스 가시성 확보</li>
+          </ul>
         </div>
       </div>
     </div>
   </section>
-  <!-- LINK (Go to Dashboard) -->
-  <section id="link">
-    <div class="section-inner" style="text-align: center;">
-      <a href="https://kpi-gns.vercel.app" class="btn-magic reveal">
-        <!-- 반짝이는 별 SVG 아이콘 -->
-        <svg viewBox="0 0 24 24">
-          <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="currentColor"/>
-          <path d="M6 14L6.5 16.5L9 17L6.5 17.5L6 20L5.5 17.5L3 17L5.5 16.5L6 14Z" fill="currentColor"/>
-        </svg>
+
+  <!-- 10. LINK & FOOTER -->
+  <section id="link" style="height: calc(100vh - 100px); justify-content: center;">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2 class="section-title reveal">당신의 다음 분기를<br>설계할 준비가 되셨습니까?</h2>
+      </div>
+      <a href="https://kpi-gns.vercel.app" class="btn-magic reveal delay-1">
+        <svg viewBox="0 0 24 24"><path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="currentColor"/><path d="M6 14L6.5 16.5L9 17L6.5 17.5L6 20L5.5 17.5L3 17L5.5 16.5L6 14Z" fill="currentColor"/></svg>
         Go to Dashboard
       </a>
     </div>
   </section>
-  <!-- FOOTER -->
+
   <footer>
-    <div style="width:100%; max-width:1200px; display:flex; justify-content:space-between; align-items:center; margin:0 auto;">
+    <div class="footer-inner">
       <div>
         <div class="footer-logo">GNWMC</div>
         <div class="footer-copy">경상남도 서부의료원 · Path Reflection</div>
       </div>
-      <div class="footer-copy" style="text-align: right;">
-        © 2026 GNS KPI Dashboard. All rights reserved.<br>
-        Built for Growth and Insight.
+      <div style="text-align: right;">
+        <div class="footer-copy">© 2026 GNS KPI Dashboard. All rights reserved.</div>
+        <div class="footer-copy">Built for Growth and Insight.</div>
       </div>
     </div>
   </footer>
-</div> <!-- fullpage-wrapper end -->
+
+</div> <!-- fullpage end -->
+
 <script>
-  // 먼지 파티클 (70개)
+  // Dust Particles
   document.addEventListener("DOMContentLoaded", () => {
     const dustContainer = document.getElementById('dust-container');
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < 60; i++) {
       let dust = document.createElement('div');
       dust.className = 'dust';
       let size = Math.random() * 3 + 1;
@@ -696,62 +533,64 @@
     }
     triggerReveal();
   });
-  
-  /* --- 커스텀 부드러운 스크롤 (Fullpage) 구현 --- */
+
+  // Fullpage Scroll Logic
   const wrapper = document.getElementById('fullpage');
   const sections = document.querySelectorAll('#fullpage > section, #fullpage > footer');
   const totalSections = sections.length;
   let currentIndex = 0;
   let isScrolling = false;
-  
+
   function moveToSection(index) {
     if (index < 0) index = 0;
     if (index >= totalSections) index = totalSections - 1;
     currentIndex = index;
 
-    wrapper.style.transform = `translateY(-${currentIndex * 100}vh)`;
+    // 푸터 높이 보정을 위해 마지막 인덱스일 때 계산 다르게 적용
+    if (currentIndex === totalSections - 1) {
+      wrapper.style.transform = `translateY(calc(-${(currentIndex - 1) * 100}vh - 100px))`;
+    } else {
+      wrapper.style.transform = `translateY(-${currentIndex * 100}vh)`;
+    }
 
     const currentElem = sections[currentIndex];
     if (currentElem.tagName.toLowerCase() === 'section') {
       const targetId = currentElem.getAttribute('id');
       if (targetId) {
-        // [오류 수정 부분] document.querySelector 뒤에 누락되었던 괄호 `(` 를 추가했습니다.
         const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
         if (activeLink) updateNavIndicator(activeLink);
       }
     }
     triggerReveal();
   }
-  
-  // 휠 이벤트 (1.5초 딜레이)
+
+  // Mouse Wheel Scroll
   window.addEventListener('wheel', (e) => {
     if (isScrolling) return;
     isScrolling = true;
-
     if (e.deltaY > 0) moveToSection(currentIndex + 1);
     else moveToSection(currentIndex - 1);
-
-    setTimeout(() => { isScrolling = false; }, 1500);
+    setTimeout(() => { isScrolling = false; }, 1300); // 스크롤 딜레이 조정
   }, { passive: false });
-  
-  // 키보드 Page Down / Page Up 연동
+
+  // Keyboard Scroll
   window.addEventListener('keydown', (e) => {
     if (isScrolling) return;
     if (e.key === 'PageDown' || e.key === 'ArrowDown') {
       isScrolling = true;
       moveToSection(currentIndex + 1);
-      setTimeout(() => { isScrolling = false; }, 1500);
+      setTimeout(() => { isScrolling = false; }, 1300);
     } else if (e.key === 'PageUp' || e.key === 'ArrowUp') {
       isScrolling = true;
       moveToSection(currentIndex - 1);
-      setTimeout(() => { isScrolling = false; }, 1500);
+      setTimeout(() => { isScrolling = false; }, 1300);
     }
   });
-  
-  // 네비게이션 모핑 인디케이터
+
+  // Nav Indicator
   const navLinks = document.querySelectorAll('.nav-links a');
   const indicator = document.querySelector('.nav-indicator');
-  
+
   function updateNavIndicator(activeLink) {
     if(!activeLink) return;
     indicator.style.width = `${activeLink.offsetWidth}px`;
@@ -759,17 +598,18 @@
     navLinks.forEach(link => link.classList.remove('active'));
     activeLink.classList.add('active');
   }
-  
+
   navLinks.forEach((link, idx) => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
       moveToSection(idx);
     });
   });
-  
+
   window.addEventListener('load', () => updateNavIndicator(document.querySelector('.nav-links a.active') || navLinks[0]));
   window.addEventListener('resize', () => updateNavIndicator(document.querySelector('.nav-links a.active')));
-  
+
+  // Reveal Animations
   function triggerReveal() {
     sections.forEach((sec, idx) => {
       const reveals = sec.querySelectorAll('.reveal');
@@ -777,38 +617,6 @@
         reveals.forEach(el => el.classList.add('visible'));
       }
     });
-  }
-  
-  // Philosophy 슬라이더 로직 (3단 + Dots 연동)
-  let currentSlide = 0;
-  function updateSlider() {
-    const track = document.getElementById('phil-track');
-    const prevBtn = document.querySelector('.slider-btn.prev');
-    const nextBtn = document.querySelector('.slider-btn.next');
-    const dots = document.querySelectorAll('.slider-dot');
-
-    track.style.transform = `translateX(-${currentSlide * 33.333}%)`;
-
-    prevBtn.style.display = currentSlide === 0 ? 'none' : 'flex';
-    nextBtn.style.display = currentSlide === 2 ? 'none' : 'flex';
-
-    dots.forEach((dot, idx) => {
-      if (idx === currentSlide) {
-        dot.classList.add('active');
-      } else {
-        dot.classList.remove('active');
-      }
-    });
-  }
-  function moveSlide(direction) {
-    currentSlide += direction;
-    if(currentSlide < 0) currentSlide = 0;
-    if(currentSlide > 2) currentSlide = 2;
-    updateSlider();
-  }
-  function goToSlide(index) {
-    currentSlide = index;
-    updateSlider();
   }
 </script>
 </body>
