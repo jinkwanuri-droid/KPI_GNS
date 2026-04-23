@@ -138,17 +138,30 @@ function renderOvProjectRatio(all){
     var poNum = parseFloat(po);
     var pcNum = parseFloat(pc);
 
+    // 💡 해결 1: 상단 여백(padding-top, margin-top)과 내부 간격(gap)을 넓혀 텍스트 겹침을 방지
+    // 💡 해결 2: 게이지바의 overflow를 visible로 변경하고 타 프로젝트 위에 말풍선 추가
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:12px; padding: 10px 5px; height:100%; justify-content:center;">
-        <div style="display:flex; align-items:flex-end; gap:8px;">
-            <span style="font-size:28px; font-weight:900; color:#00428E;">${pm}%</span>
-            <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:6px;">경상남도 서부의료원</span>
+    <div style="display:flex; flex-direction:column; gap:16px; padding: 20px 5px 5px 5px; height:100%; justify-content:center;">
+        <div style="display:flex; align-items:flex-end; gap:8px; margin-top:10px;">
+            <span style="font-size:28px; font-weight:900; color:#00428E; line-height:1;">${pm}%</span>
+            <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:2px;">경상남도 서부의료원</span>
         </div>
-        <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-            <!-- 변경점: 넓이가 12% 미만이면 글자를 아예 숨겨서 겹치지 않게 합니다 -->
-            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pmNum >= 12 ? pm+'%' : ''}</div>
-            <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${poNum >= 12 ? po+'%' : ''}</div>
-            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pcNum >= 12 ? pc+'%' : ''}</div>
+        <div style="display:flex; min-height:24px; border-radius:12px; overflow:visible; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9; position:relative;">
+            
+            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; border-radius:12px 0 0 12px; transition: width 0.3s ease;">${pmNum >= 12 ? pm+'%' : ''}</div>
+            
+            <!-- 타 프로젝트: 막대 위로 예쁜 말풍선 띄우기 -->
+            <div style="position:relative; flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; transition: width 0.3s ease;">
+                ${poNum > 0 ? `
+                <div style="position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:10px; font-weight:900; padding:4px 7px; border-radius:4px; white-space:nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); z-index:10;">
+                    ${po}%
+                    <div style="position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); border-width:4px 4px 0; border-style:solid; border-color:#3b82f6 transparent transparent transparent;"></div>
+                </div>
+                ` : ''}
+            </div>
+            
+            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; border-radius:0 12px 12px 0; transition: width 0.3s ease;">${pcNum >= 12 ? pc+'%' : ''}</div>
+            
         </div>
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; padding: 0 5px;">
             <span style="color:#00428E;">서부의료원</span>
@@ -156,12 +169,6 @@ function renderOvProjectRatio(all){
             <span style="color:#94a3b8;">공통/기타</span>
         </div>
     </div>`;
-}
-
-function getMonthsBetween(start, end) {
-    var res = []; var curr = new Date(start + '-01'); var endDate = new Date(end + '-01');
-    while(curr <= endDate) { var y = curr.getFullYear(); var m = String(curr.getMonth() + 1).padStart(2, '0'); res.push(y + '-' + m); curr.setMonth(curr.getMonth() + 1); }
-    return res;
 }
 
 // ====================================================================
