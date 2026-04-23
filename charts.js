@@ -146,8 +146,7 @@ function renderOvProjectRatio(all){
         <div style="margin-top: 20px;"></div>
 
         <!-- [상단 영역] 좌측: 큰 숫자 / 우측: 범례 -->
-        <!-- 💡 2. margin-bottom: 25px를 통해 큰 숫자와 아래 막대차트 사이의 간격 확보 -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 25px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 15px;">
             
             <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
                 <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
