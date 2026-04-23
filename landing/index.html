@@ -56,12 +56,15 @@
   .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.6; box-shadow: 0 0 6px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
   @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateY(-10vh) translateX(20px) rotate(360deg); opacity: 0; } }
 
-  /* ─── 전역 물결 배경 ─── */
-  .wave-bg-global { position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh; transform: translateY(-50%); z-index: 0; opacity: 0.15; pointer-events: none; display: flex; align-items: center; }
+  /* ─── 전역 물결 배경 (강화 & 추가됨) ─── */
+  .wave-bg-global { position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh; transform: translateY(-50%); z-index: 0; pointer-events: none; display: flex; align-items: center; }
   .wave-bg-global svg { width: 100%; height: 600px; }
-  .wave-path-1 { animation: waveSlide 3s ease-in-out infinite alternate; }
-  .wave-path-2 { animation: waveSlide 4s ease-in-out infinite alternate-reverse; }
-  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-40px); } }
+  .wave-path-1 { animation: waveSlide 4s ease-in-out infinite alternate; }
+  .wave-path-2 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
+  .wave-path-3 { animation: waveSlide 3s ease-in-out infinite alternate; }
+  .wave-path-4 { animation: waveSlide 6s ease-in-out infinite alternate-reverse; }
+  .wave-path-5 { animation: waveSlide 4.5s ease-in-out infinite alternate; }
+  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-60px); } }
 
   /* ─── NAV ─── */
   nav {
@@ -78,17 +81,22 @@
   .nav-links a.active, .nav-links a:hover { color: var(--blue-1); }
   .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08), inset 0 0 0 1px rgba(255,255,255,0.8); z-index: 1; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 1, 0.32, 1); }
 
-  /* ─── COMMON TYPOGRAPHY ─── */
+  /* ─── COMMON TYPOGRAPHY (타이틀 디자인 통일) ─── */
   .section-header { text-align: center; margin-bottom: 40px; }
   .section-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
-  .section-title { font-weight: 900; font-size: clamp(32px, 4vw, 44px); letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); }
+  
+  /* 전 페이지 동일하게 적용될 우아한 폰트 대비 스타일 */
+  .section-title { font-size: clamp(28px, 4vw, 44px); line-height: 1.4; letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); font-weight: 800; }
+  .section-title .light { font-weight: 300; color: rgba(30, 41, 59, 0.55); }
+  .section-title .hl { font-weight: 900; background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
   .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 550px; margin: 0 auto; line-height: 1.6; word-break: keep-all; }
 
   /* ─── 1. HERO ─── */
   .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
   .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
   .hero-title { font-size: clamp(36px, 5vw, 64px); line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
-  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.7); }
+  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.6); }
   .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .hero-subtitle { font-size: 20px; color: var(--text-sub); margin-bottom: 12px; font-weight: 400; }
   .hero-subtitle strong { font-weight: 700; color: var(--text-main); }
@@ -98,14 +106,46 @@
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
   @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.2} }
 
-  /* ─── 2. PROBLEM ─── */
-  .problem-quote { font-size: clamp(24px, 3.5vw, 40px); font-weight: 800; line-height: 1.4; max-width: 900px; margin: 0 auto 20px; color: var(--text-main); text-align: center; }
-  .problem-quote .hl { background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .challenge-circles { display: flex; justify-content: center; gap: 24px; margin-top: 40px; }
-  .challenge-circle { width: 280px; height: 280px; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--glass-shadow); display: flex; flex-direction: column; align-items: center; padding: 40px 24px; text-align: center; transition: transform 0.4s; }
-  .challenge-circle:hover { transform: translateY(-10px); background: rgba(255,255,255,0.9); }
-  .circle-title { font-size: 18px; font-weight: 800; color: var(--blue-1); margin: 16px 0 8px; }
-  .circle-desc { font-size: 14px; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
+  /* ─── 2. PROBLEM (디자인 대폭 개선) ─── */
+  .challenge-circles { display: flex; justify-content: center; gap: 32px; margin-top: 40px; perspective: 1000px; }
+  
+  .challenge-circle {
+    position: relative; width: 290px; height: 320px; border-radius: 140px; /* 타원/캡슐형에 가까운 우아한 형태 */
+    background: linear-gradient(145deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.4) 100%);
+    border: 1px solid rgba(255,255,255,1);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08), inset 0 0 20px rgba(255,255,255,0.6);
+    display: flex; flex-direction: column; align-items: center; padding: 48px 24px 32px; text-align: center;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .challenge-circle:hover { 
+    transform: translateY(-12px) scale(1.02); 
+    box-shadow: 0 30px 60px rgba(37, 99, 235, 0.12), inset 0 0 30px rgba(255,255,255,0.8);
+    border-color: var(--blue-3);
+  }
+
+  /* 우아한 아이콘 박스 */
+  .circle-icon-wrap {
+    position: relative; width: 72px; height: 72px; margin-bottom: 24px;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .circle-icon-glow {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-2), var(--purple-2));
+    filter: blur(12px); opacity: 0.4; transition: 0.5s;
+  }
+  .challenge-circle:hover .circle-icon-glow { opacity: 0.7; filter: blur(16px); transform: scale(1.1); }
+  
+  .circle-icon-inner {
+    position: relative; width: 100%; height: 100%; border-radius: 50%;
+    background: white; border: 2px solid rgba(59, 130, 246, 0.1);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 28px; z-index: 2; box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  }
+
+  .circle-title { font-size: 19px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; letter-spacing: -0.01em; }
+  .circle-desc { font-size: 14.5px; color: var(--text-sub); line-height: 1.6; word-break: keep-all; font-weight: 400; }
 
   /* ─── 3. PARADIGM SHIFT (VS) ─── */
   .vs-container { display: flex; gap: 40px; position: relative; max-width: 1000px; margin: 0 auto; }
@@ -116,7 +156,7 @@
   .vs-header { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em; }
   .old .vs-header { color: var(--text-muted); }
   .new .vs-header { color: var(--blue-1); }
-  .vs-title { font-size: 28px; font-weight: 800; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); }
+  .vs-title { font-size: 26px; font-weight: 800; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); }
   .vs-list { list-style: none; }
   .vs-list li { margin-bottom: 16px; font-size: 16px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 500; }
   .old .vs-list li::before { content: '✕'; color: #ef4444; font-weight: bold; }
@@ -149,7 +189,7 @@
   /* ─── 6. KPIs ─── */
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .kpi-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; box-shadow: var(--glass-shadow); transition: 0.4s; }
-  .kpi-card:hover { transform: translateY(-8px); background: var(--white); }
+  .kpi-card:hover { transform: translateY(-8px); background: var(--white); border-color: rgba(255,255,255,1); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08); }
   .kpi-index { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 4px; }
   .kpi-name { font-size: 22px; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
   .kpi-subtitle { font-size: 13px; font-weight: 700; color: var(--blue-2); margin-bottom: 12px; }
@@ -170,18 +210,16 @@
 
   /* ─── 8. PSYCHOLOGICAL SAFETY (조직문화) ─── */
   #culture { text-align: center; }
-  .culture-icon { font-size: 48px; margin-bottom: 24px; animation: floatIcon 3s ease-in-out infinite alternate; }
-  .culture-quote { font-size: clamp(28px, 4vw, 44px); font-weight: 900; line-height: 1.4; color: var(--text-main); margin-bottom: 24px; letter-spacing: -0.02em; }
-  .culture-quote span { background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .culture-icon { font-size: 52px; margin-bottom: 24px; animation: floatIcon 3s ease-in-out infinite alternate; }
   .culture-desc { font-size: 18px; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 500; }
   @keyframes floatIcon { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
   /* ─── 9. IMPACT ─── */
   .impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .impact-card { background: var(--glass-bg); padding: 40px 32px; border-radius: 24px; border: 1px solid var(--white); box-shadow: var(--glass-shadow); transition: 0.4s; }
-  .impact-card:hover { transform: translateY(-8px); background: var(--white); box-shadow: 0 20px 40px rgba(37,99,235,0.1); }
+  .impact-card { background: var(--glass-bg); padding: 40px 32px; border-radius: 24px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: 0.4s; }
+  .impact-card:hover { transform: translateY(-8px); background: var(--white); border-color: rgba(255,255,255,1); box-shadow: 0 20px 40px rgba(37,99,235,0.1); }
   .impact-role { font-size: 14px; font-weight: 800; color: var(--blue-1); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .impact-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); }
+  .impact-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); line-height: 1.3; }
   .impact-list { padding-left: 20px; font-size: 15px; color: var(--text-sub); line-height: 1.6; }
   .impact-list li { margin-bottom: 8px; }
 
@@ -216,11 +254,14 @@
 </div>
 <div id="dust-container"></div>
 
-<!-- Background Wave -->
+<!-- Background Wave (강화 & 투명도 증가) -->
 <div class="wave-bg-global">
   <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.6"></path>
-    <path class="wave-path-2" fill="none" stroke="#8b5cf6" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.4"></path>
+    <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.8" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.3"></path>
+    <path class="wave-path-2" fill="none" stroke="#8b5cf6" stroke-width="1.2" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.25"></path>
+    <path class="wave-path-3" fill="none" stroke="#60a5fa" stroke-width="0.5" d="M0,80 C400,280,600,20,900,120 C1200,220,1300,100,1440,150" opacity="0.35"></path>
+    <path class="wave-path-4" fill="none" stroke="#a78bfa" stroke-width="0.7" d="M0,260 C350,100,550,320,850,180 C1150,40,1350,260,1440,200" opacity="0.2"></path>
+    <path class="wave-path-5" fill="none" stroke="#2563eb" stroke-width="1.5" d="M0,120 C300,20,500,280,800,100 C1100, -80,1250,300,1440,120" opacity="0.15"></path>
   </svg>
 </div>
 
@@ -269,22 +310,36 @@
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">The Challenge</p>
-        <h2 class="problem-quote reveal delay-1">
+        <h2 class="section-title reveal delay-1">
           도면의 오차는 <span class="hl">mm 단위</span>로 잡으면서,<br>
-          사람의 성과는 <span class="hl">눈대중</span>으로 재고 있지 않습니까?
+          사람의 성과는 <span class="light">눈대중</span>으로 재고 있지 않습니까?
         </h2>
         <p class="section-desc reveal delay-2">분기말의 희미한 기억에 의존하는 평가, 매일 버려지는 소중한 업무 기록들. 감(感)에 의존하는 평가는 이제 끝내야 합니다.</p>
       </div>
+      
+      <!-- 디자인 대폭 개선된 3개의 원 -->
       <div class="challenge-circles reveal delay-3">
         <div class="challenge-circle">
+          <div class="circle-icon-wrap">
+            <div class="circle-icon-glow"></div>
+            <div class="circle-icon-inner">🗑️</div>
+          </div>
           <div class="circle-title">버려지는 데이터</div>
           <div class="circle-desc">단순 출퇴근용으로 전락한 1,500명의 소중한 데일리 업무 기록들.</div>
         </div>
         <div class="challenge-circle">
+          <div class="circle-icon-wrap">
+            <div class="circle-icon-glow"></div>
+            <div class="circle-icon-inner">🧠</div>
+          </div>
           <div class="circle-title">기억의 오류</div>
           <div class="circle-desc">최근 1~2주의 기억이 3개월 전체의 평가를 지배하는 최신 편향 문제.</div>
         </div>
         <div class="challenge-circle">
+          <div class="circle-icon-wrap">
+            <div class="circle-icon-glow"></div>
+            <div class="circle-icon-inner">💬</div>
+          </div>
           <div class="circle-title">피드백의 한계</div>
           <div class="circle-desc">정확한 근거 없는 "고생했다"는 위로만으로는 성장을 코칭할 수 없습니다.</div>
         </div>
@@ -292,12 +347,15 @@
     </div>
   </section>
 
-  <!-- 3. PARADIGM SHIFT (NEW) -->
+  <!-- 3. PARADIGM SHIFT -->
   <section id="paradigm">
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">Paradigm Shift</p>
-        <h2 class="section-title reveal delay-1">평가를 위한 감시에서,<br>성장을 위한 거울로.</h2>
+        <h2 class="section-title reveal delay-1">
+          <span class="light">평가를 위한 감시에서,</span><br>
+          성장을 위한 <span class="hl">거울로.</span>
+        </h2>
       </div>
       <div class="vs-container reveal delay-2">
         <div class="vs-badge">VS</div>
@@ -330,7 +388,9 @@
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">Core Philosophy</p>
-        <h2 class="section-title reveal delay-1">3단계 성장 프로세스</h2>
+        <h2 class="section-title reveal delay-1">
+          성장을 위한 <span class="hl">3단계</span> <span class="light">프로세스</span>
+        </h2>
       </div>
       <div class="slider-viewport reveal delay-2">
         <div class="slider-track" id="phil-track">
@@ -344,12 +404,14 @@
     </div>
   </section>
 
-  <!-- 5. HOW IT WORKS (NEW) -->
+  <!-- 5. HOW IT WORKS -->
   <section id="workflow">
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">How it Works</p>
-        <h2 class="section-title reveal delay-1">새로운 툴을 배울 필요 없습니다.</h2>
+        <h2 class="section-title reveal delay-1">
+          <span class="light">새로운 툴을</span> <span class="hl">배울 필요 없습니다.</span>
+        </h2>
         <p class="section-desc reveal delay-2">기존 하던 방식 그대로 일하십시오. 분석과 시각화는 시스템이 조용히 처리합니다.</p>
       </div>
       <div class="workflow-container reveal delay-3">
@@ -378,7 +440,9 @@
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">6 Core Metrics</p>
-        <h2 class="section-title reveal delay-1">성과를 측정하는 수학적 기준</h2>
+        <h2 class="section-title reveal delay-1">
+          <span class="light">성과를 측정하는</span> <span class="hl">수학적 기준</span>
+        </h2>
       </div>
       <div class="kpi-grid">
         <div class="kpi-card reveal">
@@ -406,12 +470,14 @@
     </div>
   </section>
 
-  <!-- 7. SNEAK PEEK (NEW) -->
+  <!-- 7. SNEAK PEEK -->
   <section id="sneakpeek">
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">Sneak Peek</p>
-        <h2 class="section-title reveal delay-1">복잡한 데이터, 직관적인 시각화</h2>
+        <h2 class="section-title reveal delay-1">
+          <span class="light">복잡한 데이터,</span> <span class="hl">직관적인 시각화</span>
+        </h2>
         <p class="section-desc reveal delay-2">수백 줄의 엑셀 데이터를 경영진과 팀원 모두가 한눈에 이해할 수 있는 아름다운 차트로 변환합니다.</p>
       </div>
       <div class="mockup-wrapper reveal delay-3">
@@ -434,13 +500,13 @@
     </div>
   </section>
 
-  <!-- 8. PSYCHOLOGICAL SAFETY (NEW) -->
+  <!-- 8. PSYCHOLOGICAL SAFETY -->
   <section id="culture">
     <div class="section-inner">
       <div class="culture-icon reveal">🛡️</div>
-      <h2 class="culture-quote reveal delay-1">
-        우리는 사람을 <span>통제</span>하지 않습니다.<br>
-        데이터를 통해 <span>성장</span>을 돕습니다.
+      <h2 class="section-title reveal delay-1" style="text-align: center; margin-bottom: 24px;">
+        우리는 사람을 <span class="light">통제하지 않습니다.</span><br>
+        데이터를 통해 <span class="hl">성장을 돕습니다.</span>
       </h2>
       <p class="culture-desc reveal delay-2">
         이 대시보드는 누군가를 감시하거나 깎아내리기 위한 '빅브라더' 툴이 아닙니다.<br>
@@ -455,7 +521,9 @@
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">Expected Impact</p>
-        <h2 class="section-title reveal delay-1">모두가 경험하는 투명한 성장</h2>
+        <h2 class="section-title reveal delay-1">
+          <span class="light">모두가 경험하는</span> <span class="hl">투명한 성장</span>
+        </h2>
       </div>
       <div class="impact-cards">
         <div class="impact-card reveal">
@@ -493,7 +561,10 @@
   <section id="link" style="height: calc(100vh - 100px); justify-content: center;">
     <div class="section-inner">
       <div class="section-header">
-        <h2 class="section-title reveal">당신의 다음 분기를<br>설계할 준비가 되셨습니까?</h2>
+        <h2 class="section-title reveal">
+          당신의 <span class="hl">다음 분기</span>를<br>
+          <span class="light">설계할 준비가 되셨습니까?</span>
+        </h2>
       </div>
       <a href="https://kpi-gns.vercel.app" class="btn-magic reveal delay-1">
         <svg viewBox="0 0 24 24"><path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="currentColor"/><path d="M6 14L6.5 16.5L9 17L6.5 17.5L6 20L5.5 17.5L3 17L5.5 16.5L6 14Z" fill="currentColor"/></svg>
@@ -546,7 +617,6 @@
     if (index >= totalSections) index = totalSections - 1;
     currentIndex = index;
 
-    // 푸터 높이 보정을 위해 마지막 인덱스일 때 계산 다르게 적용
     if (currentIndex === totalSections - 1) {
       wrapper.style.transform = `translateY(calc(-${(currentIndex - 1) * 100}vh - 100px))`;
     } else {
@@ -570,7 +640,7 @@
     isScrolling = true;
     if (e.deltaY > 0) moveToSection(currentIndex + 1);
     else moveToSection(currentIndex - 1);
-    setTimeout(() => { isScrolling = false; }, 1300); // 스크롤 딜레이 조정
+    setTimeout(() => { isScrolling = false; }, 1300); 
   }, { passive: false });
 
   // Keyboard Scroll
