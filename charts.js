@@ -117,16 +117,33 @@ function renderProjectProgress() {
 // ====================================================================
 // [수정1] 투입비율 차트 (글자 겹침 방지 및 하단 레이블 위치 정렬)
 // ====================================================================
+if (!window.showOvTooltip) {
+            tt.style.transform = 'translate(-50%, -100%)'; // 마우스 중앙 살짝 위
+            tt.style.transition = 'opacity 0.1s';
+            document.body.appendChild(tt);
+        }
+        tt.innerHTML = text;
+        tt.style.display = 'block';
+        tt.style.left = e.clientX + 'px';
+        tt.style.top = (e.clientY - 15) + 'px'; // 마우스보다 15px 위에 위치
+    };
+    window.hideOvTooltip = function() {
+        var tt = document.getElementById('ovCustomTooltip');
+        if(tt) tt.style.display = 'none';
+    };
+}
+
 function renderOvProjectRatio(all){
     var wrap = document.getElementById('ovPjRatioWrap');
     if(!wrap) return;  
 
+    // 기존 텍스트 무효화
     var prev = wrap.previousElementSibling;
     if (prev && prev.textContent && prev.textContent.includes("투입 비율")) {
         prev.style.display = "none";
     }
 
-    wrap.style.paddingBottom = "30px";
+    wrap.style.paddingBottom = "10px"; // 바닥 공간 강제 확장
 
     var m=0, o=0, c=0;
     all.forEach(function(r){
@@ -158,7 +175,6 @@ function renderOvProjectRatio(all){
 
         <!-- [2단] 큰 숫자 & 범례 -->
         <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 30px;">
-            
             <div style="display:flex; align-items:flex-end; gap:8px; line-height:1; margin-left: 5px;">
                 <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
                 <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
@@ -178,11 +194,11 @@ function renderOvProjectRatio(all){
         </div>
         
         <!-- [3단] 막대 차트 본체 -->
-        <!-- 💡 각 막대 div에 title 속성을 부여하여 마우스 오버 시 툴팁(계열명, 백분율)이 보이게 처리했습니다. -->
+        <!-- 💡 각 막대에 onmousemove 이벤트를 걸어 마우스를 즉각 따라다니는 고급 툴팁을 띄웁니다. -->
         <div style="display:flex; min-height:26px; border-radius:13px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-            <div title="서부의료원: ${pm}%" style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap; cursor:help;">${pmNum >= 10 ? pm+'%' : ''}</div>
-            <div title="타 프로젝트: ${po}%" style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap; cursor:help;">${poNum >= 10 ? po+'%' : ''}</div>
-            <div title="공통/기타: ${pc}%" style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap; cursor:help;">${pcNum >= 10 ? pc+'%' : ''}</div>
+            <div onmousemove="showOvTooltip(event, '서부의료원: <span style=\\'color:#93c5fd;font-size:13px;\\'>${pm}%</span>')" onmouseleave="hideOvTooltip()" style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap; cursor:pointer;">${pmNum >= 10 ? pm+'%' : ''}</div>
+            <div onmousemove="showOvTooltip(event, '타 프로젝트: <span style=\\'color:#93c5fd;font-size:13px;\\'>${po}%</span>')" onmouseleave="hideOvTooltip()" style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap; cursor:pointer;">${poNum >= 10 ? po+'%' : ''}</div>
+            <div onmousemove="showOvTooltip(event, '공통/기타: <span style=\\'color:#93c5fd;font-size:13px;\\'>${pc}%</span>')" onmouseleave="hideOvTooltip()" style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap; cursor:pointer;">${pcNum >= 10 ? pc+'%' : ''}</div>
         </div>
         
     </div>
