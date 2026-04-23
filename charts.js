@@ -140,14 +140,18 @@ function renderOvProjectRatio(all){
     var pcNum = parseFloat(pc);  
     
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:25px; padding: 5px; height:100%; justify-content:center; margin-top: 15px; margin-bottom: 25px;">
+    <div style="display:flex; flex-direction:column; gap:25px; padding: 5px; height:100%; justify-content:center; margin-top: 40px; margin-bottom: 25px;">
         
-        <!-- [상단 영역] 좌측: 수치 / 우측: 범례 (소제목 중복 렌더링 코드 제거됨) -->
+        <!-- [상단 영역] 좌측: 타이틀 및 퍼센트 / 우측: 범례 -->
         <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%;">
-            <!-- 좌측 퍼센트 수치 -->
-            <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
-                <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
-                <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="font-size:12px; font-weight:700; color:#64748b;">
+                    투입 비율 (경남 서부의료원 vs 타 프로젝트)
+                </div>
+                <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
+                    <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
+                    <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
+                </div>
             </div>
             
             <!-- 우측 범례 영역 -->
@@ -164,7 +168,7 @@ function renderOvProjectRatio(all){
             </div>
         </div>
         
-        <!-- [하단 영역] 막대 차트 본체 -->
+        <!-- [하단 영역] 막대 차트 (하단 글자 삭제됨) -->
         <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
             <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 10 ? pm+'%' : ''}</div>
             <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 10 ? po+'%' : ''}</div>
@@ -647,12 +651,22 @@ function renderWpDonutCat(d,t){
 // [수정2] 전환횟수 차트 레이블 & 여백 완벽 해결
 // ====================================================================
 function renderWpSwitchBar(d, mos, col) {
-    // 1. 기존 차트 초기화
-    if (typeof dC === 'function') dC('wpSwitchBar');
-    var canvas = document.getElementById('wpSwitchBar');
-    if (!canvas) return; // 캔버스가 없으면 렌더링 중단
+    customLegend.style.fontWeight = '700';
+    customLegend.style.color = '#64748b';
+    
+    customLegend.innerHTML = `
+        <div style="display:flex; align-items:center; gap:5px;">
+            <div style="width:12px; height:2px; background:#94a3b8; border:1px dashed #94a3b8; position:relative;">
+                <div style="width:6px; height:6px; border-radius:50%; background:#fff; border:2px solid #94a3b8; position:absolute; top:-3px; left:2px;"></div>
+            </div> 팀 평균
+        </div>
+        <div style="display:flex; align-items:center; gap:5px;">
+            <div style="width:12px; height:12px; border-radius:3px; background:${col};"></div> 개인 전환 횟수
+        </div>
+    `;
+    parent.appendChild(customLegend);
 
-    // 2. 데이터 집계
+    // 데이터 연산
     var sw = {}, pv = null;
     d.forEach(r => {
         var m = r.date.slice(0, 7);
@@ -660,7 +674,6 @@ function renderWpSwitchBar(d, mos, col) {
         if (pv !== null && pv !== r.sub) sw[m]++;
         pv = r.sub;
     });
-    
     var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
     var teamSw = {}, teamPv = {}, act = {};
     teamData.forEach(r => {
@@ -671,12 +684,12 @@ function renderWpSwitchBar(d, mos, col) {
         if (teamPv[r.name] !== null && teamPv[r.name] !== r.sub) teamSw[m]++;
         teamPv[r.name] = r.sub;
     });
-    
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
     
-    // 3. 차트 생성
+    // 차트 생성
     CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
         data: {
             labels: mos,
             datasets: [
@@ -686,17 +699,7 @@ function renderWpSwitchBar(d, mos, col) {
                     data: barData,
                     backgroundColor: col,
                     borderRadius: 4,
-                    order: 2,
-                    // 💡 [핵심] 막대 차트에만 데이터 레이블 강제 부여 (짙은 파란색)
-                    datalabels: {
-                        display: function(cx) { return cx.raw > 0; },
-                        color: '#1e3a8a', // 짙은 파란색
-                        font: { weight: '900', size: 11 },
-                        anchor: 'end',
-                        align: 'top',     // 막대 위쪽에 띄움
-                        offset: 4,
-                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                    }
+                    order: 2
                 },
                 {
                     type: 'line',
@@ -709,27 +712,33 @@ function renderWpSwitchBar(d, mos, col) {
                     pointRadius: 4,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
-                    order: 1,
-                    // 💡 팀 평균 꺾은선은 레이블 숨김
-                    datalabels: { display: false }
+                    order: 1
                 }
             ]
         },
+        plugins: [ChartDataLabels], // 💡 레이블 플러그인 무조건 실행되도록 강제 주입
         options: {
-            responsive: true, 
-            maintainAspectRatio: false, 
-            clip: false, 
-            // 💡 위쪽 여백(top)을 0으로 설정하여 범례가 위쪽 제목에 바짝 붙게 함
-            layout: { padding: { top: 0, bottom: 0, left: 0, right: 0 } }, 
+            responsive: true, maintainAspectRatio: false, clip: false, 
+            layout: { padding: { top: 20, bottom: 0, left: 0, right: 0 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                // 💡 Chart.js 내장 범례를 우측 상단 끝에 배치
-                legend: { 
-                    display: true, 
-                    position: 'top', 
-                    align: 'end', 
-                    labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, weight: 'bold' }, color: '#64748b' } 
-                },
+                legend: { display: false }, // 내장 범례는 끄기 (위에 커스텀 범례를 만들었으므로)
+                datalabels: { 
+                    display: function(cx) { return cx.dataset.type === 'bar' && cx.raw > 0; },
+                    color: '#1e3a8a', // 💡 짙은 파란색 강제 적용
+                    font: { weight: '900', size: 11 },
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 2,
+                    formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                }
+            },
+            scales: { 
+                x: { grid: { display: false } }, 
+                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } 
+            }
+        }
+    });
 }
 
 function renderWpFocusBar(d,mos){
