@@ -143,7 +143,7 @@ function renderOvProjectRatio(all){
     <div style="display:flex; flex-direction:column; padding: 5px 10px; height:100%; justify-content:center;">
         
         <!-- 💡 1. 상단 하드코딩 텍스트(투입 비율...)와 큰 숫자 사이의 여백 확보 -->
-        <div style="margin-top: 15px;"></div>
+        <div style="margin-top: 20px;"></div>
 
         <!-- [상단 영역] 좌측: 큰 숫자 / 우측: 범례 -->
         <!-- 💡 2. margin-bottom: 25px를 통해 큰 숫자와 아래 막대차트 사이의 간격 확보 -->
