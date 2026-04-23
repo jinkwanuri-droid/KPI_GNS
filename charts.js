@@ -254,7 +254,7 @@ function renderCostTrendChart(mos) {
         }
     });
     
-    // 💡 핵심 변경점: 실제 데이터가 기준이 아닌 '상단 슬라이더(필터)'의 세팅 값을 직접 읽어옵니다.
+    // 💡 에러 원인 해결: 중복 로직 제거 및 슬라이더 값 기준으로 딱 한 번만 슬라이싱
     var fStart = typeof window.filterStartIndex !== 'undefined' ? window.filterStartIndex : 0;
     var fEnd = typeof window.filterEndIndex !== 'undefined' ? window.filterEndIndex : 11;
     
@@ -372,13 +372,12 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 💡 변경점 적용: 이제 무조건 슬라이더 필터 구간의 마지막 달 데이터를 가져와서 요약 카드에 표시합니다.
-    var targetMonthForSummary = allFullMonths[eIdx];
-    
-    var sPlan = globalData.plan[eIdx] || 0;
-    var sExec = globalData.execActual[eIdx];
+    // 요약 카드 연동 부분: 최종적으로 렌더링된 슬라이스 배열의 맨 마지막 달을 가져옵니다.
+    var targetMonthForSummary = viewMonths[viewMonths.length - 1];
+    var sPlan = viewPlan[viewPlan.length - 1] || 0;
+    var sExec = viewActual[viewActual.length - 1];
     var isPred = sExec === null;
-    if(isPred) sExec = globalData.execPred[eIdx] || 0;
+    if(isPred) sExec = viewPred[viewPred.length - 1] || 0;
 
     if(typeof renderCostSummary === 'function') {
         renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
