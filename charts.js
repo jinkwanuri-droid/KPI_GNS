@@ -154,14 +154,14 @@ function renderOvProjectRatio(all){
     <div style="display:flex; flex-direction:column; padding: 0px 5px; justify-content:center; margin-top: 10px;">
         
         <!-- [1단] 소제목 -->
-        <!-- 💡 소제목과 큰 숫자 사이의 여백 대폭 확대 (margin-bottom: 20px) -->
-        <div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom: 20px; margin-left: 5px;">
+        <!-- 💡 소제목과 큰 숫자 사이의 여백 대폭 확대 (margin-bottom: 15px) -->
+        <div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom: 15px; margin-left: 5px;">
             투입 비율 (경남 서부의료원 vs 타 프로젝트)
         </div>
 
         <!-- [2단] 큰 숫자 & 범례 -->
-        <!-- 💡 큰 숫자와 막대 차트 사이의 여백 대폭 확대 (margin-bottom: 30px) -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 30px;">
+        <!-- 💡 큰 숫자와 막대 차트 사이의 여백 대폭 확대 (margin-bottom: 10px) -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 10px;">
             
             <div style="display:flex; align-items:flex-end; gap:8px; line-height:1; margin-left: 5px;">
                 <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
