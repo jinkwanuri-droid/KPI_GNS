@@ -121,11 +121,14 @@ function renderOvProjectRatio(all){
     var wrap = document.getElementById('ovPjRatioWrap');
     if(!wrap) return;  
 
-    // 💡 HTML에 고정되어 간격 조절을 방해하던 기존 "투입 비율" 텍스트를 찾아 강제로 숨깁니다.
+    // 기존 텍스트 숨김 처리
     var prev = wrap.previousElementSibling;
     if (prev && prev.textContent && prev.textContent.includes("투입 비율")) {
         prev.style.display = "none";
     }
+
+    // 💡 1. 부모 카드의 바닥 여백을 강제로 늘려줍니다. (여기서 막대차트 아래 공간이 늘어납니다)
+    wrap.style.paddingBottom = "30px";
 
     var m=0, o=0, c=0;
     all.forEach(function(r){
@@ -146,19 +149,19 @@ function renderOvProjectRatio(all){
     var poNum = parseFloat(po);
     var pcNum = parseFloat(pc);  
     
-    // 💡 margin-top: -15px를 주어 전체 덩어리를 위쪽 빨간선(통계카드 밑)으로 끌어올립니다.
+    // 💡 2. height: 100% 족쇄를 제거하고, margin-top을 10px로 설정하여 전체 덩어리를 통계카드 밑으로 살짝 띄웁니다.
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; padding: 0px 5px; height:100%; justify-content:center; margin-top: -15px;">
+    <div style="display:flex; flex-direction:column; padding: 0px 5px; justify-content:center; margin-top: 10px;">
         
         <!-- [1단] 소제목 -->
-        <!-- 💡 소제목과 숫자 사이 여백 조절: margin-bottom: 12px -->
-        <div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom: 12px; margin-left: 5px;">
+        <!-- 💡 소제목과 큰 숫자 사이의 여백 대폭 확대 (margin-bottom: 20px) -->
+        <div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom: 20px; margin-left: 5px;">
             투입 비율 (경남 서부의료원 vs 타 프로젝트)
         </div>
 
         <!-- [2단] 큰 숫자 & 범례 -->
-        <!-- 💡 숫자/범례와 막대차트 사이 여백 조절: margin-bottom: 22px -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 22px;">
+        <!-- 💡 큰 숫자와 막대 차트 사이의 여백 대폭 확대 (margin-bottom: 30px) -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 30px;">
             
             <div style="display:flex; align-items:flex-end; gap:8px; line-height:1; margin-left: 5px;">
                 <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
@@ -179,8 +182,7 @@ function renderOvProjectRatio(all){
         </div>
         
         <!-- [3단] 막대 차트 본체 -->
-        <!-- 💡 막대차트와 카드 바닥 사이 여백 조절: margin-bottom: 15px -->
-        <div style="display:flex; min-height:26px; border-radius:13px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9; margin-bottom: 15px;">
+        <div style="display:flex; min-height:26px; border-radius:13px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
             <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 10 ? pm+'%' : ''}</div>
             <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 10 ? po+'%' : ''}</div>
             <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 10 ? pc+'%' : ''}</div>
