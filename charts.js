@@ -669,13 +669,20 @@ function renderWpSwitchBar(d,mos,col){
     var barData = mos.map(m=>sw[m]||0);
     var avgData = mos.map(m=> act[m]&&act[m].size>0 ? parseFloat((teamSw[m]/act[m].size).toFixed(1)) : null);
     
+    // 겹침 방지를 위한 차트 최댓값 계산
     var maxVal = Math.max(...barData.concat(avgData.filter(v=>v!==null)));
+    if(maxVal === 0 || !isFinite(maxVal)) maxVal = 10;
     
     CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{
-        data:{labels:mos,datasets:[
-            {type:'bar', label:'개인 전환 횟수', data:barData, backgroundColor:col, borderRadius:6, order:2},
-            {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:4, pointBackgroundColor:'#fff', pointBorderColor:'#94a3b8', order:1}
-        ]},
+        data:{
+            labels:mos,
+            datasets:[
+                {type:'bar', label:'개인 전환 횟수', data:barData, backgroundColor:col, borderRadius:6, order:2},
+                {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:4, pointBackgroundColor:'#fff', pointBorderColor:'#94a3b8', order:1}
+            ]
+        },
+        // 💡 핵심 1: 플러그인을 차트 객체 내에 명시적으로 강제 활성화
+        plugins: [ChartDataLabels], 
         options:{
             responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:35}},
             interaction: { mode: 'index', intersect: false },
@@ -683,7 +690,8 @@ function renderWpSwitchBar(d,mos,col){
                 legend:{ display:true, position:'top', align:'end', labels:{usePointStyle:true, boxWidth:8, font:{size:10, weight:'bold'}} },
                 datalabels:{
                     display: cx => cx.raw !== null && cx.raw > 0,
-                    color: cx => cx.dataset.type==='bar' ? col : '#64748b',
+                    // 💡 핵심 2: 하얀색(#fff) 글자 제거 -> 막대는 막대색상(col), 선은 회색으로 명시
+                    color: cx => cx.dataset.type === 'bar' ? col : '#64748b',
                     font: {weight:'900', size:11},
                     anchor: 'end',
                     // 값 겹침 방지 스마트 라벨링 로직
@@ -691,14 +699,15 @@ function renderWpSwitchBar(d,mos,col){
                         var bVal = barData[cx.dataIndex] || 0;
                         var lVal = avgData[cx.dataIndex] || 0;
                         if(cx.dataset.type === 'bar') return 'end';
-                        return lVal >= bVal ? 'end' : 'start';
+                        // 선 값이 막대보다 작으면 아래로, 크면 위로 라벨을 배치
+                        return lVal >= bVal ? 'end' : 'bottom';
                     },
                     offset: cx => {
                         var bVal = barData[cx.dataIndex] || 0;
                         var lVal = avgData[cx.dataIndex] || 0;
                         if(cx.dataset.type === 'bar') return 2;
                         // 선과 막대 값이 너무 가까우면 선 라벨을 더 높이 띄움
-                        return (lVal >= bVal && Math.abs(lVal - bVal) < (maxVal * 0.1)) ? 14 : 4;
+                        return (lVal >= bVal && Math.abs(lVal - bVal) < (maxVal * 0.15)) ? 14 : 4;
                     },
                     formatter: v => Number(v).toFixed(1).replace('.0', '')
                 }
