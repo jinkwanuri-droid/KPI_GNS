@@ -140,18 +140,14 @@ function renderOvProjectRatio(all){
     var pcNum = parseFloat(pc);  
     
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:25px; padding: 5px; height:100%; justify-content:center; margin-top: 40px; margin-bottom: 25px;">
+    <div style="display:flex; flex-direction:column; gap:25px; padding: 5px; height:100%; justify-content:center; margin-top: 15px; margin-bottom: 25px;">
         
-        <!-- [상단 영역] 좌측: 타이틀 및 퍼센트 / 우측: 범례 -->
+        <!-- [상단 영역] 좌측: 수치 / 우측: 범례 (소제목 중복 렌더링 코드 제거됨) -->
         <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%;">
-            <div style="display:flex; flex-direction:column; gap:12px;">
-                <div style="font-size:12px; font-weight:700; color:#64748b;">
-                    투입 비율 (경남 서부의료원 vs 타 프로젝트)
-                </div>
-                <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
-                    <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
-                    <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
-                </div>
+            <!-- 좌측 퍼센트 수치 -->
+            <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
+                <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
+                <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
             </div>
             
             <!-- 우측 범례 영역 -->
@@ -168,7 +164,7 @@ function renderOvProjectRatio(all){
             </div>
         </div>
         
-        <!-- [하단 영역] 막대 차트 (하단 글자 삭제됨) -->
+        <!-- [하단 영역] 막대 차트 본체 -->
         <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
             <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 10 ? pm+'%' : ''}</div>
             <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 10 ? po+'%' : ''}</div>
