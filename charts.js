@@ -138,30 +138,17 @@ function renderOvProjectRatio(all){
     var poNum = parseFloat(po);
     var pcNum = parseFloat(pc);
 
-    // 💡 해결 1: 상단 여백(padding-top, margin-top)과 내부 간격(gap)을 넓혀 텍스트 겹침을 방지
-    // 💡 해결 2: 게이지바의 overflow를 visible로 변경하고 타 프로젝트 위에 말풍선 추가
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:16px; padding: 20px 5px 5px 5px; height:100%; justify-content:center;">
-        <div style="display:flex; align-items:flex-end; gap:8px; margin-top:10px;">
-            <span style="font-size:28px; font-weight:900; color:#00428E; line-height:1;">${pm}%</span>
-            <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:2px;">경상남도 서부의료원</span>
+    <div style="display:flex; flex-direction:column; gap:12px; padding: 10px 5px; height:100%; justify-content:center;">
+        <div style="display:flex; align-items:flex-end; gap:8px;">
+            <span style="font-size:28px; font-weight:900; color:#00428E;">${pm}%</span>
+            <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:6px;">경상남도 서부의료원</span>
         </div>
-        <div style="display:flex; min-height:24px; border-radius:12px; overflow:visible; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9; position:relative;">
-            
-            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; border-radius:12px 0 0 12px; transition: width 0.3s ease;">${pmNum >= 12 ? pm+'%' : ''}</div>
-            
-            <!-- 타 프로젝트: 막대 위로 예쁜 말풍선 띄우기 -->
-            <div style="position:relative; flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; transition: width 0.3s ease;">
-                ${poNum > 0 ? `
-                <div style="position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:10px; font-weight:900; padding:4px 7px; border-radius:4px; white-space:nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); z-index:10;">
-                    ${po}%
-                    <div style="position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); border-width:4px 4px 0; border-style:solid; border-color:#3b82f6 transparent transparent transparent;"></div>
-                </div>
-                ` : ''}
-            </div>
-            
-            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; border-radius:0 12px 12px 0; transition: width 0.3s ease;">${pcNum >= 12 ? pc+'%' : ''}</div>
-            
+        <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
+            <!-- 변경점: 넓이가 12% 미만이면 글자를 아예 숨겨서 겹치지 않게 합니다 -->
+            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pmNum >= 12 ? pm+'%' : ''}</div>
+            <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${poNum >= 12 ? po+'%' : ''}</div>
+            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pcNum >= 12 ? pc+'%' : ''}</div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; padding: 0 5px;">
             <span style="color:#00428E;">서부의료원</span>
@@ -171,10 +158,136 @@ function renderOvProjectRatio(all){
     </div>`;
 }
 
+function getMonthsBetween(start, end) {
+    var res = []; var curr = new Date(start + '-01'); var endDate = new Date(end + '-01');
+    while(curr <= endDate) { var y = curr.getFullYear(); var m = String(curr.getMonth() + 1).padStart(2, '0'); res.push(y + '-' + m); curr.setMonth(curr.getMonth() + 1); }
+    return res;
+}
+
 // ====================================================================
 // [수정2] 인건비 추이 차트 (0 데이터 무시 및 26년 4월부터 예상치 적용 로직 완벽 수정)
 // ====================================================================
-window.renderCostTrendChart = function(mos) {
+function renderCostTrendChart(mos) {
+    if(typeof dC === 'function') dC('costTrendChart'); 
+    window.lastCostMos = mos;
+    
+    var canvas = document.getElementById('costTrendChart');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+
+    var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
+    if(safeCostData.length === 0) return;
+    
+    var globalStart = '2024-03';
+    var globalEnd = '2026-11';
+    var allFullMonths = getMonthsBetween(globalStart, globalEnd);
+    var allMosMap = {};
+    allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
+    
+    safeCostData.forEach(function(r) {
+        var m = r.date;
+        if(m && m.length > 7) m = m.substring(0,7);
+        if(allMosMap[m] !== undefined) {
+            var p = parseFloat(r.plan);
+            if(!isNaN(p)) allMosMap[m].plan += (p / 10000);
+            
+            if(r.exec !== null && r.exec !== undefined && String(r.exec).trim() !== '') {
+                var e = parseFloat(r.exec);
+                if(!isNaN(e) && e > 0) {
+                    allMosMap[m].exec += (e / 10000);
+                    allMosMap[m].hasExec = true;
+                }
+            }
+        }
+    });
+    
+    var lastActualMonth = '';
+    var pastTotalExec = 0;
+    var actualMonthCount = 0;
+    
+    allFullMonths.forEach(function(m) {
+        if(allMosMap[m] && allMosMap[m].hasExec) {
+            lastActualMonth = m;
+            pastTotalExec += allMosMap[m].exec;
+            actualMonthCount++;
+        }
+    });
+
+    var avgMonthlyExec = (actualMonthCount > 0) ? (pastTotalExec / actualMonthCount) : 0;
+    
+    var globalData = { plan: [], execActual: [], execPred: [] };
+    var cumPlan = 0, cumExec = 0, cumPred = 0;
+    var isCum = window.isCostCumulative === true;
+
+    allFullMonths.forEach(function(m) {
+        var mPlan = allMosMap[m].plan;
+        var mExec = allMosMap[m].hasExec ? allMosMap[m].exec : null;
+
+        cumPlan += mPlan;
+        globalData.plan.push(isCum ? cumPlan : mPlan);
+
+        if (lastActualMonth === '' || m < lastActualMonth) {
+            cumExec += (mExec || 0);
+            cumPred = cumExec;
+            globalData.execActual.push(isCum ? cumExec : mExec);
+            globalData.execPred.push(null);
+        } else if (m === lastActualMonth) {
+            cumExec += (mExec || 0);
+            cumPred = cumExec;
+            var valExec = isCum ? cumExec : mExec;
+            globalData.execActual.push(valExec);
+            globalData.execPred.push(valExec); 
+        } else {
+            var stepPred = avgMonthlyExec; 
+            if (m >= '2026-08') { stepPred = avgMonthlyExec * 0.8; }
+            
+            cumPred += stepPred;
+            globalData.execActual.push(null);
+            globalData.execPred.push(isCum ? cumPred : stepPred);
+        }
+    });
+    
+    // 💡 핵심 변경점: 실제 데이터가 기준이 아닌 '상단 슬라이더(필터)'의 세팅 값을 직접 읽어옵니다.
+    var fStart = typeof window.filterStartIndex !== 'undefined' ? window.filterStartIndex : 0;
+    var fEnd = typeof window.filterEndIndex !== 'undefined' ? window.filterEndIndex : 11;
+    
+    var startY = 2024 + Math.floor(fStart / 4);
+    var startM = (fStart % 4) * 3 + 1;
+    var reqStart = startY + '-' + (startM < 10 ? '0' + startM : startM);
+
+    var endY = 2024 + Math.floor(fEnd / 4);
+    var endM = ((fEnd % 4) + 1) * 3;
+    var reqEnd = endY + '-' + (endM < 10 ? '0' + endM : endM);
+
+    var viewMonthsList = allFullMonths.filter(function(m) { return m >= reqStart && m <= reqEnd; });
+    if(viewMonthsList.length === 0) viewMonthsList = allFullMonths;
+
+    var sIdx = allFullMonths.indexOf(viewMonthsList[0]);
+    var eIdx = allFullMonths.indexOf(viewMonthsList[viewMonthsList.length - 1]);
+    
+    var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
+    var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
+    var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
+    var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
+
+    var maxArr = [10];
+    var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
+    addMax(viewPlan); addMax(viewActual); addMax(viewPred);
+    var maxVal = Math.max.apply(null, maxArr);
+    if(isNaN(maxVal) || maxVal === -Infinity) maxVal = 100;
+    var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
+    
+    var schData = [];
+    viewMonths.forEach(function(m) {
+        var schedules = (typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(function(s) { return s.date && s.date.startsWith(m); });
+        if(schedules.length > 0) {
+            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').trim(); });
+            schData.push({ schTitle: st, yPos: scheduleTopY });
+        } else { schData.push(null); }
+    });
+
+    var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
+    gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
 
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
@@ -199,7 +312,7 @@ window.renderCostTrendChart = function(mos) {
             plugins: {
                 legend: { display: false },
                 datalabels: {
-                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === undefined || cx.raw === 0) return false; return true; },
+                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
                     align: function(cx) {
                         var idx = cx.dataIndex;
                         var planVal = viewPlan[idx] || 0;
@@ -236,7 +349,7 @@ window.renderCostTrendChart = function(mos) {
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], pred = viewPred[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
                             
-                            if(actual !== null && actual !== undefined) {
+                            if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
                                 lines.push(diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)");
@@ -252,20 +365,18 @@ window.renderCostTrendChart = function(mos) {
         }
     });
 
-    // 💡 기간 집행 요약(Summary Card): 슬라이더의 가장 우측 달(mos의 마지막 값)의 수치를 정확히 가져와 연동합니다.
-    var targetMonthForSummary = mos[mos.length - 1];
-    var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
-    if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
+    // 💡 변경점 적용: 이제 무조건 슬라이더 필터 구간의 마지막 달 데이터를 가져와서 요약 카드에 표시합니다.
+    var targetMonthForSummary = allFullMonths[eIdx];
     
-    var sPlan = globalData.plan[sEndIdx] || 0;
-    var sExec = globalData.execActual[sEndIdx];
-    var isPred = (sExec === null || sExec === undefined);
-    if(isPred) sExec = globalData.execPred[sEndIdx] || 0;
+    var sPlan = globalData.plan[eIdx] || 0;
+    var sExec = globalData.execActual[eIdx];
+    var isPred = sExec === null;
+    if(isPred) sExec = globalData.execPred[eIdx] || 0;
 
     if(typeof renderCostSummary === 'function') {
         renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
     }
-};
+}
 
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
