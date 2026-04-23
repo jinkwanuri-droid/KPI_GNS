@@ -126,28 +126,53 @@ function renderOvProjectRatio(all){
         else if(r.project==='타 프로젝트') o+=r.min;
         else c+=r.min;
     });
+
     var t = m + o + c;  
-    if (t === 0) { wrap.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">선택된 기간에 데이터가 없습니다.</div>'; return; }  
-    var pm = (m/t*100).toFixed(1); var po = (o/t*100).toFixed(1); var pc = (c/t*100).toFixed(1);  
-    var pmNum = parseFloat(pm); var poNum = parseFloat(po); var pcNum = parseFloat(pc);  
+    if (t === 0) {
+        wrap.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">선택된 기간에 데이터가 없습니다.</div>';
+        return;
+    }  
+    var pm = (m/t*100).toFixed(1);
+    var po = (o/t*100).toFixed(1);
+    var pc = (c/t*100).toFixed(1);  
+    var pmNum = parseFloat(pm);
+    var poNum = parseFloat(po);
+    var pcNum = parseFloat(pc);  
     
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:20px; padding: 5px; height:100%; justify-content:center; margin-top: 40px; margin-bottom: 10px;">
-        <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
-            <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
-            <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
+    <div style="display:flex; flex-direction:column; gap:25px; padding: 5px; height:100%; justify-content:center; margin-top: 40px; margin-bottom: 25px;">
+        
+        <!-- [상단 영역] 좌측: 타이틀 및 퍼센트 / 우측: 범례 -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%;">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="font-size:12px; font-weight:700; color:#64748b;">
+                    투입 비율 (경남 서부의료원 vs 타 프로젝트)
+                </div>
+                <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
+                    <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
+                    <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
+                </div>
+            </div>
+            
+            <!-- 우측 범례 영역 -->
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:4px;">
+                <div style="display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#64748b;">
+                    <div style="width:10px; height:10px; border-radius:2px; background:#00428E;"></div> 서부의료원
+                </div>
+                <div style="display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#64748b;">
+                    <div style="width:10px; height:10px; border-radius:2px; background:#3b82f6;"></div> 타 프로젝트
+                </div>
+                <div style="display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#64748b;">
+                    <div style="width:10px; height:10px; border-radius:2px; background:#cbd5e1;"></div> 공통/기타
+                </div>
+            </div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-            <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-                <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 12 ? pm+'%' : ''}</div>
-                <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 12 ? po+'%' : ''}</div>
-                <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 12 ? pc+'%' : ''}</div>
-            </div>
-            <div style="display:flex; width:100%; font-size:11px; font-weight:600; color:#64748b; text-align:center;">
-                <div style="width: ${pm}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${pmNum > 0 ? '서부의료원' : ''}</div>
-                <div style="width: ${po}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${poNum > 0 ? '타 프로젝트' : ''}</div>
-                <div style="width: ${pc}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${pcNum > 0 ? '공통/기타' : ''}</div>
-            </div>
+        
+        <!-- [하단 영역] 막대 차트 (하단 글자 삭제됨) -->
+        <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
+            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 10 ? pm+'%' : ''}</div>
+            <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 10 ? po+'%' : ''}</div>
+            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 10 ? pc+'%' : ''}</div>
         </div>
     </div>
     `;
@@ -626,7 +651,22 @@ function renderWpDonutCat(d,t){
 // [수정2] 전환횟수 차트 레이블 & 여백 완벽 해결
 // ====================================================================
 function renderWpSwitchBar(d, mos, col) {
-    if (typeof dC === 'function') dC('wpSwitchBar');
+    customLegend.style.fontWeight = '700';
+    customLegend.style.color = '#64748b';
+    
+    customLegend.innerHTML = `
+        <div style="display:flex; align-items:center; gap:5px;">
+            <div style="width:12px; height:2px; background:#94a3b8; border:1px dashed #94a3b8; position:relative;">
+                <div style="width:6px; height:6px; border-radius:50%; background:#fff; border:2px solid #94a3b8; position:absolute; top:-3px; left:2px;"></div>
+            </div> 팀 평균
+        </div>
+        <div style="display:flex; align-items:center; gap:5px;">
+            <div style="width:12px; height:12px; border-radius:3px; background:${col};"></div> 개인 전환 횟수
+        </div>
+    `;
+    parent.appendChild(customLegend);
+
+    // 데이터 연산
     var sw = {}, pv = null;
     d.forEach(r => {
         var m = r.date.slice(0, 7);
@@ -647,7 +687,8 @@ function renderWpSwitchBar(d, mos, col) {
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
     
-    CH.wpSwitchBar = new Chart(document.getElementById('wpSwitchBar').getContext('2d'), {
+    // 차트 생성
+    CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
             labels: mos,
@@ -675,15 +716,16 @@ function renderWpSwitchBar(d, mos, col) {
                 }
             ]
         },
+        plugins: [ChartDataLabels], // 💡 레이블 플러그인 무조건 실행되도록 강제 주입
         options: {
             responsive: true, maintainAspectRatio: false, clip: false, 
-            layout: { padding: { top: 15, bottom: 0, left: 0, right: 0 } }, // 여백 최소화
+            layout: { padding: { top: 20, bottom: 0, left: 0, right: 0 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: true, position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } },
+                legend: { display: false }, // 내장 범례는 끄기 (위에 커스텀 범례를 만들었으므로)
                 datalabels: { 
-                    display: function(cx) { return cx.dataset.type === 'bar' && cx.raw > 0; }, // 막대만 표시
-                    color: '#1e3a8a', // 짙은 파란색 강제 적용
+                    display: function(cx) { return cx.dataset.type === 'bar' && cx.raw > 0; },
+                    color: '#1e3a8a', // 💡 짙은 파란색 강제 적용
                     font: { weight: '900', size: 11 },
                     anchor: 'end',
                     align: 'end',
@@ -693,7 +735,7 @@ function renderWpSwitchBar(d, mos, col) {
             },
             scales: { 
                 x: { grid: { display: false } }, 
-                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '15%' } 
+                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } 
             }
         }
     });
