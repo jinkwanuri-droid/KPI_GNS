@@ -645,99 +645,68 @@ function renderWpDonutCat(d,t){
         options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',clip:false,layout:{padding:40}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:11,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ca[cx.dataIndex]+'\n'+p+'%';}}} }
     });
 }
-function renderWpSwitchBar(d,mos,col){
-    if(typeof dC === 'function') dC('wpSwitchBar');
-    var sw={},pv=null;
-    d.forEach(r=>{
-        var m=r.date.slice(0,7);
-        if(!sw[m])sw[m]=0;
-        if(pv!==null&&pv!==r.sub)sw[m]++;
-        pv=r.sub;
+function renderWpSwitchBar(d, mos, col) {
+    if (typeof dC === 'function') dC('wpSwitchBar');
+    var sw = {}, pv = null;
+    d.forEach(r => {
+        var m = r.date.slice(0, 7);
+        if (!sw[m]) sw[m] = 0;
+        if (pv !== null && pv !== r.sub) sw[m]++;
+        pv = r.sub;
     });
-    
-    var teamData = typeof filtered === 'function' ? filtered().filter(r=>r.project==='경남 서부의료원') : [];
-    var teamSw={}, teamPv={}, act={};
-    teamData.forEach(r=>{ 
-        var m=r.date.slice(0,7); 
-        if(!teamSw[m])teamSw[m]=0; 
-        if(!act[m])act[m]=new Set(); 
-        act[m].add(r.name); 
-        if(teamPv[r.name]!==null && teamPv[r.name]!==r.sub) teamSw[m]++; 
-        teamPv[r.name]=r.sub; 
+
+    var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
+    var teamSw = {}, teamPv = {}, act = {};
+    teamData.forEach(r => {
+        var m = r.date.slice(0, 7);
+        if (!teamSw[m]) teamSw[m] = 0;
+        if (!act[m]) act[m] = new Set();
+        act[m].add(r.name);
+        if (teamPv[r.name] !== null && teamPv[r.name] !== r.sub) teamSw[m]++;
+        teamPv[r.name] = r.sub;
     });
-    
-    var barData = mos.map(m=>sw[m]||0);
-    var avgData = mos.map(m=> act[m]&&act[m].size>0 ? parseFloat((teamSw[m]/act[m].size).toFixed(1)) : null);
-    
-    // 겹침 방지를 위한 차트 최댓값 계산
-    var maxVal = Math.max(...barData.concat(avgData.filter(v=>v!==null)));
-    if(maxVal === 0 || !isFinite(maxVal)) maxVal = 10;
-    
-    CH.wpSwitchBar=new Chart(document.getElementById('wpSwitchBar').getContext('2d'),{
-        data:{
-            labels:mos,
-            datasets:[
-                {
-                    type:'bar', 
-                    label:'개인 전환 횟수', 
-                    data:barData, 
-                    backgroundColor:col, 
-                    borderRadius:6, 
-                    order:2,
-                    // 💡 해결책: 막대 차트 전용 라벨 설정을 데이터셋 내부에 직접 강제 주입
-                    datalabels: {
-                        display: function(cx) { return cx.raw !== null && cx.raw > 0; },
-                        color: col, // 개인 막대 색상과 동일하게
-                        font: { weight: '900', size: 11 },
-                        anchor: 'end',
-                        align: 'end',
-                        offset: 2,
-                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                    }
-                },
-                {
-                    type:'line', 
-                    label:'팀 평균', 
-                    data:avgData, 
-                    borderColor:'#94a3b8', 
-                    backgroundColor:'transparent', 
-                    borderDash:[3,3], 
-                    borderWidth:1.5, 
-                    pointRadius:4, 
-                    pointBackgroundColor:'#fff', 
-                    pointBorderColor:'#94a3b8', 
-                    order:1,
-                    // 💡 해결책: 꺾은선 차트 전용 라벨 설정을 데이터셋 내부에 직접 강제 주입
-                    datalabels: {
-                        display: function(cx) { return cx.raw !== null && cx.raw > 0; },
-                        color: '#64748b', // 팀 평균은 회색
-                        font: { weight: '900', size: 11 },
-                        anchor: 'center',
-                        align: function(cx) {
-                            var bVal = barData[cx.dataIndex] || 0;
-                            var lVal = avgData[cx.dataIndex] || 0;
-                            return lVal >= bVal ? 'top' : 'bottom'; // 막대보다 높으면 위로, 낮으면 아래로
-                        },
-                        offset: function(cx) {
-                            var bVal = barData[cx.dataIndex] || 0;
-                            var lVal = avgData[cx.dataIndex] || 0;
-                            // 값이 비슷해서 겹칠 위험이 있으면 12px 밀어내고, 아니면 6px
-                            return (lVal >= bVal && Math.abs(lVal - bVal) < (maxVal * 0.15)) ? 12 : 6;
-                        },
-                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                    }
-                }
+
+    var barData = mos.map(m => sw[m] || 0);
+    var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
+
+    CH.wpSwitchBar = new Chart(document.getElementById('wpSwitchBar').getContext('2d'), {
+        data: {
+            labels: mos,
+            datasets: [
+                { type: 'bar', label: '개인 전환 횟수', data: barData, backgroundColor: col, borderRadius: 6, order: 2 },
+                { type: 'line', label: '팀 평균', data: avgData, borderColor: '#94a3b8', backgroundColor: 'transparent', borderDash: [3, 3], borderWidth: 1.5, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: '#94a3b8', order: 1 }
             ]
         },
-        options:{
-            responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:35, bottom: 10}},
+        options: {
+            responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: { top: 35, bottom: 10 } },
             interaction: { mode: 'index', intersect: false },
-            plugins:{
-                legend:{ display:true, position:'top', align:'end', labels:{usePointStyle:true, boxWidth:8, font:{size:10, weight:'bold'}} },
-                // options 영역의 전역 datalabels 설정은 끕니다. (위의 개별 설정이 작동하도록)
-                datalabels: { display: false }
+            plugins: {
+                legend: { display: true, position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } },
+                datalabels: {
+                    // 에러 없이 무조건 레이블을 표시하도록 단순화
+                    display: true,
+                    color: function (cx) {
+                        return cx.dataset.type === 'bar' ? col : '#64748b'; // 막대는 파란색, 선은 회색
+                    },
+                    font: { weight: '900', size: 10 },
+                    anchor: function(cx) {
+                        return cx.dataset.type === 'bar' ? 'end' : 'center';
+                    },
+                    align: function(cx) {
+                        // 막대는 위로(top), 꺾은선은 아래로(bottom) 고정 배치
+                        return cx.dataset.type === 'bar' ? 'top' : 'bottom'; 
+                    },
+                    offset: function(cx) {
+                        return cx.dataset.type === 'bar' ? 2 : 6;
+                    },
+                    formatter: function (v) {
+                        // 값이 0이거나 없을 때는 빈칸 처리
+                        if(v === null || v === 0) return '';
+                        return Number(v).toFixed(1).replace('.0', '');
+                    }
+                }
             },
-            scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'20%'}}
+            scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } }
         }
     });
 }
