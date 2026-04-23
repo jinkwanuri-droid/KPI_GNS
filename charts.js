@@ -176,7 +176,7 @@ function renderCostTrendChart(mos) {
     var ctx = canvas.getContext('2d');
 
     var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
-    if(safeCostData.length === 0) return;
+    if(!mos || !mos.length || safeCostData.length === 0) return;
     
     var globalStart = '2024-03';
     var globalEnd = '2026-11';
@@ -247,23 +247,9 @@ function renderCostTrendChart(mos) {
         }
     });
     
-    // 💡 핵심 변경점: 실제 데이터가 기준이 아닌 '상단 슬라이더(필터)'의 세팅 값을 직접 읽어옵니다.
-    var fStart = typeof window.filterStartIndex !== 'undefined' ? window.filterStartIndex : 0;
-    var fEnd = typeof window.filterEndIndex !== 'undefined' ? window.filterEndIndex : 11;
-    
-    var startY = 2024 + Math.floor(fStart / 4);
-    var startM = (fStart % 4) * 3 + 1;
-    var reqStart = startY + '-' + (startM < 10 ? '0' + startM : startM);
-
-    var endY = 2024 + Math.floor(fEnd / 4);
-    var endM = ((fEnd % 4) + 1) * 3;
-    var reqEnd = endY + '-' + (endM < 10 ? '0' + endM : endM);
-
-    var viewMonthsList = allFullMonths.filter(function(m) { return m >= reqStart && m <= reqEnd; });
-    if(viewMonthsList.length === 0) viewMonthsList = allFullMonths;
-
-    var sIdx = allFullMonths.indexOf(viewMonthsList[0]);
-    var eIdx = allFullMonths.indexOf(viewMonthsList[viewMonthsList.length - 1]);
+    var sIdx = allFullMonths.indexOf(mos[0]);
+    if(sIdx === -1) sIdx = 0;
+    var eIdx = allFullMonths.length - 1; 
     
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
     var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
@@ -365,17 +351,86 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 💡 변경점 적용: 이제 무조건 슬라이더 필터 구간의 마지막 달 데이터를 가져와서 요약 카드에 표시합니다.
-    var targetMonthForSummary = allFullMonths[eIdx];
+    // 💡 오류 해결 지점: 차트의 끝이 아니라 '슬라이드 필터 배열(mos)의 마지막 값'을 추출합니다.
+    var targetMonthForSummary = mos[mos.length - 1];
+    var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
+    if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
     
-    var sPlan = globalData.plan[eIdx] || 0;
-    var sExec = globalData.execActual[eIdx];
+    var sPlan = globalData.plan[sEndIdx] || 0;
+    var sExec = globalData.execActual[sEndIdx];
     var isPred = sExec === null;
-    if(isPred) sExec = globalData.execPred[eIdx] || 0;
+    // 실행 데이터가 null이면 그 달의 예측 데이터를 요약 카드로 보냅니다.
+    if(isPred) sExec = globalData.execPred[sEndIdx] || 0;
 
     if(typeof renderCostSummary === 'function') {
         renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
     }
+}
+
+function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
+    var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
+    
+    var finalBudget = 0;
+    if (window.COST_DATA) {
+        finalBudget = window.COST_DATA.reduce(function(acc, cur) { return acc + (parseFloat(cur.plan) || 0)/10000; }, 0);
+    }
+    
+    var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
+    var ratioNum = parseFloat(ratio);
+    var diff = totalPlan - totalExec;
+    
+    // 상태별 기본값 (안전) 설정
+    var statusClass = 'good', statusMsg = '안전', diffColor = '#10b981', barColor = '#10b981';
+    
+    // 💡 핵심 변경점: 95% 이상(위기), 91~94.9%(경계), 91% 미만(안전)
+    if(ratioNum >= 95) { 
+        statusClass = 'danger'; statusMsg = '위기'; diffColor = '#ef4444'; barColor = '#ef4444';
+    } else if (ratioNum >= 91) { 
+        statusClass = 'warn'; statusMsg = '경계'; diffColor = '#f59e0b'; barColor = '#f59e0b';
+    }
+
+    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치)</span>' : '';
+    var execLabel = isPred ? '실행금액 (예상)' : '실행금액 (당시)';
+    var diffLabel = isPred ? '절감액 (계획-예상)' : '절감액 (계획-실행)';
+    var ratioTitle = isPred ? '계획 대비 실행 비율 <span style="color:#8b5cf6; font-size:11px; font-weight:800;">(예상값)</span>' : '계획 대비 실행 비율';
+    
+    wrap.innerHTML = `
+    <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
+        기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ${targetMonth}${titleSuffix})</span>
+    </div>
+    
+    <!-- 계획 대비 실행 비율 카드 (위기/경계/안전 테마 적용) -->
+    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <div style="font-size:12px; color:#64748b; font-weight:700; margin-bottom:8px;">${ratioTitle}</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:24px; font-weight:900; color:#00428E; margin:0;">${ratio}%</div>
+            <div style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; background:${barColor}20; color:${barColor};">${statusMsg}</div>
+        </div>
+        <div style="height:6px; width:100%; background:#f1f5f9; border-radius:3px; margin-top:12px; overflow:hidden;">
+            <div style="height:100%; width:${Math.min(ratioNum, 100)}%; background:${barColor}; border-radius:3px; transition: width 0.5s ease;"></div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+            <div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">예산최종금액 (전체)</div>
+            <div style="font-size:16px; font-weight:800; color:#0f172a;">${finalBudget.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+            <div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">계획금액 (당시)</div>
+            <div style="font-size:16px; font-weight:800; color:#64748b;">${totalPlan.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
+        </div>
+        <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:10px;">
+            <div style="font-size:11px; color:#0369a1; font-weight:700; margin-bottom:4px;">${execLabel}</div>
+            <div style="font-size:16px; font-weight:800; color:#0284c7;">${totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
+        </div>
+        <!-- 절감액 카드 (위기/경계/안전 테마 적용) -->
+        <div style="background:${diffColor}15; border:1px solid ${diffColor}40; border-radius:8px; padding:10px;">
+            <div style="font-size:11px; color:${diffColor}; font-weight:700; margin-bottom:4px;">${diffLabel}</div>
+            <div style="font-size:16px; font-weight:800; color:${diffColor};">${diff > 0 ? '+' : ''}${diff.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
+            <div style="font-size:10px; color:${diffColor}; margin-top:2px;">${statusMsg}</div>
+        </div>
+    </div>`;
 }
 
 function renderDashStage(pd){
@@ -401,7 +456,6 @@ function renderDashCompare(pd){
         options:{ responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:40}}, interaction: { mode: 'nearest', intersect: true }, plugins:{ legend:{display:false}, datalabels:{ display:function(cx){ if(cx.dataset.type === 'line') return false; var stg = CAT_ORDER[cx.dataIndex]; var mem = cx.dataset.label; if(hlStage!==null && hlStage!==stg) return false; if(hlTimeline!==null && hlTimeline!==mem) return false; return cx.dataset.data[cx.dataIndex] > 0; }, color:'#64748b',font:{size:10,weight:'bold'},anchor:'end',align:'end', formatter:function(v){return v>0?v.toFixed(1):'';} } }, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(226,232,240,0.5)'},grace:'15%'}}, onClick:function(e,els){ if(els.length && els[0].datasetIndex < MEMBERS.length) { dTogStage(CAT_ORDER[els[0].index]); } else { dTogStage(null); } } }
     });
 }
-
 function renderDashDonut(pd){
     dC('donutChart');var sm=grp(pd,'sub'),t=Object.values(sm).reduce((a,b)=>a+b,0),ta=Object.entries(sm).sort((a,b)=>b[1]-a[1]);
     document.getElementById('donutCenter').innerText=fH(t)+'h';
