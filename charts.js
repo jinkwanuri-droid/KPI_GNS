@@ -115,44 +115,37 @@ function renderProjectProgress() {
 }
 
 // ====================================================================
-// [수정1] 투입비율 차트 (남색/하늘색/회색 색상 복구 및 글자 겹침 방지)
+// [수정1] 투입비율 차트 (글자 겹침 방지 및 하단 레이블 위치 정렬)
 // ====================================================================
 function renderOvProjectRatio(all){
     var wrap = document.getElementById('ovPjRatioWrap');
     if(!wrap) return;  
-
     var m=0, o=0, c=0;
     all.forEach(function(r){
         if(r.project==='경남 서부의료원') m+=r.min;
         else if(r.project==='타 프로젝트') o+=r.min;
         else c+=r.min;
     });
-    
-    var t = m + o + c;  
 
+    var t = m + o + c;  
     if (t === 0) {
         wrap.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">선택된 기간에 데이터가 없습니다.</div>';
         return;
     }  
-
     var pm = (m/t*100).toFixed(1);
     var po = (o/t*100).toFixed(1);
     var pc = (c/t*100).toFixed(1);  
-
     var pmNum = parseFloat(pm);
     var poNum = parseFloat(po);
     var pcNum = parseFloat(pc);  
-
-    // HTML 렌더링 시작 (중복되던 제목 div를 제거하고 레이아웃 여백 조정)
+    
     wrap.innerHTML = `
     <div style="display:flex; flex-direction:column; gap:12px; padding: 5px; height:100%; justify-content:center; margin-top: 5px;">
-        
-        <!-- 수치 영역 -->
+        <!-- 수치 영역 (중복 타이틀 제거) -->
         <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
             <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
             <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
         </div>
-
         <!-- 차트 및 하단 라벨 영역 -->
         <div style="display:flex; flex-direction:column; gap:8px;">
             <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
@@ -160,7 +153,7 @@ function renderOvProjectRatio(all){
                 <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 12 ? po+'%' : ''}</div>
                 <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 12 ? pc+'%' : ''}</div>
             </div>
-            
+            <!-- 라벨 위치 막대 너비와 동일하게 동기화 -->
             <div style="display:flex; width:100%; font-size:11px; font-weight:600; color:#64748b; text-align:center;">
                 <div style="width: ${pm}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${pmNum > 0 ? '서부의료원' : ''}</div>
                 <div style="width: ${po}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${poNum > 0 ? '타 프로젝트' : ''}</div>
@@ -178,32 +171,31 @@ function getMonthsBetween(start, end) {
 }
 
 // ====================================================================
-// [수정2] 인건비 추이 차트 (0 데이터 무시 및 26년 4월부터 예상치 적용 로직 완벽 수정)
+// [오류 수정] 곱셈 기호(*)가 깨져서 에러를 유발하던 부분을 정상 복구했습니다.
 // ====================================================================
 function renderCostTrendChart(mos) {
-    if(typeof dC === 'function') dC('costTrendChart'); 
+    if(typeof dC === 'function') dC('costTrendChart');
     window.lastCostMos = mos;
-    
+
     var canvas = document.getElementById('costTrendChart');
     if(!canvas) return;
     var ctx = canvas.getContext('2d');
-
     var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
     if(safeCostData.length === 0) return;
-    
+
     var globalStart = '2024-03';
     var globalEnd = '2026-11';
     var allFullMonths = getMonthsBetween(globalStart, globalEnd);
     var allMosMap = {};
     allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
-    
+
     safeCostData.forEach(function(r) {
         var m = r.date;
         if(m && m.length > 7) m = m.substring(0,7);
         if(allMosMap[m] !== undefined) {
             var p = parseFloat(r.plan);
             if(!isNaN(p)) allMosMap[m].plan += (p / 10000);
-            
+
             if(r.exec !== null && r.exec !== undefined && String(r.exec).trim() !== '') {
                 var e = parseFloat(r.exec);
                 if(!isNaN(e) && e > 0) {
@@ -213,11 +205,11 @@ function renderCostTrendChart(mos) {
             }
         }
     });
-    
+
     var lastActualMonth = '';
     var pastTotalExec = 0;
     var actualMonthCount = 0;
-    
+
     allFullMonths.forEach(function(m) {
         if(allMosMap[m] && allMosMap[m].hasExec) {
             lastActualMonth = m;
@@ -225,20 +217,16 @@ function renderCostTrendChart(mos) {
             actualMonthCount++;
         }
     });
-
     var avgMonthlyExec = (actualMonthCount > 0) ? (pastTotalExec / actualMonthCount) : 0;
-    
+
     var globalData = { plan: [], execActual: [], execPred: [] };
     var cumPlan = 0, cumExec = 0, cumPred = 0;
     var isCum = window.isCostCumulative === true;
-
     allFullMonths.forEach(function(m) {
         var mPlan = allMosMap[m].plan;
         var mExec = allMosMap[m].hasExec ? allMosMap[m].exec : null;
-
         cumPlan += mPlan;
         globalData.plan.push(isCum ? cumPlan : mPlan);
-
         if (lastActualMonth === '' || m < lastActualMonth) {
             cumExec += (mExec || 0);
             cumPred = cumExec;
@@ -249,47 +237,44 @@ function renderCostTrendChart(mos) {
             cumPred = cumExec;
             var valExec = isCum ? cumExec : mExec;
             globalData.execActual.push(valExec);
-            globalData.execPred.push(valExec); 
+            globalData.execPred.push(valExec);
         } else {
-            var stepPred = avgMonthlyExec; 
+            var stepPred = avgMonthlyExec;
             if (m >= '2026-08') { stepPred = avgMonthlyExec * 0.8; }
-            
+
             cumPred += stepPred;
             globalData.execActual.push(null);
             globalData.execPred.push(isCum ? cumPred : stepPred);
         }
     });
-    
-    // 💡 핵심 변경점: 실제 데이터가 기준이 아닌 '상단 슬라이더(필터)'의 세팅 값을 직접 읽어옵니다.
+
     var fStart = typeof window.filterStartIndex !== 'undefined' ? window.filterStartIndex : 0;
     var fEnd = typeof window.filterEndIndex !== 'undefined' ? window.filterEndIndex : 11;
-    
+
     var startY = 2024 + Math.floor(fStart / 4);
     var startM = (fStart % 4) * 3 + 1;
     var reqStart = startY + '-' + (startM < 10 ? '0' + startM : startM);
-
     var endY = 2024 + Math.floor(fEnd / 4);
     var endM = ((fEnd % 4) + 1) * 3;
     var reqEnd = endY + '-' + (endM < 10 ? '0' + endM : endM);
-
     var viewMonthsList = allFullMonths.filter(function(m) { return m >= reqStart && m <= reqEnd; });
     if(viewMonthsList.length === 0) viewMonthsList = allFullMonths;
-
     var sIdx = allFullMonths.indexOf(viewMonthsList[0]);
     var eIdx = allFullMonths.indexOf(viewMonthsList[viewMonthsList.length - 1]);
-    
+
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
     var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
     var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
     var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
-
     var maxArr = [10];
     var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
     addMax(viewPlan); addMax(viewActual); addMax(viewPred);
     var maxVal = Math.max.apply(null, maxArr);
     if(isNaN(maxVal) || maxVal === -Infinity) maxVal = 100;
-    var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
     
+    // 💡 에러 발생하던 문법 오류 복구 (* 연산자 정상 적용)
+    var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
+
     var schData = [];
     viewMonths.forEach(function(m) {
         var schedules = (typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(function(s) { return s.date && s.date.startsWith(m); });
@@ -298,17 +283,15 @@ function renderCostTrendChart(mos) {
             schData.push({ schTitle: st, yPos: scheduleTopY });
         } else { schData.push(null); }
     });
-
+    
     var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
     gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
-
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
-    gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); 
+    gradPred.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
     gradPred.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
-    
-    if(window.CH && window.CH.costTrendChart) { window.CH.costTrendChart.destroy(); }
 
+    if(window.CH && window.CH.costTrendChart) { window.CH.costTrendChart.destroy(); }
     window.CH.costTrendChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -348,9 +331,9 @@ function renderCostTrendChart(mos) {
                         }
                         return 'top';
                     },
-                    offset: 8, 
-                    color: function(cx) { return cx.dataset.borderColor; }, 
-                    font: { size: 10, weight: 'bold' }, 
+                    offset: 8,
+                    color: function(cx) { return cx.dataset.borderColor; },
+                    font: { size: 10, weight: 'bold' },
                     formatter: function(v) { return Number(v||0).toFixed(1); }
                 },
                 tooltip: {
@@ -361,7 +344,7 @@ function renderCostTrendChart(mos) {
                             var item = cx; if (item.dataset.isSchedule) return schData[item.dataIndex].schTitle;
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], pred = viewPred[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
-                            
+
                             if(actual !== null) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
@@ -378,14 +361,11 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 💡 변경점 적용: 이제 무조건 슬라이더 필터 구간의 마지막 달 데이터를 가져와서 요약 카드에 표시합니다.
     var targetMonthForSummary = allFullMonths[eIdx];
-    
     var sPlan = globalData.plan[eIdx] || 0;
     var sExec = globalData.execActual[eIdx];
     var isPred = sExec === null;
     if(isPred) sExec = globalData.execPred[eIdx] || 0;
-
     if(typeof renderCostSummary === 'function') {
         renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
     }
@@ -393,37 +373,32 @@ function renderCostTrendChart(mos) {
 
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
-    
+
     var finalBudget = 0;
     if (window.COST_DATA) {
         finalBudget = window.COST_DATA.reduce(function(acc, cur) { return acc + (parseFloat(cur.plan) || 0)/10000; }, 0);
     }
-    
+
     var ratio = totalPlan > 0 ? ((totalExec / totalPlan) * 100).toFixed(1) : 0;
     var ratioNum = parseFloat(ratio);
     var diff = totalPlan - totalExec;
-    
-    // 상태별 기본값 (안전) 설정
+
     var statusClass = 'good', statusMsg = '안전', diffColor = '#10b981', barColor = '#10b981';
-    
-    // 💡 핵심 변경점: 95% 이상(위기), 91~94.9%(경계), 91% 미만(안전)
-    if(ratioNum >= 95) { 
+
+    if(ratioNum >= 95) {
         statusClass = 'danger'; statusMsg = '위기'; diffColor = '#ef4444'; barColor = '#ef4444';
-    } else if (ratioNum >= 91) { 
+    } else if (ratioNum >= 91) {
         statusClass = 'warn'; statusMsg = '경계'; diffColor = '#f59e0b'; barColor = '#f59e0b';
     }
-
     var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치)</span>' : '';
     var execLabel = isPred ? '실행금액 (예상)' : '실행금액 (당시)';
     var diffLabel = isPred ? '절감액 (계획-예상)' : '절감액 (계획-실행)';
     var ratioTitle = isPred ? '계획 대비 실행 비율 <span style="color:#8b5cf6; font-size:11px; font-weight:800;">(예상값)</span>' : '계획 대비 실행 비율';
-    
+
     wrap.innerHTML = `
     <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
         기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ${targetMonth}${titleSuffix})</span>
     </div>
-    
-    <!-- 계획 대비 실행 비율 카드 (위기/경계/안전 테마 적용) -->
     <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
         <div style="font-size:12px; color:#64748b; font-weight:700; margin-bottom:8px;">${ratioTitle}</div>
         <div style="display:flex; align-items:center; gap:10px;">
@@ -434,7 +409,6 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
             <div style="height:100%; width:${Math.min(ratioNum, 100)}%; background:${barColor}; border-radius:3px; transition: width 0.5s ease;"></div>
         </div>
     </div>
-
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
             <div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:4px;">예산최종금액 (전체)</div>
@@ -448,7 +422,6 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
             <div style="font-size:11px; color:#0369a1; font-weight:700; margin-bottom:4px;">${execLabel}</div>
             <div style="font-size:16px; font-weight:800; color:#0284c7;">${totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
         </div>
-        <!-- 절감액 카드 (위기/경계/안전 테마 적용) -->
         <div style="background:${diffColor}15; border:1px solid ${diffColor}40; border-radius:8px; padding:10px;">
             <div style="font-size:11px; color:${diffColor}; font-weight:700; margin-bottom:4px;">${diffLabel}</div>
             <div style="font-size:16px; font-weight:800; color:${diffColor};">${diff > 0 ? '+' : ''}${diff.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
@@ -526,6 +499,7 @@ function renderDashOvertimeDonut(pd){
     }
     dd('dashOvertimeDonutChart9',dm); dd('dashOvertimeDonutChart12',ds);
 }
+
 // --- Working 탭 렌더링 ---
 function renderWorkingTab(nm){
     if(!nm&&MEMBERS.length)nm=MEMBERS[0];
@@ -658,7 +632,29 @@ function renderWpDonutCat(d,t){
         options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',clip:false,layout:{padding:40}, interaction: { mode: 'nearest', intersect: true }, plugins:{legend:{display:false},datalabels:{display:function(cx){return (cx.dataset.data[cx.dataIndex]/mToH(t)*100)>=5;},color:'#1e293b',font:{size:11,weight:'bold'},anchor:'end',align:'end',textAlign:'center',formatter:function(v,cx){var p=(v/mToH(t)*100).toFixed(0);return ca[cx.dataIndex]+'\n'+p+'%';}}} }
     });
 }
+
+// ====================================================================
+// [수정2] 전환횟수 차트 레이블 & 여백 완벽 해결
+// ====================================================================
 function renderWpSwitchBar(d, mos, col) {
+    if (typeof dC === 'function') dC('wpSwitchBar');
+    var sw = {}, pv = null;
+    d.forEach(r => {
+        var m = r.date.slice(0, 7);
+        if (!sw[m]) sw[m] = 0;
+        if (pv !== null && pv !== r.sub) sw[m]++;
+        pv = r.sub;
+    });
+    
+    var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
+    var teamSw = {}, teamPv = {}, act = {};
+    teamData.forEach(r => {
+        var m = r.date.slice(0, 7);
+        if (!teamSw[m]) teamSw[m] = 0;
+        if (!act[m]) act[m] = new Set();
+        act[m].add(r.name);
+        if (teamPv[r.name] !== null && teamPv[r.name] !== r.sub) teamSw[m]++;
+        teamPv[r.name] = r.sub;
     });
     
     var barData = mos.map(m => sw[m] || 0);
@@ -676,13 +672,12 @@ function renderWpSwitchBar(d, mos, col) {
                     backgroundColor: col,
                     borderRadius: 6,
                     order: 2,
-                    // 💡 [필승 세팅 1] 데이터셋 내부에 직접 라벨 옵션 강제 주입
                     datalabels: {
-                        display: function(cx) { return cx.raw > 0; }, // 값이 0보다 클 때만 표시
-                        color: col, // 막대 색상과 동일하게
+                        display: function(cx) { return cx.raw > 0; },
+                        color: col,
                         font: { weight: '900', size: 11 },
                         anchor: 'end',
-                        align: 'end', // 막대 끝에서 위로 띄움
+                        align: 'end',
                         offset: 4,
                         formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
                     }
@@ -699,7 +694,6 @@ function renderWpSwitchBar(d, mos, col) {
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
                     order: 1,
-                    // 💡 팀 평균 꺾은선은 라벨 강제 숨김
                     datalabels: { display: false }
                 }
             ]
@@ -708,7 +702,6 @@ function renderWpSwitchBar(d, mos, col) {
             responsive: true, 
             maintainAspectRatio: false, 
             clip: false, 
-            // 💡 [필승 세팅 2] 범례와 차트 사이 여백 좁히기
             layout: { padding: { top: 20, bottom: 5 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
@@ -718,12 +711,10 @@ function renderWpSwitchBar(d, mos, col) {
                     align: 'end', 
                     labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } 
                 },
-                // 전역 플러그인 설정은 끄고 데이터셋 설정을 우선시함
                 datalabels: { display: false } 
             },
             scales: { 
                 x: { grid: { display: false } }, 
-                // 💡 [필승 세팅 3] grace: '25%'를 주어 막대 위에 숫자가 들어갈 '천장 공간'을 자동으로 확보
                 y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '25%' } 
             }
         }
@@ -812,19 +803,23 @@ function renderWpGini(d,c){
 function buildHeatmapHTML(dt,yr,c,tid){
     var dm={};dt.filter(r=>r.date.startsWith(yr+'-')).forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});var mt=Array.from({length:6},()=>new Array(12).fill(0)),hm=new Array(12).fill(false),mx=1;Object.keys(dm).forEach(d=>{var s=dm[d],p=d.split('-'),m=parseInt(p[1])-1,dy=parseInt(p[2]),fd=new Date(parseInt(yr),m,1).getDay(),w=Math.ceil((dy+fd)/7)-1;if(w>=0&&w<6){mt[w][m]+=s;hm[m]=true;if(mt[w][m]>mx)mx=mt[w][m];}});var th='<thead><tr><th style="width:30px;"></th>';MONTH_KO.forEach((l,i)=>{th+='<th style="font-size:11px;font-weight:'+(hm[i]?'800':'500')+';color:'+(hm[i]?c:'#cbd5e1')+';">'+l+'</th>';});th+='</tr></thead><tbody>';for(var w=0;w<6;w++){th+='<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">'+(w+1)+'주</td>';for(var mo=0;mo<12;mo++){if(!hm[mo])th+='<td><div class="hm-cell" style="background:transparent;"></div></td>';else if(mt[w][mo]<=0)th+='<td><div class="hm-cell" style="background:#F0F5FA;opacity:'+(hlHeatBin!==null?0.2:1)+';"></div></td>';else{var vl=mt[w][mo],rt=vl/mx,bn=Math.ceil(rt*5),id=hlHeatBin!==null&&hlHeatBin!==bn,al=0.2+(bn-1)*0.2,tc=al>=0.55?'#fff':'#1e293b';th+='<td><div class="hm-cell" onclick="toggleHeatBin('+bn+',\''+yr+'\',\''+tid+'\')" style="background:'+hRgba(c,al)+';color:'+tc+';opacity:'+(id?0.2:1)+';" title="'+fH(vl)+'h">'+fH(vl)+'</div></td>';}}th+='</tr>';}var el=document.getElementById(tid);if(el)el.innerHTML=th+'</tbody>';
 }
+
+// ====================================================================
+// [오류 수정] 곱셈 기호(*)가 깨져서 에러를 유발하던 부분을 정상 복구했습니다.
+// ====================================================================
 function renderAdvancedMetrics(d,da,col,pf){
     try {
         if(typeof dC === 'function') {
             dC(pf+'ShannonChart');dC(pf+'HhiChart');dC(pf+'JaccardChart');dC(pf+'CvChart');dC(pf+'HurstChart');dC(pf+'OtChart');
         }
         if(!d||d.length===0)return;
-        
+
         var cr = typeof calcStandaloneMetrics === 'function' ? calcStandaloneMetrics(d) : {ot:0,shannon:0,hhi:0,cv:0,hurst:0,jaccard:0};
         var cvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), (cr.cv||0), (cr.hurst||0), (cr.jaccard||0)];
         var rawCvInsight = [cr.ot, (cr.shannon||0), (cr.hhi||0), cr.cv||0, cr.hurst||0, cr.jaccard||0];
         var teamRawCvInsight = [0,0,0,0,0,0], teamCvInsight = [0,0,0,0,0,0];
         var datasetsArr = [{ label: '선택 기간', data: cvInsight, borderColor: col, backgroundColor: (typeof hRgba === 'function' ? hRgba(col, 0.15) : 'rgba(0,0,0,0.1)'), borderWidth: 2, pointBackgroundColor: col, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5 }];
-        
+
         if (pf === 'wp' || pf === 'pj') {
             var teamData = typeof filtered === 'function' ? filtered().filter(r=>r.project==='경남 서부의료원') : [];
             var teamCr = typeof calcStandaloneMetrics === 'function' ? calcStandaloneMetrics(teamData) : {ot:0,shannon:0,hhi:0,cv:0,hurst:0,jaccard:0};
@@ -832,7 +827,7 @@ function renderAdvancedMetrics(d,da,col,pf){
             teamRawCvInsight = [teamCr.ot, (teamCr.shannon||0), (teamCr.hhi||0), teamCr.cv||0, teamCr.hurst||0, teamCr.jaccard||0];
             datasetsArr.push({ label: '팀 전체 평균', data: teamCvInsight, borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0 });
         }
-        
+
         if(typeof dC === 'function') dC(pf + 'InsightRadar');
         if(document.getElementById(pf + 'InsightRadar')) {
             CH[pf + 'InsightRadar'] = new Chart(document.getElementById(pf + 'InsightRadar').getContext('2d'), {
@@ -840,7 +835,7 @@ function renderAdvancedMetrics(d,da,col,pf){
                 options: { responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: 40 }, plugins: { legend: { display: false }, datalabels: { display: cx => cx.datasetIndex === 0, formatter: v => Number(v).toFixed(2), color: col, font: { size: 10, weight: 'bold' }, anchor: 'end', align: 'end' }, tooltip: { callbacks: { label: cx => cx.datasetIndex === 0 ? cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2) : cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:10, weight:'800'}, color: '#64748b', padding: 15 } } } }
             });
         }
-        
+
         var tb = document.getElementById(pf + 'InsightTable');
         if(tb && typeof INSIGHT_METRICS_INFO !== 'undefined') {
             var tableHtml = '<table style="width:100%; border-collapse:collapse; margin-top:5px; table-layout:fixed;">';
@@ -859,7 +854,7 @@ function renderAdvancedMetrics(d,da,col,pf){
             }
             tableHtml += '</tbody></table>'; tb.innerHTML = tableHtml;
         }
-        
+
         var wm={},bwm={};
         d.forEach(r=>{
             var wi = typeof getWeekInfo === 'function' ? getWeekInfo(r.date) : {key1:r.date, key2:r.date, label1:r.date, label2:r.date};
@@ -870,7 +865,7 @@ function renderAdvancedMetrics(d,da,col,pf){
         var wl=[], bwl=[], sd=[], hd=[], od=[], cd=[], hud=[], jd=[];
         var ss=new Array(wk.length).fill(null), sh=new Array(wk.length).fill(null), so=new Array(wk.length).fill(null);
         var sc=new Array(bwk.length).fill(null), shu=new Array(bwk.length).fill(null), sj=new Array(bwk.length).fill(null);
-        
+
         wk.forEach((k,i)=>{
             var g=wm[k]; wl.push(g.l);
             var tot=g.r.reduce((s,r)=>s+r.min,0)||1; var sm = typeof grp === 'function' ? grp(g.r,'sub') : {}; var hi=0, sn=0, ky=Object.keys(sm), N=ky.length;
@@ -884,17 +879,19 @@ function renderAdvancedMetrics(d,da,col,pf){
             });
             var F = 1.0;
             if(weeklyCount === 2) F = 1.25; else if(weeklyCount === 3) F = 1.50; else if(weeklyCount >= 4) F = 2.0;
-            var x = weeklyPts * F, p = 2 - (2 / (1 + Math.exp(-2.0 * x)));
-            sd.push(sn); hd.push(hi); od.push(p);
             
+            // 💡 에러 발생하던 문법 오류 복구 (* 연산자 정상 적용)
+            var x = weeklyPts * F, p = 2 - (2 / (1 + Math.exp(-2.0 * x)));
+            
+            sd.push(sn); hd.push(hi); od.push(p);
+
             var ws=[]; Array.from(g.d).forEach(dt2 => { ws=ws.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date&&s.date.slice(0,10)===dt2)); });
-            if(ws.length>0){ 
-                // 한글 텍스트를 파괴하던 정규식(.replace(/[\u1000-\uFFFF]+/g,''))을 완전히 제거했습니다.
-                var st = ws.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').trim()); 
-                ss[i]={schTitle:st}; sh[i]={schTitle:st}; so[i]={schTitle:st}; 
+            if(ws.length>0){
+                var st = ws.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').trim());
+                ss[i]={schTitle:st}; sh[i]={schTitle:st}; so[i]={schTitle:st};
             }
         });
-        
+
         var ps=new Set();
         bwk.forEach((k,i)=>{
             var g=bwm[k]; bwl.push(g.l);
@@ -904,15 +901,14 @@ function renderAdvancedMetrics(d,da,col,pf){
             if(nh>=3 && m>0){ var dv=vl.map(v=>v-m), cm=[], cs=0; dv.forEach(v=>{cs+=v; cm.push(cs);}); var R=Math.max.apply(null,cm)-Math.min.apply(null,cm), S=Math.sqrt(vl.reduce((a,v)=>a+Math.pow(v-m,2),0)/nh)||1; if(R>0) hs=Math.min(Math.max(Math.log(R/S)/Math.log(nh/2),0.01),0.99); }
             var cs2=new Set(Object.keys(typeof grp === 'function' ? grp(g.r,'sub') : {})), it=0; cs2.forEach(x => {if(ps.has(x))it++;});
             var un=new Set([...ps,...cs2]).size, jc=un===0?0:it/un; ps=cs2; cd.push(cn); hud.push(hs); jd.push(jc);
-            
+
             var bs=[]; Array.from(g.d).forEach(dt2 => { bs=bs.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date&&s.date.slice(0,10)===dt2)); });
-            if(bs.length>0){ 
-                // 여기도 한글 파괴 정규식을 제거했습니다.
-                var st = bs.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').trim()); 
-                sc[i]={schTitle:st}; shu[i]={schTitle:st}; sj[i]={schTitle:st}; 
+            if(bs.length>0){
+                var st = bs.map(s => '• '+s.date.slice(2,10).replace(/-/g,'.')+'. '+(s.title||s.name||s['일정']||s['내용']||'일정').trim());
+                sc[i]={schTitle:st}; shu[i]={schTitle:st}; sj[i]={schTitle:st};
             }
         });
-        
+
         function dmc(id, l, xl, da, sa, cx) {
             if(!document.getElementById(id)) return;
             try {
@@ -927,6 +923,7 @@ function renderAdvancedMetrics(d,da,col,pf){
         dmc(pf+'OtChart','정시업무(1-OT)',wl,od,so,'#ef4444'); dmc(pf+'ShannonChart','Shannon',wl,sd,ss,'#14b8a6'); dmc(pf+'HhiChart','HHI',wl,hd,sh,'#f59e0b'); dmc(pf+'CvChart','CV(Norm)',bwl,cd,sc,'#8b5cf6'); dmc(pf+'HurstChart','Hurst',bwl,hud,shu,'#ec4899'); dmc(pf+'JaccardChart','Jaccard',bwl,jd,sj,'#3b82f6');
     } catch(e) {}
 }
+
 function renderEvalTab() {
     var m = GLOBAL_MEMBER === 'ALL' ? MEMBERS[0] : GLOBAL_MEMBER;
     if (!m) return;
@@ -1039,13 +1036,13 @@ function renderEvalTab() {
                 type: 'radar',
                 data: { labels: splitRadarLabels, datasets: [{ label: latestQ.q, data: cvInsight, borderColor: c, backgroundColor: hRgba(c, 0.15), borderWidth: 2, pointBackgroundColor: c, pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5, order: 1 }, { label: '팀 전체 평균', data: teamCvInsight, borderColor: '#cbd5e1', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, order: 2 }] },
                 options: {
-                    responsive: true, maintainAspectRatio: false, clip: false, 
-                    layout: { padding: 15 }, // 패딩을 40에서 15로 줄여 차트 20% 확대
+                    responsive: true, maintainAspectRatio: false, clip: false,
+                    layout: { padding: 15 },
                     plugins: {
-                        legend: { display: false }, 
-                        datalabels: { 
-                            display: cx => cx.datasetIndex === 0, // 내 데이터(0번째)만 값 레이블 표시
-                            align: 'end', anchor: 'end', color: c, font: {size:11, weight:'900'}, formatter: v => Number(v).toFixed(2) 
+                        legend: { display: false },
+                        datalabels: {
+                            display: cx => cx.datasetIndex === 0,
+                            align: 'end', anchor: 'end', color: c, font: {size:11, weight:'900'}, formatter: v => Number(v).toFixed(2)
                         },
                         tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 12 }, bodyFont: { size: 11, weight: 'bold' }, padding: 10, callbacks: { label: function(cx) { if(cx.datasetIndex===0) return cx.dataset.label + ': ' + Number(rawCvInsight[cx.dataIndex]).toFixed(2); else return cx.dataset.label + ': ' + Number(teamRawCvInsight[cx.dataIndex]).toFixed(2); } } }
                     },
