@@ -176,7 +176,7 @@ function renderCostTrendChart(mos) {
     var ctx = canvas.getContext('2d');
 
     var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
-    if(!mos || !mos.length || safeCostData.length === 0) return;
+    if(safeCostData.length === 0) return;
     
     var globalStart = '2024-03';
     var globalEnd = '2026-11';
@@ -247,9 +247,23 @@ function renderCostTrendChart(mos) {
         }
     });
     
-    var sIdx = allFullMonths.indexOf(mos[0]);
-    if(sIdx === -1) sIdx = 0;
-    var eIdx = allFullMonths.length - 1; 
+    // 💡 핵심 변경점: 실제 데이터가 기준이 아닌 '상단 슬라이더(필터)'의 세팅 값을 직접 읽어옵니다.
+    var fStart = typeof window.filterStartIndex !== 'undefined' ? window.filterStartIndex : 0;
+    var fEnd = typeof window.filterEndIndex !== 'undefined' ? window.filterEndIndex : 11;
+    
+    var startY = 2024 + Math.floor(fStart / 4);
+    var startM = (fStart % 4) * 3 + 1;
+    var reqStart = startY + '-' + (startM < 10 ? '0' + startM : startM);
+
+    var endY = 2024 + Math.floor(fEnd / 4);
+    var endM = ((fEnd % 4) + 1) * 3;
+    var reqEnd = endY + '-' + (endM < 10 ? '0' + endM : endM);
+
+    var viewMonthsList = allFullMonths.filter(function(m) { return m >= reqStart && m <= reqEnd; });
+    if(viewMonthsList.length === 0) viewMonthsList = allFullMonths;
+
+    var sIdx = allFullMonths.indexOf(viewMonthsList[0]);
+    var eIdx = allFullMonths.indexOf(viewMonthsList[viewMonthsList.length - 1]);
     
     var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
     var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
@@ -351,16 +365,13 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 💡 오류 해결 지점: 차트의 끝이 아니라 '슬라이드 필터 배열(mos)의 마지막 값'을 추출합니다.
-    var targetMonthForSummary = mos[mos.length - 1];
-    var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
-    if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
+    // 💡 변경점 적용: 이제 무조건 슬라이더 필터 구간의 마지막 달 데이터를 가져와서 요약 카드에 표시합니다.
+    var targetMonthForSummary = allFullMonths[eIdx];
     
-    var sPlan = globalData.plan[sEndIdx] || 0;
-    var sExec = globalData.execActual[sEndIdx];
+    var sPlan = globalData.plan[eIdx] || 0;
+    var sExec = globalData.execActual[eIdx];
     var isPred = sExec === null;
-    // 실행 데이터가 null이면 그 달의 예측 데이터를 요약 카드로 보냅니다.
-    if(isPred) sExec = globalData.execPred[sEndIdx] || 0;
+    if(isPred) sExec = globalData.execPred[eIdx] || 0;
 
     if(typeof renderCostSummary === 'function') {
         renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
