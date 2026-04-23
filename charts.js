@@ -128,7 +128,7 @@ function renderOvProjectRatio(all){
     }
 
     // 💡 1. 부모 카드의 바닥 여백을 강제로 늘려줍니다. (여기서 막대차트 아래 공간이 늘어납니다)
-    wrap.style.paddingBottom = "30px";
+    wrap.style.paddingBottom = "10px";
 
     var m=0, o=0, c=0;
     all.forEach(function(r){
