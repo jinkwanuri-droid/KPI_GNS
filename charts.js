@@ -677,40 +677,65 @@ function renderWpSwitchBar(d,mos,col){
         data:{
             labels:mos,
             datasets:[
-                {type:'bar', label:'개인 전환 횟수', data:barData, backgroundColor:col, borderRadius:6, order:2},
-                {type:'line', label:'팀 평균', data:avgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:4, pointBackgroundColor:'#fff', pointBorderColor:'#94a3b8', order:1}
+                {
+                    type:'bar', 
+                    label:'개인 전환 횟수', 
+                    data:barData, 
+                    backgroundColor:col, 
+                    borderRadius:6, 
+                    order:2,
+                    // 💡 해결책: 막대 차트 전용 라벨 설정을 데이터셋 내부에 직접 강제 주입
+                    datalabels: {
+                        display: function(cx) { return cx.raw !== null && cx.raw > 0; },
+                        color: col, // 개인 막대 색상과 동일하게
+                        font: { weight: '900', size: 11 },
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 2,
+                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                    }
+                },
+                {
+                    type:'line', 
+                    label:'팀 평균', 
+                    data:avgData, 
+                    borderColor:'#94a3b8', 
+                    backgroundColor:'transparent', 
+                    borderDash:[3,3], 
+                    borderWidth:1.5, 
+                    pointRadius:4, 
+                    pointBackgroundColor:'#fff', 
+                    pointBorderColor:'#94a3b8', 
+                    order:1,
+                    // 💡 해결책: 꺾은선 차트 전용 라벨 설정을 데이터셋 내부에 직접 강제 주입
+                    datalabels: {
+                        display: function(cx) { return cx.raw !== null && cx.raw > 0; },
+                        color: '#64748b', // 팀 평균은 회색
+                        font: { weight: '900', size: 11 },
+                        anchor: 'center',
+                        align: function(cx) {
+                            var bVal = barData[cx.dataIndex] || 0;
+                            var lVal = avgData[cx.dataIndex] || 0;
+                            return lVal >= bVal ? 'top' : 'bottom'; // 막대보다 높으면 위로, 낮으면 아래로
+                        },
+                        offset: function(cx) {
+                            var bVal = barData[cx.dataIndex] || 0;
+                            var lVal = avgData[cx.dataIndex] || 0;
+                            // 값이 비슷해서 겹칠 위험이 있으면 12px 밀어내고, 아니면 6px
+                            return (lVal >= bVal && Math.abs(lVal - bVal) < (maxVal * 0.15)) ? 12 : 6;
+                        },
+                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                    }
+                }
             ]
         },
-        // 💡 핵심 1: 플러그인을 차트 객체 내에 명시적으로 강제 활성화
-        plugins: [ChartDataLabels], 
         options:{
-            responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:35}},
+            responsive:true,maintainAspectRatio:false,clip:false,layout:{padding:{top:35, bottom: 10}},
             interaction: { mode: 'index', intersect: false },
             plugins:{
                 legend:{ display:true, position:'top', align:'end', labels:{usePointStyle:true, boxWidth:8, font:{size:10, weight:'bold'}} },
-                datalabels:{
-                    display: cx => cx.raw !== null && cx.raw > 0,
-                    // 💡 핵심 2: 하얀색(#fff) 글자 제거 -> 막대는 막대색상(col), 선은 회색으로 명시
-                    color: cx => cx.dataset.type === 'bar' ? col : '#64748b',
-                    font: {weight:'900', size:11},
-                    anchor: 'end',
-                    // 값 겹침 방지 스마트 라벨링 로직
-                    align: cx => {
-                        var bVal = barData[cx.dataIndex] || 0;
-                        var lVal = avgData[cx.dataIndex] || 0;
-                        if(cx.dataset.type === 'bar') return 'end';
-                        // 선 값이 막대보다 작으면 아래로, 크면 위로 라벨을 배치
-                        return lVal >= bVal ? 'end' : 'bottom';
-                    },
-                    offset: cx => {
-                        var bVal = barData[cx.dataIndex] || 0;
-                        var lVal = avgData[cx.dataIndex] || 0;
-                        if(cx.dataset.type === 'bar') return 2;
-                        // 선과 막대 값이 너무 가까우면 선 라벨을 더 높이 띄움
-                        return (lVal >= bVal && Math.abs(lVal - bVal) < (maxVal * 0.15)) ? 14 : 4;
-                    },
-                    formatter: v => Number(v).toFixed(1).replace('.0', '')
-                }
+                // options 영역의 전역 datalabels 설정은 끕니다. (위의 개별 설정이 작동하도록)
+                datalabels: { display: false }
             },
             scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)'}, grace:'20%'}}
         }
