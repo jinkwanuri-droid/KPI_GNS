@@ -379,17 +379,17 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var ratioNum = parseFloat(ratio);
     var diff = totalPlan - totalExec;
     
-    // 상태별 변수 초기화 (기본: 안전/초록색)
+    // 상태별 기본값 (안전) 설정
     var statusClass = 'good', statusMsg = '안전', diffColor = '#10b981', barColor = '#10b981';
     
-    // 조건: 95% 이상 위기, 91% 이상 95% 미만 경계, 91% 미만 안전
+    // 💡 핵심 변경점: 95% 이상(위기), 91~94.9%(경계), 91% 미만(안전)
     if(ratioNum >= 95) { 
         statusClass = 'danger'; statusMsg = '위기'; diffColor = '#ef4444'; barColor = '#ef4444';
     } else if (ratioNum >= 91) { 
         statusClass = 'warn'; statusMsg = '경계'; diffColor = '#f59e0b'; barColor = '#f59e0b';
     }
 
-    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치 포함)</span>' : '';
+    var titleSuffix = isPred ? ' <span style="color:#8b5cf6; font-size:11px;">(예상치)</span>' : '';
     var execLabel = isPred ? '실행금액 (예상)' : '실행금액 (당시)';
     var diffLabel = isPred ? '절감액 (계획-예상)' : '절감액 (계획-실행)';
     var ratioTitle = isPred ? '계획 대비 실행 비율 <span style="color:#8b5cf6; font-size:11px; font-weight:800;">(예상값)</span>' : '계획 대비 실행 비율';
@@ -399,6 +399,7 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
         기간 집행 요약 <span style="font-size:11px; color:#64748b; font-weight:600;">(기준: ${targetMonth}${titleSuffix})</span>
     </div>
     
+    <!-- 계획 대비 실행 비율 카드 (위기/경계/안전 테마 적용) -->
     <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
         <div style="font-size:12px; color:#64748b; font-weight:700; margin-bottom:8px;">${ratioTitle}</div>
         <div style="display:flex; align-items:center; gap:10px;">
@@ -423,6 +424,7 @@ function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
             <div style="font-size:11px; color:#0369a1; font-weight:700; margin-bottom:4px;">${execLabel}</div>
             <div style="font-size:16px; font-weight:800; color:#0284c7;">${totalExec.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
         </div>
+        <!-- 절감액 카드 (위기/경계/안전 테마 적용) -->
         <div style="background:${diffColor}15; border:1px solid ${diffColor}40; border-radius:8px; padding:10px;">
             <div style="font-size:11px; color:${diffColor}; font-weight:700; margin-bottom:4px;">${diffLabel}</div>
             <div style="font-size:16px; font-weight:800; color:${diffColor};">${diff > 0 ? '+' : ''}${diff.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1})} <span style="font-size:11px;font-weight:600;">천만</span></div>
