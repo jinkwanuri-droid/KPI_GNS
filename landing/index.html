@@ -7,66 +7,63 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
 <style>
   :root {
-    --bg-deep: #f0f4f8; 
-    --text-main: #1e293b; 
-    --text-sub: #475569; 
-    --text-muted: #94a3b8; 
-    
+    --bg-deep: #f0f4f8;
+    --text-main: #1e293b;
+    --text-sub: #475569;
+    --text-muted: #94a3b8;
+
     --blue-1: #2563eb;
     --blue-2: #3b82f6;
     --blue-3: #60a5fa;
     --purple-1: #7c3aed;
     --purple-2: #8b5cf6;
     --white: #ffffff;
-    
+
     --glass-bg: rgba(255, 255, 255, 0.6);
     --glass-border: rgba(255, 255, 255, 0.5);
     --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.05);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  
+
   /* --- 커스텀 부드러운 스크롤 --- */
   html, body {
     width: 100%; height: 100%;
-    overflow: hidden; 
+    overflow: hidden;
     background: var(--bg-deep);
     color: var(--text-main);
     font-family: 'Pretendard', sans-serif;
     cursor: default;
   }
-
   .fullpage-wrapper {
     width: 100%; height: 100%;
     position: relative;
-    transition: transform 1.5s cubic-bezier(0.65, 0, 0.15, 1); 
+    transition: transform 1.5s cubic-bezier(0.65, 0, 0.15, 1);
     will-change: transform;
     z-index: 10;
   }
-
   section, footer {
-    width: 100%; height: 100vh; 
-    display: flex; flex-direction: column; justify-content: center; align-items: center; 
-    padding: 60px 40px; 
+    width: 100%; height: 100vh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 60px 40px;
     position: relative;
   }
-  
-  .section-inner { width: 100%; max-width: 1200px; position: relative; z-index: 2; }
 
+  .section-inner { width: 100%; max-width: 1200px; position: relative; z-index: 2; }
+  
   /* ─── CANVAS BG (Ambient Light) ─── */
   #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; animation: drift ease-in-out infinite alternate; }
   .orb-1 { width: 700px; height: 700px; background: rgba(59, 130, 246, 0.25); top: -100px; left: -100px; animation-duration: 20s; }
   .orb-2 { width: 600px; height: 600px; background: rgba(139, 92, 246, 0.2); bottom: -100px; right: -50px; animation-duration: 25s; animation-delay: -5s; }
   .orb-3 { width: 500px; height: 500px; background: rgba(96, 165, 250, 0.2); top: 30%; left: 40%; animation-duration: 22s; animation-delay: -2s; }
-  
-  @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.15); } }
 
+  @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.15); } }
+  
   /* ─── DUST PARTICLES ─── */
   #dust-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
   .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.6; box-shadow: 0 0 6px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
   @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateY(-10vh) translateX(20px) rotate(360deg); opacity: 0; } }
-
+  
   /* ─── 전역 물결 배경 (Global Wave) ─── */
   .wave-bg-global {
     position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh;
@@ -79,64 +76,63 @@
   .wave-path-3 { animation: waveSlide 2.5s ease-in-out infinite alternate; }
   .wave-path-4 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
   .wave-path-5 { animation: waveSlide 3.5s ease-in-out infinite alternate; }
-  .wave-path-6 { animation: waveSlide 4.5s ease-in-out infinite alternate-reverse; } 
+  .wave-path-6 { animation: waveSlide 4.5s ease-in-out infinite alternate-reverse; }
   @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-40px); } }
-
+  
   /* ─── NAV (상단바) ─── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 21px 60px 16px; 
+    padding: 21px 60px 16px;
     display: flex; align-items: center; justify-content: space-between;
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
-    pointer-events: none; 
+    pointer-events: none;
   }
-  .nav-logo, .nav-links { pointer-events: auto; } 
-  
+  .nav-logo, .nav-links { pointer-events: auto; }
+
   .nav-logo { display: flex; flex-direction: column; gap: 2px; }
   .nav-logo-main {
-    font-weight: 900; font-size: 24px; letter-spacing: normal; 
+    font-weight: 900; font-size: 24px; letter-spacing: normal;
     background: linear-gradient(135deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .nav-logo-sub { font-size: 11px; font-weight: 600; letter-spacing: normal; color: var(--text-sub); } 
-  
+  .nav-logo-sub { font-size: 11px; font-weight: 600; letter-spacing: normal; color: var(--text-sub); }
+
   .nav-links { position: relative; display: flex; gap: 4px; margin-right: 20px; align-items: center; }
   .nav-links a { position: relative; z-index: 2; padding: 10px 20px; border-radius: 20px; font-size: 15px; font-weight: 600; color: var(--text-sub); text-decoration: none; transition: color 0.3s; }
   .nav-links a.active, .nav-links a:hover { color: var(--blue-1); }
   .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255, 255, 255, 0.8); border-radius: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06), inset 0 0 0 1px rgba(255,255,255,0.6); z-index: 1; pointer-events: none; transition: transform 0.4s cubic-bezier(0.25, 1, 0.32, 1), width 0.4s cubic-bezier(0.25, 1, 0.32, 1); }
-
+  
   /* ─── COMMON SECTION HEADER ─── */
   .section-header { text-align: center; margin-bottom: 40px; }
   .section-eyebrow, .problem-kicker, .hero-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: normal; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
   .section-title { font-weight: 900; font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); }
   .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 500px; margin: 0 auto; line-height: 1.6; }
-
+  
   /* ─── HERO ─── */
   #hero { text-align: center; }
   .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); }
   .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
-  
+
   .hero-title { font-size: clamp(32px, 5.5vw, 68px); line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
-  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.75); } 
+  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.75); }
   .hero-title .med-text { font-weight: 500; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1) 0%, var(--purple-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  
+
   .hero-subtitle { font-size: 22px; font-weight: 500; color: var(--text-sub); margin-bottom: 12px; }
-  .hero-subtitle strong { font-weight: 800; color: var(--text-main); } 
+  .hero-subtitle strong { font-weight: 800; color: var(--text-main); }
   .hero-sub2 { font-size: 16px; color: var(--text-muted); margin-bottom: 40px; font-weight: 400; }
-  
+
   .scroll-hint { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 12px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; animation: bounceY 2s ease-in-out infinite; }
   .scroll-mouse { width: 24px; height: 38px; border: 2px solid rgba(148, 163, 184, 0.4); border-radius: 12px; display: flex; justify-content: center; padding-top: 6px; }
   .scroll-dot { width: 4px; height: 8px; background: var(--blue-2); border-radius: 2px; animation: scrollDot 2s ease-in-out infinite; }
   @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.4} }
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-
+  
   /* ─── SECTION: PROBLEM ─── */
   #problem { text-align: center; }
   .problem-kicker { margin-bottom: 24px; color: var(--blue-1); }
   .problem-quote { font-size: clamp(24px, 3.5vw, 42px); font-weight: 800; line-height: 1.45; max-width: 900px; margin: 0 auto 20px; color: var(--text-main); letter-spacing: -0.02em; position: relative; z-index: 2; }
   .problem-quote .hl { background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .problem-sub { font-size: 18px; color: var(--text-sub); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 500; position: relative; z-index: 2; }
-
   .challenge-circles { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; z-index: 2; }
   .challenge-circle {
     width: 290px; height: 290px; border-radius: 50%;
@@ -148,53 +144,51 @@
     transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
   }
   .challenge-circle:hover { transform: translateY(-10px); background: rgba(255,255,255,0.85); box-shadow: 0 16px 32px rgba(37,99,235,0.1); }
-  
+
   .circle-icon { width: 36px; height: 36px; margin-bottom: 12px; stroke: url(#gradIcon); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .circle-title { font-size: 19px; font-weight: 800; color: var(--blue-1); margin-bottom: 16px; line-height: 1.35; word-break: keep-all; } 
+  .circle-title { font-size: 19px; font-weight: 800; color: var(--blue-1); margin-bottom: 16px; line-height: 1.35; word-break: keep-all; }
   .circle-point { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
   .circle-divider { width: 40px; height: 2px; background: rgba(59,130,246,0.3); border: none; margin: 0 auto 12px; }
   .circle-desc { font-size: 14px; font-weight: 400; color: var(--text-sub); line-height: 1.6; word-break: keep-all; }
-
+  
   /* ─── SECTION: PHILOSOPHY (Slider 3단 & 네비게이션) ─── */
   #philosophy .section-inner { position: relative; max-width: 1200px; }
   .slider-viewport { width: 100%; overflow: hidden; position: relative; padding: 10px 0; }
   .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 300%; }
-  
+
   .slide-page { width: 33.333%; padding: 0 10px; display: flex; flex-direction: column; gap: 8px; position: relative; align-items: center; }
-  
+
   .slide-subtitle {
     display: inline-block; font-size: 14px; font-weight: 800; letter-spacing: 0.15em; color: var(--blue-1);
     background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25);
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     padding: 6px 24px; border-radius: 999px; margin-bottom: 16px; text-align: center;
   }
-  
+
   .slider-dots { display: flex; justify-content: center; gap: 10px; margin-top: 24px; }
   .slider-dot { width: 8px; height: 8px; border-radius: 4px; background: rgba(148, 163, 184, 0.4); cursor: pointer; transition: all 0.4s cubic-bezier(0.23,1,0.32,1); }
   .slider-dot:hover { background: rgba(148, 163, 184, 0.8); }
   .slider-dot.active { width: 28px; background: var(--blue-1); }
-
   .phil-step { width: 100%; display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 20px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.03); transition: all 0.4s; border-radius: 20px; }
   .phil-step:last-child { border-bottom: none; }
   .phil-step:hover { background: rgba(255,255,255,0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.04); transform: scale(1.01); }
   .phil-num { font-weight: 900; font-size: 56px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; opacity: 0.9; }
-  .phil-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; } 
+  .phil-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
   .phil-heading { font-weight: 800; font-size: 22px; letter-spacing: -0.01em; color: var(--text-main); }
-  
-  .phil-body { font-size: 16px; font-weight: 400; color: var(--text-sub); line-height: 1.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
 
+  .phil-body { font-size: 16px; font-weight: 400; color: var(--text-sub); line-height: 1.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
   .slider-btn {
     position: absolute; top: 50%; transform: translateY(-50%);
-    width: 72px; height: 72px; border-radius: 50%; 
+    width: 72px; height: 72px; border-radius: 50%;
     background: transparent; border: none; box-shadow: none;
     display: flex; justify-content: center; align-items: center;
     cursor: pointer; z-index: 10; opacity: 0.4; transition: all 0.3s;
   }
   .slider-btn:hover { opacity: 1; }
   .slider-btn svg { width: 48px; height: 48px; stroke: var(--blue-1); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .slider-btn.prev { left: -80px; display: none; } 
+  .slider-btn.prev { left: -80px; display: none; }
   .slider-btn.next { right: -80px; }
-
+  
   /* ─── SECTION: KPI GRID & TOOLTIPS ─── */
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
   .kpi-card { position: relative; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 28px 24px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: var(--glass-shadow); transition: all 0.4s cubic-bezier(0.23,1,0.32,1); display: flex; flex-direction: column; justify-content: space-between; }
@@ -204,25 +198,24 @@
   .kpi-name { font-weight: 900; font-size: 24px; letter-spacing: -0.01em; margin-bottom: 6px; color: var(--text-main); }
   .kpi-subtitle { font-weight: 700; font-size: 13px; letter-spacing: 0.02em; color: var(--blue-2); margin-bottom: 16px; }
   .kpi-desc { font-weight: 400; font-size: 13.5px; color: var(--text-sub); line-height: 1.6; flex-grow: 1; word-break: keep-all; }
-  
+
   .kpi-formula-box { margin-top: auto; position: relative; cursor: help; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255,255,255,0.9); border-radius: 12px; padding: 14px; text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
   .math-font { font-family: 'Cambria', 'Times New Roman', serif; font-style: italic; font-weight: 700; font-size: 17px; color: var(--blue-1); }
   .kpi-card.silver .math-font { color: var(--purple-1); }
   .kpi-card.silver .kpi-subtitle { color: var(--purple-2); }
-
   .formula-tooltip { position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%) translateY(10px); width: 320px; background: rgba(30, 41, 59, 0.95); color: #f8fafc; padding: 16px; border-radius: 12px; font-size: 13px; font-weight: 400; font-family: 'Pretendard', sans-serif; font-style: normal; text-align: left; line-height: 1.6; word-break: keep-all; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 100; }
   .formula-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 7px; border-style: solid; border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent; }
   .kpi-formula-box:hover .formula-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
   .tooltip-item { margin-bottom: 8px; } .tooltip-item:last-child { margin-bottom: 0; }
   .tooltip-item strong { color: #60a5fa; margin-right: 4px; font-weight: 700; }
   .kpi-card.silver .tooltip-item strong { color: #a78bfa; }
-
+  
   /* ─── SECTION: IMPACT ─── */
   .impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
-  .impact-card { 
-    position: relative; overflow: hidden; border-radius: 24px; padding: 40px 32px; 
-    transition: all 0.4s; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 12px 32px rgba(15,23,42,0.04); 
-    display: flex; flex-direction: column; 
+  .impact-card {
+    position: relative; overflow: hidden; border-radius: 24px; padding: 40px 32px;
+    transition: all 0.4s; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 12px 32px rgba(15,23,42,0.04);
+    display: flex; flex-direction: column;
   }
   .impact-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(15,23,42,0.08); }
   .impact-card::before { content: ''; position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.12; z-index: 0; transition: opacity 0.4s; }
@@ -230,20 +223,20 @@
   .impact-card:nth-child(1)::before { background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80'); }
   .impact-card:nth-child(2)::before { background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=80'); }
   .impact-card:nth-child(3)::before { background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80'); }
-  
+
   .impact-glass-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1; }
   .impact-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
-  
+
   .impact-role { font-size: 15px; font-weight: 800; letter-spacing: normal; color: var(--blue-1); margin-bottom: 12px; }
   .impact-title { font-weight: 800; font-size: 22px; line-height: 1.35; margin-bottom: 20px; color: var(--text-main); letter-spacing: -0.01em; }
-  
+
   .impact-list { margin: 0; padding-left: 20px; font-size: 15px; font-weight: 400; color: var(--text-sub); line-height: 1.7; word-break: keep-all; flex-grow: 1; }
   .impact-list li { margin-bottom: 10px; }
   .impact-list li:last-child { margin-bottom: 0; }
-
+  
   /* ─── SECTION: LINK (Magic Button - 70% Size & Glowing Ring) ─── */
   #link { text-align: center; }
-  
+
   .btn-magic {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 14px 32px; /* 70% Size 조정 */
@@ -253,42 +246,40 @@
     /* 버튼 배경: 진한 보라색 그라데이션 */
     background: linear-gradient(180deg, #9333ea 0%, #6366f1 100%);
     /* 빛나는 내부 글로우 및 두꺼운 반투명 외부 링 효과 */
-    box-shadow: 
-      inset 0 1px 1px rgba(255,255,255,0.3), 
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.3),
       inset 0 -2px 4px rgba(0,0,0,0.2),
       0 0 0 6px rgba(139, 92, 246, 0.25), /* 외부 투명 보라색 테두리 */
       0 8px 24px rgba(139, 92, 246, 0.4); /* 부드러운 드롭 섀도우 */
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
+
   .btn-magic:hover {
     transform: translateY(-3px) scale(1.02);
     /* 호버 시 아우라와 그림자 확장 */
-    box-shadow: 
-      inset 0 1px 1px rgba(255,255,255,0.4), 
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.4),
       inset 0 -2px 4px rgba(0,0,0,0.2),
       0 0 0 8px rgba(139, 92, 246, 0.35),
       0 12px 32px rgba(139, 92, 246, 0.5);
   }
-  
+
   /* 반짝이 아이콘 SVG 스타일 */
   .btn-magic svg {
     width: 18px; height: 18px;
     fill: #ffffff;
   }
-
+  
   /* ─── FOOTER ─── */
   footer { border-top: 1px solid rgba(255,255,255,0.6); padding: 60px; background: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; width: 100%; flex-shrink: 0; }
   .footer-logo { font-weight: 900; font-size: 22px; color: var(--text-main); }
   .footer-copy { font-size: 14px; font-weight: 400; color: var(--text-muted); margin-top: 8px; }
-
   .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
   .reveal.visible { opacity: 1; transform: translateY(0); }
   .reveal-delay-1 { transition-delay: 0.1s; } .reveal-delay-2 { transition-delay: 0.2s; } .reveal-delay-3 { transition-delay: 0.3s; }
 </style>
 </head>
 <body>
-
 <!-- 아이콘/그라데이션 정의 -->
 <svg style="display: none;">
   <defs>
@@ -314,15 +305,12 @@
     <circle cx="12" cy="12" r="2"></circle>
   </symbol>
 </svg>
-
 <!-- Ambient Orbs -->
 <div id="bg-canvas">
   <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 </div>
-
 <!-- Floating Dust Particles (70개) -->
 <div id="dust-container"></div>
-
 <!-- 전역 다중 라인 물결 SVG 배경 -->
 <div class="wave-bg-global">
   <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
@@ -334,7 +322,6 @@
     <path class="wave-path-6" fill="none" stroke="#8b5cf6" stroke-width="1.5" d="M0,180 C400,0,600,320,900,180 C1200,40,1300,280,1440,180" opacity="0.35"></path>
   </svg>
 </div>
-
 <!-- NAV -->
 <nav>
   <div class="nav-logo">
@@ -350,10 +337,9 @@
     <a href="#impact">기대효과</a>
   </div>
 </nav>
-
 <!-- 전체 풀페이지 래퍼 -->
 <div class="fullpage-wrapper" id="fullpage">
-  
+
   <!-- HERO -->
   <section id="hero">
     <div class="section-inner" style="text-align: center;">
@@ -364,14 +350,13 @@
       </h1>
       <p class="hero-subtitle reveal reveal-delay-2">어제의 데이터가 아니라, 내일의 성장을 위한 <strong>인사이트.</strong></p>
       <p class="hero-sub2 reveal reveal-delay-3">경상남도 서부의료원 팀원 KPI DASHBOARD</p>
-      
+
       <div class="scroll-hint reveal reveal-delay-3">
         <div class="scroll-mouse"><div class="scroll-dot"></div></div>
         Scroll Down
       </div>
     </div>
   </section>
-
   <!-- PROBLEM -->
   <section id="problem">
     <div class="section-inner" style="text-align: center;">
@@ -384,7 +369,7 @@
         분기말의 희미한 기억, 버려지는 업무일지.<br>
         감(感)에 의존하는 평가는 이제 끝내야 합니다.
       </p>
-      
+
       <div class="challenge-circles reveal reveal-delay-3">
         <div class="challenge-circle">
           <svg class="circle-icon"><use href="#icon-note"></use></svg>
@@ -410,7 +395,6 @@
       </div>
     </div>
   </section>
-
   <!-- PHILOSOPHY -->
   <section id="philosophy">
     <div class="section-inner" style="max-width: 1200px;">
@@ -419,17 +403,16 @@
         <h2 class="section-title reveal reveal-delay-1">3단계 성장 프로세스</h2>
         <p class="section-desc reveal reveal-delay-2">새로운 입력 없이, 기존 데이터에서 인사이트를 자동 추출합니다.</p>
       </div>
-      
+
       <button class="slider-btn prev" onclick="moveSlide(-1)">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
       <button class="slider-btn next" onclick="moveSlide(1)">
         <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
-
       <div class="slider-viewport reveal reveal-delay-3">
         <div class="slider-track" id="phil-track">
-          
+
           <!-- Page 1 (GOALS) -->
           <div class="slide-page">
             <div class="slide-subtitle">GOALS</div>
@@ -455,7 +438,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Page 2 (PRESENT) -->
           <div class="slide-page">
             <div class="slide-subtitle">PRESENT</div>
@@ -481,7 +464,6 @@
               </div>
             </div>
           </div>
-
           <!-- Page 3 (FUTURE) -->
           <div class="slide-page">
             <div class="slide-subtitle">FUTURE</div>
@@ -507,19 +489,17 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
-      
+
       <div class="slider-dots reveal reveal-delay-3">
         <div class="slider-dot active" onclick="goToSlide(0)"></div>
         <div class="slider-dot" onclick="goToSlide(1)"></div>
         <div class="slider-dot" onclick="goToSlide(2)"></div>
       </div>
-      
+
     </div>
   </section>
-
   <!-- KPIs -->
   <section id="kpis">
     <div class="section-inner">
@@ -628,7 +608,6 @@
       </div>
     </div>
   </section>
-
   <!-- IMPACT -->
   <section id="impact">
     <div class="section-inner">
@@ -674,7 +653,6 @@
       </div>
     </div>
   </section>
-
   <!-- LINK (Go to Dashboard) -->
   <section id="link">
     <div class="section-inner" style="text-align: center;">
@@ -688,7 +666,6 @@
       </a>
     </div>
   </section>
-
   <!-- FOOTER -->
   <footer>
     <div style="width:100%; max-width:1200px; display:flex; justify-content:space-between; align-items:center; margin:0 auto;">
@@ -702,9 +679,7 @@
       </div>
     </div>
   </footer>
-
 </div> <!-- fullpage-wrapper end -->
-
 <script>
   // 먼지 파티클 (70개)
   document.addEventListener("DOMContentLoaded", () => {
@@ -712,7 +687,7 @@
     for (let i = 0; i < 70; i++) {
       let dust = document.createElement('div');
       dust.className = 'dust';
-      let size = Math.random() * 3 + 1; 
+      let size = Math.random() * 3 + 1;
       dust.style.width = `${size}px`; dust.style.height = `${size}px`;
       dust.style.left = `${Math.random() * 100}vw`; dust.style.top = `${Math.random() * 100}vh`;
       dust.style.animationDuration = `${Math.random() * 15 + 10}s`;
@@ -721,43 +696,44 @@
     }
     triggerReveal();
   });
-
+  
   /* --- 커스텀 부드러운 스크롤 (Fullpage) 구현 --- */
   const wrapper = document.getElementById('fullpage');
   const sections = document.querySelectorAll('#fullpage > section, #fullpage > footer');
   const totalSections = sections.length;
   let currentIndex = 0;
   let isScrolling = false;
-
+  
   function moveToSection(index) {
     if (index < 0) index = 0;
     if (index >= totalSections) index = totalSections - 1;
     currentIndex = index;
-    
+
     wrapper.style.transform = `translateY(-${currentIndex * 100}vh)`;
-    
+
     const currentElem = sections[currentIndex];
     if (currentElem.tagName.toLowerCase() === 'section') {
       const targetId = currentElem.getAttribute('id');
       if (targetId) {
+        // [오류 수정 부분] document.querySelector 뒤에 누락되었던 괄호 `(` 를 추가했습니다.
         const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
         if (activeLink) updateNavIndicator(activeLink);
       }
     }
     triggerReveal();
   }
-
+  
   // 휠 이벤트 (1.5초 딜레이)
   window.addEventListener('wheel', (e) => {
     if (isScrolling) return;
     isScrolling = true;
-    
+
     if (e.deltaY > 0) moveToSection(currentIndex + 1);
     else moveToSection(currentIndex - 1);
-    
-    setTimeout(() => { isScrolling = false; }, 1500); 
-  }, { passive: false });
 
+    setTimeout(() => { isScrolling = false; }, 1500);
+  }, { passive: false });
+  
   // 키보드 Page Down / Page Up 연동
   window.addEventListener('keydown', (e) => {
     if (isScrolling) return;
@@ -771,11 +747,11 @@
       setTimeout(() => { isScrolling = false; }, 1500);
     }
   });
-
+  
   // 네비게이션 모핑 인디케이터
   const navLinks = document.querySelectorAll('.nav-links a');
   const indicator = document.querySelector('.nav-indicator');
-
+  
   function updateNavIndicator(activeLink) {
     if(!activeLink) return;
     indicator.style.width = `${activeLink.offsetWidth}px`;
@@ -783,17 +759,17 @@
     navLinks.forEach(link => link.classList.remove('active'));
     activeLink.classList.add('active');
   }
-
+  
   navLinks.forEach((link, idx) => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
       moveToSection(idx);
     });
   });
-
+  
   window.addEventListener('load', () => updateNavIndicator(document.querySelector('.nav-links a.active') || navLinks[0]));
   window.addEventListener('resize', () => updateNavIndicator(document.querySelector('.nav-links a.active')));
-
+  
   function triggerReveal() {
     sections.forEach((sec, idx) => {
       const reveals = sec.querySelectorAll('.reveal');
@@ -802,7 +778,7 @@
       }
     });
   }
-
+  
   // Philosophy 슬라이더 로직 (3단 + Dots 연동)
   let currentSlide = 0;
   function updateSlider() {
@@ -810,12 +786,12 @@
     const prevBtn = document.querySelector('.slider-btn.prev');
     const nextBtn = document.querySelector('.slider-btn.next');
     const dots = document.querySelectorAll('.slider-dot');
-    
+
     track.style.transform = `translateX(-${currentSlide * 33.333}%)`;
-    
+
     prevBtn.style.display = currentSlide === 0 ? 'none' : 'flex';
     nextBtn.style.display = currentSlide === 2 ? 'none' : 'flex';
-    
+
     dots.forEach((dot, idx) => {
       if (idx === currentSlide) {
         dot.classList.add('active');
@@ -824,19 +800,16 @@
       }
     });
   }
-
   function moveSlide(direction) {
     currentSlide += direction;
     if(currentSlide < 0) currentSlide = 0;
-    if(currentSlide > 2) currentSlide = 2; 
+    if(currentSlide > 2) currentSlide = 2;
     updateSlider();
   }
-
   function goToSlide(index) {
     currentSlide = index;
     updateSlider();
   }
 </script>
-
 </body>
 </html>
