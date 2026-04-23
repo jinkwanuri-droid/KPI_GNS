@@ -140,17 +140,20 @@ function renderOvProjectRatio(all){
     var pcNum = parseFloat(pc);  
     
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:25px; padding: 5px; height:100%; justify-content:center; margin-top: 15px; margin-bottom: 25px;">
+    <div style="display:flex; flex-direction:column; padding: 5px 10px; height:100%; justify-content:center;">
         
-        <!-- [상단 영역] 좌측: 수치 / 우측: 범례 (소제목 중복 렌더링 코드 제거됨) -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%;">
-            <!-- 좌측 퍼센트 수치 -->
+        <!-- 💡 1. 상단 하드코딩 텍스트(투입 비율...)와 큰 숫자 사이의 여백 확보 -->
+        <div style="margin-top: 15px;"></div>
+
+        <!-- [상단 영역] 좌측: 큰 숫자 / 우측: 범례 -->
+        <!-- 💡 2. margin-bottom: 25px를 통해 큰 숫자와 아래 막대차트 사이의 간격 확보 -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-bottom: 25px;">
+            
             <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
                 <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
                 <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
             </div>
             
-            <!-- 우측 범례 영역 -->
             <div style="display:flex; gap:12px; align-items:center; margin-bottom:4px;">
                 <div style="display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#64748b;">
                     <div style="width:10px; height:10px; border-radius:2px; background:#00428E;"></div> 서부의료원
@@ -165,11 +168,13 @@ function renderOvProjectRatio(all){
         </div>
         
         <!-- [하단 영역] 막대 차트 본체 -->
-        <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 10 ? pm+'%' : ''}</div>
-            <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 10 ? po+'%' : ''}</div>
-            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 10 ? pc+'%' : ''}</div>
+        <!-- 💡 3. 막대 차트 아래쪽 바닥 여백(margin-bottom) 20px 추가 및 높이(min-height) 살짝 증가 -->
+        <div style="display:flex; min-height:26px; border-radius:13px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9; margin-bottom: 20px;">
+            <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 10 ? pm+'%' : ''}</div>
+            <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 10 ? po+'%' : ''}</div>
+            <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11.5px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 10 ? pc+'%' : ''}</div>
         </div>
+        
     </div>
     `;
 }
