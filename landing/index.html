@@ -3,29 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GNWMC KPI Dashboard - Product Launch</title>
+<title>GNWMC KPI Dashboard - Dark Edition</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
 <style>
   :root {
-    --bg-deep: #f0f4f8;
-    --text-main: #1e293b;
-    --text-sub: #475569;
-    --text-muted: #94a3b8;
+    /* 프리미엄 다크 모드 컬러 팔레트 */
+    --bg-deep: #0a0f1c; /* 아주 깊은 네이비/블랙 */
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+    --text-muted: #475569;
 
-    --blue-1: #2563eb;
-    --blue-2: #3b82f6;
-    --blue-3: #60a5fa;
-    --purple-1: #7c3aed;
-    --purple-2: #8b5cf6;
+    --blue-1: #3b82f6;
+    --blue-2: #60a5fa;
+    --blue-3: #93c5fd;
+    --purple-1: #8b5cf6;
+    --purple-2: #a78bfa;
+    
     --white: #ffffff;
 
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.05);
+    /* 다크모드 글래스모피즘 */
+    --glass-bg: rgba(15, 23, 42, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --glass-glow: 0 0 24px rgba(59, 130, 246, 0.15);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* --- 커스텀 부드러운 스크롤 --- */
   html, body {
     width: 100%; height: 100%; overflow: hidden;
     background: var(--bg-deep); color: var(--text-main);
@@ -39,206 +42,203 @@
   section, footer {
     width: 100%; height: 100vh;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 60px 40px; position: relative;
+    padding: 60px 40px; position: relative; overflow: hidden;
   }
   .section-inner { width: 100%; max-width: 1200px; position: relative; z-index: 2; }
 
-  /* ─── CANVAS BG (Ambient Light) ─── */
-  #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-  .orb { position: absolute; border-radius: 50%; filter: blur(120px); pointer-events: none; animation: drift ease-in-out infinite alternate; }
-  .orb-1 { width: 700px; height: 700px; background: rgba(59, 130, 246, 0.25); top: -100px; left: -100px; animation-duration: 20s; }
-  .orb-2 { width: 600px; height: 600px; background: rgba(139, 92, 246, 0.2); bottom: -100px; right: -50px; animation-duration: 25s; animation-delay: -5s; }
-  .orb-3 { width: 500px; height: 500px; background: rgba(96, 165, 250, 0.2); top: 30%; left: 40%; animation-duration: 22s; animation-delay: -2s; }
-  @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.15); } }
+  /* ─── CANVAS BG (다크모드 오라) ─── */
+  #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(circle at center, #0f172a 0%, #05080f 100%); }
+  .orb { position: absolute; border-radius: 50%; filter: blur(140px); pointer-events: none; animation: drift ease-in-out infinite alternate; mix-blend-mode: screen; }
+  .orb-1 { width: 800px; height: 800px; background: rgba(59, 130, 246, 0.12); top: -200px; left: -200px; animation-duration: 20s; }
+  .orb-2 { width: 700px; height: 700px; background: rgba(139, 92, 246, 0.1); bottom: -150px; right: -150px; animation-duration: 25s; animation-delay: -5s; }
+  .orb-3 { width: 600px; height: 600px; background: rgba(56, 189, 248, 0.08); top: 40%; left: 30%; animation-duration: 22s; animation-delay: -2s; }
+  @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.1); } }
 
-  /* ─── DUST PARTICLES ─── */
+  /* ─── DUST PARTICLES (별가루 느낌) ─── */
   #dust-container { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-  .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.6; box-shadow: 0 0 6px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
-  @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateY(-10vh) translateX(20px) rotate(360deg); opacity: 0; } }
+  .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.3; box-shadow: 0 0 8px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
+  @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0); opacity: 0; } 20% { opacity: 0.5; } 80% { opacity: 0.5; } 100% { transform: translateY(-10vh) translateX(20px); opacity: 0; } }
 
-  /* ─── 전역 물결 배경 (강화 & 추가됨) ─── */
+  /* ─── 전역 물결 배경 (투명도 조정 및 두꺼운 선 추가) ─── */
   .wave-bg-global { position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh; transform: translateY(-50%); z-index: 0; pointer-events: none; display: flex; align-items: center; }
-  .wave-bg-global svg { width: 100%; height: 600px; }
-  .wave-path-1 { animation: waveSlide 4s ease-in-out infinite alternate; }
-  .wave-path-2 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
-  .wave-path-3 { animation: waveSlide 3s ease-in-out infinite alternate; }
-  .wave-path-4 { animation: waveSlide 6s ease-in-out infinite alternate-reverse; }
-  .wave-path-5 { animation: waveSlide 4.5s ease-in-out infinite alternate; }
-  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-60px); } }
+  .wave-bg-global svg { width: 100%; height: 700px; }
+  /* 기존 얇고 덜 투명한 선 */
+  .wave-path-1 { animation: waveSlide 5s ease-in-out infinite alternate; }
+  .wave-path-2 { animation: waveSlide 6s ease-in-out infinite alternate-reverse; }
+  /* 두껍고 극도로 투명한 선 (깊이감 연출) */
+  .wave-path-3 { animation: waveSlide 4s ease-in-out infinite alternate; }
+  .wave-path-4 { animation: waveSlide 7s ease-in-out infinite alternate-reverse; }
+  .wave-path-5 { animation: waveSlide 5.5s ease-in-out infinite alternate; }
+  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-80px); } }
 
   /* ─── NAV ─── */
   nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 100%);
-    pointer-events: none;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(10, 15, 28, 0.9) 0%, rgba(10, 15, 28, 0) 100%); pointer-events: none;
   }
   .nav-logo, .nav-links { pointer-events: auto; }
-  .nav-logo-main { font-weight: 900; font-size: 22px; background: linear-gradient(135deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; }
+  .nav-logo-main { font-weight: 900; font-size: 22px; background: linear-gradient(135deg, var(--blue-2), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; }
   .nav-logo-sub { font-size: 10px; font-weight: 600; color: var(--text-sub); }
   .nav-links { position: relative; display: flex; gap: 2px; align-items: center; }
   .nav-links a { position: relative; z-index: 2; padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; color: var(--text-sub); text-decoration: none; transition: color 0.3s; }
-  .nav-links a.active, .nav-links a:hover { color: var(--blue-1); }
-  .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08), inset 0 0 0 1px rgba(255,255,255,0.8); z-index: 1; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 1, 0.32, 1); }
+  .nav-links a.active, .nav-links a:hover { color: var(--white); }
+  .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255,255,255,0.1); border-radius: 20px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); z-index: 1; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 1, 0.32, 1); backdrop-filter: blur(8px); }
 
-  /* ─── COMMON TYPOGRAPHY (타이틀 디자인 통일) ─── */
+  /* ─── COMMON TYPOGRAPHY ─── */
   .section-header { text-align: center; margin-bottom: 40px; }
-  .section-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
-  
-  /* 전 페이지 동일하게 적용될 우아한 폰트 대비 스타일 */
+  .section-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
   .section-title { font-size: clamp(28px, 4vw, 44px); line-height: 1.4; letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); font-weight: 800; }
-  .section-title .light { font-weight: 300; color: rgba(30, 41, 59, 0.55); }
-  .section-title .hl { font-weight: 900; background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  
+  .section-title .light { font-weight: 300; color: var(--text-sub); }
+  .section-title .hl { font-weight: 900; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 550px; margin: 0 auto; line-height: 1.6; word-break: keep-all; }
 
   /* ─── 1. HERO ─── */
-  .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
-  .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
-  .hero-title { font-size: clamp(36px, 5vw, 64px); line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
-  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.6); }
-  .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-2); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
+  .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-2); opacity: 0.3; }
+  .hero-title { font-size: clamp(36px, 5vw, 68px); line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
+  .hero-title .light-text { font-weight: 200; color: var(--text-sub); }
+  .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, #38bdf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .hero-subtitle { font-size: 20px; color: var(--text-sub); margin-bottom: 12px; font-weight: 400; }
-  .hero-subtitle strong { font-weight: 700; color: var(--text-main); }
+  .hero-subtitle strong { font-weight: 700; color: var(--white); }
   .scroll-hint { margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.2em; animation: bounceY 2s infinite; }
-  .scroll-mouse { width: 22px; height: 36px; border: 2px solid rgba(148, 163, 184, 0.5); border-radius: 12px; display: flex; justify-content: center; padding-top: 6px; }
+  .scroll-mouse { width: 22px; height: 36px; border: 2px solid rgba(148, 163, 184, 0.3); border-radius: 12px; display: flex; justify-content: center; padding-top: 6px; }
   .scroll-dot { width: 4px; height: 6px; background: var(--blue-2); border-radius: 2px; animation: scrollDot 2s infinite; }
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
   @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.2} }
 
-  /* ─── 2. PROBLEM (디자인 대폭 개선) ─── */
-  .challenge-circles { display: flex; justify-content: center; gap: 32px; margin-top: 40px; perspective: 1000px; }
-  
+  /* ─── 2. PROBLEM (다크모드 캡슐 글래스) ─── */
+  .challenge-circles { display: flex; justify-content: center; gap: 32px; margin-top: 40px; }
   .challenge-circle {
-    position: relative; width: 290px; height: 320px; border-radius: 140px; /* 타원/캡슐형에 가까운 우아한 형태 */
-    background: linear-gradient(145deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.4) 100%);
-    border: 1px solid rgba(255,255,255,1);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08), inset 0 0 20px rgba(255,255,255,0.6);
+    position: relative; width: 290px; height: 330px; border-radius: 140px; 
+    background: linear-gradient(145deg, rgba(30,41,59,0.7) 0%, rgba(15,23,42,0.5) 100%);
+    border: 1px solid rgba(255,255,255,0.05); border-top-color: rgba(255,255,255,0.15);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
     display: flex; flex-direction: column; align-items: center; padding: 48px 24px 32px; text-align: center;
     transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
   .challenge-circle:hover { 
-    transform: translateY(-12px) scale(1.02); 
-    box-shadow: 0 30px 60px rgba(37, 99, 235, 0.12), inset 0 0 30px rgba(255,255,255,0.8);
-    border-color: var(--blue-3);
+    transform: translateY(-12px); 
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 30px rgba(59,130,246,0.1);
+    border-color: rgba(96,165,250,0.3);
   }
-
-  /* 우아한 아이콘 박스 */
-  .circle-icon-wrap {
-    position: relative; width: 72px; height: 72px; margin-bottom: 24px;
-    display: flex; justify-content: center; align-items: center;
-  }
-  .circle-icon-glow {
-    position: absolute; inset: 0; border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue-2), var(--purple-2));
-    filter: blur(12px); opacity: 0.4; transition: 0.5s;
-  }
-  .challenge-circle:hover .circle-icon-glow { opacity: 0.7; filter: blur(16px); transform: scale(1.1); }
-  
-  .circle-icon-inner {
-    position: relative; width: 100%; height: 100%; border-radius: 50%;
-    background: white; border: 2px solid rgba(59, 130, 246, 0.1);
-    display: flex; justify-content: center; align-items: center;
-    font-size: 28px; z-index: 2; box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-  }
-
-  .circle-title { font-size: 19px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; letter-spacing: -0.01em; }
+  .circle-icon-wrap { position: relative; width: 76px; height: 76px; margin-bottom: 24px; display: flex; justify-content: center; align-items: center; }
+  .circle-icon-glow { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, var(--blue-2), var(--purple-2)); filter: blur(16px); opacity: 0.3; transition: 0.5s; }
+  .challenge-circle:hover .circle-icon-glow { opacity: 0.6; filter: blur(20px); transform: scale(1.1); }
+  .circle-icon-inner { position: relative; width: 100%; height: 100%; border-radius: 50%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; font-size: 28px; z-index: 2; box-shadow: inset 0 2px 4px rgba(255,255,255,0.05); }
+  .circle-title { font-size: 19px; font-weight: 800; color: var(--white); margin-bottom: 12px; }
   .circle-desc { font-size: 14.5px; color: var(--text-sub); line-height: 1.6; word-break: keep-all; font-weight: 400; }
 
-  /* ─── 3. PARADIGM SHIFT (VS) ─── */
+  /* ─── 3. PARADIGM SHIFT ─── */
   .vs-container { display: flex; gap: 40px; position: relative; max-width: 1000px; margin: 0 auto; }
   .vs-card { flex: 1; padding: 48px 40px; border-radius: 24px; position: relative; }
-  .vs-card.old { background: rgba(226, 232, 240, 0.4); border: 1px solid rgba(255,255,255,0.5); }
-  .vs-card.new { background: var(--glass-bg); border: 1px solid var(--blue-3); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-  .vs-badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: var(--text-main); color: white; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; z-index: 5; border: 4px solid var(--bg-deep); }
-  .vs-header { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em; }
+  .vs-card.old { background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.05); filter: grayscale(50%); opacity: 0.8; }
+  .vs-card.new { background: var(--glass-bg); border: 1px solid rgba(56,189,248,0.3); box-shadow: var(--glass-shadow), var(--glass-glow); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .vs-badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: #1e293b; color: var(--white); display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 16px; z-index: 5; border: 4px solid var(--bg-deep); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+  .vs-header { font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em; }
   .old .vs-header { color: var(--text-muted); }
-  .new .vs-header { color: var(--blue-1); }
-  .vs-title { font-size: 26px; font-weight: 800; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); }
+  .new .vs-header { color: var(--blue-2); }
+  .vs-title { font-size: 26px; font-weight: 800; margin-bottom: 24px; line-height: 1.3; color: var(--white); }
   .vs-list { list-style: none; }
-  .vs-list li { margin-bottom: 16px; font-size: 16px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 500; }
-  .old .vs-list li::before { content: '✕'; color: #ef4444; font-weight: bold; }
-  .new .vs-list li::before { content: '✓'; color: var(--blue-1); font-weight: bold; }
+  .vs-list li { margin-bottom: 16px; font-size: 16px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; }
+  .old .vs-list li::before { content: '✕'; color: #f87171; font-weight: bold; }
+  .new .vs-list li::before { content: '✓'; color: #38bdf8; font-weight: bold; text-shadow: 0 0 8px rgba(56,189,248,0.5); }
 
-  /* ─── 4. PHILOSOPHY (Slider) ─── */
-  .slider-viewport { width: 100%; overflow: hidden; padding: 10px 0; }
-  .slider-track { display: flex; transition: transform 0.8s cubic-bezier(0.65, 0, 0.15, 1); width: 300%; }
-  .slide-page { width: 33.333%; padding: 0 20px; }
-  .phil-step { display: flex; align-items: center; gap: 24px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.04); transition: transform 0.3s; border-radius: 20px; }
-  .phil-step:hover { background: rgba(255,255,255,0.8); transform: scale(1.02); }
-  .phil-num { font-weight: 900; font-size: 48px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .phil-heading { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+  /* ─── 4. PHILOSOPHY ─── */
+  .phil-step { display: flex; align-items: center; gap: 24px; padding: 24px 32px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; border-radius: 20px; background: rgba(15,23,42,0.3); margin-bottom: 12px; }
+  .phil-step:hover { background: rgba(30,41,59,0.8); transform: translateX(10px); border-color: rgba(255,255,255,0.1); }
+  .phil-num { font-weight: 900; font-size: 48px; background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.8; }
+  .phil-heading { font-size: 20px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
   .phil-body { font-size: 15px; color: var(--text-sub); line-height: 1.6; }
-  .slider-dots { display: flex; justify-content: center; gap: 10px; margin-top: 30px; }
-  .slider-dot { width: 8px; height: 8px; border-radius: 4px; background: rgba(148, 163, 184, 0.4); cursor: pointer; transition: 0.4s; }
-  .slider-dot.active { width: 32px; background: var(--blue-1); }
 
-  /* ─── 5. HOW IT WORKS (Data Flow) ─── */
+  /* ─── 5. HOW IT WORKS ─── */
   .workflow-container { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 1000px; margin: 60px auto 0; }
-  .workflow-line { position: absolute; top: 40px; left: 10%; right: 10%; height: 3px; background: rgba(59,130,246,0.15); z-index: 1; }
-  .workflow-progress { position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, var(--blue-1)); animation: flowAnim 3s linear infinite; }
+  .workflow-line { position: absolute; top: 40px; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.05); z-index: 1; }
+  .workflow-progress { position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, #38bdf8, transparent); animation: flowAnim 3s linear infinite; }
   @keyframes flowAnim { 0% { left: -50%; opacity: 0; } 50% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
   .workflow-node { z-index: 2; display: flex; flex-direction: column; align-items: center; flex: 1; }
-  .node-icon-box { width: 80px; height: 80px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--white); box-shadow: 0 10px 25px rgba(37,99,235,0.1); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; font-size: 28px; transition: transform 0.3s; }
-  .workflow-node:hover .node-icon-box { transform: translateY(-8px); background: var(--white); }
-  .node-title { font-weight: 800; font-size: 18px; color: var(--text-main); margin-bottom: 8px; }
-  .node-desc { font-size: 14px; color: var(--text-sub); text-align: center; line-height: 1.5; word-break: keep-all; padding: 0 20px; }
+  .node-icon-box { width: 80px; height: 80px; border-radius: 20px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; font-size: 28px; transition: transform 0.3s; }
+  .workflow-node:hover .node-icon-box { transform: translateY(-8px); border-color: #38bdf8; box-shadow: 0 10px 30px rgba(56,189,248,0.2); }
+  .node-title { font-weight: 800; font-size: 17px; color: var(--white); margin-bottom: 8px; }
+  .node-desc { font-size: 14px; color: var(--text-sub); text-align: center; line-height: 1.5; }
 
-  /* ─── 6. KPIs ─── */
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .kpi-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; box-shadow: var(--glass-shadow); transition: 0.4s; }
-  .kpi-card:hover { transform: translateY(-8px); background: var(--white); border-color: rgba(255,255,255,1); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08); }
-  .kpi-index { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 4px; }
-  .kpi-name { font-size: 22px; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
-  .kpi-subtitle { font-size: 13px; font-weight: 700; color: var(--blue-2); margin-bottom: 12px; }
-  .kpi-desc { font-size: 14px; color: var(--text-sub); line-height: 1.5; margin-bottom: 16px; }
-  .math-font { display: inline-block; padding: 8px 12px; background: rgba(255,255,255,0.8); border-radius: 8px; font-family: 'Cambria', serif; font-style: italic; font-weight: 700; color: var(--blue-1); border: 1px solid rgba(0,0,0,0.05); }
+  /* ─── 6. KPIs (가로 슬라이더 형태) ─── */
+  .kpi-slider-wrapper { width: 100%; position: relative; overflow: hidden; padding: 20px 0; }
+  .kpi-slider-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.25, 1, 0.32, 1); padding: 0 40px; }
+  .kpi-card { 
+    flex: 0 0 calc(33.333% - 16px); min-width: 320px; 
+    background: linear-gradient(180deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.8) 100%); 
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px 24px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4); transition: 0.4s; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .kpi-card:hover { transform: translateY(-8px); border-color: rgba(56,189,248,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(56,189,248,0.1); }
+  .kpi-index { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.15em; margin-bottom: 8px; text-transform: uppercase; }
+  .kpi-name { font-size: 24px; font-weight: 900; color: var(--white); margin-bottom: 6px; }
+  .kpi-subtitle { font-size: 13px; font-weight: 700; color: var(--blue-2); margin-bottom: 16px; }
+  .kpi-desc { font-size: 14.5px; color: var(--text-sub); line-height: 1.6; margin-bottom: 24px; flex-grow: 1; }
+  .math-font { align-self: flex-start; padding: 8px 14px; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: 'Cambria', serif; font-style: italic; font-weight: 700; color: #38bdf8; border: 1px solid rgba(255,255,255,0.05); letter-spacing: 1px; }
+  
+  .slider-controls { display: flex; justify-content: center; gap: 16px; margin-top: 30px; }
+  .slider-btn { width: 48px; height: 48px; border-radius: 50%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: var(--white); cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+  .slider-btn:hover { background: #38bdf8; border-color: #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.4); }
+  .slider-btn svg { width: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* ─── 7. DASHBOARD SNEAK PEEK ─── */
-  .mockup-wrapper { width: 100%; max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 24px; box-shadow: 0 24px 48px rgba(15,23,42,0.08); backdrop-filter: blur(20px); position: relative; overflow: hidden; }
-  .mockup-header { display: flex; gap: 8px; margin-bottom: 20px; }
-  .mockup-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; }
-  .mockup-dot:nth-child(1) { background: #fca5a5; } .mockup-dot:nth-child(2) { background: #fde047; } .mockup-dot:nth-child(3) { background: #86efac; }
-  .mockup-body { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-  .mockup-panel { background: rgba(255,255,255,0.5); border-radius: 16px; padding: 20px; min-height: 200px; display: flex; flex-direction: column; gap: 12px; }
-  .skeleton-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(203,213,225,0.3) 25%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0.3) 75%); background-size: 200% 100%; animation: skeletonLoad 2s infinite; }
-  .skeleton-line.w-short { width: 40%; } .skeleton-line.w-med { width: 70%; } .skeleton-line.w-long { width: 100%; }
-  .mockup-chart { flex-grow: 1; border-radius: 12px; background: rgba(59,130,246,0.1); border: 1px dashed rgba(59,130,246,0.3); display: flex; justify-content: center; align-items: center; color: var(--blue-2); font-weight: 700; font-size: 14px; }
-  @keyframes skeletonLoad { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  /* ─── 7. DASHBOARD SNEAK PEEK (레이더 애니메이션) ─── */
+  .radar-container { position: relative; width: 400px; height: 400px; margin: 40px auto 0; display: flex; justify-content: center; align-items: center; }
+  
+  /* 날아오는 가짜 카드들 */
+  .flying-card {
+    position: absolute; width: 80px; height: 100px; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.5); border-radius: 12px;
+    box-shadow: 0 0 20px rgba(56,189,248,0.2); opacity: 0; pointer-events: none;
+    transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* 활성화 시 카드들이 중앙으로 모임 */
+  #sneakpeek.active .flying-card { transform: translate(0,0) scale(0.2) rotate(360deg) !important; opacity: 0; }
+  
+  /* 레이더 차트 본체 */
+  .radar-chart-svg { width: 100%; height: 100%; opacity: 0; transform: scale(0.5); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s; filter: drop-shadow(0 0 20px rgba(56,189,248,0.2)); }
+  #sneakpeek.active .radar-chart-svg { opacity: 1; transform: scale(1); }
+  
+  /* SVG 내부 스타일 */
+  .radar-grid { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 1; }
+  .radar-axis { stroke: rgba(255,255,255,0.1); stroke-width: 1; }
+  .radar-polygon { fill: rgba(56,189,248,0.2); stroke: #38bdf8; stroke-width: 2; transition: all 1s linear; }
+  .radar-point { fill: #fff; stroke: #38bdf8; stroke-width: 2; transition: all 1s linear; }
+  .radar-label { fill: var(--text-muted); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; letter-spacing: 1px; }
 
-  /* ─── 8. PSYCHOLOGICAL SAFETY (조직문화) ─── */
+  /* ─── 8. PSYCHOLOGICAL SAFETY ─── */
   #culture { text-align: center; }
-  .culture-icon { font-size: 52px; margin-bottom: 24px; animation: floatIcon 3s ease-in-out infinite alternate; }
-  .culture-desc { font-size: 18px; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 500; }
+  .culture-icon { font-size: 52px; margin-bottom: 24px; animation: floatIcon 3s ease-in-out infinite alternate; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
+  .culture-desc { font-size: 18px; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 400; }
   @keyframes floatIcon { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
   /* ─── 9. IMPACT ─── */
   .impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .impact-card { background: var(--glass-bg); padding: 40px 32px; border-radius: 24px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: 0.4s; }
-  .impact-card:hover { transform: translateY(-8px); background: var(--white); border-color: rgba(255,255,255,1); box-shadow: 0 20px 40px rgba(37,99,235,0.1); }
-  .impact-role { font-size: 14px; font-weight: 800; color: var(--blue-1); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .impact-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); line-height: 1.3; }
+  .impact-card { background: rgba(15,23,42,0.6); padding: 40px 32px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); transition: 0.4s; position: relative; overflow: hidden; }
+  .impact-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #38bdf8, #818cf8); opacity: 0; transition: 0.4s; }
+  .impact-card:hover { transform: translateY(-8px); background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.1); }
+  .impact-card:hover::before { opacity: 1; }
+  .impact-role { font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .impact-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--white); line-height: 1.3; }
   .impact-list { padding-left: 20px; font-size: 15px; color: var(--text-sub); line-height: 1.6; }
   .impact-list li { margin-bottom: 8px; }
 
   /* ─── 10. LINK & FOOTER ─── */
   #link { text-align: center; }
   .btn-magic {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 16px 36px; border-radius: 50px; font-size: 16px; font-weight: 800; color: #ffffff; text-decoration: none;
-    background: linear-gradient(180deg, #9333ea 0%, #6366f1 100%);
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.2), 0 0 0 6px rgba(139, 92, 246, 0.25), 0 12px 24px rgba(139, 92, 246, 0.4);
-    transition: all 0.3s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 18px 40px; border-radius: 50px; font-size: 16px; font-weight: 800; color: #fff; text-decoration: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2), 0 10px 30px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  .btn-magic:hover { transform: translateY(-4px) scale(1.02); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 0 0 8px rgba(139, 92, 246, 0.35), 0 16px 32px rgba(139, 92, 246, 0.5); }
-  .btn-magic svg { width: 20px; height: 20px; fill: #ffffff; }
+  .btn-magic:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.3), 0 20px 40px rgba(139, 92, 246, 0.6); }
+  .btn-magic svg { width: 20px; height: 20px; fill: currentColor; }
 
-  footer { height: auto; padding: 40px; background: rgba(255,255,255,0.5); border-top: 1px solid rgba(255,255,255,0.8); }
+  footer { height: auto; padding: 40px; background: #05080f; border-top: 1px solid rgba(255,255,255,0.05); }
   .footer-inner { width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; }
-  .footer-logo { font-weight: 900; font-size: 20px; color: var(--text-main); }
-  .footer-copy { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .footer-logo { font-weight: 900; font-size: 20px; color: var(--text-muted); }
+  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.3); line-height: 1.5; }
 
   /* Reveal Animation */
   .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
@@ -254,14 +254,16 @@
 </div>
 <div id="dust-container"></div>
 
-<!-- Background Wave (강화 & 투명도 증가) -->
+<!-- Background Wave (Dark Mode optimized) -->
 <div class="wave-bg-global">
   <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.8" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.3"></path>
-    <path class="wave-path-2" fill="none" stroke="#8b5cf6" stroke-width="1.2" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.25"></path>
-    <path class="wave-path-3" fill="none" stroke="#60a5fa" stroke-width="0.5" d="M0,80 C400,280,600,20,900,120 C1200,220,1300,100,1440,150" opacity="0.35"></path>
-    <path class="wave-path-4" fill="none" stroke="#a78bfa" stroke-width="0.7" d="M0,260 C350,100,550,320,850,180 C1150,40,1350,260,1440,200" opacity="0.2"></path>
-    <path class="wave-path-5" fill="none" stroke="#2563eb" stroke-width="1.5" d="M0,120 C300,20,500,280,800,100 C1100, -80,1250,300,1440,120" opacity="0.15"></path>
+    <!-- 얇은 선 -->
+    <path class="wave-path-1" fill="none" stroke="#38bdf8" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.1"></path>
+    <path class="wave-path-2" fill="none" stroke="#a78bfa" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.08"></path>
+    <!-- 두껍고 극도로 투명한 선 (3줄 추가) -->
+    <path class="wave-path-3" fill="none" stroke="#60a5fa" stroke-width="4" d="M0,80 C400,280,600,20,900,120 C1200,220,1300,100,1440,150" opacity="0.03"></path>
+    <path class="wave-path-4" fill="none" stroke="#c084fc" stroke-width="6" d="M0,260 C350,100,550,320,850,180 C1150,40,1350,260,1440,200" opacity="0.02"></path>
+    <path class="wave-path-5" fill="none" stroke="#3b82f6" stroke-width="3" d="M0,120 C300,20,500,280,800,100 C1100, -80,1250,300,1440,120" opacity="0.04"></path>
   </svg>
 </div>
 
@@ -279,7 +281,7 @@
     <a href="#philosophy">철학</a>
     <a href="#workflow">작동원리</a>
     <a href="#kpis">KPI</a>
-    <a href="#sneakpeek">프리뷰</a>
+    <a href="#sneakpeek">인사이트</a>
     <a href="#culture">조직문화</a>
     <a href="#impact">기대효과</a>
     <a href="#link">시작하기</a>
@@ -316,30 +318,19 @@
         </h2>
         <p class="section-desc reveal delay-2">분기말의 희미한 기억에 의존하는 평가, 매일 버려지는 소중한 업무 기록들. 감(感)에 의존하는 평가는 이제 끝내야 합니다.</p>
       </div>
-      
-      <!-- 디자인 대폭 개선된 3개의 원 -->
       <div class="challenge-circles reveal delay-3">
         <div class="challenge-circle">
-          <div class="circle-icon-wrap">
-            <div class="circle-icon-glow"></div>
-            <div class="circle-icon-inner">🗑️</div>
-          </div>
+          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner">🗑️</div></div>
           <div class="circle-title">버려지는 데이터</div>
           <div class="circle-desc">단순 출퇴근용으로 전락한 1,500명의 소중한 데일리 업무 기록들.</div>
         </div>
         <div class="challenge-circle">
-          <div class="circle-icon-wrap">
-            <div class="circle-icon-glow"></div>
-            <div class="circle-icon-inner">🧠</div>
-          </div>
+          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner">🧠</div></div>
           <div class="circle-title">기억의 오류</div>
           <div class="circle-desc">최근 1~2주의 기억이 3개월 전체의 평가를 지배하는 최신 편향 문제.</div>
         </div>
         <div class="challenge-circle">
-          <div class="circle-icon-wrap">
-            <div class="circle-icon-glow"></div>
-            <div class="circle-icon-inner">💬</div>
-          </div>
+          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner">💬</div></div>
           <div class="circle-title">피드백의 한계</div>
           <div class="circle-desc">정확한 근거 없는 "고생했다"는 위로만으로는 성장을 코칭할 수 없습니다.</div>
         </div>
@@ -392,14 +383,10 @@
           성장을 위한 <span class="hl">3단계</span> <span class="light">프로세스</span>
         </h2>
       </div>
-      <div class="slider-viewport reveal delay-2">
-        <div class="slider-track" id="phil-track">
-          <div class="slide-page">
-            <div class="phil-step"><div class="phil-num">01</div><div><div class="phil-heading">조용한 데이터 추출</div><div class="phil-body">기존 업무일지를 그대로 사용합니다. 새로운 입력이나 방해 없이 워크플로우에 녹아듭니다.</div></div></div>
-            <div class="phil-step"><div class="phil-num">02</div><div><div class="phil-heading">감(感)을 수치(Data)로</div><div class="phil-body">직관적인 업무 투입시간, 야근 빈도 등을 수치화하여 피드백의 탄탄한 기초를 마련합니다.</div></div></div>
-            <div class="phil-step"><div class="phil-num">03</div><div><div class="phil-heading">숨겨진 인사이트 도출</div><div class="phil-body">수학적 모델을 통해 업무 패턴, 리소스 밸런스를 입체적으로 분석하고 시각화합니다.</div></div></div>
-          </div>
-        </div>
+      <div class="reveal delay-2" style="max-width: 800px; margin: 0 auto;">
+        <div class="phil-step"><div class="phil-num">01</div><div><div class="phil-heading">조용한 데이터 추출</div><div class="phil-body">기존 업무일지를 그대로 사용합니다. 새로운 입력이나 방해 없이 워크플로우에 녹아듭니다.</div></div></div>
+        <div class="phil-step"><div class="phil-num">02</div><div><div class="phil-heading">감(感)을 수치(Data)로</div><div class="phil-body">직관적인 업무 투입시간, 야근 빈도 등을 수치화하여 피드백의 탄탄한 기초를 마련합니다.</div></div></div>
+        <div class="phil-step"><div class="phil-num">03</div><div><div class="phil-heading">숨겨진 인사이트 도출</div><div class="phil-body">수학적 모델을 통해 업무 패턴, 리소스 밸런스를 입체적으로 분석하고 시각화합니다.</div></div></div>
       </div>
     </div>
   </section>
@@ -435,67 +422,148 @@
     </div>
   </section>
 
-  <!-- 6. KPIs -->
+  <!-- 6. KPIs (Full 6 Metrics with Horizontal Slider) -->
   <section id="kpis">
-    <div class="section-inner">
+    <div class="section-inner" style="max-width: 100%;">
       <div class="section-header">
         <p class="section-eyebrow reveal">6 Core Metrics</p>
         <h2 class="section-title reveal delay-1">
           <span class="light">성과를 측정하는</span> <span class="hl">수학적 기준</span>
         </h2>
       </div>
-      <div class="kpi-grid">
-        <div class="kpi-card reveal">
-          <div class="kpi-index">Shannon Entropy</div>
-          <div class="kpi-name">섀넌 지수</div>
-          <div class="kpi-subtitle">파편화도 · 질적 몰입도</div>
-          <div class="kpi-desc">업무가 얼마나 여러 갈래로 분산되었는지 파악하여, 몰입을 방해하는 요소를 찾습니다.</div>
-          <div class="math-font">H = −Σ pᵢ ln pᵢ</div>
-        </div>
-        <div class="kpi-card reveal delay-1">
-          <div class="kpi-index">Hurst Exponent</div>
-          <div class="kpi-name">허스트 지수</div>
-          <div class="kpi-subtitle">주도성 · 질적 통제력</div>
-          <div class="kpi-desc">수동적 업무 처리가 아닌, 팀원 스스로 업무 리듬을 끌고 나가는 주도성을 측정합니다.</div>
-          <div class="math-font">E[R/S] = C nᴴ</div>
-        </div>
-        <div class="kpi-card reveal delay-2">
-          <div class="kpi-index">Jaccard Index</div>
-          <div class="kpi-name">자카드 지수</div>
-          <div class="kpi-subtitle">확장성 · 질적 성장성</div>
-          <div class="kpi-desc">반복 업무의 늪에 빠지지 않고, 새로운 영역을 탐색하고 있는지를 나타내는 성장의 궤적입니다.</div>
-          <div class="math-font">J = |A ∩ B| / |A ∪ B|</div>
+      
+      <div class="kpi-slider-wrapper reveal delay-2">
+        <div class="kpi-slider-track" id="kpi-track">
+          <!-- Card 1 -->
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-index">Index 01</div>
+              <div class="kpi-name">섀넌 지수</div>
+              <div class="kpi-subtitle">파편화도 · 질적 몰입도</div>
+              <div class="kpi-desc">업무가 얼마나 여러 갈래로 분산되었는지 파악하여, 몰입을 방해하는 요소를 찾습니다.</div>
+            </div>
+            <div class="math-font">H = −Σ pᵢ ln pᵢ</div>
+          </div>
+          <!-- Card 2 -->
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-index">Index 02</div>
+              <div class="kpi-name">허스트 지수</div>
+              <div class="kpi-subtitle">주도성 · 질적 통제력</div>
+              <div class="kpi-desc">수동적 업무 처리가 아닌, 팀원 스스로 업무 리듬을 끌고 나가는 주도성을 측정합니다.</div>
+            </div>
+            <div class="math-font">E[R/S] = C nᴴ</div>
+          </div>
+          <!-- Card 3 -->
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-index">Index 03</div>
+              <div class="kpi-name">자카드 지수</div>
+              <div class="kpi-subtitle">확장성 · 질적 성장성</div>
+              <div class="kpi-desc">반복 업무의 늪에 빠지지 않고, 새로운 영역을 탐색하고 있는지를 나타내는 성장의 궤적입니다.</div>
+            </div>
+            <div class="math-font">J = |A ∩ B| / |A ∪ B|</div>
+          </div>
+          <!-- Card 4 -->
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-index">Index 04</div>
+              <div class="kpi-name">초과근무 지수</div>
+              <div class="kpi-subtitle">정시업무 · 양적 에너지 잔량</div>
+              <div class="kpi-desc">총 근무 중 초과근무 비율을 역산하여 건강한 에너지 상태와 번아웃 위험을 진단합니다.</div>
+            </div>
+            <div class="math-font">Idx = 1 − (T_ot / T_total)</div>
+          </div>
+          <!-- Card 5 -->
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-index">Index 05</div>
+              <div class="kpi-name">허핀달-허쉬만 지수</div>
+              <div class="kpi-subtitle">몰입도 · 양적 화력 집중도</div>
+              <div class="kpi-desc">특정 핵심 프로젝트에 에너지를 온전히 집중하고 있는지를 수치화합니다.</div>
+            </div>
+            <div class="math-font">HHI = Σ sᵢ²</div>
+          </div>
+          <!-- Card 6 -->
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-index">Index 06</div>
+              <div class="kpi-name">변동계수</div>
+              <div class="kpi-subtitle">안정성 · 양적 투입 리듬</div>
+              <div class="kpi-desc">일일 업무 투입 시간의 기복을 측정하여 심리적 불안도와 안정적인 업무 리듬을 파악합니다.</div>
+            </div>
+            <div class="math-font">CV = σ / μ</div>
+          </div>
         </div>
       </div>
+      
+      <!-- Slider Controls -->
+      <div class="slider-controls reveal delay-3">
+        <button class="slider-btn" onclick="moveKpi(-1)">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="slider-btn" onclick="moveKpi(1)">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
     </div>
   </section>
 
-  <!-- 7. SNEAK PEEK -->
+  <!-- 7. SNEAK PEEK (Radar Chart Animation) -->
   <section id="sneakpeek">
     <div class="section-inner">
       <div class="section-header">
-        <p class="section-eyebrow reveal">Sneak Peek</p>
+        <p class="section-eyebrow reveal">Visualized Insight</p>
         <h2 class="section-title reveal delay-1">
-          <span class="light">복잡한 데이터,</span> <span class="hl">직관적인 시각화</span>
+          <span class="light">6개의 개별 지표가 융합된</span><br><span class="hl">하나의 다각적 인사이트</span>
         </h2>
-        <p class="section-desc reveal delay-2">수백 줄의 엑셀 데이터를 경영진과 팀원 모두가 한눈에 이해할 수 있는 아름다운 차트로 변환합니다.</p>
+        <p class="section-desc reveal delay-2">각각의 지표들은 6각형 레이더 차트로 모여 개인의 퍼포먼스 밸런스를 한눈에 보여주는 강력한 지도가 됩니다.</p>
       </div>
-      <div class="mockup-wrapper reveal delay-3">
-        <div class="mockup-header">
-          <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
-        </div>
-        <div class="mockup-body">
-          <div class="mockup-panel">
-            <div class="skeleton-line w-short"></div>
-            <div class="skeleton-line w-long"></div>
-            <div class="skeleton-line w-med"></div>
-            <div style="margin-top:20px;" class="skeleton-line w-long"></div>
-            <div class="skeleton-line w-med"></div>
-          </div>
-          <div class="mockup-panel" style="background: rgba(255,255,255,0.8);">
-            <div class="mockup-chart">Interactive Radial Chart Area</div>
-          </div>
-        </div>
+      
+      <div class="radar-container reveal delay-3">
+        <!-- 6 Flying Fake Cards -->
+        <div class="flying-card" style="top: -100px; left: -100px; transform: rotate(-15deg);"></div>
+        <div class="flying-card" style="top: -50px; right: -150px; transform: rotate(20deg);"></div>
+        <div class="flying-card" style="top: 150px; left: -200px; transform: rotate(-5deg);"></div>
+        <div class="flying-card" style="top: 200px; right: -100px; transform: rotate(30deg);"></div>
+        <div class="flying-card" style="bottom: -100px; left: 0px; transform: rotate(-25deg);"></div>
+        <div class="flying-card" style="bottom: -50px; right: 50px; transform: rotate(10deg);"></div>
+        
+        <!-- Animated SVG Radar Chart -->
+        <svg class="radar-chart-svg" viewBox="0 0 300 300">
+          <g transform="translate(150, 150)">
+            <!-- Grid webs (6 hexagons) -->
+            <polygon class="radar-grid" points="0,-100 86.6,-50 86.6,50 0,100 -86.6,50 -86.6,-50" />
+            <polygon class="radar-grid" points="0,-80 69.3,-40 69.3,40 0,80 -69.3,40 -69.3,-40" />
+            <polygon class="radar-grid" points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" />
+            <polygon class="radar-grid" points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20" />
+            <polygon class="radar-grid" points="0,-20 17.3,-10 17.3,10 0,20 -17.3,10 -17.3,-10" />
+            <!-- Axis lines -->
+            <line class="radar-axis" x1="0" y1="0" x2="0" y2="-100" />
+            <line class="radar-axis" x1="0" y1="0" x2="86.6" y2="-50" />
+            <line class="radar-axis" x1="0" y1="0" x2="86.6" y2="50" />
+            <line class="radar-axis" x1="0" y1="0" x2="0" y2="100" />
+            <line class="radar-axis" x1="0" y1="0" x2="-86.6" y2="50" />
+            <line class="radar-axis" x1="0" y1="0" x2="-86.6" y2="-50" />
+            <!-- Labels -->
+            <text class="radar-label" x="0" y="-115">SHANNON</text>
+            <text class="radar-label" x="105" y="-55">HURST</text>
+            <text class="radar-label" x="105" y="55">JACCARD</text>
+            <text class="radar-label" x="0" y="115">OVERTIME</text>
+            <text class="radar-label" x="-105" y="55">HHI</text>
+            <text class="radar-label" x="-105" y="-55">CV</text>
+            <!-- Dynamic Data Polygon -->
+            <polygon id="dynamic-radar" class="radar-polygon" points="0,-50 43.3,-25 60.6,35 0,70 -52,30 -69.3,-40"></polygon>
+            <!-- Dynamic Points -->
+            <circle class="radar-point pt-0" cx="0" cy="-50" r="3" />
+            <circle class="radar-point pt-1" cx="43.3" cy="-25" r="3" />
+            <circle class="radar-point pt-2" cx="60.6" cy="35" r="3" />
+            <circle class="radar-point pt-3" cx="0" cy="70" r="3" />
+            <circle class="radar-point pt-4" cx="-52" cy="30" r="3" />
+            <circle class="radar-point pt-5" cx="-69.3" cy="-40" r="3" />
+          </g>
+        </svg>
       </div>
     </div>
   </section>
@@ -568,7 +636,7 @@
       </div>
       <a href="https://kpi-gns.vercel.app" class="btn-magic reveal delay-1">
         <svg viewBox="0 0 24 24"><path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="currentColor"/><path d="M6 14L6.5 16.5L9 17L6.5 17.5L6 20L5.5 17.5L3 17L5.5 16.5L6 14Z" fill="currentColor"/></svg>
-        Go to Dashboard
+        대시보드 시작하기
       </a>
     </div>
   </section>
@@ -581,7 +649,6 @@
       </div>
       <div style="text-align: right;">
         <div class="footer-copy">© 2026 GNS KPI Dashboard. All rights reserved.</div>
-        <div class="footer-copy">Built for Growth and Insight.</div>
       </div>
     </div>
   </footer>
@@ -595,15 +662,55 @@
     for (let i = 0; i < 60; i++) {
       let dust = document.createElement('div');
       dust.className = 'dust';
-      let size = Math.random() * 3 + 1;
+      let size = Math.random() * 2.5 + 1;
       dust.style.width = `${size}px`; dust.style.height = `${size}px`;
       dust.style.left = `${Math.random() * 100}vw`; dust.style.top = `${Math.random() * 100}vh`;
-      dust.style.animationDuration = `${Math.random() * 15 + 10}s`;
+      dust.style.animationDuration = `${Math.random() * 20 + 10}s`;
       dust.style.animationDelay = `${Math.random() * 10}s`;
       dustContainer.appendChild(dust);
     }
     triggerReveal();
+    startRadarAnimation(); // 레이더 차트 애니메이션 루프 시작
   });
+
+  // KPI Slider Logic
+  let currentKpiIndex = 0;
+  function moveKpi(direction) {
+    const track = document.getElementById('kpi-track');
+    // 카드 총 6개, 한 화면에 3개 노출 (반응형에 따라 다르지만 기본 로직)
+    // 0 -> 1 -> 2 -> 3 까지만 이동 가능하도록 설정
+    const maxIndex = 3; 
+    currentKpiIndex += direction;
+    if (currentKpiIndex < 0) currentKpiIndex = 0;
+    if (currentKpiIndex > maxIndex) currentKpiIndex = maxIndex;
+    
+    // 카드 너비(33.333%) + 갭(24px) 비율만큼 이동 계산
+    track.style.transform = `translateX(calc(-${currentKpiIndex * 33.333}% - ${currentKpiIndex * 8}px))`;
+  }
+
+  // Radar Chart Fluctuation Animation
+  function startRadarAnimation() {
+    const poly = document.getElementById('dynamic-radar');
+    const dots = document.querySelectorAll('.radar-point');
+    // 육각형 각도: 0, 60, 120, 180, 240, 300도 (위쪽부터 시계방향)
+    const angles = [ -Math.PI/2, -Math.PI/6, Math.PI/6, Math.PI/2, 5*Math.PI/6, 7*Math.PI/6 ];
+    
+    setInterval(() => {
+      let pointsStr = "";
+      angles.forEach((angle, i) => {
+        // 반지름 40 ~ 100 사이의 임의의 값 생성
+        let r = Math.random() * 60 + 40; 
+        let x = r * Math.cos(angle);
+        let y = r * Math.sin(angle);
+        pointsStr += `${x},${y} `;
+        
+        // 동그라미 위치도 같이 업데이트
+        dots[i].setAttribute('cx', x);
+        dots[i].setAttribute('cy', y);
+      });
+      poly.setAttribute('points', pointsStr.trim());
+    }, 1200); // 1.2초마다 형태 변경
+  }
 
   // Fullpage Scroll Logic
   const wrapper = document.getElementById('fullpage');
@@ -624,13 +731,23 @@
     }
 
     const currentElem = sections[currentIndex];
+    
+    // 네비게이션 연동
     if (currentElem.tagName.toLowerCase() === 'section') {
       const targetId = currentElem.getAttribute('id');
       if (targetId) {
         const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
         if (activeLink) updateNavIndicator(activeLink);
       }
+      
+      // 7장(sneakpeek) 도달 시 클래스 추가 (레이더 트랜지션 애니메이션 트리거)
+      if (targetId === 'sneakpeek') {
+        currentElem.classList.add('active');
+      } else {
+        document.getElementById('sneakpeek').classList.remove('active');
+      }
     }
+    
     triggerReveal();
   }
 
