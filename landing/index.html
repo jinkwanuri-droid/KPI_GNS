@@ -3,29 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GNWMC KPI Dashboard - Dark Edition</title>
+<title>GNWMC KPI Dashboard - Product Launch</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
 <style>
   :root {
-    /* 프리미엄 다크 모드 컬러 팔레트 */
-    --bg-deep: #0a0f1c; /* 아주 깊은 네이비/블랙 */
-    --text-main: #f8fafc;
-    --text-sub: #94a3b8;
-    --text-muted: #475569;
+    /* 오리지널 우아한 라이트 테마 복구 */
+    --bg-deep: #f0f4f8;
+    --text-main: #1e293b;
+    --text-sub: #475569;
+    --text-muted: #94a3b8;
 
-    --blue-1: #3b82f6;
-    --blue-2: #60a5fa;
-    --blue-3: #93c5fd;
-    --purple-1: #8b5cf6;
-    --purple-2: #a78bfa;
-    
+    --blue-1: #2563eb;
+    --blue-2: #3b82f6;
+    --blue-3: #60a5fa;
+    --purple-1: #7c3aed;
+    --purple-2: #8b5cf6;
     --white: #ffffff;
 
-    /* 다크모드 글래스모피즘 */
-    --glass-bg: rgba(15, 23, 42, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --glass-glow: 0 0 24px rgba(59, 130, 246, 0.15);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.05);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -42,205 +39,231 @@
   section, footer {
     width: 100%; height: 100vh;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 60px 40px; position: relative; overflow: hidden;
+    padding: 60px 40px; position: relative;
   }
   .section-inner { width: 100%; max-width: 1200px; position: relative; z-index: 2; }
 
-  /* ─── CANVAS BG (다크모드 오라) ─── */
-  #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(circle at center, #0f172a 0%, #05080f 100%); }
-  .orb { position: absolute; border-radius: 50%; filter: blur(140px); pointer-events: none; animation: drift ease-in-out infinite alternate; mix-blend-mode: screen; }
-  .orb-1 { width: 800px; height: 800px; background: rgba(59, 130, 246, 0.12); top: -200px; left: -200px; animation-duration: 20s; }
-  .orb-2 { width: 700px; height: 700px; background: rgba(139, 92, 246, 0.1); bottom: -150px; right: -150px; animation-duration: 25s; animation-delay: -5s; }
-  .orb-3 { width: 600px; height: 600px; background: rgba(56, 189, 248, 0.08); top: 40%; left: 30%; animation-duration: 22s; animation-delay: -2s; }
-  @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.1); } }
+  /* ─── CANVAS BG (우아한 빛 번짐) ─── */
+  #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(120px); pointer-events: none; animation: drift ease-in-out infinite alternate; }
+  .orb-1 { width: 700px; height: 700px; background: rgba(59, 130, 246, 0.25); top: -100px; left: -100px; animation-duration: 20s; }
+  .orb-2 { width: 600px; height: 600px; background: rgba(139, 92, 246, 0.2); bottom: -100px; right: -50px; animation-duration: 25s; animation-delay: -5s; }
+  .orb-3 { width: 500px; height: 500px; background: rgba(96, 165, 250, 0.2); top: 30%; left: 40%; animation-duration: 22s; animation-delay: -2s; }
+  @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.15); } }
 
-  /* ─── DUST PARTICLES (별가루 느낌) ─── */
+  /* ─── DUST PARTICLES ─── */
   #dust-container { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-  .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.3; box-shadow: 0 0 8px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
-  @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0); opacity: 0; } 20% { opacity: 0.5; } 80% { opacity: 0.5; } 100% { transform: translateY(-10vh) translateX(20px); opacity: 0; } }
+  .dust { position: absolute; background: var(--white); border-radius: 50%; opacity: 0.6; box-shadow: 0 0 6px rgba(255,255,255,0.8); animation: floatDust linear infinite; }
+  @keyframes floatDust { 0% { transform: translateY(100vh) translateX(0); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateY(-10vh) translateX(20px); opacity: 0; } }
 
-  /* ─── 전역 물결 배경 (투명도 조정 및 두꺼운 선 추가) ─── */
+  /* ─── 전역 물결 배경 (라이트 테마 최적화: 투명도 10%↑, 선 두께 다양화) ─── */
   .wave-bg-global { position: fixed; top: 50%; left: -10%; width: 120%; height: 100vh; transform: translateY(-50%); z-index: 0; pointer-events: none; display: flex; align-items: center; }
-  .wave-bg-global svg { width: 100%; height: 700px; }
-  /* 기존 얇고 덜 투명한 선 */
-  .wave-path-1 { animation: waveSlide 5s ease-in-out infinite alternate; }
-  .wave-path-2 { animation: waveSlide 6s ease-in-out infinite alternate-reverse; }
-  /* 두껍고 극도로 투명한 선 (깊이감 연출) */
-  .wave-path-3 { animation: waveSlide 4s ease-in-out infinite alternate; }
-  .wave-path-4 { animation: waveSlide 7s ease-in-out infinite alternate-reverse; }
-  .wave-path-5 { animation: waveSlide 5.5s ease-in-out infinite alternate; }
-  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-80px); } }
+  .wave-bg-global svg { width: 100%; height: 600px; }
+  /* 얇고 중간 투명도의 선 */
+  .wave-path-1 { animation: waveSlide 4s ease-in-out infinite alternate; }
+  .wave-path-2 { animation: waveSlide 5s ease-in-out infinite alternate-reverse; }
+  /* 두껍지만 아주 투명한 선 (깊이감 부여) */
+  .wave-path-3 { animation: waveSlide 3s ease-in-out infinite alternate; }
+  .wave-path-4 { animation: waveSlide 6s ease-in-out infinite alternate-reverse; }
+  .wave-path-5 { animation: waveSlide 4.5s ease-in-out infinite alternate; }
+  @keyframes waveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-60px); } }
 
   /* ─── NAV ─── */
   nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(to bottom, rgba(10, 15, 28, 0.9) 0%, rgba(10, 15, 28, 0) 100%); pointer-events: none;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
   }
   .nav-logo, .nav-links { pointer-events: auto; }
-  .nav-logo-main { font-weight: 900; font-size: 22px; background: linear-gradient(135deg, var(--blue-2), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; }
+  .nav-logo-main { font-weight: 900; font-size: 22px; background: linear-gradient(135deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; }
   .nav-logo-sub { font-size: 10px; font-weight: 600; color: var(--text-sub); }
   .nav-links { position: relative; display: flex; gap: 2px; align-items: center; }
   .nav-links a { position: relative; z-index: 2; padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; color: var(--text-sub); text-decoration: none; transition: color 0.3s; }
-  .nav-links a.active, .nav-links a:hover { color: var(--white); }
-  .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255,255,255,0.1); border-radius: 20px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); z-index: 1; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 1, 0.32, 1); backdrop-filter: blur(8px); }
+  .nav-links a.active, .nav-links a:hover { color: var(--blue-1); }
+  .nav-indicator { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08), inset 0 0 0 1px rgba(255,255,255,0.8); z-index: 1; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 1, 0.32, 1); }
 
   /* ─── COMMON TYPOGRAPHY ─── */
   .section-header { text-align: center; margin-bottom: 40px; }
-  .section-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
+  .section-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue-2); margin-bottom: 12px; }
   .section-title { font-size: clamp(28px, 4vw, 44px); line-height: 1.4; letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-main); font-weight: 800; }
-  .section-title .light { font-weight: 300; color: var(--text-sub); }
-  .section-title .hl { font-weight: 900; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .section-title .light { font-weight: 300; color: rgba(30, 41, 59, 0.55); }
+  .section-title .hl { font-weight: 900; background: linear-gradient(90deg, var(--blue-1), var(--purple-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .section-desc { font-size: 17px; font-weight: 400; color: var(--text-sub); max-width: 550px; margin: 0 auto; line-height: 1.6; word-break: keep-all; }
 
   /* ─── 1. HERO ─── */
-  .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-2); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
-  .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-2); opacity: 0.3; }
-  .hero-title { font-size: clamp(36px, 5vw, 68px); line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
-  .hero-title .light-text { font-weight: 200; color: var(--text-sub); }
-  .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, #38bdf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; color: var(--blue-1); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
+  .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--blue-1); opacity: 0.3; }
+  .hero-title { font-size: clamp(36px, 5vw, 64px); line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main); }
+  .hero-title .light-text { font-weight: 200; color: rgba(30, 41, 59, 0.6); }
+  .hero-title .bold-text { font-weight: 900; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .hero-subtitle { font-size: 20px; color: var(--text-sub); margin-bottom: 12px; font-weight: 400; }
-  .hero-subtitle strong { font-weight: 700; color: var(--white); }
+  .hero-subtitle strong { font-weight: 700; color: var(--text-main); }
   .scroll-hint { margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.2em; animation: bounceY 2s infinite; }
-  .scroll-mouse { width: 22px; height: 36px; border: 2px solid rgba(148, 163, 184, 0.3); border-radius: 12px; display: flex; justify-content: center; padding-top: 6px; }
+  .scroll-mouse { width: 22px; height: 36px; border: 2px solid rgba(148, 163, 184, 0.5); border-radius: 12px; display: flex; justify-content: center; padding-top: 6px; }
   .scroll-dot { width: 4px; height: 6px; background: var(--blue-2); border-radius: 2px; animation: scrollDot 2s infinite; }
   @keyframes bounceY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
   @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(8px);opacity:0.2} }
 
-  /* ─── 2. PROBLEM (다크모드 캡슐 글래스) ─── */
-  .challenge-circles { display: flex; justify-content: center; gap: 32px; margin-top: 40px; }
+  /* ─── 2. PROBLEM (우아한 레이어 형태 + 모던 SVG 교체) ─── */
+  .challenge-circles { display: flex; justify-content: center; gap: 32px; margin-top: 40px; perspective: 1000px; }
   .challenge-circle {
-    position: relative; width: 290px; height: 330px; border-radius: 140px; 
-    background: linear-gradient(145deg, rgba(30,41,59,0.7) 0%, rgba(15,23,42,0.5) 100%);
-    border: 1px solid rgba(255,255,255,0.05); border-top-color: rgba(255,255,255,0.15);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
+    position: relative; width: 290px; height: 320px; border-radius: 140px; 
+    background: linear-gradient(145deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.4) 100%);
+    border: 1px solid rgba(255,255,255,1);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08), inset 0 0 20px rgba(255,255,255,0.6);
     display: flex; flex-direction: column; align-items: center; padding: 48px 24px 32px; text-align: center;
     transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   }
   .challenge-circle:hover { 
-    transform: translateY(-12px); 
-    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 30px rgba(59,130,246,0.1);
-    border-color: rgba(96,165,250,0.3);
+    transform: translateY(-12px) scale(1.02); 
+    box-shadow: 0 30px 60px rgba(37, 99, 235, 0.12), inset 0 0 30px rgba(255,255,255,0.8);
+    border-color: var(--blue-3);
   }
-  .circle-icon-wrap { position: relative; width: 76px; height: 76px; margin-bottom: 24px; display: flex; justify-content: center; align-items: center; }
-  .circle-icon-glow { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, var(--blue-2), var(--purple-2)); filter: blur(16px); opacity: 0.3; transition: 0.5s; }
-  .challenge-circle:hover .circle-icon-glow { opacity: 0.6; filter: blur(20px); transform: scale(1.1); }
-  .circle-icon-inner { position: relative; width: 100%; height: 100%; border-radius: 50%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; font-size: 28px; z-index: 2; box-shadow: inset 0 2px 4px rgba(255,255,255,0.05); }
-  .circle-title { font-size: 19px; font-weight: 800; color: var(--white); margin-bottom: 12px; }
+  .circle-icon-wrap { position: relative; width: 72px; height: 72px; margin-bottom: 24px; display: flex; justify-content: center; align-items: center; }
+  .circle-icon-glow { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, var(--blue-2), var(--purple-2)); filter: blur(12px); opacity: 0.3; transition: 0.5s; }
+  .challenge-circle:hover .circle-icon-glow { opacity: 0.6; filter: blur(16px); transform: scale(1.1); }
+  .circle-icon-inner { position: relative; width: 100%; height: 100%; border-radius: 50%; background: white; border: 1px solid rgba(59, 130, 246, 0.1); display: flex; justify-content: center; align-items: center; z-index: 2; box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
+  .circle-icon-inner svg { width: 32px; height: 32px; stroke: url(#gradIcon); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .circle-title { font-size: 19px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; letter-spacing: -0.01em; }
   .circle-desc { font-size: 14.5px; color: var(--text-sub); line-height: 1.6; word-break: keep-all; font-weight: 400; }
 
   /* ─── 3. PARADIGM SHIFT ─── */
   .vs-container { display: flex; gap: 40px; position: relative; max-width: 1000px; margin: 0 auto; }
   .vs-card { flex: 1; padding: 48px 40px; border-radius: 24px; position: relative; }
-  .vs-card.old { background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.05); filter: grayscale(50%); opacity: 0.8; }
-  .vs-card.new { background: var(--glass-bg); border: 1px solid rgba(56,189,248,0.3); box-shadow: var(--glass-shadow), var(--glass-glow); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-  .vs-badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: #1e293b; color: var(--white); display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 16px; z-index: 5; border: 4px solid var(--bg-deep); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-  .vs-header { font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em; }
+  .vs-card.old { background: rgba(226, 232, 240, 0.4); border: 1px solid rgba(255,255,255,0.5); }
+  .vs-card.new { background: var(--glass-bg); border: 1px solid var(--blue-3); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .vs-badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; background: var(--text-main); color: white; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; z-index: 5; border: 4px solid var(--bg-deep); }
+  .vs-header { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em; }
   .old .vs-header { color: var(--text-muted); }
-  .new .vs-header { color: var(--blue-2); }
-  .vs-title { font-size: 26px; font-weight: 800; margin-bottom: 24px; line-height: 1.3; color: var(--white); }
+  .new .vs-header { color: var(--blue-1); }
+  .vs-title { font-size: 26px; font-weight: 800; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); }
   .vs-list { list-style: none; }
-  .vs-list li { margin-bottom: 16px; font-size: 16px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; }
-  .old .vs-list li::before { content: '✕'; color: #f87171; font-weight: bold; }
-  .new .vs-list li::before { content: '✓'; color: #38bdf8; font-weight: bold; text-shadow: 0 0 8px rgba(56,189,248,0.5); }
+  .vs-list li { margin-bottom: 16px; font-size: 16px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 500; }
+  .old .vs-list li::before { content: '✕'; color: #ef4444; font-weight: bold; }
+  .new .vs-list li::before { content: '✓'; color: var(--blue-1); font-weight: bold; }
 
   /* ─── 4. PHILOSOPHY ─── */
-  .phil-step { display: flex; align-items: center; gap: 24px; padding: 24px 32px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; border-radius: 20px; background: rgba(15,23,42,0.3); margin-bottom: 12px; }
-  .phil-step:hover { background: rgba(30,41,59,0.8); transform: translateX(10px); border-color: rgba(255,255,255,0.1); }
-  .phil-num { font-weight: 900; font-size: 48px; background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.8; }
-  .phil-heading { font-size: 20px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+  .phil-step { display: flex; align-items: center; gap: 24px; padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,0.04); transition: transform 0.3s; border-radius: 20px; }
+  .phil-step:hover { background: rgba(255,255,255,0.8); transform: scale(1.02); }
+  .phil-num { font-weight: 900; font-size: 48px; background: linear-gradient(135deg, var(--blue-1), var(--purple-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .phil-heading { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
   .phil-body { font-size: 15px; color: var(--text-sub); line-height: 1.6; }
 
-  /* ─── 5. HOW IT WORKS ─── */
+  /* ─── 5. HOW IT WORKS (SVG 모던 아이콘으로 교체) ─── */
   .workflow-container { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 1000px; margin: 60px auto 0; }
-  .workflow-line { position: absolute; top: 40px; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.05); z-index: 1; }
-  .workflow-progress { position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, #38bdf8, transparent); animation: flowAnim 3s linear infinite; }
+  .workflow-line { position: absolute; top: 40px; left: 10%; right: 10%; height: 3px; background: rgba(59,130,246,0.15); z-index: 1; }
+  .workflow-progress { position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, var(--blue-1)); animation: flowAnim 3s linear infinite; }
   @keyframes flowAnim { 0% { left: -50%; opacity: 0; } 50% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
   .workflow-node { z-index: 2; display: flex; flex-direction: column; align-items: center; flex: 1; }
-  .node-icon-box { width: 80px; height: 80px; border-radius: 20px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; font-size: 28px; transition: transform 0.3s; }
-  .workflow-node:hover .node-icon-box { transform: translateY(-8px); border-color: #38bdf8; box-shadow: 0 10px 30px rgba(56,189,248,0.2); }
-  .node-title { font-weight: 800; font-size: 17px; color: var(--white); margin-bottom: 8px; }
-  .node-desc { font-size: 14px; color: var(--text-sub); text-align: center; line-height: 1.5; }
+  .node-icon-box { width: 80px; height: 80px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--white); box-shadow: 0 10px 25px rgba(37,99,235,0.1); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; transition: transform 0.3s; }
+  .workflow-node:hover .node-icon-box { transform: translateY(-8px); background: var(--white); }
+  .node-icon-box svg { width: 36px; height: 36px; stroke: var(--blue-1); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .node-title { font-weight: 800; font-size: 18px; color: var(--text-main); margin-bottom: 8px; }
+  .node-desc { font-size: 14px; color: var(--text-sub); text-align: center; line-height: 1.5; word-break: keep-all; padding: 0 20px; }
 
-  /* ─── 6. KPIs (가로 슬라이더 형태) ─── */
-  .kpi-slider-wrapper { width: 100%; position: relative; overflow: hidden; padding: 20px 0; }
-  .kpi-slider-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.25, 1, 0.32, 1); padding: 0 40px; }
+  /* ─── 6. KPIs (가로폭 축소, 쐐기 버튼, 1/3 오버플로우 UI) ─── */
+  #kpis .section-inner { max-width: 100%; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; }
+  .kpi-layout-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 1200px; position: relative; margin-top: 20px; }
+  
+  .kpi-slider-viewport { 
+    width: 900px; /* 고정폭을 주어 넘치는 부분이 자연스럽게 잘리도록 설계 */
+    overflow: hidden; padding: 20px 0; 
+    /* 오른쪽 여백을 크게 주어 다음 카드가 슬쩍 보이게 함 */
+    padding-right: 150px; 
+  }
+  
+  .kpi-slider-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.25, 1, 0.32, 1); }
+  
   .kpi-card { 
-    flex: 0 0 calc(33.333% - 16px); min-width: 320px; 
-    background: linear-gradient(180deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.8) 100%); 
-    border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px 24px; 
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4); transition: 0.4s; display: flex; flex-direction: column; justify-content: space-between;
+    width: 280px; flex-shrink: 0; /* 카드 폭 축소 (280px) */
+    background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 28px 24px; 
+    box-shadow: var(--glass-shadow); transition: 0.4s; display: flex; flex-direction: column; justify-content: space-between;
   }
-  .kpi-card:hover { transform: translateY(-8px); border-color: rgba(56,189,248,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(56,189,248,0.1); }
+  .kpi-card:hover { transform: translateY(-8px); background: var(--white); border-color: rgba(255,255,255,1); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08); }
   .kpi-index { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.15em; margin-bottom: 8px; text-transform: uppercase; }
-  .kpi-name { font-size: 24px; font-weight: 900; color: var(--white); margin-bottom: 6px; }
+  .kpi-name { font-size: 22px; font-weight: 900; color: var(--text-main); margin-bottom: 6px; }
   .kpi-subtitle { font-size: 13px; font-weight: 700; color: var(--blue-2); margin-bottom: 16px; }
-  .kpi-desc { font-size: 14.5px; color: var(--text-sub); line-height: 1.6; margin-bottom: 24px; flex-grow: 1; }
-  .math-font { align-self: flex-start; padding: 8px 14px; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: 'Cambria', serif; font-style: italic; font-weight: 700; color: #38bdf8; border: 1px solid rgba(255,255,255,0.05); letter-spacing: 1px; }
-  
-  .slider-controls { display: flex; justify-content: center; gap: 16px; margin-top: 30px; }
-  .slider-btn { width: 48px; height: 48px; border-radius: 50%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: var(--white); cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
-  .slider-btn:hover { background: #38bdf8; border-color: #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.4); }
-  .slider-btn svg { width: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .kpi-desc { font-size: 14px; color: var(--text-sub); line-height: 1.6; margin-bottom: 24px; flex-grow: 1; word-break: keep-all; }
+  .math-font { align-self: flex-start; padding: 8px 12px; background: rgba(255,255,255,0.8); border-radius: 8px; font-family: 'Cambria', serif; font-style: italic; font-weight: 700; color: var(--blue-1); border: 1px solid rgba(0,0,0,0.05); }
 
-  /* ─── 7. DASHBOARD SNEAK PEEK (레이더 애니메이션) ─── */
-  .radar-container { position: relative; width: 400px; height: 400px; margin: 40px auto 0; display: flex; justify-content: center; align-items: center; }
-  
-  /* 날아오는 가짜 카드들 */
-  .flying-card {
-    position: absolute; width: 80px; height: 100px; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.5); border-radius: 12px;
-    box-shadow: 0 0 20px rgba(56,189,248,0.2); opacity: 0; pointer-events: none;
-    transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  /* 좌우 쐐기 화살표 버튼 */
+  .slider-btn { 
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+    width: 56px; height: 56px; border-radius: 50%; background: var(--white); border: 1px solid var(--glass-border); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05); color: var(--text-main); cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; 
   }
-  /* 활성화 시 카드들이 중앙으로 모임 */
-  #sneakpeek.active .flying-card { transform: translate(0,0) scale(0.2) rotate(360deg) !important; opacity: 0; }
-  
-  /* 레이더 차트 본체 */
-  .radar-chart-svg { width: 100%; height: 100%; opacity: 0; transform: scale(0.5); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s; filter: drop-shadow(0 0 20px rgba(56,189,248,0.2)); }
-  #sneakpeek.active .radar-chart-svg { opacity: 1; transform: scale(1); }
-  
-  /* SVG 내부 스타일 */
-  .radar-grid { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 1; }
-  .radar-axis { stroke: rgba(255,255,255,0.1); stroke-width: 1; }
-  .radar-polygon { fill: rgba(56,189,248,0.2); stroke: #38bdf8; stroke-width: 2; transition: all 1s linear; }
-  .radar-point { fill: #fff; stroke: #38bdf8; stroke-width: 2; transition: all 1s linear; }
-  .radar-label { fill: var(--text-muted); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; letter-spacing: 1px; }
+  .slider-btn:hover { background: var(--blue-1); color: var(--white); box-shadow: 0 10px 25px rgba(37,99,235,0.3); }
+  .slider-btn svg { width: 24px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .slider-btn.prev { left: 40px; }
+  .slider-btn.next { right: 40px; }
 
-  /* ─── 8. PSYCHOLOGICAL SAFETY ─── */
+  /* ─── 7. DASHBOARD SNEAK PEEK (소프트 UI 레이더 차트 + Merge 애니메이션) ─── */
+  .radar-container { position: relative; width: 500px; height: 500px; margin: 40px auto 0; display: flex; justify-content: center; align-items: center; }
+  
+  /* 6장에서 날아오는 빛 입자 효과 (Merge Transition) */
+  .merge-particle {
+    position: absolute; width: 60px; height: 60px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--blue-1), var(--purple-1));
+    box-shadow: 0 10px 20px rgba(37,99,235,0.4);
+    opacity: 0; pointer-events: none; z-index: 5;
+  }
+  #sneakpeek.active .merge-particle { animation: mergeParticleAnim 1.5s cubic-bezier(0.25, 1, 0.32, 1) forwards; }
+  @keyframes mergeParticleAnim {
+    0% { opacity: 0; transform: translate(var(--startX), var(--startY)) scale(1.5); }
+    30% { opacity: 1; transform: translate(var(--startX), var(--startY)) scale(1); }
+    100% { opacity: 0; transform: translate(0, 0) scale(0); }
+  }
+
+  /* 부드러운 소프트 UI 차트 래퍼 */
+  .radar-chart-wrapper {
+    position: absolute; width: 100%; height: 100%;
+    opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.8s;
+  }
+  #sneakpeek.active .radar-chart-wrapper { opacity: 1; transform: scale(1); }
+  
+  .radar-chart-svg { width: 100%; height: 100%; overflow: visible; }
+  .radar-axis { stroke: rgba(0,0,0,0.04); stroke-width: 1; }
+  /* 매우 느리고 부드럽게 물결치는 애니메이션 셋팅 */
+  .radar-polygon { fill: rgba(99, 102, 241, 0.05); stroke: url(#polyGrad); stroke-width: 3; transition: all 2.5s ease-in-out; }
+  .radar-point { fill: #fff; stroke: var(--blue-1); stroke-width: 2.5; transition: all 2.5s ease-in-out; }
+  .radar-label { fill: var(--text-main); font-size: 12px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+  .radar-val { fill: var(--text-sub); font-size: 13px; font-weight: 800; text-anchor: middle; dominant-baseline: middle; }
+
+  /* ─── 8. PSYCHOLOGICAL SAFETY (방패 모던 SVG) ─── */
   #culture { text-align: center; }
-  .culture-icon { font-size: 52px; margin-bottom: 24px; animation: floatIcon 3s ease-in-out infinite alternate; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
-  .culture-desc { font-size: 18px; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 400; }
+  .culture-icon { margin-bottom: 24px; animation: floatIcon 3s ease-in-out infinite alternate; display: inline-block; }
+  .culture-icon svg { width: 64px; height: 64px; stroke: url(#gradIcon); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .culture-desc { font-size: 18px; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 500; }
   @keyframes floatIcon { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
   /* ─── 9. IMPACT ─── */
   .impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .impact-card { background: rgba(15,23,42,0.6); padding: 40px 32px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); transition: 0.4s; position: relative; overflow: hidden; }
-  .impact-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #38bdf8, #818cf8); opacity: 0; transition: 0.4s; }
-  .impact-card:hover { transform: translateY(-8px); background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.1); }
-  .impact-card:hover::before { opacity: 1; }
-  .impact-role { font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
-  .impact-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--white); line-height: 1.3; }
+  .impact-card { background: var(--glass-bg); padding: 40px 32px; border-radius: 24px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: 0.4s; }
+  .impact-card:hover { transform: translateY(-8px); background: var(--white); border-color: rgba(255,255,255,1); box-shadow: 0 20px 40px rgba(37,99,235,0.1); }
+  .impact-role { font-size: 14px; font-weight: 800; color: var(--blue-1); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .impact-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); line-height: 1.3; }
   .impact-list { padding-left: 20px; font-size: 15px; color: var(--text-sub); line-height: 1.6; }
   .impact-list li { margin-bottom: 8px; }
 
   /* ─── 10. LINK & FOOTER ─── */
   #link { text-align: center; }
   .btn-magic {
-    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    padding: 18px 40px; border-radius: 50px; font-size: 16px; font-weight: 800; color: #fff; text-decoration: none;
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2), 0 10px 30px rgba(59, 130, 246, 0.4);
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 16px 36px; border-radius: 50px; font-size: 16px; font-weight: 800; color: #ffffff; text-decoration: none;
+    background: linear-gradient(180deg, #9333ea 0%, #6366f1 100%);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.2), 0 0 0 6px rgba(139, 92, 246, 0.25), 0 12px 24px rgba(139, 92, 246, 0.4);
+    transition: all 0.3s;
   }
-  .btn-magic:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.3), 0 20px 40px rgba(139, 92, 246, 0.6); }
-  .btn-magic svg { width: 20px; height: 20px; fill: currentColor; }
+  .btn-magic:hover { transform: translateY(-4px) scale(1.02); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 0 0 8px rgba(139, 92, 246, 0.35), 0 16px 32px rgba(139, 92, 246, 0.5); }
+  .btn-magic svg { width: 20px; height: 20px; fill: #ffffff; }
 
-  footer { height: auto; padding: 40px; background: #05080f; border-top: 1px solid rgba(255,255,255,0.05); }
+  footer { height: auto; padding: 40px; background: rgba(255,255,255,0.5); border-top: 1px solid rgba(255,255,255,0.8); }
   .footer-inner { width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; }
-  .footer-logo { font-weight: 900; font-size: 20px; color: var(--text-muted); }
-  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.3); line-height: 1.5; }
+  .footer-logo { font-weight: 900; font-size: 20px; color: var(--text-main); }
+  .footer-copy { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
-  /* Reveal Animation */
   .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
   .reveal.visible { opacity: 1; transform: translateY(0); }
   .delay-1 { transition-delay: 0.1s; } .delay-2 { transition-delay: 0.2s; } .delay-3 { transition-delay: 0.3s; }
@@ -248,22 +271,68 @@
 </head>
 <body>
 
+<!-- SVG 아이콘 정의 (이모지 완전 대체) -->
+<svg style="display: none;">
+  <defs>
+    <linearGradient id="gradIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <linearGradient id="polyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+    <!-- 뉴모피즘 드롭섀도우 필터 -->
+    <filter id="neumorphism-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="15" stdDeviation="25" flood-color="#000000" flood-opacity="0.06"/>
+    </filter>
+    <filter id="neumorphism-inner" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.04"/>
+    </filter>
+  </defs>
+  
+  <!-- 2장 문제인식 아이콘 -->
+  <symbol id="icon-trash" viewBox="0 0 24 24">
+    <polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
+  </symbol>
+  <symbol id="icon-brain" viewBox="0 0 24 24">
+    <path d="M9.5 2A2.5 2.5 0 0 0 7 4.5v.5H6a3 3 0 0 0-3 3v2a3 3 0 0 0 1 2.23V14a4 4 0 0 0 4 4h1a4 4 0 0 0 4 4 4 4 0 0 0 4-4h1a4 4 0 0 0 4-4v-1.77A3 3 0 0 0 21 10V8a3 3 0 0 0-3-3h-1v-.5A2.5 2.5 0 0 0 14.5 2a2.5 2.5 0 0 0-2.5 2.5V5h-1V4.5A2.5 2.5 0 0 0 9.5 2z"></path><path d="M12 5v17"></path><path d="M12 9h4"></path><path d="M12 13h4"></path>
+  </symbol>
+  <symbol id="icon-feedback" viewBox="0 0 24 24">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line>
+  </symbol>
+
+  <!-- 5장 작동원리 아이콘 -->
+  <symbol id="icon-doc" viewBox="0 0 24 24">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+  </symbol>
+  <symbol id="icon-cog" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+  </symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24">
+    <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line><line x1="2" y1="20" x2="22" y2="20"></line>
+  </symbol>
+  
+  <!-- 8장 조직문화 방패 아이콘 -->
+  <symbol id="icon-shield" viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+  </symbol>
+</svg>
+
 <!-- Ambient Orbs & Dust -->
 <div id="bg-canvas">
   <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 </div>
 <div id="dust-container"></div>
 
-<!-- Background Wave (Dark Mode optimized) -->
+<!-- Background Wave -->
 <div class="wave-bg-global">
   <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <!-- 얇은 선 -->
-    <path class="wave-path-1" fill="none" stroke="#38bdf8" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.1"></path>
-    <path class="wave-path-2" fill="none" stroke="#a78bfa" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.08"></path>
-    <!-- 두껍고 극도로 투명한 선 (3줄 추가) -->
-    <path class="wave-path-3" fill="none" stroke="#60a5fa" stroke-width="4" d="M0,80 C400,280,600,20,900,120 C1200,220,1300,100,1440,150" opacity="0.03"></path>
-    <path class="wave-path-4" fill="none" stroke="#c084fc" stroke-width="6" d="M0,260 C350,100,550,320,850,180 C1150,40,1350,260,1440,200" opacity="0.02"></path>
-    <path class="wave-path-5" fill="none" stroke="#3b82f6" stroke-width="3" d="M0,120 C300,20,500,280,800,100 C1100, -80,1250,300,1440,120" opacity="0.04"></path>
+    <path class="wave-path-1" fill="none" stroke="#3b82f6" stroke-width="0.5" d="M0,160 C320,300,420,0,720,160 C1020,320,1120,60,1440,160" opacity="0.4"></path>
+    <path class="wave-path-2" fill="none" stroke="#a78bfa" stroke-width="0.8" d="M0,200 C280,50,520,350,820,200 C1120,50,1280,250,1440,200" opacity="0.3"></path>
+    <path class="wave-path-3" fill="none" stroke="#60a5fa" stroke-width="3.5" d="M0,80 C400,280,600,20,900,120 C1200,220,1300,100,1440,150" opacity="0.12"></path>
+    <path class="wave-path-4" fill="none" stroke="#c084fc" stroke-width="5" d="M0,260 C350,100,550,320,850,180 C1150,40,1350,260,1440,200" opacity="0.1"></path>
+    <path class="wave-path-5" fill="none" stroke="#3b82f6" stroke-width="2" d="M0,120 C300,20,500,280,800,100 C1100, -80,1250,300,1440,120" opacity="0.15"></path>
   </svg>
 </div>
 
@@ -320,17 +389,17 @@
       </div>
       <div class="challenge-circles reveal delay-3">
         <div class="challenge-circle">
-          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner">🗑️</div></div>
+          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner"><svg><use href="#icon-trash"></use></svg></div></div>
           <div class="circle-title">버려지는 데이터</div>
           <div class="circle-desc">단순 출퇴근용으로 전락한 1,500명의 소중한 데일리 업무 기록들.</div>
         </div>
         <div class="challenge-circle">
-          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner">🧠</div></div>
+          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner"><svg><use href="#icon-brain"></use></svg></div></div>
           <div class="circle-title">기억의 오류</div>
           <div class="circle-desc">최근 1~2주의 기억이 3개월 전체의 평가를 지배하는 최신 편향 문제.</div>
         </div>
         <div class="challenge-circle">
-          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner">💬</div></div>
+          <div class="circle-icon-wrap"><div class="circle-icon-glow"></div><div class="circle-icon-inner"><svg><use href="#icon-feedback"></use></svg></div></div>
           <div class="circle-title">피드백의 한계</div>
           <div class="circle-desc">정확한 근거 없는 "고생했다"는 위로만으로는 성장을 코칭할 수 없습니다.</div>
         </div>
@@ -404,17 +473,17 @@
       <div class="workflow-container reveal delay-3">
         <div class="workflow-line"><div class="workflow-progress"></div></div>
         <div class="workflow-node">
-          <div class="node-icon-box">📝</div>
+          <div class="node-icon-box"><svg><use href="#icon-doc"></use></svg></div>
           <div class="node-title">1. 기존 시스템 기록</div>
           <div class="node-desc">매일 퇴근 전 작성하는<br>HUB 업무일지 데이터</div>
         </div>
         <div class="workflow-node">
-          <div class="node-icon-box">⚙️</div>
+          <div class="node-icon-box"><svg><use href="#icon-cog"></use></svg></div>
           <div class="node-title">2. 백그라운드 분석</div>
           <div class="node-desc">Shannon, Hurst 등<br>6가지 수학적 모델 연산</div>
         </div>
         <div class="workflow-node">
-          <div class="node-icon-box">📊</div>
+          <div class="node-icon-box"><svg><use href="#icon-chart"></use></svg></div>
           <div class="node-title">3. 인사이트 도출</div>
           <div class="node-desc">개인별/팀별 직관적인<br>대시보드 UI로 실시간 반영</div>
         </div>
@@ -422,9 +491,9 @@
     </div>
   </section>
 
-  <!-- 6. KPIs (Full 6 Metrics with Horizontal Slider) -->
+  <!-- 6. KPIs (Narrow Cards + Chevron Buttons + Overflow UI) -->
   <section id="kpis">
-    <div class="section-inner" style="max-width: 100%;">
+    <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">6 Core Metrics</p>
         <h2 class="section-title reveal delay-1">
@@ -432,138 +501,147 @@
         </h2>
       </div>
       
-      <div class="kpi-slider-wrapper reveal delay-2">
-        <div class="kpi-slider-track" id="kpi-track">
-          <!-- Card 1 -->
-          <div class="kpi-card">
-            <div>
-              <div class="kpi-index">Index 01</div>
-              <div class="kpi-name">섀넌 지수</div>
-              <div class="kpi-subtitle">파편화도 · 질적 몰입도</div>
-              <div class="kpi-desc">업무가 얼마나 여러 갈래로 분산되었는지 파악하여, 몰입을 방해하는 요소를 찾습니다.</div>
-            </div>
-            <div class="math-font">H = −Σ pᵢ ln pᵢ</div>
-          </div>
-          <!-- Card 2 -->
-          <div class="kpi-card">
-            <div>
-              <div class="kpi-index">Index 02</div>
-              <div class="kpi-name">허스트 지수</div>
-              <div class="kpi-subtitle">주도성 · 질적 통제력</div>
-              <div class="kpi-desc">수동적 업무 처리가 아닌, 팀원 스스로 업무 리듬을 끌고 나가는 주도성을 측정합니다.</div>
-            </div>
-            <div class="math-font">E[R/S] = C nᴴ</div>
-          </div>
-          <!-- Card 3 -->
-          <div class="kpi-card">
-            <div>
-              <div class="kpi-index">Index 03</div>
-              <div class="kpi-name">자카드 지수</div>
-              <div class="kpi-subtitle">확장성 · 질적 성장성</div>
-              <div class="kpi-desc">반복 업무의 늪에 빠지지 않고, 새로운 영역을 탐색하고 있는지를 나타내는 성장의 궤적입니다.</div>
-            </div>
-            <div class="math-font">J = |A ∩ B| / |A ∪ B|</div>
-          </div>
-          <!-- Card 4 -->
-          <div class="kpi-card">
-            <div>
-              <div class="kpi-index">Index 04</div>
-              <div class="kpi-name">초과근무 지수</div>
-              <div class="kpi-subtitle">정시업무 · 양적 에너지 잔량</div>
-              <div class="kpi-desc">총 근무 중 초과근무 비율을 역산하여 건강한 에너지 상태와 번아웃 위험을 진단합니다.</div>
-            </div>
-            <div class="math-font">Idx = 1 − (T_ot / T_total)</div>
-          </div>
-          <!-- Card 5 -->
-          <div class="kpi-card">
-            <div>
-              <div class="kpi-index">Index 05</div>
-              <div class="kpi-name">허핀달-허쉬만 지수</div>
-              <div class="kpi-subtitle">몰입도 · 양적 화력 집중도</div>
-              <div class="kpi-desc">특정 핵심 프로젝트에 에너지를 온전히 집중하고 있는지를 수치화합니다.</div>
-            </div>
-            <div class="math-font">HHI = Σ sᵢ²</div>
-          </div>
-          <!-- Card 6 -->
-          <div class="kpi-card">
-            <div>
-              <div class="kpi-index">Index 06</div>
-              <div class="kpi-name">변동계수</div>
-              <div class="kpi-subtitle">안정성 · 양적 투입 리듬</div>
-              <div class="kpi-desc">일일 업무 투입 시간의 기복을 측정하여 심리적 불안도와 안정적인 업무 리듬을 파악합니다.</div>
-            </div>
-            <div class="math-font">CV = σ / μ</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Slider Controls -->
-      <div class="slider-controls reveal delay-3">
-        <button class="slider-btn" onclick="moveKpi(-1)">
+      <div class="kpi-layout-wrapper reveal delay-2">
+        <!-- Prev Button -->
+        <button class="slider-btn prev" onclick="moveKpi(-1)">
           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <button class="slider-btn" onclick="moveKpi(1)">
+        
+        <div class="kpi-slider-viewport">
+          <div class="kpi-slider-track" id="kpi-track">
+            <!-- Card 1 -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-index">Index 01</div>
+                <div class="kpi-name">섀넌 지수</div>
+                <div class="kpi-subtitle">파편화도 · 질적 몰입도</div>
+                <div class="kpi-desc">업무가 얼마나 여러 갈래로 분산되었는지 파악하여, 몰입을 방해하는 요소를 찾습니다.</div>
+              </div>
+              <div class="math-font">H = −Σ pᵢ ln pᵢ</div>
+            </div>
+            <!-- Card 2 -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-index">Index 02</div>
+                <div class="kpi-name">허스트 지수</div>
+                <div class="kpi-subtitle">주도성 · 질적 통제력</div>
+                <div class="kpi-desc">수동적 업무 처리가 아닌, 팀원 스스로 업무 리듬을 끌고 나가는 주도성을 측정합니다.</div>
+              </div>
+              <div class="math-font">E[R/S] = C nᴴ</div>
+            </div>
+            <!-- Card 3 -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-index">Index 03</div>
+                <div class="kpi-name">자카드 지수</div>
+                <div class="kpi-subtitle">확장성 · 질적 성장성</div>
+                <div class="kpi-desc">반복 업무에 빠지지 않고, 새로운 영역을 탐색하고 있는지를 나타내는 성장의 궤적입니다.</div>
+              </div>
+              <div class="math-font">J = |A ∩ B| / |A ∪ B|</div>
+            </div>
+            <!-- Card 4 -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-index">Index 04</div>
+                <div class="kpi-name">초과근무 지수</div>
+                <div class="kpi-subtitle">정시업무 · 양적 에너지 잔량</div>
+                <div class="kpi-desc">총 근무 중 초과근무 비율을 역산하여 건강한 에너지 상태와 번아웃 위험을 진단합니다.</div>
+              </div>
+              <div class="math-font">Idx = 1 − (T_ot/T_all)</div>
+            </div>
+            <!-- Card 5 -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-index">Index 05</div>
+                <div class="kpi-name">허핀달 지수</div>
+                <div class="kpi-subtitle">몰입도 · 양적 화력 집중도</div>
+                <div class="kpi-desc">특정 핵심 프로젝트에 에너지를 온전히 집중하고 있는지를 수치화합니다.</div>
+              </div>
+              <div class="math-font">HHI = Σ sᵢ²</div>
+            </div>
+            <!-- Card 6 -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-index">Index 06</div>
+                <div class="kpi-name">변동계수</div>
+                <div class="kpi-subtitle">안정성 · 양적 투입 리듬</div>
+                <div class="kpi-desc">일일 업무 투입 시간의 기복을 측정하여 안정적인 업무 리듬을 파악합니다.</div>
+              </div>
+              <div class="math-font">CV = σ / μ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Button -->
+        <button class="slider-btn next" onclick="moveKpi(1)">
           <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
       </div>
-
     </div>
   </section>
 
-  <!-- 7. SNEAK PEEK (Radar Chart Animation) -->
+  <!-- 7. SNEAK PEEK (Merge Effect & Soft UI Radar Chart) -->
   <section id="sneakpeek">
     <div class="section-inner">
       <div class="section-header">
         <p class="section-eyebrow reveal">Visualized Insight</p>
         <h2 class="section-title reveal delay-1">
-          <span class="light">6개의 개별 지표가 융합된</span><br><span class="hl">하나의 다각적 인사이트</span>
+          <span class="light">6개의 지표가 융합된</span><br><span class="hl">하나의 다각적 인사이트</span>
         </h2>
         <p class="section-desc reveal delay-2">각각의 지표들은 6각형 레이더 차트로 모여 개인의 퍼포먼스 밸런스를 한눈에 보여주는 강력한 지도가 됩니다.</p>
       </div>
       
       <div class="radar-container reveal delay-3">
-        <!-- 6 Flying Fake Cards -->
-        <div class="flying-card" style="top: -100px; left: -100px; transform: rotate(-15deg);"></div>
-        <div class="flying-card" style="top: -50px; right: -150px; transform: rotate(20deg);"></div>
-        <div class="flying-card" style="top: 150px; left: -200px; transform: rotate(-5deg);"></div>
-        <div class="flying-card" style="top: 200px; right: -100px; transform: rotate(30deg);"></div>
-        <div class="flying-card" style="bottom: -100px; left: 0px; transform: rotate(-25deg);"></div>
-        <div class="flying-card" style="bottom: -50px; right: 50px; transform: rotate(10deg);"></div>
+        <!-- Merge Animation Particles -->
+        <div class="merge-particle" style="--startX: -300px; --startY: -200px;"></div>
+        <div class="merge-particle" style="--startX: 300px; --startY: -100px;"></div>
+        <div class="merge-particle" style="--startX: -250px; --startY: 200px;"></div>
+        <div class="merge-particle" style="--startX: 250px; --startY: 250px;"></div>
+        <div class="merge-particle" style="--startX: 0px; --startY: -300px;"></div>
+        <div class="merge-particle" style="--startX: 0px; --startY: 300px;"></div>
         
-        <!-- Animated SVG Radar Chart -->
-        <svg class="radar-chart-svg" viewBox="0 0 300 300">
-          <g transform="translate(150, 150)">
-            <!-- Grid webs (6 hexagons) -->
-            <polygon class="radar-grid" points="0,-100 86.6,-50 86.6,50 0,100 -86.6,50 -86.6,-50" />
-            <polygon class="radar-grid" points="0,-80 69.3,-40 69.3,40 0,80 -69.3,40 -69.3,-40" />
-            <polygon class="radar-grid" points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" />
-            <polygon class="radar-grid" points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20" />
-            <polygon class="radar-grid" points="0,-20 17.3,-10 17.3,10 0,20 -17.3,10 -17.3,-10" />
-            <!-- Axis lines -->
-            <line class="radar-axis" x1="0" y1="0" x2="0" y2="-100" />
-            <line class="radar-axis" x1="0" y1="0" x2="86.6" y2="-50" />
-            <line class="radar-axis" x1="0" y1="0" x2="86.6" y2="50" />
-            <line class="radar-axis" x1="0" y1="0" x2="0" y2="100" />
-            <line class="radar-axis" x1="0" y1="0" x2="-86.6" y2="50" />
-            <line class="radar-axis" x1="0" y1="0" x2="-86.6" y2="-50" />
-            <!-- Labels -->
-            <text class="radar-label" x="0" y="-115">SHANNON</text>
-            <text class="radar-label" x="105" y="-55">HURST</text>
-            <text class="radar-label" x="105" y="55">JACCARD</text>
-            <text class="radar-label" x="0" y="115">OVERTIME</text>
-            <text class="radar-label" x="-105" y="55">HHI</text>
-            <text class="radar-label" x="-105" y="-55">CV</text>
-            <!-- Dynamic Data Polygon -->
-            <polygon id="dynamic-radar" class="radar-polygon" points="0,-50 43.3,-25 60.6,35 0,70 -52,30 -69.3,-40"></polygon>
-            <!-- Dynamic Points -->
-            <circle class="radar-point pt-0" cx="0" cy="-50" r="3" />
-            <circle class="radar-point pt-1" cx="43.3" cy="-25" r="3" />
-            <circle class="radar-point pt-2" cx="60.6" cy="35" r="3" />
-            <circle class="radar-point pt-3" cx="0" cy="70" r="3" />
-            <circle class="radar-point pt-4" cx="-52" cy="30" r="3" />
-            <circle class="radar-point pt-5" cx="-69.3" cy="-40" r="3" />
-          </g>
-        </svg>
+        <!-- Soft UI Radar Chart -->
+        <div class="radar-chart-wrapper">
+          <svg class="radar-chart-svg" viewBox="0 0 500 500">
+            <g transform="translate(250, 250)">
+              <!-- 뉴모피즘 원형 배경 (부드러운 그림자) -->
+              <circle cx="0" cy="0" r="160" fill="#ffffff" filter="url(#neumorphism-shadow)"/>
+              <circle cx="0" cy="0" r="105" fill="#f8fafc" filter="url(#neumorphism-inner)"/>
+              <circle cx="0" cy="0" r="50" fill="#f1f5f9" filter="url(#neumorphism-shadow)"/>
+
+              <!-- 방사형 축 (아주 얇은 선) -->
+              <line class="radar-axis" x1="0" y1="0" x2="0" y2="-160" />
+              <line class="radar-axis" x1="0" y1="0" x2="138.5" y2="-80" />
+              <line class="radar-axis" x1="0" y1="0" x2="138.5" y2="80" />
+              <line class="radar-axis" x1="0" y1="0" x2="0" y2="160" />
+              <line class="radar-axis" x1="0" y1="0" x2="-138.5" y2="80" />
+              <line class="radar-axis" x1="0" y1="0" x2="-138.5" y2="-80" />
+
+              <!-- 육각형 보조 그리드 선 -->
+              <polygon points="0,-160 138.5,-80 138.5,80 0,160 -138.5,80 -138.5,-80" fill="none" stroke="rgba(0,0,0,0.03)" stroke-width="1.5" />
+              <polygon points="0,-105 90.9,-52.5 90.9,52.5 0,105 -90.9,52.5 -90.9,-52.5" fill="none" stroke="rgba(0,0,0,0.03)" stroke-width="1.5" />
+
+              <!-- 데이터 라벨 텍스트 -->
+              <text class="radar-label" x="0" y="-180">SHANNON</text> <text class="radar-val" x="0" y="-196">Index 01</text>
+              <text class="radar-label" x="160" y="-95">HURST</text>   <text class="radar-val" x="160" y="-111">Index 02</text>
+              <text class="radar-label" x="160" y="95">JACCARD</text>  <text class="radar-val" x="160" y="79">Index 03</text>
+              <text class="radar-label" x="0" y="180">OVERTIME</text>  <text class="radar-val" x="0" y="196">Index 04</text>
+              <text class="radar-label" x="-160" y="95">HHI</text>     <text class="radar-val" x="-160" y="79">Index 05</text>
+              <text class="radar-label" x="-160" y="-95">CV</text>     <text class="radar-val" x="-160" y="-111">Index 06</text>
+
+              <!-- Dynamic Data Polygon (부드럽게 물결치는 도형) -->
+              <polygon id="dynamic-radar" class="radar-polygon" points="0,-80 69.2,-40 95.2,55 0,120 -86.6,50 -112.5,-65"></polygon>
+              
+              <!-- Dynamic Data Points -->
+              <circle class="radar-point pt-0" cx="0" cy="-80" r="4.5" />
+              <circle class="radar-point pt-1" cx="69.2" cy="-40" r="4.5" />
+              <circle class="radar-point pt-2" cx="95.2" cy="55" r="4.5" />
+              <circle class="radar-point pt-3" cx="0" cy="120" r="4.5" />
+              <circle class="radar-point pt-4" cx="-86.6" cy="50" r="4.5" />
+              <circle class="radar-point pt-5" cx="-112.5" cy="-65" r="4.5" />
+            </g>
+          </svg>
+        </div>
       </div>
     </div>
   </section>
@@ -571,7 +649,7 @@
   <!-- 8. PSYCHOLOGICAL SAFETY -->
   <section id="culture">
     <div class="section-inner">
-      <div class="culture-icon reveal">🛡️</div>
+      <div class="culture-icon reveal"><svg><use href="#icon-shield"></use></svg></div>
       <h2 class="section-title reveal delay-1" style="text-align: center; margin-bottom: 24px;">
         우리는 사람을 <span class="light">통제하지 않습니다.</span><br>
         데이터를 통해 <span class="hl">성장을 돕습니다.</span>
@@ -662,54 +740,51 @@
     for (let i = 0; i < 60; i++) {
       let dust = document.createElement('div');
       dust.className = 'dust';
-      let size = Math.random() * 2.5 + 1;
+      let size = Math.random() * 3 + 1;
       dust.style.width = `${size}px`; dust.style.height = `${size}px`;
       dust.style.left = `${Math.random() * 100}vw`; dust.style.top = `${Math.random() * 100}vh`;
-      dust.style.animationDuration = `${Math.random() * 20 + 10}s`;
+      dust.style.animationDuration = `${Math.random() * 15 + 10}s`;
       dust.style.animationDelay = `${Math.random() * 10}s`;
       dustContainer.appendChild(dust);
     }
     triggerReveal();
-    startRadarAnimation(); // 레이더 차트 애니메이션 루프 시작
+    startRadarAnimation(); // 레이더 차트 애니메이션 실행
   });
 
-  // KPI Slider Logic
+  // KPI Slider Logic (카드 가로폭 축소 & 1/3 보이기 적용)
   let currentKpiIndex = 0;
   function moveKpi(direction) {
     const track = document.getElementById('kpi-track');
-    // 카드 총 6개, 한 화면에 3개 노출 (반응형에 따라 다르지만 기본 로직)
-    // 0 -> 1 -> 2 -> 3 까지만 이동 가능하도록 설정
+    // 카드 총 6개, 한 번에 최대 이동 가능 인덱스 설정 (디자인 상 3까지 이동하면 마지막 카드가 나옴)
     const maxIndex = 3; 
     currentKpiIndex += direction;
     if (currentKpiIndex < 0) currentKpiIndex = 0;
     if (currentKpiIndex > maxIndex) currentKpiIndex = maxIndex;
     
-    // 카드 너비(33.333%) + 갭(24px) 비율만큼 이동 계산
-    track.style.transform = `translateX(calc(-${currentKpiIndex * 33.333}% - ${currentKpiIndex * 8}px))`;
+    // 카드 너비(280px) + Gap(24px) = 304px 만큼 이동
+    track.style.transform = `translateX(-${currentKpiIndex * 304}px)`;
   }
 
-  // Radar Chart Fluctuation Animation
+  // Radar Chart Fluctuation Animation (매우 느리고 부드럽게)
   function startRadarAnimation() {
     const poly = document.getElementById('dynamic-radar');
     const dots = document.querySelectorAll('.radar-point');
-    // 육각형 각도: 0, 60, 120, 180, 240, 300도 (위쪽부터 시계방향)
     const angles = [ -Math.PI/2, -Math.PI/6, Math.PI/6, Math.PI/2, 5*Math.PI/6, 7*Math.PI/6 ];
     
     setInterval(() => {
       let pointsStr = "";
       angles.forEach((angle, i) => {
-        // 반지름 40 ~ 100 사이의 임의의 값 생성
-        let r = Math.random() * 60 + 40; 
+        // 반지름 60 ~ 150 사이 (차트 영역 내)의 임의의 값 생성
+        let r = Math.random() * 90 + 60; 
         let x = r * Math.cos(angle);
         let y = r * Math.sin(angle);
         pointsStr += `${x},${y} `;
         
-        // 동그라미 위치도 같이 업데이트
         dots[i].setAttribute('cx', x);
         dots[i].setAttribute('cy', y);
       });
       poly.setAttribute('points', pointsStr.trim());
-    }, 1200); // 1.2초마다 형태 변경
+    }, 2800); // 2.8초 주기로 변경 (매우 부드러움)
   }
 
   // Fullpage Scroll Logic
@@ -732,7 +807,7 @@
 
     const currentElem = sections[currentIndex];
     
-    // 네비게이션 연동
+    // 네비게이션 & 레이더 애니메이션 트리거 연동
     if (currentElem.tagName.toLowerCase() === 'section') {
       const targetId = currentElem.getAttribute('id');
       if (targetId) {
@@ -740,7 +815,7 @@
         if (activeLink) updateNavIndicator(activeLink);
       }
       
-      // 7장(sneakpeek) 도달 시 클래스 추가 (레이더 트랜지션 애니메이션 트리거)
+      // 7장(sneakpeek) 도달 시 클래스 추가 (Merge 애니메이션 발동)
       if (targetId === 'sneakpeek') {
         currentElem.classList.add('active');
       } else {
