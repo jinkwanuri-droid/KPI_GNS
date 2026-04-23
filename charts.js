@@ -135,7 +135,6 @@ function renderOvProjectRatio(all){
         return;
     }  
 
-    // 각 항목별 퍼센트 계산
     var pm = (m/t*100).toFixed(1);
     var po = (o/t*100).toFixed(1);
     var pc = (c/t*100).toFixed(1);  
@@ -144,38 +143,29 @@ function renderOvProjectRatio(all){
     var poNum = parseFloat(po);
     var pcNum = parseFloat(pc);  
 
-    // HTML 렌더링 시작
+    // HTML 렌더링 시작 (중복되던 제목 div를 제거하고 레이아웃 여백 조정)
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:18px; padding: 10px 5px; height:100%; justify-content:center;">
+    <div style="display:flex; flex-direction:column; gap:12px; padding: 5px; height:100%; justify-content:center; margin-top: 5px;">
         
-        <!-- [1] 상단 텍스트 영역: 세로로 배치하고 gap을 주어 글자 겹침 완벽 해결 -->
-        <div style="display:flex; flex-direction:column; gap:6px;">
-            <div style="font-size:12px; font-weight:700; color:#64748b;">
-                투입 비율 (경남 서부의료원 vs 타 프로젝트)
-            </div>
-            <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
-                <span style="font-size:28px; font-weight:900; color:#00428E;">${pm}%</span>
-                <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:2px;">경상남도 서부의료원</span>
-            </div>
+        <!-- 수치 영역 -->
+        <div style="display:flex; align-items:flex-end; gap:8px; line-height:1;">
+            <span style="font-size:32px; font-weight:900; color:#00428E;">${pm}%</span>
+            <span style="font-size:14px; font-weight:600; color:#64748b; margin-bottom:4px;">경상남도 서부의료원</span>
         </div>
 
-        <!-- [2] 차트 및 하단 라벨 영역 -->
+        <!-- 차트 및 하단 라벨 영역 -->
         <div style="display:flex; flex-direction:column; gap:8px;">
-            
-            <!-- 막대 차트 본체 (12% 미만일 경우 글자 숨김 처리 유지) -->
             <div style="display:flex; min-height:24px; border-radius:12px; overflow:hidden; width:100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); background:#f1f5f9;">
-                <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pmNum >= 12 ? pm+'%' : ''}</div>
-                <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${poNum >= 12 ? po+'%' : ''}</div>
-                <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap; transition: width 0.3s ease;">${pcNum >= 12 ? pc+'%' : ''}</div>
+                <div style="flex: 0 0 ${pm}%; background:#00428E; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pmNum >= 12 ? pm+'%' : ''}</div>
+                <div style="flex: 0 0 ${po}%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${poNum >= 12 ? po+'%' : ''}</div>
+                <div style="flex: 0 0 ${pc}%; background:#cbd5e1; display:flex; align-items:center; justify-content:center; color:#475569; font-size:11px; font-weight:bold; overflow:hidden; white-space:nowrap;">${pcNum >= 12 ? pc+'%' : ''}</div>
             </div>
             
-            <!-- 하단 텍스트 라벨 (막대 차트와 완벽하게 동일한 % width를 부여하여 위치 어긋남 해결) -->
             <div style="display:flex; width:100%; font-size:11px; font-weight:600; color:#64748b; text-align:center;">
                 <div style="width: ${pm}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${pmNum > 0 ? '서부의료원' : ''}</div>
                 <div style="width: ${po}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${poNum > 0 ? '타 프로젝트' : ''}</div>
                 <div style="width: ${pc}%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${pcNum > 0 ? '공통/기타' : ''}</div>
             </div>
-
         </div>
     </div>
     `;
