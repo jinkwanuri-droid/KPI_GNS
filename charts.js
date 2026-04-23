@@ -351,7 +351,7 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 핵심 변경점: 슬라이더 필터 배열(mos)의 마지막 값을 기준으로 요약 카드를 연동합니다!
+    // 💡 오류 해결 지점: 차트의 끝이 아니라 '슬라이드 필터 배열(mos)의 마지막 값'을 추출합니다.
     var targetMonthForSummary = mos[mos.length - 1];
     var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
     if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
@@ -359,6 +359,7 @@ function renderCostTrendChart(mos) {
     var sPlan = globalData.plan[sEndIdx] || 0;
     var sExec = globalData.execActual[sEndIdx];
     var isPred = sExec === null;
+    // 실행 데이터가 null이면 그 달의 예측 데이터를 요약 카드로 보냅니다.
     if(isPred) sExec = globalData.execPred[sEndIdx] || 0;
 
     if(typeof renderCostSummary === 'function') {
