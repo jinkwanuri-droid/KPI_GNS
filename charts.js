@@ -659,30 +659,13 @@ function renderWpDonutCat(d,t){
     });
 }
 function renderWpSwitchBar(d, mos, col) {
-    if (typeof dC === 'function') dC('wpSwitchBar');
-    var sw = {}, pv = null;
-    d.forEach(r => {
-        var m = r.date.slice(0, 7);
-        if (!sw[m]) sw[m] = 0;
-        if (pv !== null && pv !== r.sub) sw[m]++;
-        pv = r.sub;
-    });
-    
-    var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
-    var teamSw = {}, teamPv = {}, act = {};
-    teamData.forEach(r => {
-        var m = r.date.slice(0, 7);
-        if (!teamSw[m]) teamSw[m] = 0;
-        if (!act[m]) act[m] = new Set();
-        act[m].add(r.name);
-        if (teamPv[r.name] !== null && teamPv[r.name] !== r.sub) teamSw[m]++;
-        teamPv[r.name] = r.sub;
     });
     
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
     
     CH.wpSwitchBar = new Chart(document.getElementById('wpSwitchBar').getContext('2d'), {
+        type: 'bar',
         data: {
             labels: mos,
             datasets: [
@@ -692,7 +675,17 @@ function renderWpSwitchBar(d, mos, col) {
                     data: barData,
                     backgroundColor: col,
                     borderRadius: 6,
-                    order: 2
+                    order: 2,
+                    // 💡 [필승 세팅 1] 데이터셋 내부에 직접 라벨 옵션 강제 주입
+                    datalabels: {
+                        display: function(cx) { return cx.raw > 0; }, // 값이 0보다 클 때만 표시
+                        color: col, // 막대 색상과 동일하게
+                        font: { weight: '900', size: 11 },
+                        anchor: 'end',
+                        align: 'end', // 막대 끝에서 위로 띄움
+                        offset: 4,
+                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                    }
                 },
                 {
                     type: 'line',
@@ -705,17 +698,18 @@ function renderWpSwitchBar(d, mos, col) {
                     pointRadius: 4,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
-                    order: 1
+                    order: 1,
+                    // 💡 팀 평균 꺾은선은 라벨 강제 숨김
+                    datalabels: { display: false }
                 }
             ]
         },
-        plugins: [ChartDataLabels],
         options: {
             responsive: true, 
             maintainAspectRatio: false, 
             clip: false, 
-            // 💡 상단 padding을 35에서 15로 대폭 줄여 빈 공간을 없애고 차트의 세로를 길게 늘렸습니다.
-            layout: { padding: { top: 15, bottom: 5 } }, 
+            // 💡 [필승 세팅 2] 범례와 차트 사이 여백 좁히기
+            layout: { padding: { top: 20, bottom: 5 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { 
@@ -724,20 +718,13 @@ function renderWpSwitchBar(d, mos, col) {
                     align: 'end', 
                     labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } 
                 },
-                datalabels: { 
-                    // 💡 막대 차트(개인 전환 횟수)일 때만 상단에 수치 레이블을 표시하도록 통합 설정했습니다.
-                    display: function(cx) { return cx.dataset.type === 'bar' && cx.raw > 0; },
-                    color: col,
-                    font: { weight: '900', size: 11 },
-                    anchor: 'end',
-                    align: 'top',
-                    offset: 4,
-                    formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                }
+                // 전역 플러그인 설정은 끄고 데이터셋 설정을 우선시함
+                datalabels: { display: false } 
             },
             scales: { 
-                x:{ grid: { display: false } }, 
-                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } 
+                x: { grid: { display: false } }, 
+                // 💡 [필승 세팅 3] grace: '25%'를 주어 막대 위에 숫자가 들어갈 '천장 공간'을 자동으로 확보
+                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '25%' } 
             }
         }
     });
