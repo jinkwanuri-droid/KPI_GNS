@@ -149,9 +149,9 @@ function renderOvProjectRatio(all){
     var poNum = parseFloat(po);
     var pcNum = parseFloat(pc);  
     
-    // 💡 2. height: 100% 족쇄를 제거하고, margin-top을 10px로 설정하여 전체 덩어리를 통계카드 밑으로 살짝 띄웁니다.
+    // 💡 2. height: 100% 족쇄를 제거하고, margin-top을 20px로 설정하여 전체 덩어리를 통계카드 밑으로 살짝 띄웁니다.
     wrap.innerHTML = `
-    <div style="display:flex; flex-direction:column; padding: 0px 5px; justify-content:center; margin-top: 10px;">
+    <div style="display:flex; flex-direction:column; padding: 0px 5px; justify-content:center; margin-top: 20px;">
         
         <!-- [1단] 소제목 -->
         <!-- 💡 소제목과 큰 숫자 사이의 여백 대폭 확대 (margin-bottom: 15px) -->
