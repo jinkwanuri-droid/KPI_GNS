@@ -661,7 +661,6 @@ function renderWpSwitchBar(d, mos, col) {
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
     
     CH.wpSwitchBar = new Chart(document.getElementById('wpSwitchBar').getContext('2d'), {
-        type: 'bar',
         data: {
             labels: mos,
             datasets: [
@@ -670,17 +669,8 @@ function renderWpSwitchBar(d, mos, col) {
                     label: '개인 전환 횟수',
                     data: barData,
                     backgroundColor: col,
-                    borderRadius: 6,
-                    order: 2,
-                    datalabels: {
-                        display: function(cx) { return cx.raw > 0; },
-                        color: col,
-                        font: { weight: '900', size: 11 },
-                        anchor: 'end',
-                        align: 'end',
-                        offset: 4,
-                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                    }
+                    borderRadius: 4,
+                    order: 2
                 },
                 {
                     type: 'line',
@@ -693,8 +683,7 @@ function renderWpSwitchBar(d, mos, col) {
                     pointRadius: 4,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
-                    order: 1,
-                    datalabels: { display: false }
+                    order: 1
                 }
             ]
         },
@@ -702,7 +691,8 @@ function renderWpSwitchBar(d, mos, col) {
             responsive: true, 
             maintainAspectRatio: false, 
             clip: false, 
-            layout: { padding: { top: 20, bottom: 5 } }, 
+            // 💡 1. 상단 여백을 극단적으로 줄입니다. (10px)
+            layout: { padding: { top: 10, bottom: 0 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { 
@@ -711,11 +701,28 @@ function renderWpSwitchBar(d, mos, col) {
                     align: 'end', 
                     labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } 
                 },
-                datalabels: { display: false } 
+                // 💡 2. 가장 강력한 위치(options.plugins)에서 레이블을 강제합니다.
+                datalabels: { 
+                    display: function(cx) {
+                        // 막대 차트(개인 전환 횟수)이고 값이 0보다 클 때만 무조건 표시
+                        return cx.dataset.type === 'bar' && cx.raw > 0;
+                    },
+                    color: col,
+                    font: { weight: '900', size: 11 },
+                    anchor: 'end',
+                    align: 'top', // 막대 위쪽으로 띄움
+                    offset: 2,
+                    formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                }
             },
             scales: { 
                 x: { grid: { display: false } }, 
-                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '25%' } 
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(226,232,240,0.5)' }, 
+                    // 💡 3. 위쪽 빈 공간(grace)을 최소한(15%)으로 설정해 차트를 길게 늘립니다.
+                    grace: '15%' 
+                } 
             }
         }
     });
