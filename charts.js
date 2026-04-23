@@ -673,38 +673,50 @@ function renderWpSwitchBar(d, mos, col) {
         data: {
             labels: mos,
             datasets: [
-                { type: 'bar', label: '개인 전환 횟수', data: barData, backgroundColor: col, borderRadius: 6, order: 2 },
-                { type: 'line', label: '팀 평균', data: avgData, borderColor: '#94a3b8', backgroundColor: 'transparent', borderDash: [3, 3], borderWidth: 1.5, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: '#94a3b8', order: 1 }
+                {
+                    type: 'bar',
+                    label: '개인 전환 횟수',
+                    data: barData,
+                    backgroundColor: col,
+                    borderRadius: 6,
+                    order: 2,
+                    // 막대 차트(개인) 레이블만 표시
+                    datalabels: {
+                        display: function(cx) { return cx.raw !== null && cx.raw > 0; },
+                        color: col, 
+                        font: { weight: '900', size: 11 },
+                        anchor: 'end',
+                        align: 'top',
+                        offset: 2,
+                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                    }
+                },
+                {
+                    type: 'line',
+                    label: '팀 평균',
+                    data: avgData,
+                    borderColor: '#94a3b8',
+                    backgroundColor: 'transparent',
+                    borderDash: [3, 3],
+                    borderWidth: 1.5,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#94a3b8',
+                    order: 1,
+                    // 💡 팀 평균(꺾은선) 레이블 강제 숨김 처리
+                    datalabels: {
+                        display: false
+                    }
+                }
             ]
         },
+        plugins: [ChartDataLabels],
         options: {
             responsive: true, maintainAspectRatio: false, clip: false, layout: { padding: { top: 35, bottom: 10 } },
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { display: true, position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } },
-                datalabels: {
-                    // 에러 없이 무조건 레이블을 표시하도록 단순화
-                    display: true,
-                    color: function (cx) {
-                        return cx.dataset.type === 'bar' ? col : '#64748b'; // 막대는 파란색, 선은 회색
-                    },
-                    font: { weight: '900', size: 10 },
-                    anchor: function(cx) {
-                        return cx.dataset.type === 'bar' ? 'end' : 'center';
-                    },
-                    align: function(cx) {
-                        // 막대는 위로(top), 꺾은선은 아래로(bottom) 고정 배치
-                        return cx.dataset.type === 'bar' ? 'top' : 'bottom'; 
-                    },
-                    offset: function(cx) {
-                        return cx.dataset.type === 'bar' ? 2 : 6;
-                    },
-                    formatter: function (v) {
-                        // 값이 0이거나 없을 때는 빈칸 처리
-                        if(v === null || v === 0) return '';
-                        return Number(v).toFixed(1).replace('.0', '');
-                    }
-                }
+                datalabels: { display: false }
             },
             scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } }
         }
