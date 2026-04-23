@@ -174,127 +174,7 @@ function renderOvProjectRatio(all){
 // ====================================================================
 // [수정2] 인건비 추이 차트 (0 데이터 무시 및 26년 4월부터 예상치 적용 로직 완벽 수정)
 // ====================================================================
-function renderCostTrendChart(mos) {
-    if(typeof dC === 'function') dC('costTrendChart'); 
-    window.lastCostMos = mos;
-    
-    var canvas = document.getElementById('costTrendChart');
-    if(!canvas) return;
-    var ctx = canvas.getContext('2d');
-
-    var safeCostData = (typeof COST_DATA !== 'undefined' && Array.isArray(COST_DATA)) ? COST_DATA : [];
-    if(safeCostData.length === 0) return;
-    
-    var globalStart = '2024-03';
-    var globalEnd = '2026-11';
-    var allFullMonths = getMonthsBetween(globalStart, globalEnd);
-    var allMosMap = {};
-    allFullMonths.forEach(function(m){ allMosMap[m] = { plan: 0, exec: 0, hasExec: false }; });
-    
-    safeCostData.forEach(function(r) {
-        var m = r.date;
-        if(m && m.length > 7) m = m.substring(0,7);
-        if(allMosMap[m] !== undefined) {
-            var p = parseFloat(r.plan);
-            if(!isNaN(p)) allMosMap[m].plan += (p / 10000);
-            
-            if(r.exec !== null && r.exec !== undefined && String(r.exec).trim() !== '') {
-                var e = parseFloat(r.exec);
-                if(!isNaN(e) && e > 0) {
-                    allMosMap[m].exec += (e / 10000);
-                    allMosMap[m].hasExec = true;
-                }
-            }
-        }
-    });
-    
-    var lastActualMonth = '';
-    var pastTotalExec = 0;
-    var actualMonthCount = 0;
-    
-    allFullMonths.forEach(function(m) {
-        if(allMosMap[m] && allMosMap[m].hasExec) {
-            lastActualMonth = m;
-            pastTotalExec += allMosMap[m].exec;
-            actualMonthCount++;
-        }
-    });
-
-    var avgMonthlyExec = (actualMonthCount > 0) ? (pastTotalExec / actualMonthCount) : 0;
-    
-    var globalData = { plan: [], execActual: [], execPred: [] };
-    var cumPlan = 0, cumExec = 0, cumPred = 0;
-    var isCum = window.isCostCumulative === true;
-
-    allFullMonths.forEach(function(m) {
-        var mPlan = allMosMap[m].plan;
-        var mExec = allMosMap[m].hasExec ? allMosMap[m].exec : null;
-
-        cumPlan += mPlan;
-        globalData.plan.push(isCum ? cumPlan : mPlan);
-
-        if (lastActualMonth === '' || m < lastActualMonth) {
-            cumExec += (mExec || 0);
-            cumPred = cumExec;
-            globalData.execActual.push(isCum ? cumExec : mExec);
-            globalData.execPred.push(null);
-        } else if (m === lastActualMonth) {
-            cumExec += (mExec || 0);
-            cumPred = cumExec;
-            var valExec = isCum ? cumExec : mExec;
-            globalData.execActual.push(valExec);
-            globalData.execPred.push(valExec); 
-        } else {
-            var stepPred = avgMonthlyExec; 
-            if (m >= '2026-08') { stepPred = avgMonthlyExec * 0.8; }
-            
-            cumPred += stepPred;
-            globalData.execActual.push(null);
-            globalData.execPred.push(isCum ? cumPred : stepPred);
-        }
-    });
-    
-    // 💡 핵심 변경점: 실제 데이터가 기준이 아닌 '상단 슬라이더(필터)'의 세팅 값을 직접 읽어옵니다.
-    var fStart = typeof window.filterStartIndex !== 'undefined' ? window.filterStartIndex : 0;
-    var fEnd = typeof window.filterEndIndex !== 'undefined' ? window.filterEndIndex : 11;
-    
-    var startY = 2024 + Math.floor(fStart / 4);
-    var startM = (fStart % 4) * 3 + 1;
-    var reqStart = startY + '-' + (startM < 10 ? '0' + startM : startM);
-
-    var endY = 2024 + Math.floor(fEnd / 4);
-    var endM = ((fEnd % 4) + 1) * 3;
-    var reqEnd = endY + '-' + (endM < 10 ? '0' + endM : endM);
-
-    var viewMonthsList = allFullMonths.filter(function(m) { return m >= reqStart && m <= reqEnd; });
-    if(viewMonthsList.length === 0) viewMonthsList = allFullMonths;
-
-    var sIdx = allFullMonths.indexOf(viewMonthsList[0]);
-    var eIdx = allFullMonths.indexOf(viewMonthsList[viewMonthsList.length - 1]);
-    
-    var viewMonths = allFullMonths.slice(sIdx, eIdx + 1);
-    var viewPlan = globalData.plan.slice(sIdx, eIdx + 1);
-    var viewActual = globalData.execActual.slice(sIdx, eIdx + 1);
-    var viewPred = globalData.execPred.slice(sIdx, eIdx + 1);
-
-    var maxArr = [10];
-    var addMax = function(arr) { arr.forEach(function(v){ if(typeof v === 'number' && !isNaN(v)) maxArr.push(v); }); };
-    addMax(viewPlan); addMax(viewActual); addMax(viewPred);
-    var maxVal = Math.max.apply(null, maxArr);
-    if(isNaN(maxVal) || maxVal === -Infinity) maxVal = 100;
-    var scheduleTopY = Math.ceil((maxVal * 1.15) / 10) * 10;
-    
-    var schData = [];
-    viewMonths.forEach(function(m) {
-        var schedules = (typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(function(s) { return s.date && s.date.startsWith(m); });
-        if(schedules.length > 0) {
-            var st = schedules.map(function(s) { return '• ' + s.date.slice(2,10).replace(/-/g,'.') + '. ' + (s.title||s.name||s['일정']||s['내용']||'').trim(); });
-            schData.push({ schTitle: st, yPos: scheduleTopY });
-        } else { schData.push(null); }
-    });
-
-    var gradActual = ctx.createLinearGradient(0, 0, 0, 400);
-    gradActual.addColorStop(0, 'rgba(0, 66, 142, 0.3)');
+window.renderCostTrendChart = function(mos) {
     gradActual.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
 
     var gradPred = ctx.createLinearGradient(0, 0, 0, 400);
@@ -319,7 +199,7 @@ function renderCostTrendChart(mos) {
             plugins: {
                 legend: { display: false },
                 datalabels: {
-                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === 0) return false; return true; },
+                    display: function(cx) { if (cx.dataset.isSchedule || cx.raw === null || cx.raw === undefined || cx.raw === 0) return false; return true; },
                     align: function(cx) {
                         var idx = cx.dataIndex;
                         var planVal = viewPlan[idx] || 0;
@@ -356,7 +236,7 @@ function renderCostTrendChart(mos) {
                             var idx = item.dataIndex, plan = viewPlan[idx], actual = viewActual[idx], pred = viewPred[idx];
                             var lines = [ "계획 인건비: " + Number(plan||0).toFixed(1) + " 천만" ];
                             
-                            if(actual !== null) {
+                            if(actual !== null && actual !== undefined) {
                                 lines.push("실행 인건비: " + Number(actual||0).toFixed(1) + " 천만");
                                 var diff = (plan||0) - actual;
                                 lines.push(diff >= 0 ? "(절감: " + diff.toFixed(1) + " 천만)" : "(초과: " + Math.abs(diff).toFixed(1) + " 천만)");
@@ -372,18 +252,20 @@ function renderCostTrendChart(mos) {
         }
     });
 
-    // 💡 변경점 적용: 이제 무조건 슬라이더 필터 구간의 마지막 달 데이터를 가져와서 요약 카드에 표시합니다.
-    var targetMonthForSummary = allFullMonths[eIdx];
+    // 💡 기간 집행 요약(Summary Card): 슬라이더의 가장 우측 달(mos의 마지막 값)의 수치를 정확히 가져와 연동합니다.
+    var targetMonthForSummary = mos[mos.length - 1];
+    var sEndIdx = allFullMonths.indexOf(targetMonthForSummary);
+    if(sEndIdx === -1) sEndIdx = allFullMonths.length - 1;
     
-    var sPlan = globalData.plan[eIdx] || 0;
-    var sExec = globalData.execActual[eIdx];
-    var isPred = sExec === null;
-    if(isPred) sExec = globalData.execPred[eIdx] || 0;
+    var sPlan = globalData.plan[sEndIdx] || 0;
+    var sExec = globalData.execActual[sEndIdx];
+    var isPred = (sExec === null || sExec === undefined);
+    if(isPred) sExec = globalData.execPred[sEndIdx] || 0;
 
     if(typeof renderCostSummary === 'function') {
         renderCostSummary(targetMonthForSummary, sPlan, sExec, isPred);
     }
-}
+};
 
 function renderCostSummary(targetMonth, totalPlan, totalExec, isPred) {
     var wrap = document.getElementById('costSummaryArea'); if(!wrap) return;
