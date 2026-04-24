@@ -665,33 +665,9 @@ function renderWpDonutCat(d,t){
 // [수정2] 전환횟수 차트 레이블 & 여백 완벽 해결
 // ====================================================================
 function renderWpSwitchBar(d, mos, col) {
-    var canvas = document.getElementById('wpSwitchBar');
-    if (!canvas) return; 
-
-    var sw = {}, pv = null;
-    d.forEach(r => {
-        var m = r.date.slice(0, 7);
-        if (!sw[m]) sw[m] = 0;
-        if (pv !== null && pv !== r.sub) sw[m]++;
-        pv = r.sub;
-    });
-    
-    var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
-    var teamSw = {}, teamPv = {}, act = {};
-    teamData.forEach(r => {
-        var m = r.date.slice(0, 7);
-        if (!teamSw[m]) teamSw[m] = 0;
-        if (!act[m]) act[m] = new Set();
-        act[m].add(r.name);
-        if (teamPv[r.name] !== null && teamPv[r.name] !== r.sub) teamSw[m]++;
-        teamPv[r.name] = r.sub;
-    });
-    
-    var barData = mos.map(m => sw[m] || 0);
-    var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
-    
-    CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
-        type: 'bar', // 💡 이 부분이 누락되어서 차트가 그려지지 않았습니다. 복구 완료!
+    if (window.CH && window.CH.wpSwitchBar) { window.CH.wpSwitchBar.destroy(); }
+    window.CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
         data: {
             labels: mos,
             datasets: [
@@ -704,11 +680,11 @@ function renderWpSwitchBar(d, mos, col) {
                     order: 2,
                     datalabels: {
                         display: function(cx) { return cx.raw > 0; },
-                        color: '#1e3a8a', 
+                        color: '#1A2B4C', // 💡 남색 폰트 적용
                         font: { weight: '900', size: 11 },
                         anchor: 'end',
-                        align: 'end', 
-                        offset: 2,
+                        align: 'end',
+                        offset: 4,
                         formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
                     }
                 },
@@ -724,29 +700,34 @@ function renderWpSwitchBar(d, mos, col) {
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
                     order: 1,
-                    datalabels: { display: false }
+                    datalabels: { display: false } // 💡 팀 평균은 값 표시 안 함
                 }
             ]
         },
         options: {
-            responsive: true, 
-            maintainAspectRatio: false, 
-            clip: false, 
-            // 💡 범례와 차트가 겹치지 않게 top: 25 추가
-            layout: { padding: { top: 25, bottom: 10, left: 0, right: 0 } }, 
+            responsive: true,
+            maintainAspectRatio: false,
+            clip: false,
+            // 💡 상/하단 여백을 극단적으로 줄여서 차트를 세로로 길게 늘림
+            layout: { padding: { top: 15, bottom: 0, left: 0, right: 0 } },
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { 
-                    display: true, 
-                    position: 'top', 
-                    align: 'end', 
-                    labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } 
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: { 
+                        usePointStyle: true, 
+                        boxWidth: 8, 
+                        font: { size: 10, weight: 'bold' }
+                    }
                 },
-                datalabels: { display: false } 
+                datalabels: { display: false }
             },
-            scales: { 
-                x: { grid: { display: false } }, 
-                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '25%' } 
+            scales: {
+                x: { grid: { display: false } },
+                // 💡 grace 속성을 10%로 줄여서 막대 위쪽 빈 공간을 줄이고 세로 비율을 높임
+                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '10%' } 
             }
         }
     });
@@ -832,7 +813,49 @@ function renderWpGini(d,c){
     document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';
 }
 function buildHeatmapHTML(dt,yr,c,tid){
-    var dm={};dt.filter(r=>r.date.startsWith(yr+'-')).forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});var mt=Array.from({length:6},()=>new Array(12).fill(0)),hm=new Array(12).fill(false),mx=1;Object.keys(dm).forEach(d=>{var s=dm[d],p=d.split('-'),m=parseInt(p[1])-1,dy=parseInt(p[2]),fd=new Date(parseInt(yr),m,1).getDay(),w=Math.ceil((dy+fd)/7)-1;if(w>=0&&w<6){mt[w][m]+=s;hm[m]=true;if(mt[w][m]>mx)mx=mt[w][m];}});var th='<thead><tr><th style="width:30px;"></th>';MONTH_KO.forEach((l,i)=>{th+='<th style="font-size:11px;font-weight:'+(hm[i]?'800':'500')+';color:'+(hm[i]?c:'#cbd5e1')+';">'+l+'</th>';});th+='</tr></thead><tbody>';for(var w=0;w<6;w++){th+='<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">'+(w+1)+'주</td>';for(var mo=0;mo<12;mo++){if(!hm[mo])th+='<td><div class="hm-cell" style="background:transparent;"></div></td>';else if(mt[w][mo]<=0)th+='<td><div class="hm-cell" style="background:#F0F5FA;opacity:'+(hlHeatBin!==null?0.2:1)+';"></div></td>';else{var vl=mt[w][mo],rt=vl/mx,bn=Math.ceil(rt*5),id=hlHeatBin!==null&&hlHeatBin!==bn,al=0.2+(bn-1)*0.2,tc=al>=0.55?'#fff':'#1e293b';th+='<td><div class="hm-cell" onclick="toggleHeatBin('+bn+',\''+yr+'\',\''+tid+'\')" style="background:'+hRgba(c,al)+';color:'+tc+';opacity:'+(id?0.2:1)+';" title="'+fH(vl)+'h">'+fH(vl)+'</div></td>';}}th+='</tr>';}var el=document.getElementById(tid);if(el)el.innerHTML=th+'</tbody>';
+    var dm={};
+    dt.filter(r=>r.date.startsWith(yr+'-')).forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});
+    
+    // 💡 6주차 배열을 지우고 5주차까지만 담을 그릇을 만듭니다. (length: 5)
+    var mt=Array.from({length:5},()=>new Array(12).fill(0));
+    var hm=new Array(12).fill(false);
+    var mx=1;
+    
+    Object.keys(dm).forEach(d=>{
+        var s=dm[d], p=d.split('-'), m=parseInt(p[1])-1, dy=parseInt(p[2]), fd=new Date(parseInt(yr),m,1).getDay(), w=Math.ceil((dy+fd)/7)-1;
+        
+        // 💡 6주차(w가 5 이상)로 계산되는 날짜는 무조건 5주차(w = 4)로 병합합니다.
+        if (w >= 5) w = 4;
+        
+        if(w>=0 && w<5){
+            mt[w][m]+=s; 
+            hm[m]=true; 
+            // 💡 병합된 값 기준으로 최대값을 재산정합니다.
+            if(mt[w][m]>mx) mx=mt[w][m];
+        }
+    });
+    
+    var th='<thead><tr><th style="width:30px;"></th>';
+    MONTH_KO.forEach((l,i)=>{th+='<th style="font-size:11px;font-weight:'+(hm[i]?'800':'500')+';color:'+(hm[i]?c:'#cbd5e1')+';">'+l+'</th>';});
+    th+='</tr></thead><tbody>';
+    
+    // 💡 화면에 그릴 때도 5주(w < 5)까지만 그립니다.
+    for(var w=0; w<5; w++){
+        th+='<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">'+(w+1)+'주</td>';
+        for(var mo=0; mo<12; mo++){
+            if(!hm[mo]) th+='<td><div class="hm-cell" style="background:transparent;"></div></td>';
+            else if(mt[w][mo]<=0) th+='<td><div class="hm-cell" style="background:#F0F5FA;opacity:'+(hlHeatBin!==null?0.2:1)+';"></div></td>';
+            else{
+                var vl=mt[w][mo], rt=vl/mx, bn=Math.ceil(rt*5);
+                var id=hlHeatBin!==null&&hlHeatBin!==bn, al=0.2+(bn-1)*0.2, tc=al>=0.55?'#fff':'#1e293b';
+                th+='<td><div class="hm-cell" onclick="toggleHeatBin('+bn+',\''+yr+'\',\''+tid+'\')" style="background:'+hRgba(c,al)+';color:'+tc+';opacity:'+(id?0.2:1)+';" title="'+fH(vl)+'h">'+fH(vl)+'</div></td>';
+            }
+        }
+        th+='</tr>';
+    }
+    
+    var el=document.getElementById(tid);
+    if(el) el.innerHTML=th+'</tbody>';
 }
 
 // ====================================================================
