@@ -105,18 +105,52 @@
   .challenge-cards { display: flex; justify-content: center; gap: 32px; margin-top: 60px; }
   .ch-card {
     position: relative; width: 310px; background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(248,250,252,0.8) 100%); 
-    border: 1px solid rgba(255,255,255,1); border-radius: 24px; padding: 50px 24px 36px; text-align: center;
+    border: 1px solid rgba(255,255,255,1); border-radius: 24px; padding: 72px 24px 36px; text-align: center;
     box-shadow: 0 15px 35px rgba(15, 23, 42, 0.05), inset 0 2px 0 rgba(255,255,255,1);
     backdrop-filter: blur(12px); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
   .ch-card:hover { transform: translateY(-8px) !important; box-shadow: 0 25px 50px rgba(37, 99, 235, 0.1); }
   .ch-icon-wrap {
-    position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-    width: 70px; height: 70px; border-radius: 50%; background: var(--white);
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12), inset 0 0 0 1px rgba(255,255,255,1);
-    display: flex; justify-content: center; align-items: center; border: 1px solid rgba(226, 232, 240, 1);
+    position: absolute; top: -47px; left: 50%; transform: translateX(-50%);
+    width: 108px; height: 108px; border-radius: 50%;
+    background: radial-gradient(circle at 28% 24%, #ffffff 0%, #eaf2ff 42%, #d5e4ff 100%);
+    box-shadow: 0 16px 35px rgba(37, 99, 235, 0.18), inset 0 0 0 1px rgba(255,255,255,1);
+    display: flex; justify-content: center; align-items: center; border: 1px solid rgba(191, 219, 254, 0.9);
+    overflow: hidden;
   }
-  .ch-icon-wrap svg { width: 30px; height: 30px; stroke: var(--blue-1); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .ch-iso {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    transform: perspective(220px) rotateX(18deg) rotateY(-22deg);
+  }
+  .ch-iso-base {
+    position: absolute; left: 10px; right: 8px; bottom: 3px; height: 18px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #f2f8ff 0%, #d6e7ff 100%);
+    box-shadow: 0 5px 12px rgba(30, 64, 175, 0.22);
+  }
+  .ch-iso-bar {
+    position: absolute; bottom: 18px; width: 18px; border-radius: 5px 5px 2px 2px;
+    background: linear-gradient(180deg, #1d4ed8 0%, #0ea5e9 100%);
+    box-shadow: inset -2px 0 0 rgba(191, 219, 254, 0.9), 0 4px 10px rgba(59, 130, 246, 0.34);
+  }
+  .ch-iso-bar::before {
+    content: "";
+    position: absolute; left: 2px; right: 2px; top: -5px; height: 6px; border-radius: 3px;
+    background: linear-gradient(180deg, #dbeafe 0%, #93c5fd 100%);
+  }
+  .ch-iso .bar-a { left: 8px; height: 24px; }
+  .ch-iso .bar-b { left: 29px; height: 38px; }
+  .ch-iso .bar-c { left: 50px; height: 52px; }
+  .ch-icon-wrap.icon-memory .ch-iso { transform: perspective(220px) rotateX(18deg) rotateY(-22deg) translateY(2px); }
+  .ch-icon-wrap.icon-memory .ch-iso .bar-a { height: 30px; }
+  .ch-icon-wrap.icon-memory .ch-iso .bar-b { height: 45px; }
+  .ch-icon-wrap.icon-memory .ch-iso .bar-c { height: 34px; }
+  .ch-icon-wrap.icon-feedback .ch-iso { transform: perspective(220px) rotateX(16deg) rotateY(-18deg) translateY(1px); }
+  .ch-icon-wrap.icon-feedback .ch-iso .bar-a { height: 36px; }
+  .ch-icon-wrap.icon-feedback .ch-iso .bar-b { height: 30px; }
+  .ch-icon-wrap.icon-feedback .ch-iso .bar-c { height: 44px; }
   .ch-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; letter-spacing: -0.02em; }
   .ch-desc { font-size: 15px; color: var(--text-sub); line-height: 1.6; word-break: keep-all; font-weight: 500; }
 
@@ -438,17 +472,38 @@
       </div>
       <div class="challenge-cards">
         <div class="ch-card reveal delay-seq-1">
-          <div class="ch-icon-wrap"><svg><use href="#icon-trash"></use></svg></div>
+          <div class="ch-icon-wrap icon-data">
+            <div class="ch-iso">
+              <span class="ch-iso-base"></span>
+              <span class="ch-iso-bar bar-a"></span>
+              <span class="ch-iso-bar bar-b"></span>
+              <span class="ch-iso-bar bar-c"></span>
+            </div>
+          </div>
           <div class="ch-title">버려지는 데이터</div>
           <div class="ch-desc">단순 출퇴근용으로 전락한 1,500명의 소중한 데일리 업무 기록들.</div>
         </div>
         <div class="ch-card reveal delay-seq-2">
-          <div class="ch-icon-wrap"><svg><use href="#icon-brain"></use></svg></div>
+          <div class="ch-icon-wrap icon-memory">
+            <div class="ch-iso">
+              <span class="ch-iso-base"></span>
+              <span class="ch-iso-bar bar-a"></span>
+              <span class="ch-iso-bar bar-b"></span>
+              <span class="ch-iso-bar bar-c"></span>
+            </div>
+          </div>
           <div class="ch-title">기억의 오류</div>
           <div class="ch-desc">최근 1~2주의 기억이 3개월 전체의 평가를 지배하는 최신 편향 문제.</div>
         </div>
         <div class="ch-card reveal delay-seq-3">
-          <div class="ch-icon-wrap"><svg><use href="#icon-feedback"></use></svg></div>
+          <div class="ch-icon-wrap icon-feedback">
+            <div class="ch-iso">
+              <span class="ch-iso-base"></span>
+              <span class="ch-iso-bar bar-a"></span>
+              <span class="ch-iso-bar bar-b"></span>
+              <span class="ch-iso-bar bar-c"></span>
+            </div>
+          </div>
           <div class="ch-title">피드백의 한계</div>
           <div class="ch-desc">정확한 근거 없는 "고생했다"는 위로만으로는 성장을 코칭할 수 없습니다.</div>
         </div>
