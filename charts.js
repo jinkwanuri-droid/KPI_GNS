@@ -665,11 +665,6 @@ function renderWpDonutCat(d,t){
 // [수정2] 전환횟수 차트 레이블 & 여백 완벽 해결
 // ====================================================================
 function renderWpSwitchBar(d, mos, col) {
-    var canvas = document.getElementById('wpSwitchBar');
-    if (!canvas) return; 
-
-    var sw = {}, pv = null;
-    d.forEach(r => {
         var m = r.date.slice(0, 7);
         if (!sw[m]) sw[m] = 0;
         if (pv !== null && pv !== r.sub) sw[m]++;
@@ -690,8 +685,9 @@ function renderWpSwitchBar(d, mos, col) {
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
     
+    // 차트 생성
     CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
-        type: 'bar', // 💡 이 부분이 누락되어서 차트가 그려지지 않았습니다. 복구 완료!
+        type: 'bar',
         data: {
             labels: mos,
             datasets: [
@@ -702,12 +698,13 @@ function renderWpSwitchBar(d, mos, col) {
                     backgroundColor: col,
                     borderRadius: 4,
                     order: 2,
+                    // 💡 2. 막대 차트에만 남색 데이터 레이블 표시
                     datalabels: {
                         display: function(cx) { return cx.raw > 0; },
-                        color: '#1e3a8a', 
+                        color: '#1e3a8a', // 남색 폰트 강제 적용
                         font: { weight: '900', size: 11 },
                         anchor: 'end',
-                        align: 'end', 
+                        align: 'end',
                         offset: 2,
                         formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
                     }
@@ -724,29 +721,23 @@ function renderWpSwitchBar(d, mos, col) {
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
                     order: 1,
-                    datalabels: { display: false }
+                    datalabels: { display: false } // 팀 평균은 값 숨김
                 }
             ]
         },
+        plugins: [ChartDataLabels],
         options: {
-            responsive: true, 
-            maintainAspectRatio: false, 
-            clip: false, 
-            // 💡 범례와 차트가 겹치지 않게 top: 25 추가
-            layout: { padding: { top: 25, bottom: 10, left: 0, right: 0 } }, 
+            responsive: true, maintainAspectRatio: false, clip: false, 
+            // 💡 3. 위쪽 여백(top)을 5px로 극소화하여 차트 세로 길이 대폭 확장
+            layout: { padding: { top: 5, bottom: 5, left: 0, right: 0 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { 
-                    display: true, 
-                    position: 'top', 
-                    align: 'end', 
-                    labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } 
-                },
+                legend: { display: false }, // 내장 범례는 끔 (커스텀 범례 사용)
                 datalabels: { display: false } 
             },
             scales: { 
                 x: { grid: { display: false } }, 
-                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '25%' } 
+                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } 
             }
         }
     });
@@ -832,7 +823,57 @@ function renderWpGini(d,c){
     document.getElementById('wpGiniTxt').innerHTML='지니계수: <b style="color:'+c+';">'+gn.toFixed(3)+'</b> <span style="color:#94a3b8;">('+gl+')</span>';
 }
 function buildHeatmapHTML(dt,yr,c,tid){
-    var dm={};dt.filter(r=>r.date.startsWith(yr+'-')).forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});var mt=Array.from({length:6},()=>new Array(12).fill(0)),hm=new Array(12).fill(false),mx=1;Object.keys(dm).forEach(d=>{var s=dm[d],p=d.split('-'),m=parseInt(p[1])-1,dy=parseInt(p[2]),fd=new Date(parseInt(yr),m,1).getDay(),w=Math.ceil((dy+fd)/7)-1;if(w>=0&&w<6){mt[w][m]+=s;hm[m]=true;if(mt[w][m]>mx)mx=mt[w][m];}});var th='<thead><tr><th style="width:30px;"></th>';MONTH_KO.forEach((l,i)=>{th+='<th style="font-size:11px;font-weight:'+(hm[i]?'800':'500')+';color:'+(hm[i]?c:'#cbd5e1')+';">'+l+'</th>';});th+='</tr></thead><tbody>';for(var w=0;w<6;w++){th+='<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">'+(w+1)+'주</td>';for(var mo=0;mo<12;mo++){if(!hm[mo])th+='<td><div class="hm-cell" style="background:transparent;"></div></td>';else if(mt[w][mo]<=0)th+='<td><div class="hm-cell" style="background:#F0F5FA;opacity:'+(hlHeatBin!==null?0.2:1)+';"></div></td>';else{var vl=mt[w][mo],rt=vl/mx,bn=Math.ceil(rt*5),id=hlHeatBin!==null&&hlHeatBin!==bn,al=0.2+(bn-1)*0.2,tc=al>=0.55?'#fff':'#1e293b';th+='<td><div class="hm-cell" onclick="toggleHeatBin('+bn+',\''+yr+'\',\''+tid+'\')" style="background:'+hRgba(c,al)+';color:'+tc+';opacity:'+(id?0.2:1)+';" title="'+fH(vl)+'h">'+fH(vl)+'</div></td>';}}th+='</tr>';}var el=document.getElementById(tid);if(el)el.innerHTML=th+'</tbody>';
+    var dm={};
+    dt.filter(r=>r.date.startsWith(yr+'-')).forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});
+    
+    // 💡 배열 길이를 6(6주)에서 5(5주)로 축소
+    var mt=Array.from({length:5},()=>new Array(12).fill(0)), hm=new Array(12).fill(false), mx=1;
+    
+    Object.keys(dm).forEach(d=>{
+        var s=dm[d], p=d.split('-'), m=parseInt(p[1])-1, dy=parseInt(p[2]);
+        
+        // 💡 [핵심 변경] 달력 요일 무시하고 오직 날짜(1~31일)를 7일씩 쪼개어 무조건 1~5주차로 밀어넣음
+        var w = Math.ceil(dy / 7) - 1; 
+        
+        // 데이터 누적 (최대 5주까지만)
+        if(w >= 0 && w < 5){
+            mt[w][m] += s; hm[m] = true;
+            if(mt[w][m] > mx) mx = mt[w][m];
+        }
+    });
+
+    var th='<table style="width:100%; border-collapse:separate; border-spacing:3px;"><thead><tr><th style="width:30px;"></th>';
+    MONTH_KO.forEach((l,i)=>{
+        th+='<th style="font-size:11px;font-weight:'+(hm[i]?'800':'500')+';color:'+(hm[i]?c:'#cbd5e1')+'; padding-bottom: 5px;">'+l+'</th>';
+    });
+    th+='</tr></thead><tbody>';
+
+    var cellStyle = 'height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 3px; font-size: 11px; font-weight: bold; margin: 0; box-sizing: border-box;';
+
+    // 💡 렌더링 루프도 6주에서 5주로 축소
+    for(var w=0; w<5; w++){
+        th+='<tr><td style="font-size:10px;font-weight:700;color:#94a3b8;text-align:right;padding-right:6px;">'+(w+1)+'주</td>';
+        
+        for(var mo=0; mo<12; mo++){
+            if(!hm[mo]) {
+                th+='<td><div class="hm-cell" style="background:transparent; ' + cellStyle + '"></div></td>';
+            } else if(mt[w][mo]<=0) {
+                th+='<td><div class="hm-cell" style="background:#F0F5FA;opacity:'+(hlHeatBin!==null?0.2:1)+'; ' + cellStyle + '"></div></td>';
+            } else {
+                var vl=mt[w][mo], rt=vl/mx, bn=Math.ceil(rt*5);
+                var id=hlHeatBin!==null&&hlHeatBin!==bn, al=0.2+(bn-1)*0.2, tc=al>=0.55?'#fff':'#1e293b';
+                
+                th+='<td><div class="hm-cell" onclick="toggleHeatBin('+bn+',\''+yr+'\',\''+tid+'\')" style="background:'+hRgba(c,al)+';color:'+tc+';opacity:'+(id?0.2:1)+'; cursor:pointer; ' + cellStyle + '" title="'+fH(vl)+'h">'+fH(vl)+'</div></td>';
+            }
+        }
+        th+='</tr>';
+    }
+    
+    var el = document.getElementById(tid);
+    if(el) {
+        el.style.paddingBottom = "20px";
+        el.innerHTML = th + '</tbody></table>';
+    }
 }
 
 // ====================================================================
