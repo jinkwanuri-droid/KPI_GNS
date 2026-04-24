@@ -666,7 +666,7 @@ function renderWpSwitchBar(d, mos, col) {
     var canvas = document.getElementById('wpSwitchBar');
     if (!canvas) return;
 
-    // 1. HTML 범례 주입 (이미 잘 나오고 있음)
+    // 1. HTML 범례 주입
     var legendWrap = document.getElementById('wpSwitchLegendWrap');
     if (legendWrap) {
         legendWrap.innerHTML = `
@@ -702,6 +702,37 @@ function renderWpSwitchBar(d, mos, col) {
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
 
+    // 💡 [궁극의 해결책] Canvas API를 이용해 막대 위에 숫자를 "직접" 그리는 커스텀 플러그인
+    const drawLabelsPlugin = {
+        id: 'drawBarLabels',
+        afterDatasetsDraw: function(chart) {
+            const ctx = chart.ctx;
+            chart.data.datasets.forEach(function(dataset, i) {
+                // 막대 차트일 때만 실행
+                if (dataset.type === 'bar') {
+                    const meta = chart.getDatasetMeta(i);
+                    meta.data.forEach(function(bar, index) {
+                        const val = dataset.data[index];
+                        if (val > 0) {
+                            ctx.save();
+                            ctx.fillStyle = '#1A2B4C'; // 남색 폰트
+                            ctx.font = '900 11px Pretendard, sans-serif'; // 폰트 두께 및 사이즈
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+                            
+                            // 값 포맷팅 (예: 11.0 -> 11)
+                            const text = Number(val).toFixed(1).replace('.0', '');
+                            
+                            // 막대 최상단(bar.y)에서 4px 위로 올려서 텍스트 작성
+                            ctx.fillText(text, bar.x, bar.y - 4);
+                            ctx.restore();
+                        }
+                    });
+                }
+            });
+        }
+    };
+
     // 3. 차트 렌더링
     CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
         type: 'bar',
@@ -710,64 +741,6 @@ function renderWpSwitchBar(d, mos, col) {
             datasets: [
                 {
                     type: 'bar',
-                    label: '개인 전환 횟수',
-                    data: barData,
-                    backgroundColor: col,
-                    borderRadius: 4,
-                    order: 2
-                    // 💡 클로드의 조언대로 여기 있던 개별 옵션은 모두 삭제했습니다.
-                },
-                {
-                    type: 'line',
-                    label: '팀 평균',
-                    data: avgData,
-                    borderColor: '#94a3b8',
-                    backgroundColor: 'transparent',
-                    borderDash: [3, 3],
-                    borderWidth: 1.5,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#94a3b8',
-                    order: 1
-                    // 💡 선 차트도 마찬가지로 개별 옵션 삭제.
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            clip: false,
-            layout: { padding: { top: 25, bottom: 0, left: 0, right: 0 } },
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-                legend: { display: false },
-                
-                // 💡 [핵심 해결책] 전역 플러그인 옵션(options.plugins.datalabels)에서 강력하게 통제합니다!
-                datalabels: {
-                    display: function(context) {
-                        // datasetIndex가 0(개인 전환 횟수, 막대)이고, 값이 0보다 클 때만 true 반환
-                        return context.datasetIndex === 0 && context.raw > 0;
-                    },
-                    color: '#1A2B4C', // 남색 폰트
-                    font: { weight: '900', size: 11 },
-                    anchor: 'end',
-                    align: 'end',
-                    offset: 2,
-                    formatter: function(v) { 
-                        return Number(v).toFixed(1).replace('.0', ''); 
-                    }
-                }
-            },
-            scales: {
-                x: { grid: { display: false } },
-                y: { 
-                    beginAtZero: true, 
-                    grid: { color: 'rgba(226,232,240,0.5)' },
-                    grace: '15%' 
-                }
-            }
-        }
-    });
 }
 
 function renderWpFocusBar(d,mos){
