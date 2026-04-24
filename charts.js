@@ -666,7 +666,7 @@ function renderWpSwitchBar(d, mos, col) {
     var canvas = document.getElementById('wpSwitchBar');
     if (!canvas) return;
 
-    // 1. HTML 범례 주입 (완벽히 작동 중)
+    // 1. HTML 범례 주입 (이미 잘 나오고 있음)
     var legendWrap = document.getElementById('wpSwitchLegendWrap');
     if (legendWrap) {
         legendWrap.innerHTML = `
@@ -714,17 +714,8 @@ function renderWpSwitchBar(d, mos, col) {
                     data: barData,
                     backgroundColor: col,
                     borderRadius: 4,
-                    order: 2,
-                    // 💡 [핵심 수정] 막대 차트 데이터셋 안에 직접 옵션을 박아 넣어서 강제 표시
-                    datalabels: {
-                        display: function(cx) { return cx.raw > 0; }, // 0보다 크면 표시
-                        color: '#1A2B4C', // 남색 폰트
-                        font: { weight: '900', size: 11 },
-                        anchor: 'end',
-                        align: 'end',
-                        offset: 4,
-                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                    }
+                    order: 2
+                    // 💡 클로드의 조언대로 여기 있던 개별 옵션은 모두 삭제했습니다.
                 },
                 {
                     type: 'line',
@@ -737,9 +728,8 @@ function renderWpSwitchBar(d, mos, col) {
                     pointRadius: 4,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
-                    order: 1,
-                    // 💡 [핵심 수정] 선 차트는 확실하게 숨김 처리
-                    datalabels: { display: false }
+                    order: 1
+                    // 💡 선 차트도 마찬가지로 개별 옵션 삭제.
                 }
             ]
         },
@@ -747,19 +737,33 @@ function renderWpSwitchBar(d, mos, col) {
             responsive: true,
             maintainAspectRatio: false,
             clip: false,
-            // 숫자가 들어갈 위쪽 여백 살짝 확보
             layout: { padding: { top: 25, bottom: 0, left: 0, right: 0 } },
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: false }
-                // 💡 기존에 여기에 있던 datalabels 옵션은 삭제하여 충돌 방지!
+                legend: { display: false },
+                
+                // 💡 [핵심 해결책] 전역 플러그인 옵션(options.plugins.datalabels)에서 강력하게 통제합니다!
+                datalabels: {
+                    display: function(context) {
+                        // datasetIndex가 0(개인 전환 횟수, 막대)이고, 값이 0보다 클 때만 true 반환
+                        return context.datasetIndex === 0 && context.raw > 0;
+                    },
+                    color: '#1A2B4C', // 남색 폰트
+                    font: { weight: '900', size: 11 },
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 2,
+                    formatter: function(v) { 
+                        return Number(v).toFixed(1).replace('.0', ''); 
+                    }
+                }
             },
             scales: {
                 x: { grid: { display: false } },
                 y: { 
                     beginAtZero: true, 
                     grid: { color: 'rgba(226,232,240,0.5)' },
-                    grace: '15%' // 상단 여유 공간 설정 (숫자가 차트 바깥으로 잘리지 않게)
+                    grace: '15%' 
                 }
             }
         }
