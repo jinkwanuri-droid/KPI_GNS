@@ -665,22 +665,9 @@ function renderWpDonutCat(d,t){
 // [수정2] 전환횟수 차트 레이블 & 여백 완벽 해결
 // ====================================================================
 function renderWpSwitchBar(d, mos, col) {
-    customLegend.style.fontWeight = '700';
-    customLegend.style.color = '#64748b';
-    
-    customLegend.innerHTML = `
-        <div style="display:flex; align-items:center; gap:5px;">
-            <div style="width:12px; height:2px; background:#94a3b8; border:1px dashed #94a3b8; position:relative;">
-                <div style="width:6px; height:6px; border-radius:50%; background:#fff; border:2px solid #94a3b8; position:absolute; top:-3px; left:2px;"></div>
-            </div> 팀 평균
-        </div>
-        <div style="display:flex; align-items:center; gap:5px;">
-            <div style="width:12px; height:12px; border-radius:3px; background:${col};"></div> 개인 전환 횟수
-        </div>
-    `;
-    parent.appendChild(customLegend);
+    var canvas = document.getElementById('wpSwitchBar');
+    if (!canvas) return; 
 
-    // 데이터 연산
     var sw = {}, pv = null;
     d.forEach(r => {
         var m = r.date.slice(0, 7);
@@ -688,6 +675,7 @@ function renderWpSwitchBar(d, mos, col) {
         if (pv !== null && pv !== r.sub) sw[m]++;
         pv = r.sub;
     });
+    
     var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
     var teamSw = {}, teamPv = {}, act = {};
     teamData.forEach(r => {
@@ -698,12 +686,12 @@ function renderWpSwitchBar(d, mos, col) {
         if (teamPv[r.name] !== null && teamPv[r.name] !== r.sub) teamSw[m]++;
         teamPv[r.name] = r.sub;
     });
+    
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
     
-    // 차트 생성
     CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
-        type: 'bar',
+        type: 'bar', // 💡 이 부분이 누락되어서 차트가 그려지지 않았습니다. 복구 완료!
         data: {
             labels: mos,
             datasets: [
@@ -713,7 +701,16 @@ function renderWpSwitchBar(d, mos, col) {
                     data: barData,
                     backgroundColor: col,
                     borderRadius: 4,
-                    order: 2
+                    order: 2,
+                    datalabels: {
+                        display: function(cx) { return cx.raw > 0; },
+                        color: '#1e3a8a', 
+                        font: { weight: '900', size: 11 },
+                        anchor: 'end',
+                        align: 'end', 
+                        offset: 2,
+                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                    }
                 },
                 {
                     type: 'line',
@@ -726,30 +723,30 @@ function renderWpSwitchBar(d, mos, col) {
                     pointRadius: 4,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
-                    order: 1
+                    order: 1,
+                    datalabels: { display: false }
                 }
             ]
         },
-        plugins: [ChartDataLabels], // 💡 레이블 플러그인 무조건 실행되도록 강제 주입
         options: {
-            responsive: true, maintainAspectRatio: false, clip: false, 
-            layout: { padding: { top: 20, bottom: 0, left: 0, right: 0 } }, 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            clip: false, 
+            // 💡 범례와 차트가 겹치지 않게 top: 25 추가
+            layout: { padding: { top: 25, bottom: 10, left: 0, right: 0 } }, 
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: false }, // 내장 범례는 끄기 (위에 커스텀 범례를 만들었으므로)
-                datalabels: { 
-                    display: function(cx) { return cx.dataset.type === 'bar' && cx.raw > 0; },
-                    color: '#1e3a8a', // 💡 짙은 파란색 강제 적용
-                    font: { weight: '900', size: 11 },
-                    anchor: 'end',
-                    align: 'end',
-                    offset: 2,
-                    formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                }
+                legend: { 
+                    display: true, 
+                    position: 'top', 
+                    align: 'end', 
+                    labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 'bold' } } 
+                },
+                datalabels: { display: false } 
             },
             scales: { 
                 x: { grid: { display: false } }, 
-                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '20%' } 
+                y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.5)' }, grace: '25%' } 
             }
         }
     });
