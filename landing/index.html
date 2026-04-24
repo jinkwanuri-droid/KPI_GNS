@@ -131,8 +131,42 @@
   /* 디지털 플립 시계 (배경) */
   .bg-digital-clock {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-family: 'Courier New', Courier, monospace; font-size: 24vw; font-weight: 900;
-    color: var(--text-main); opacity: 0.02; z-index: 0; pointer-events: none; letter-spacing: -0.05em;
+    display: flex; align-items: center; gap: 1.2vw;
+    z-index: 0; pointer-events: none; opacity: 0.12;
+    filter: blur(0.1px);
+  }
+  .flip-group { display: flex; gap: 0.45vw; align-items: center; }
+  .flip-sep {
+    font-size: 8vw; font-weight: 800; line-height: 1; color: rgba(30, 41, 59, 0.15);
+    margin: 0 0.2vw 0.1vw;
+  }
+  .flip-digit {
+    position: relative;
+    width: 8.1vw; height: 10.2vw;
+    border-radius: 0.8vw;
+    border: 1px solid rgba(30, 41, 59, 0.08);
+    background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(241,245,249,0.08) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 18px 30px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+  }
+  .flip-digit::before,
+  .flip-digit::after {
+    position: absolute; left: 0; width: 100%; height: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 7.2vw; font-weight: 900; letter-spacing: -0.06em;
+    color: rgba(30, 41, 59, 0.16); content: attr(data-num);
+  }
+  .flip-digit::before {
+    top: 0;
+    background: linear-gradient(180deg, rgba(248,250,252,0.5) 0%, rgba(226,232,240,0.16) 100%);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    align-items: flex-end; padding-bottom: 0.5vw;
+  }
+  .flip-digit::after {
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(226,232,240,0.16) 0%, rgba(203,213,225,0.08) 100%);
+    align-items: flex-start; padding-top: 0.5vw;
   }
 
   /* 3D 슬라이더 카드 공통 속성 */
@@ -425,7 +459,22 @@
       <div class="paradigm-stage reveal delay-2" id="pd-stage">
         
         <!-- 디지털 플립 시계 배경 -->
-        <div class="bg-digital-clock" id="digi-clock">00:00:00</div>
+        <div class="bg-digital-clock" id="digi-clock" aria-hidden="true">
+          <div class="flip-group">
+            <span class="flip-digit" data-pos="0" data-num="0"></span>
+            <span class="flip-digit" data-pos="1" data-num="0"></span>
+          </div>
+          <span class="flip-sep">:</span>
+          <div class="flip-group">
+            <span class="flip-digit" data-pos="2" data-num="0"></span>
+            <span class="flip-digit" data-pos="3" data-num="0"></span>
+          </div>
+          <span class="flip-sep">:</span>
+          <div class="flip-group">
+            <span class="flip-digit" data-pos="4" data-num="0"></span>
+            <span class="flip-digit" data-pos="5" data-num="0"></span>
+          </div>
+        </div>
 
         <!-- 좌우 반투명 쐐기 버튼 -->
         <button class="pd-nav-btn prev hidden" id="pd-prev" onclick="moveParadigm(-1)">
@@ -675,12 +724,17 @@
   function updateDigitalClock() {
     const clock = document.getElementById('digi-clock');
     if(!clock) return;
+    const digits = clock.querySelectorAll('.flip-digit');
     let d = new Date();
     // 더 빠른 시간 흐름 효과를 위해 ms 단위를 혼합
     let h = String(d.getHours()).padStart(2, '0');
     let m = String(d.getMinutes()).padStart(2, '0');
     let s = String(Math.floor(d.getMilliseconds()/10)).padStart(2, '0');
-    clock.innerText = `${h}:${m}:${s}`;
+    const value = `${h}${m}${s}`;
+    digits.forEach((digit, idx) => {
+      const nextNum = value[idx];
+      if (digit.dataset.num !== nextNum) digit.dataset.num = nextNum;
+    });
     requestAnimationFrame(updateDigitalClock);
   }
   updateDigitalClock();
