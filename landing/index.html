@@ -128,45 +128,56 @@
   /* ─── 3. PARADIGM SHIFT (3D 커버플로우 & 디지털 시계) ─── */
   .paradigm-stage { position: relative; width: 100%; max-width: 1000px; height: 400px; margin: 0 auto; display: flex; justify-content: center; align-items: center; perspective: 1200px; }
   
-  /* 디지털 플립 시계 (배경) */
+  /* 아날로그 시계 배경 */
   .bg-digital-clock {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    display: flex; align-items: center; gap: 1.2vw;
-    z-index: 0; pointer-events: none; opacity: 0.12;
-    filter: blur(0.1px);
+    width: min(56vw, 620px); aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 1px solid rgba(30, 41, 59, 0.09);
+    background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.22) 0%, rgba(241,245,249,0.08) 68%, rgba(203,213,225,0.05) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 20px 40px rgba(15, 23, 42, 0.02);
+    z-index: 0; pointer-events: none; opacity: 0.2;
   }
-  .flip-group { display: flex; gap: 0.45vw; align-items: center; }
-  .flip-sep {
-    font-size: 8vw; font-weight: 800; line-height: 1; color: rgba(30, 41, 59, 0.15);
-    margin: 0 0.2vw 0.1vw;
+  .clock-rim {
+    position: absolute; inset: 6%;
+    border-radius: 50%;
+    border: 1px solid rgba(30, 41, 59, 0.07);
   }
-  .flip-digit {
-    position: relative;
-    width: 8.1vw; height: 10.2vw;
-    border-radius: 0.8vw;
-    border: 1px solid rgba(30, 41, 59, 0.08);
-    background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(241,245,249,0.08) 100%);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 18px 30px rgba(15, 23, 42, 0.03);
-    overflow: hidden;
+  .clock-tick {
+    position: absolute; left: 50%; top: 3.8%;
+    width: 0.45%; height: 5.4%;
+    background: rgba(30, 41, 59, 0.12);
+    border-radius: 999px;
+    transform-origin: 50% 840%;
   }
-  .flip-digit::before,
-  .flip-digit::after {
-    position: absolute; left: 0; width: 100%; height: 50%;
-    display: flex; justify-content: center; align-items: center;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 7.2vw; font-weight: 900; letter-spacing: -0.06em;
-    color: rgba(30, 41, 59, 0.16); content: attr(data-num);
+  .clock-tick.major { height: 7%; background: rgba(30, 41, 59, 0.18); }
+  .clock-hand {
+    position: absolute; left: 50%; top: 50%;
+    transform-origin: 50% 100%;
+    border-radius: 999px;
+    will-change: transform;
   }
-  .flip-digit::before {
-    top: 0;
-    background: linear-gradient(180deg, rgba(248,250,252,0.5) 0%, rgba(226,232,240,0.16) 100%);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-    align-items: flex-end; padding-bottom: 0.5vw;
+  .hand-hour {
+    width: 1.4%; height: 20%;
+    margin-left: -0.7%; margin-top: -20%;
+    background: rgba(30, 41, 59, 0.2);
   }
-  .flip-digit::after {
-    bottom: 0;
-    background: linear-gradient(180deg, rgba(226,232,240,0.16) 0%, rgba(203,213,225,0.08) 100%);
-    align-items: flex-start; padding-top: 0.5vw;
+  .hand-minute {
+    width: 1%; height: 28%;
+    margin-left: -0.5%; margin-top: -28%;
+    background: rgba(30, 41, 59, 0.18);
+  }
+  .hand-second {
+    width: 0.45%; height: 34%;
+    margin-left: -0.225%; margin-top: -30%;
+    background: rgba(59, 130, 246, 0.22);
+  }
+  .clock-pin {
+    position: absolute; left: 50%; top: 50%;
+    width: 2.6%; height: 2.6%;
+    margin-left: -1.3%; margin-top: -1.3%;
+    border-radius: 50%;
+    background: rgba(30, 41, 59, 0.2);
   }
 
   /* 3D 슬라이더 카드 공통 속성 */
@@ -458,22 +469,25 @@
       
       <div class="paradigm-stage reveal delay-2" id="pd-stage">
         
-        <!-- 디지털 플립 시계 배경 -->
+        <!-- 아날로그 시계 배경 -->
         <div class="bg-digital-clock" id="digi-clock" aria-hidden="true">
-          <div class="flip-group">
-            <span class="flip-digit" data-pos="0" data-num="0"></span>
-            <span class="flip-digit" data-pos="1" data-num="0"></span>
-          </div>
-          <span class="flip-sep">:</span>
-          <div class="flip-group">
-            <span class="flip-digit" data-pos="2" data-num="0"></span>
-            <span class="flip-digit" data-pos="3" data-num="0"></span>
-          </div>
-          <span class="flip-sep">:</span>
-          <div class="flip-group">
-            <span class="flip-digit" data-pos="4" data-num="0"></span>
-            <span class="flip-digit" data-pos="5" data-num="0"></span>
-          </div>
+          <div class="clock-rim"></div>
+          <div class="clock-tick major" style="transform: translateX(-50%) rotate(0deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(30deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(60deg);"></div>
+          <div class="clock-tick major" style="transform: translateX(-50%) rotate(90deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(120deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(150deg);"></div>
+          <div class="clock-tick major" style="transform: translateX(-50%) rotate(180deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(210deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(240deg);"></div>
+          <div class="clock-tick major" style="transform: translateX(-50%) rotate(270deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(300deg);"></div>
+          <div class="clock-tick" style="transform: translateX(-50%) rotate(330deg);"></div>
+          <div class="clock-hand hand-hour" id="clock-hour"></div>
+          <div class="clock-hand hand-minute" id="clock-minute"></div>
+          <div class="clock-hand hand-second" id="clock-second"></div>
+          <div class="clock-pin"></div>
         </div>
 
         <!-- 좌우 반투명 쐐기 버튼 -->
@@ -720,24 +734,59 @@
     triggerReveal();
   });
 
-  // Digital Clock Background Logic
-  function updateDigitalClock() {
-    const clock = document.getElementById('digi-clock');
-    if(!clock) return;
-    const digits = clock.querySelectorAll('.flip-digit');
-    let d = new Date();
-    // 더 빠른 시간 흐름 효과를 위해 ms 단위를 혼합
-    let h = String(d.getHours()).padStart(2, '0');
-    let m = String(d.getMinutes()).padStart(2, '0');
-    let s = String(Math.floor(d.getMilliseconds()/10)).padStart(2, '0');
-    const value = `${h}${m}${s}`;
-    digits.forEach((digit, idx) => {
-      const nextNum = value[idx];
-      if (digit.dataset.num !== nextNum) digit.dataset.num = nextNum;
-    });
-    requestAnimationFrame(updateDigitalClock);
+  // Analog Clock Background Logic
+  function updateAnalogClock() {
+    const hourHand = document.getElementById('clock-hour');
+    const minuteHand = document.getElementById('clock-minute');
+    const secondHand = document.getElementById('clock-second');
+    if(!hourHand || !minuteHand || !secondHand) return;
+
+    const now = new Date();
+    const ms = now.getMilliseconds();
+    const sec = now.getSeconds() + ms / 1000;
+    const min = now.getMinutes() + sec / 60;
+    const hour = (now.getHours() % 12) + min / 60;
+
+    hourHand.style.transform = `rotate(${hour * 30}deg)`;
+    minuteHand.style.transform = `rotate(${min * 6}deg)`;
+    secondHand.style.transform = `rotate(${sec * 6}deg)`;
+
+    requestAnimationFrame(updateAnalogClock);
   }
-  updateDigitalClock();
+  updateAnalogClock();
+
+  // Radar Polygon Random Motion Logic
+  function initRadarAnimation() {
+    const radarPolygon = document.getElementById('dynamic-radar');
+    if (!radarPolygon) return;
+
+    const angles = [-90, -30, 30, 90, 150, 210].map(deg => deg * Math.PI / 180);
+    let current = [0.64, 0.57, 0.61, 0.54, 0.59, 0.56];
+    let target = current.map(v => v + (Math.random() - 0.5) * 0.18);
+    let lastTargetUpdate = 0;
+
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+    function render(ts) {
+      if (!lastTargetUpdate || ts - lastTargetUpdate > 1500) {
+        target = target.map(v => clamp(v + (Math.random() - 0.5) * 0.22, 0.33, 0.95));
+        lastTargetUpdate = ts;
+      }
+
+      current = current.map((v, i) => v + (target[i] - v) * 0.032);
+      const points = current.map((ratio, i) => {
+        const r = 160 * ratio;
+        const x = (Math.cos(angles[i]) * r).toFixed(2);
+        const y = (Math.sin(angles[i]) * r).toFixed(2);
+        return `${x},${y}`;
+      }).join(' ');
+      radarPolygon.setAttribute('points', points);
+
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  }
+  initRadarAnimation();
 
   // Paradigm Shift (3장) 슬라이더 로직
   let pdCurrentIndex = 0;
