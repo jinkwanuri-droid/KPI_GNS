@@ -46,15 +46,23 @@ const customRadarBgPlugin = {
             for(let i=0; i<r._pointLabels.length; i++){ pts.push(r.getPointPositionForValue(i, maxVal)); }
             if(pts.length < 3) return;
             const ctx = chart.ctx;
+            
+            // 상단 부분 그리기
             ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(pts[1].x, pts[1].y); ctx.lineTo(pts[2].x, pts[2].y);
             if(pts.length > 3) ctx.lineTo(pts[3].x, pts[3].y);
             ctx.closePath();
-            ctx.fillStyle = 'rgba(59, 130, 246, 0.05)'; ctx.fill();
+            // 💡 기존 파란색 -> 부드러운 흰색 반투명으로 변경
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; 
+            ctx.fill();
+            
+            // 하단 부분 그리기
             if(pts.length > 3) {
                 ctx.beginPath(); ctx.moveTo(pts[3].x, pts[3].y); ctx.lineTo(pts[4].x, pts[4].y);
                 if(pts.length > 5) ctx.lineTo(pts[5].x, pts[5].y);
                 ctx.lineTo(pts[0].x, pts[0].y); ctx.closePath();
-                ctx.fillStyle = 'rgba(236, 72, 153, 0.05)'; ctx.fill();
+                // 💡 기존 빨간색 -> 부드러운 흰색 반투명으로 변경
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; 
+                ctx.fill();
             }
         } catch(e) { }
     }
@@ -1088,7 +1096,6 @@ function renderAdvancedMetrics(d, da, col, pf) {
                 'CV(Norm)': '안정성', 'CV': '안정성', 'Hurst': '주도성', 'Jaccard': '확장성'
             };
             
-            // 💡 목표값 파싱용 헬퍼 함수
             var targetMap = {
                 '1-OT': '0.8 이상<br><span style="font-size:10px; color:#94a3b8;">(정시퇴근)</span>',
                 'Shannon': '0.4 ~ 0.6<br><span style="font-size:10px; color:#94a3b8;">(업무균형)</span>',
@@ -1101,26 +1108,26 @@ function renderAdvancedMetrics(d, da, col, pf) {
 
             var tableHtml = '<table style="width:100%; border-collapse:collapse; margin-top:5px; table-layout:fixed;">';
             
-            // 💡 헤더 비율 조정: 지표명(18%), 현재값(12%), 목표값(15%), 진단(15%), 해석(40%)
+            // 💡 비율 조정 반영: 지표명(12%), 현재(12%), 목표(15%), 진단(15%), 해석(46%)
             if (pf === 'wp') {
-                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:12px;"><th style="padding:6px 0px; text-align:left; width:18%;">지표명</th><th style="padding:6px 0px; text-align:center; width:12%;">현재값</th><th style="padding:6px 0px; text-align:center; width:15%;">목표값</th><th style="padding:6px 0px; text-align:center; width:15%;">진단</th><th style="padding:6px 0px 6px 10px; text-align:left; width:40%;">값 해석</th></tr></thead><tbody>';
+                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:12px;"><th style="padding:6px 0px; text-align:left; width:12%;">지표명</th><th style="padding:6px 0px; text-align:center; width:12%;">현재값</th><th style="padding:6px 0px; text-align:center; width:15%;">목표값</th><th style="padding:6px 0px; text-align:center; width:15%;">진단</th><th style="padding:6px 0px 6px 10px; text-align:left; width:46%;">값 해석</th></tr></thead><tbody>';
                 for (var idx = 0; idx < INSIGHT_METRICS_INFO.length; idx++) {
                     var info = INSIGHT_METRICS_INFO[idx], val = rawCvInsight[idx], evalResult = info.eval(val);
-                    var fullName = info.name + ' <div style="font-size:11px; color:#94a3b8; font-weight:600; margin-top:2px;">(' + (koNames[info.name] || '') + ')</div>';
+                    // 💡 지표명(한글명)을 <div> 대신 <span>으로 변경하여 1줄로 나란히 표시되게 수정
+                    var fullName = info.name + ' <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:4px;">(' + (koNames[info.name] || '') + ')</span>';
                     var parsedTarget = targetMap[info.name] || (info.target + '<br><span style="font-size:10px; color:#94a3b8;">(권장)</span>');
                     
-                    // 💡 지표명 폰트 크기: 14px (+2pt), 진단 열: 이모지 삭제(evalResult.s만 출력) 및 폰트 크기 12px (+1pt)
-                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0px; font-weight:800; color:#334155; font-size:14px; vertical-align:middle;">' + fullName + '</td><td style="padding:10px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:14px; vertical-align:middle;">' + Number(val).toFixed(2) + '</td><td style="padding:10px 0px; text-align:center; font-weight:800; color:#4f46e5; font-size:12px; vertical-align:middle; line-height:1.3;">' + parsedTarget + '</td><td style="padding:10px 0px; text-align:center; vertical-align:middle;">  <span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:800; display:inline-block;">' + evalResult.s + '</span></td><td style="padding:10px 0px 10px 10px; font-size:12px; color:#64748b; line-height:1.4; word-break:keep-all; vertical-align:middle;">' + evalResult.t + '</td></tr>';
+                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0px; font-weight:800; color:#334155; font-size:14px; vertical-align:middle; white-space:nowrap;">' + fullName + '</td><td style="padding:10px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:14px; vertical-align:middle;">' + Number(val).toFixed(2) + '</td><td style="padding:10px 0px; text-align:center; font-weight:800; color:#4f46e5; font-size:12px; vertical-align:middle; line-height:1.3;">' + parsedTarget + '</td><td style="padding:10px 0px; text-align:center; vertical-align:middle;">  <span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:800; display:inline-block;">' + evalResult.s + '</span></td><td style="padding:10px 0px 10px 10px; font-size:12px; color:#64748b; line-height:1.4; word-break:keep-all; vertical-align:middle;">' + evalResult.t + '</td></tr>';
                 }
             } else {
-                // 프로젝트 탭(pj) 테이블 설정 적용
-                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:13px;"><th style="padding:10px 0px; text-align:left; width:18%;">지표명</th><th style="padding:10px 0px; text-align:center; width:12%;">현재값</th><th style="padding:10px 0px; text-align:center; width:15%;">목표값</th><th style="padding:10px 0px; text-align:center; width:15%;">진단</th><th style="padding:10px 0px 10px 10px; text-align:left; width:40%;">값 해석</th></tr></thead><tbody>';
+                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:13px;"><th style="padding:10px 0px; text-align:left; width:12%;">지표명</th><th style="padding:10px 0px; text-align:center; width:12%;">현재값</th><th style="padding:10px 0px; text-align:center; width:15%;">목표값</th><th style="padding:10px 0px; text-align:center; width:15%;">진단</th><th style="padding:10px 0px 10px 10px; text-align:left; width:46%;">값 해석</th></tr></thead><tbody>';
                 for (var idx = 0; idx < INSIGHT_METRICS_INFO.length; idx++) {
                     var info = INSIGHT_METRICS_INFO[idx], val = rawCvInsight[idx], evalResult = info.eval(val);
-                    var fullName = info.name + ' <div style="font-size:11px; color:#94a3b8; font-weight:600; margin-top:2px;">(' + (koNames[info.name] || '') + ')</div>';
+                    // 💡 동일하게 1줄 처리
+                    var fullName = info.name + ' <span style="font-size:11px; color:#94a3b8; font-weight:600; margin-left:4px;">(' + (koNames[info.name] || '') + ')</span>';
                     var parsedTarget = targetMap[info.name] || (info.target + '<br><span style="font-size:10px; color:#94a3b8;">(권장)</span>');
                     
-                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:12px 0px; font-weight:800; color:#334155; font-size:15px; vertical-align:middle;">' + fullName + '</td><td style="padding:12px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:15px; vertical-align:middle;">' + Number(val).toFixed(2) + '</td><td style="padding:12px 0px; text-align:center; font-weight:800; color:#4f46e5; font-size:13px; vertical-align:middle; line-height:1.3;">' + parsedTarget + '</td><td style="padding:12px 0px; text-align:center; vertical-align:middle;"><span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:4px 8px; border-radius:4px; font-size:13px; font-weight:800; display:inline-block;">' + evalResult.s + '</span></td><td style="padding:12px 0px 12px 10px; font-size:13px; color:#64748b; line-height:1.5; word-break:keep-all; vertical-align:middle;">' + evalResult.t + '</td></tr>';
+                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:12px 0px; font-weight:800; color:#334155; font-size:15px; vertical-align:middle; white-space:nowrap;">' + fullName + '</td><td style="padding:12px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:15px; vertical-align:middle;">' + Number(val).toFixed(2) + '</td><td style="padding:12px 0px; text-align:center; font-weight:800; color:#4f46e5; font-size:13px; vertical-align:middle; line-height:1.3;">' + parsedTarget + '</td><td style="padding:12px 0px; text-align:center; vertical-align:middle;"><span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:4px 8px; border-radius:4px; font-size:13px; font-weight:800; display:inline-block;">' + evalResult.s + '</span></td><td style="padding:12px 0px 12px 10px; font-size:13px; color:#64748b; line-height:1.5; word-break:keep-all; vertical-align:middle;">' + evalResult.t + '</td></tr>';
                 }
             }
             tableHtml += '</tbody></table>';
