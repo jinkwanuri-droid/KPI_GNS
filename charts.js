@@ -570,16 +570,35 @@ function renderWorkingTab(nm){
     d.forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});
     var ad=Object.keys(dm).length, da=ad>0?mToH(pm)/ad:0, t1=0, t2=0, t3=0;
     Object.values(dm).forEach(m=>{if(m>=540&&m<660)t1++;else if(m>=660&&m<720)t2++;else if(m>=720)t3++;});
+    
     document.getElementById('wpStatMonths').textContent=mo.length;document.getElementById('wpStatActiveDays').textContent='('+ad+'일)';
     document.getElementById('wpStatTotal').textContent=fH(pm);document.getElementById('wpStatDayAvg').textContent=da.toFixed(1)+'h/일';
-    document.getElementById('wpStatOt1').textContent=(t1+t2);document.getElementById('wpStatOt2').textContent=t3;
-    var top3Html = '';
+    
+    // 💡 1. 초과근무일 폰트 +2pt 확대 (16px -> 18px)
+    var ot1El = document.getElementById('wpStatOt1');
+    if(ot1El) { ot1El.textContent=(t1+t2); ot1El.style.fontSize = '18px'; }
+    var ot2El = document.getElementById('wpStatOt2');
+    if(ot2El) { ot2El.textContent=t3; ot2El.style.fontSize = '18px'; }
+    
+    // 💡 2. 업무유형 TOP 5 표시 및 말줄임표 제거
+    var top5Html = '';
     if(ta2.length > 0) {
-        top3Html = ta2.slice(0,3).map((e,i) => `<div style="display:flex;justify-content:space-between;font-size:12px;color:#1e293b;font-weight:700;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px;">${i+1}. ${e[0]}</span><span style="color:#64748b;">${(pm>0?(e[1]/pm*100):0).toFixed(0)}%</span></div>`).join('');
+        // slice(0,5)로 5개 표시, 말줄임표(text-overflow, max-width, overflow) 삭제, 줄바꿈 유지
+        top5Html = ta2.slice(0,5).map((e,i) => `<div style="display:flex;justify-content:space-between;align-items:flex-start;font-size:11px;color:#1e293b;font-weight:700;line-height:1.3;margin-bottom:4px;"><span style="flex:1;word-break:keep-all;">${i+1}. ${e[0]}</span><span style="color:#64748b;margin-left:6px;flex-shrink:0;">${(pm>0?(e[1]/pm*100):0).toFixed(0)}%</span></div>`).join('');
     } else {
-        top3Html = '<div style="font-size:11px;color:#94a3b8;">데이터 없음</div>';
+        top5Html = '<div style="font-size:11px;color:#94a3b8;">데이터 없음</div>';
     }
-    document.getElementById('wpTop3ListOnly').innerHTML = top3Html;
+    
+    var topListEl = document.getElementById('wpTop3ListOnly');
+    if(topListEl) {
+        topListEl.innerHTML = top5Html;
+        // 제목을 TOP 3 -> TOP 5로 강제 변경
+        var topListTitle = topListEl.previousElementSibling;
+        if(topListTitle && topListTitle.innerText.includes('TOP')) {
+            topListTitle.innerText = '업무유형 TOP 5';
+        }
+    }
+    
     var catStr = Object.entries(grp(d,'cat')).sort((a,b)=>b[1]-a[1]).map(x => x[0]+'('+(pm>0 ? (x[1]/pm*100).toFixed(0) : 0)+'%)').join(', ');
     window.currentWorkingAiData = { m: nm, tt: pm, apm: apm, o9: o9, o12: o12, tk: tk, as: as, ah: ah, ac: ac, cat: catStr };
     if(window.currentWorkingAiResponse) {
@@ -588,6 +607,7 @@ function renderWorkingTab(nm){
         document.getElementById('wpAiCommentBox').innerHTML = '<div class="ai-insight-content" style="color:#64748b;">우측 상단의 <b>분석 요청하기</b> 버튼을 눌러보세요.</div>';
     }
     if(typeof updateCustomSelectTrigger !== 'undefined') updateCustomSelectTrigger();
+    
     var cr = calcStandaloneMetrics(d);
     var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
     var teamCr = calcStandaloneMetrics(teamData);
@@ -599,10 +619,10 @@ function renderWorkingTab(nm){
         { key: 'hurst', val: cr.hurst || 0, main: 'Hurst', sub: '주도성' },
         { key: 'jaccard', val: cr.jaccard || 0, main: 'Jaccard', sub: '확장성' }
     ];
+    
     var metricsCards = metricKeys.map((m, idx) => {
         var evalObj = INSIGHT_METRICS_INFO[idx].eval(m.val);
         var statusClass = evalObj.s === '좋음' ? 'good' : (evalObj.s === '보통' ? 'warn' : 'danger');
-        // 💡 상태에 따른 색상 추출 (노란색은 시인성을 위해 약간 진한 주황/노랑으로 보정)
         var valColor = statusClass === 'good' ? '#10b981' : (statusClass === 'warn' ? '#d97706' : '#ef4444');
         return `
             <div class="wp-metric-badge">
@@ -613,14 +633,13 @@ function renderWorkingTab(nm){
                         <div class="wp-mb-subtitle">${m.sub}</div>
                     </div>
                 </div>
-                <!-- 💡 값 폰트 크기 21px -> 20px로 1pt 축소 & 색상 연동 -->
-                <span class="val" style="font-size:20px; color:${valColor};">${m.val.toFixed(2)}</span>
+                <!-- 💡 3. 수치값 폰트 두께 900 -> 800으로 낮춤 -->
+                <span class="val" style="font-size:20px; color:${valColor}; font-weight:800;">${m.val.toFixed(2)}</span>
             </div>
         `;
     }).join('');
     document.getElementById('wpHeroMetricsCards').innerHTML = metricsCards;
     
-    // 💡 제목 폰트 크기 12px -> 14px (+2pt) 확대 반영 (DOM 조작)
     var titleEl = document.querySelector('.wp-right-title');
     if (titleEl) { titleEl.style.fontSize = '14px'; }
 
@@ -636,7 +655,7 @@ function renderWorkingTab(nm){
         },
         options: { 
             responsive: true, maintainAspectRatio: false, clip: false, 
-            layout:{padding:10}, // 💡 padding을 25 -> 10으로 줄여 차트 10% 확대
+            layout:{padding:10}, 
             plugins: { 
                 legend: { display: false }, 
                 datalabels: { display: cx=>cx.datasetIndex===0, color: c, font: {size:9, weight:'bold'}, formatter: v=>v.toFixed(2), anchor:'end', align:'end' }, 
@@ -645,11 +664,12 @@ function renderWorkingTab(nm){
             scales: { 
                 r: { 
                     min: 0, max: 1.2, ticks: { display: false }, 
-                    pointLabels: { font: {size:10, weight:'800'}, color: '#64748b' } // 💡 글씨 크기 8 -> 10 (+2pt) 확대
+                    pointLabels: { font: {size:10, weight:'800'}, color: '#64748b' } 
                 } 
             } 
         }
     });
+    
     safeRender(function(){renderWpStackedBar(d,mo);});
     safeRender(function(){renderWpHeatmapYear('2024');});
     safeRender(function(){renderWpDonutSub(d,pm);});
