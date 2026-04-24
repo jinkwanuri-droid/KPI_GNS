@@ -797,65 +797,131 @@ function renderWpFocusBar(d,mos){
     });
 }
 function renderWpOvertimeDetail(d){
-    dC('wpOtBar'); var dm={}; d.forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});
+    if (typeof dC === 'function') dC('wpOtBar'); 
+    var dm={}; 
+    d.forEach(r=>{dm[r.date]=(dm[r.date]||0)+r.min;});
+    
     var od=Object.entries(dm).filter(e=>e[1]>=540).sort((a,b)=>a[0].localeCompare(b[0]));
     var mo=Array.from(new Set(od.map(e=>e[0].slice(0,7)))).sort();
     var ct={'9~10h':[],'10~11h':[],'11~12h':[],'12h 이상':[]};
-    mo.forEach(m=>{ var c1=0,c2=0,c3=0,c4=0; od.forEach(e=>{ if(!e[0].startsWith(m))return; var n=e[1]; if(n<600)c1++; else if(n<660)c2++; else if(n<720)c3++; else c4++; }); ct['9~10h'].push(c1); ct['10~11h'].push(c2); ct['11~12h'].push(c3); ct['12h 이상'].push(c4); });
-    var teamData = filtered().filter(r=>r.project==='경남 서부의료원');
+    
+    mo.forEach(m=>{ 
+        var c1=0,c2=0,c3=0,c4=0; 
+        od.forEach(e=>{ 
+            if(!e[0].startsWith(m)) return; 
+            var n=e[1]; 
+            if(n<600) c1++; 
+            else if(n<660) c2++; 
+            else if(n<720) c3++; 
+            else c4++; 
+        }); 
+        ct['9~10h'].push(c1); 
+        ct['10~11h'].push(c2); 
+        ct['11~12h'].push(c3); 
+        ct['12h 이상'].push(c4); 
+    });
+    
+    var teamData = typeof filtered === 'function' ? filtered().filter(r=>r.project==='경남 서부의료원') : [];
     var teamDm = {};
     teamData.forEach(r => { var key = r.name + '|' + r.date; teamDm[key] = (teamDm[key]||0) + r.min; });
-    var teamMonthlyOtCount = {}; var teamMonthlyActiveMembers = {};
+    
+    var teamMonthlyOtCount = {}; 
+    var teamMonthlyActiveMembers = {};
     Object.entries(teamDm).forEach(e => {
-        var name = e[0].split('|')[0]; var date = e[0].split('|')[1]; var m = date.slice(0,7);
+        var name = e[0].split('|')[0]; 
+        var date = e[0].split('|')[1]; 
+        var m = date.slice(0,7);
         if(!teamMonthlyActiveMembers[m]) teamMonthlyActiveMembers[m] = new Set();
         teamMonthlyActiveMembers[m].add(name);
         if(e[1] >= 540) { teamMonthlyOtCount[m] = (teamMonthlyOtCount[m]||0) + 1; }
     });
+    
     var teamAvgData = mo.map(m => {
         var membersCount = teamMonthlyActiveMembers[m] ? teamMonthlyActiveMembers[m].size : 0;
         if(membersCount === 0) return null;
         var otCount = teamMonthlyOtCount[m] || 0;
         return parseFloat((otCount / membersCount).toFixed(1));
     });
+    
     var bd = ['9~10h','10~11h','11~12h','12h 이상'];
-    document.getElementById('wpOtLegendWrap').innerHTML = bd.map((b, i) => '<div class="legend-item ' + (hlWpOt!==null && hlWpOt!==b ? 'dimmed' : '') + '" onclick="dTogWpOt(\''+b+'\')"><div class="legend-dot" style="background:'+OT_COLORS[i]+'"></div><span style="font-size:11px;">'+b+'</span></div>').join('') + '<div class="legend-item"><div class="legend-dot" style="background:transparent; border-top:2px dashed #94a3b8; height:0; width:12px;"></div><span style="font-size:11px;">팀 평균</span></div>';
-    CH.wpOtBar=new Chart(document.getElementById('wpOtBar').getContext('2d'),{
-        data:{
-            labels:mo,
-            datasets:[
-                {type:'bar', label:'9~10h', data:ct['9~10h'], backgroundColor: (hlWpOt===null||hlWpOt==='9~10h')?OT_COLORS[0]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
-                {type:'bar', label:'10~11h', data:ct['10~11h'], backgroundColor: (hlWpOt===null||hlWpOt==='10~11h')?OT_COLORS[1]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
-                {type:'bar', label:'11~12h', data:ct['11~12h'], backgroundColor: (hlWpOt===null||hlWpOt==='11~12h')?OT_COLORS[2]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
-                {type:'bar', label:'12h 이상', data:ct['12h 이상'], backgroundColor: (hlWpOt===null||hlWpOt==='12h 이상')?OT_COLORS[3]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
+    var legendWrap = document.getElementById('wpOtLegendWrap');
+    if (legendWrap) {
+        legendWrap.innerHTML = bd.map((b, i) => '<div class="legend-item ' + (typeof hlWpOt !== 'undefined' && hlWpOt!==null && hlWpOt!==b ? 'dimmed' : '') + '" onclick="if(typeof dTogWpOt===\'function\') dTogWpOt(\''+b+'\')"><div class="legend-dot" style="background:'+(typeof OT_COLORS !== 'undefined' ? OT_COLORS[i] : '#000')+'"></div><span style="font-size:11px;">'+b+'</span></div>').join('') + '<div class="legend-item"><div class="legend-dot" style="background:transparent; border-top:2px dashed #94a3b8; height:0; width:12px;"></div><span style="font-size:11px;">팀 평균</span></div>';
+    }
+    
+    var cvs = document.getElementById('wpOtBar');
+    if(!cvs) return;
+
+    CH.wpOtBar = new Chart(cvs.getContext('2d'), {
+        data: {
+            labels: mo,
+            datasets: [
+                {type:'bar', label:'9~10h', data:ct['9~10h'], backgroundColor: (typeof hlWpOt === 'undefined' || hlWpOt===null||hlWpOt==='9~10h')?OT_COLORS[0]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
+                {type:'bar', label:'10~11h', data:ct['10~11h'], backgroundColor: (typeof hlWpOt === 'undefined' || hlWpOt===null||hlWpOt==='10~11h')?OT_COLORS[1]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
+                {type:'bar', label:'11~12h', data:ct['11~12h'], backgroundColor: (typeof hlWpOt === 'undefined' || hlWpOt===null||hlWpOt==='11~12h')?OT_COLORS[2]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
+                {type:'bar', label:'12h 이상', data:ct['12h 이상'], backgroundColor: (typeof hlWpOt === 'undefined' || hlWpOt===null||hlWpOt==='12h 이상')?OT_COLORS[3]:'#e2e8f0', stack:'S', borderRadius:2, order:2},
                 {type:'line', label:'팀 평균', data:teamAvgData, borderColor:'#94a3b8', backgroundColor:'transparent', borderDash:[3,3], borderWidth:1.5, pointRadius:3, pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', order:1}
             ]
         },
-        options:{
+        options: {
             responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}},
-            interaction: { mode: 'index', intersect: false },
-            plugins:{
-                legend:{display:false},
-                datalabels:{
+            interaction: { mode: 'index', intersect: false }, // 툴팁 표시는 index 모드 유지
+            plugins: {
+                legend: {display:false},
+                datalabels: {
                     display: function(cx){
                         if(cx.dataset.type === 'line') return cx.raw !== null && cx.raw > 0;
-                        if(hlWpOt === null) { var maxIdx = -1; for(var i = 3; i >= 0; i--) { if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } } return cx.datasetIndex === maxIdx; }
-                        else { return cx.dataset.label === hlWpOt && cx.dataset.data[cx.dataIndex] > 0; }
+                        if(typeof hlWpOt === 'undefined' || hlWpOt === null) { 
+                            var maxIdx = -1; 
+                            for(var i = 3; i >= 0; i--) { 
+                                if(cx.chart.data.datasets[i].data[cx.dataIndex] > 0) { maxIdx = i; break; } 
+                            } 
+                            return cx.datasetIndex === maxIdx; 
+                        }
+                        else { 
+                            return cx.dataset.label === hlWpOt && cx.dataset.data[cx.dataIndex] > 0; 
+                        }
                     },
-                    color: cx => cx.dataset.type === 'line' ? '#64748b' : (hlWpOt === null ? '#1e293b' : '#fff'),
+                    color: cx => cx.dataset.type === 'line' ? '#64748b' : ((typeof hlWpOt === 'undefined' || hlWpOt === null) ? '#1e293b' : '#fff'),
                     font: {size:10, weight:'bold'},
-                    anchor: cx => cx.dataset.type === 'line' ? 'end' : (hlWpOt === null ? 'end' : 'center'),
-                    align: cx => cx.dataset.type === 'line' ? 'top' : (hlWpOt === null ? 'end' : 'center'),
-                    offset: cx => cx.dataset.type === 'line' ? 6 : (hlWpOt === null ? 4 : 0),
+                    anchor: cx => cx.dataset.type === 'line' ? 'end' : ((typeof hlWpOt === 'undefined' || hlWpOt === null) ? 'end' : 'center'),
+                    align: cx => cx.dataset.type === 'line' ? 'top' : ((typeof hlWpOt === 'undefined' || hlWpOt === null) ? 'end' : 'center'),
+                    offset: cx => cx.dataset.type === 'line' ? 6 : ((typeof hlWpOt === 'undefined' || hlWpOt === null) ? 4 : 0),
                     formatter: function(v, cx){
                         if(cx.dataset.type === 'line') return v;
-                        if(hlWpOt === null) { var sum=0; for(var i=0; i<=3; i++){ sum += cx.chart.data.datasets[i].data[cx.dataIndex]||0; } return sum>0?sum:''; }
+                        if(typeof hlWpOt === 'undefined' || hlWpOt === null) { 
+                            var sum=0; 
+                            for(var i=0; i<=3; i++){ sum += cx.chart.data.datasets[i].data[cx.dataIndex]||0; } 
+                            return sum>0?sum:''; 
+                        }
                         else return v>0?v:'';
                     }
                 }
             },
             scales:{ x:{stacked:true, grid:{display:false}, ticks:{font:{size:11}}}, y:{stacked:true, display:false, grace:'20%'} },
-            onClick: (e,els)=>{ if(els.length && els[0].datasetIndex <= 3) dTogWpOt(CH.wpOtBar.data.datasets[els[0].datasetIndex].label); else dTogWpOt(null); }
+            
+            // 💡 [핵심] 차트의 특정 조각을 클릭했을 때의 로직을 정확히 판별하도록 수정
+            onClick: function(e, activeElements, chart) {
+                if (typeof dTogWpOt !== 'function') return;
+                
+                // 마우스 클릭 위치에 가장 가까운 단일 조각(막대)을 교차(intersect) 판정으로 가져옴
+                const points = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                
+                if (points.length) {
+                    const datasetIndex = points[0].datasetIndex;
+                    // 클릭한 요소가 0~3 인덱스 (9~10h, 10~11h, 11~12h, 12h 이상 막대)일 경우
+                    if (datasetIndex <= 3) {
+                        const label = chart.data.datasets[datasetIndex].label;
+                        dTogWpOt(label); // 해당 라벨로 하이라이트 토글
+                    } else {
+                        // 팀 평균(선 차트)을 클릭했을 경우 하이라이트 해제
+                        dTogWpOt(null);
+                    }
+                } else {
+                    // 차트 캔버스 내의 빈 공간을 클릭했을 경우 하이라이트 해제
+                    dTogWpOt(null);
+                }
+            }
         }
     });
 }
