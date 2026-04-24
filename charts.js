@@ -661,10 +661,32 @@ function renderWpDonutCat(d,t){
     });
 }
 
-// ====================================================================
-// [수정2] 전환횟수 차트 레이블 & 여백 완벽 해결
-// ====================================================================
 function renderWpSwitchBar(d, mos, col) {
+    if (typeof dC === 'function') dC('wpSwitchBar');
+    var canvas = document.getElementById('wpSwitchBar');
+    if (!canvas) return;
+
+    // 💡 1. index.html에 새로 만든 범례 공간에 HTML 범례 꽂아넣기
+    var legendWrap = document.getElementById('wpSwitchLegendWrap');
+    if (legendWrap) {
+        legendWrap.innerHTML = `
+            <div style="display:flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:#64748b;">
+                <div style="width:10px; height:10px; border-radius:50%; border:2px solid #94a3b8; background:#fff; box-sizing:border-box;"></div> 팀 평균
+            </div>
+            <div style="display:flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:#64748b;">
+                <div style="width:10px; height:10px; border-radius:3px; background:${col};"></div> 개인 전환 횟수
+            </div>
+        `;
+    }
+
+    // 2. 데이터 가공 로직 (기존과 동일)
+    var sw = {}, pv = null;
+    d.forEach(r => {
+        var m = r.date.slice(0, 7);
+        if (!sw[m]) sw[m] = 0;
+        if (pv !== null && pv !== r.sub) sw[m]++;
+        pv = r.sub;
+    });
 
     var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
     var teamSw = {}, teamPv = {}, act = {};
@@ -680,9 +702,7 @@ function renderWpSwitchBar(d, mos, col) {
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
 
-    // ==========================================================
-    // [핵심 2] 차트 렌더링 및 DataLabels 강제화
-    // ==========================================================
+    // 💡 3. 차트 렌더링
     CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
@@ -715,18 +735,18 @@ function renderWpSwitchBar(d, mos, col) {
             responsive: true,
             maintainAspectRatio: false,
             clip: false,
-            layout: { padding: { top: 15, bottom: 0, left: 0, right: 0 } }, // 차트 윗공간 제거
+            // 💡 상단 여백을 극단적으로 줄여서 막대가 천장까지 뻗도록 함
+            layout: { padding: { top: 20, bottom: 0, left: 0, right: 0 } },
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                // HTML 범례를 만들었으므로 기본 범례는 숨김
-                legend: { display: false },
+                legend: { display: false }, // Chart.js 내장 범례는 끄기 (HTML로 만들었으므로)
                 
-                // 데이터레이블 전역 옵션에서 "막대차트만" 남색으로 표시하도록 강제 분기
+                // 💡 전역 설정을 무시하고 막대 차트에만 남색으로 값 레이블 강제 표시
                 datalabels: {
-                    display: function(cx) {
-                        return cx.dataset.type === 'bar' && cx.raw > 0;
+                    display: function(context) {
+                        return context.dataset.type === 'bar' && context.raw > 0;
                     },
-                    color: '#1A2B4C', // 다크 블루/남색
+                    color: '#1A2B4C', // 남색 폰트
                     font: { weight: '900', size: 11 },
                     anchor: 'end',
                     align: 'end',
@@ -739,7 +759,7 @@ function renderWpSwitchBar(d, mos, col) {
                 y: { 
                     beginAtZero: true, 
                     grid: { color: 'rgba(226,232,240,0.5)' },
-                    grace: '5%' // 상단 여백을 극단적으로 줄여서 막대가 천장까지 쭉 뻗게 만듦
+                    grace: '10%' // 위쪽 빈 공간 최소화
                 }
             }
         }
