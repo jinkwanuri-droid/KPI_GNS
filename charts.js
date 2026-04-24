@@ -594,6 +594,8 @@ function renderWorkingTab(nm){
     var metricsCards = metricKeys.map((m, idx) => {
         var evalObj = INSIGHT_METRICS_INFO[idx].eval(m.val);
         var statusClass = evalObj.s === '좋음' ? 'good' : (evalObj.s === '보통' ? 'warn' : 'danger');
+        // 💡 상태에 따른 색상 추출 (노란색은 시인성을 위해 약간 진한 주황/노랑으로 보정)
+        var valColor = statusClass === 'good' ? '#10b981' : (statusClass === 'warn' ? '#d97706' : '#ef4444');
         return `
             <div class="wp-metric-badge">
                 <div class="wp-mb-left">
@@ -603,11 +605,17 @@ function renderWorkingTab(nm){
                         <div class="wp-mb-subtitle">${m.sub}</div>
                     </div>
                 </div>
-                <span class="val">${m.val.toFixed(2)}</span>
+                <!-- 💡 값 폰트 크기 21px -> 20px로 1pt 축소 & 색상 연동 -->
+                <span class="val" style="font-size:20px; color:${valColor};">${m.val.toFixed(2)}</span>
             </div>
         `;
     }).join('');
     document.getElementById('wpHeroMetricsCards').innerHTML = metricsCards;
+    
+    // 💡 제목 폰트 크기 12px -> 14px (+2pt) 확대 반영 (DOM 조작)
+    var titleEl = document.querySelector('.wp-right-title');
+    if (titleEl) { titleEl.style.fontSize = '14px'; }
+
     dC('wpHeroRadar');
     CH.wpHeroRadar = new Chart(document.getElementById('wpHeroRadar').getContext('2d'), {
         type: 'radar',
@@ -618,7 +626,21 @@ function renderWorkingTab(nm){
                 { data: [teamCr.ot, teamCr.shannon, teamCr.hhi, teamCr.cv, teamCr.hurst, teamCr.jaccard], borderColor: '#94a3b8', backgroundColor: 'transparent', borderWidth: 1.5, borderDash: [3,3], pointRadius: 0, order: 2 }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, clip: false, layout:{padding:25}, plugins: { legend: { display: false }, datalabels: { display: cx=>cx.datasetIndex===0, color: c, font: {size:9, weight:'bold'}, formatter: v=>v.toFixed(2), anchor:'end', align:'end' }, tooltip: { displayColors: false, callbacks: { label: cx => cx.raw.toFixed(2) } } }, scales: { r: { min: 0, max: 1.2, ticks: { display: false }, pointLabels: { font: {size:8, weight:'800'}, color: '#64748b' } } } }
+        options: { 
+            responsive: true, maintainAspectRatio: false, clip: false, 
+            layout:{padding:10}, // 💡 padding을 25 -> 10으로 줄여 차트 10% 확대
+            plugins: { 
+                legend: { display: false }, 
+                datalabels: { display: cx=>cx.datasetIndex===0, color: c, font: {size:9, weight:'bold'}, formatter: v=>v.toFixed(2), anchor:'end', align:'end' }, 
+                tooltip: { displayColors: false, callbacks: { label: cx => cx.raw.toFixed(2) } } 
+            }, 
+            scales: { 
+                r: { 
+                    min: 0, max: 1.2, ticks: { display: false }, 
+                    pointLabels: { font: {size:10, weight:'800'}, color: '#64748b' } // 💡 글씨 크기 8 -> 10 (+2pt) 확대
+                } 
+            } 
+        }
     });
     safeRender(function(){renderWpStackedBar(d,mo);});
     safeRender(function(){renderWpHeatmapYear('2024');});
@@ -791,9 +813,47 @@ function renderWpFocusBar(d,mos){
     var nonFocus = ['회의', '행정', '교육', '휴가', '기타', '관리', '업무지원'];
     var mf={},mt={}; mos.forEach(m=>{mf[m]=0;mt[m]=0;});
     d.forEach(r=>{ var m=r.date.slice(0,7); if(mt[m]===undefined)return; var isFocus = !nonFocus.some(k=>r.sub.includes(k)||r.cat.includes(k)); if(isFocus)mf[m]+=r.min; mt[m]+=r.min; });
-    CH.wpFocusBar=new Chart(document.getElementById('wpFocusBar').getContext('2d'),{
-        type:'line', data:{ labels:mos, datasets:[ { label:'집중업무 비율(%)', data:mos.map(m=>mt[m]>0?(mf[m]/mt[m]*100):0), borderColor:'#00428E', backgroundColor:hRgba('#00428E',0.1), borderWidth:2, fill:true, tension:0.3, pointRadius:4, pointBackgroundColor:'#00428E' } ] },
-        options:{ responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30}}, plugins:{ legend:{display:false}, datalabels:{display:cx=>mos.length>10?cx.dataIndex%2===0:true, formatter:v=>v.toFixed(1)+'%', align:'top', font:{size:10, weight:'bold'}, color:'#00428E'} }, scales:{ x:{grid:{display:false}}, y:{min: 0, max: 110, grid:{color:'rgba(226,232,240,0.5)'}, ticks:{callback:v=>v > 100 ? '' : v+'%'}} } }
+    
+    var canvas = document.getElementById('wpFocusBar');
+    var ctx = canvas.getContext('2d');
+    
+    // 💡 블루 톤 그라데이션 생성
+    var gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
+    gradientFill.addColorStop(0, 'rgba(0, 66, 142, 0.45)');
+    gradientFill.addColorStop(1, 'rgba(0, 66, 142, 0.0)');
+
+    CH.wpFocusBar=new Chart(ctx,{
+        type:'line', 
+        data:{ 
+            labels:mos, 
+            datasets:[ { 
+                label:'집중업무 비율(%)', 
+                data:mos.map(m=>mt[m]>0?(mf[m]/mt[m]*100):0), 
+                borderColor:'#00428E', 
+                backgroundColor:gradientFill, // 💡 그라데이션 적용
+                borderWidth:2, fill:true, tension:0.3, pointRadius:4, pointBackgroundColor:'#00428E' 
+            } ] 
+        },
+        options:{ 
+            responsive:true, maintainAspectRatio:false, clip:false, layout:{padding:{top:30, bottom:10}}, 
+            plugins:{ 
+                legend:{display:false}, 
+                datalabels:{
+                    display: true, // 💡 모든 레이블 100% 표시
+                    formatter: v => v.toFixed(1)+'%', 
+                    // 💡 홀수/짝수 데이터 인덱스를 판별해 위/아래 엇갈리게 배치 (지그재그)
+                    align: cx => cx.dataIndex % 2 === 0 ? 'top' : 'bottom',
+                    anchor: cx => cx.dataIndex % 2 === 0 ? 'end' : 'start',
+                    font: {size:10, weight:'bold'}, 
+                    color: '#00428E',
+                    offset: 6
+                } 
+            }, 
+            scales:{ 
+                x:{grid:{display:false}}, 
+                y:{min: 0, max: 110, grid:{color:'rgba(226,232,240,0.5)'}, ticks:{callback:v=>v > 100 ? '' : v+'%'}} 
+            } 
+        }
     });
 }
 function renderWpOvertimeDetail(d){
@@ -977,9 +1037,6 @@ function buildHeatmapHTML(dt,yr,c,tid){
     if(el) el.innerHTML=th+'</tbody>';
 }
 
-// ====================================================================
-// [오류 수정] 곱셈 기호(*)가 깨져서 에러를 유발하던 부분을 정상 복구했습니다.
-// ====================================================================
 function renderAdvancedMetrics(d, da, col, pf) {
     try {
         if (typeof dC === 'function') {
@@ -987,7 +1044,6 @@ function renderAdvancedMetrics(d, da, col, pf) {
             dC(pf + 'CvChart'); dC(pf + 'HurstChart'); dC(pf + 'OtChart');
         }
         if (!d || d.length === 0) return;
-
         var cr = typeof calcStandaloneMetrics === 'function' ? calcStandaloneMetrics(d) : {ot:0, shannon:0, hhi:0, cv:0, hurst:0, jaccard:0};
         var cvInsight = [cr.ot, (cr.shannon || 0), (cr.hhi || 0), (cr.cv || 0), (cr.hurst || 0), (cr.jaccard || 0)];
         var rawCvInsight = [cr.ot, (cr.shannon || 0), (cr.hhi || 0), cr.cv || 0, cr.hurst || 0, cr.jaccard || 0];
@@ -998,7 +1054,6 @@ function renderAdvancedMetrics(d, da, col, pf) {
             borderWidth: 2, pointBackgroundColor: col, pointBorderColor: '#fff',
             pointBorderWidth: 1, pointRadius: 3, pointHoverRadius: 5
         }];
-
         if (pf === 'wp' || pf === 'pj') {
             var teamData = typeof filtered === 'function' ? filtered().filter(r => r.project === '경남 서부의료원') : [];
             var teamCr = typeof calcStandaloneMetrics === 'function' ? calcStandaloneMetrics(teamData) : {ot:0, shannon:0, hhi:0, cv:0, hurst:0, jaccard:0};
@@ -1010,7 +1065,6 @@ function renderAdvancedMetrics(d, da, col, pf) {
                 pointRadius: 0, pointHoverRadius: 0
             });
         }
-
         if (typeof dC === 'function') dC(pf + 'InsightRadar');
         if (document.getElementById(pf + 'InsightRadar')) {
             CH[pf + 'InsightRadar'] = new Chart(document.getElementById(pf + 'InsightRadar').getContext('2d'), {
@@ -1027,34 +1081,51 @@ function renderAdvancedMetrics(d, da, col, pf) {
                 }
             });
         }
-
         var tb = document.getElementById(pf + 'InsightTable');
         if (tb && typeof INSIGHT_METRICS_INFO !== 'undefined') {
             var koNames = {
                 '1-OT': '정시근무', 'Shannon': '파편화도', 'HHI': '몰입도',
                 'CV(Norm)': '안정성', 'CV': '안정성', 'Hurst': '주도성', 'Jaccard': '확장성'
             };
+            
+            // 💡 목표값 파싱용 헬퍼 함수
+            var targetMap = {
+                '1-OT': '0.8 이상<br><span style="font-size:10px; color:#94a3b8;">(정시퇴근)</span>',
+                'Shannon': '0.4 ~ 0.6<br><span style="font-size:10px; color:#94a3b8;">(업무균형)</span>',
+                'HHI': '0.2 ~ 0.4<br><span style="font-size:10px; color:#94a3b8;">(적정몰입)</span>',
+                'CV(Norm)': '0.2 이하<br><span style="font-size:10px; color:#94a3b8;">(높은안정)</span>',
+                'CV': '0.2 이하<br><span style="font-size:10px; color:#94a3b8;">(높은안정)</span>',
+                'Hurst': '0.6 ~ 0.8<br><span style="font-size:10px; color:#94a3b8;">(계획수행)</span>',
+                'Jaccard': '0.3 ~ 0.5<br><span style="font-size:10px; color:#94a3b8;">(적정확장)</span>'
+            };
 
             var tableHtml = '<table style="width:100%; border-collapse:collapse; margin-top:5px; table-layout:fixed;">';
+            
+            // 💡 헤더 비율 조정: 지표명(18%), 현재값(12%), 목표값(15%), 진단(15%), 해석(40%)
             if (pf === 'wp') {
-                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:12px;"><th style="padding:6px 0px; text-align:left; width:26%;">지표명</th><th style="padding:6px 0px; text-align:center; width:13%;">현재값</th><th style="padding:6px 0px; text-align:center; width:15%;">진단</th><th style="padding:6px 0px 6px 10px; text-align:left; width:46%;">값 해석 (목표 및 설명)</th></tr></thead><tbody>';
+                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:12px;"><th style="padding:6px 0px; text-align:left; width:18%;">지표명</th><th style="padding:6px 0px; text-align:center; width:12%;">현재값</th><th style="padding:6px 0px; text-align:center; width:15%;">목표값</th><th style="padding:6px 0px; text-align:center; width:15%;">진단</th><th style="padding:6px 0px 6px 10px; text-align:left; width:40%;">값 해석</th></tr></thead><tbody>';
                 for (var idx = 0; idx < INSIGHT_METRICS_INFO.length; idx++) {
                     var info = INSIGHT_METRICS_INFO[idx], val = rawCvInsight[idx], evalResult = info.eval(val);
-                    var fullName = info.name + ' <span style="font-size:11px; color:#94a3b8; font-weight:600;">(' + (koNames[info.name] || '') + ')</span>';
-                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:8px 0px; font-weight:800; color:#334155; font-size:12px; vertical-align:top;">' + fullName + '</td><td style="padding:8px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:14px; vertical-align:top;">' + Number(val).toFixed(2) + '</td><td style="padding:8px 0px; text-align:center; vertical-align:top;">  <span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:3px 6px; border-radius:4px; font-size:11px; font-weight:800; display:inline-block;">' + evalResult.i + ' ' + evalResult.s + '</span></td><td style="padding:8px 0px 8px 10px; font-size:12px; color:#64748b; line-height:1.4; word-break:keep-all; vertical-align:top;">  <span style="color:#4f46e5; font-weight:700;">[목표: ' + info.target + ']</span><br>' + evalResult.t + '</td></tr>';
+                    var fullName = info.name + ' <div style="font-size:11px; color:#94a3b8; font-weight:600; margin-top:2px;">(' + (koNames[info.name] || '') + ')</div>';
+                    var parsedTarget = targetMap[info.name] || (info.target + '<br><span style="font-size:10px; color:#94a3b8;">(권장)</span>');
+                    
+                    // 💡 지표명 폰트 크기: 14px (+2pt), 진단 열: 이모지 삭제(evalResult.s만 출력) 및 폰트 크기 12px (+1pt)
+                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0px; font-weight:800; color:#334155; font-size:14px; vertical-align:middle;">' + fullName + '</td><td style="padding:10px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:14px; vertical-align:middle;">' + Number(val).toFixed(2) + '</td><td style="padding:10px 0px; text-align:center; font-weight:800; color:#4f46e5; font-size:12px; vertical-align:middle; line-height:1.3;">' + parsedTarget + '</td><td style="padding:10px 0px; text-align:center; vertical-align:middle;">  <span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:800; display:inline-block;">' + evalResult.s + '</span></td><td style="padding:10px 0px 10px 10px; font-size:12px; color:#64748b; line-height:1.4; word-break:keep-all; vertical-align:middle;">' + evalResult.t + '</td></tr>';
                 }
             } else {
-                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:13px;"><th style="padding:10px 0px; text-align:left; width:26%;">지표명</th><th style="padding:10px 0px; text-align:center; width:15%;">현재값</th><th style="padding:10px 0px 10px 10px; text-align:left; width:59%;">성격 및 진단</th></tr></thead><tbody>';
+                // 프로젝트 탭(pj) 테이블 설정 적용
+                tableHtml += '<thead><tr style="border-bottom:2px solid #e2e8f0; color:#64748b; font-size:13px;"><th style="padding:10px 0px; text-align:left; width:18%;">지표명</th><th style="padding:10px 0px; text-align:center; width:12%;">현재값</th><th style="padding:10px 0px; text-align:center; width:15%;">목표값</th><th style="padding:10px 0px; text-align:center; width:15%;">진단</th><th style="padding:10px 0px 10px 10px; text-align:left; width:40%;">값 해석</th></tr></thead><tbody>';
                 for (var idx = 0; idx < INSIGHT_METRICS_INFO.length; idx++) {
                     var info = INSIGHT_METRICS_INFO[idx], val = rawCvInsight[idx], evalResult = info.eval(val);
-                    var fullName = info.name + ' <span style="font-size:11px; color:#94a3b8; font-weight:600;">(' + (koNames[info.name] || '') + ')</span>';
-                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:15px 0px; font-weight:800; color:#334155; font-size:13px; vertical-align:top;">' + fullName + '</td><td style="padding:15px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:15px; vertical-align:top;">' + Number(val).toFixed(2) + '</td><td style="padding:15px 0px 15px 10px; vertical-align:top;">  <div style="font-size:13px; font-weight:800; color:#1e293b; margin-bottom:8px;">' + fullName + ' <span style="font-size:11px; color:#4f46e5; font-weight:700;">[목표: ' + info.target + ']</span></div>  <div style="display:flex; align-items:flex-start; gap:6px;">    <span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:3px 6px; border-radius:4px; font-size:11px; font-weight:800; flex-shrink:0; margin-top:1px;">' + evalResult.i + ' ' + evalResult.s + '</span>    <div style="font-size:13px; color:#64748b; line-height:1.5;">' + evalResult.t + '</div>  </div></td></tr>';
+                    var fullName = info.name + ' <div style="font-size:11px; color:#94a3b8; font-weight:600; margin-top:2px;">(' + (koNames[info.name] || '') + ')</div>';
+                    var parsedTarget = targetMap[info.name] || (info.target + '<br><span style="font-size:10px; color:#94a3b8;">(권장)</span>');
+                    
+                    tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:12px 0px; font-weight:800; color:#334155; font-size:15px; vertical-align:middle;">' + fullName + '</td><td style="padding:12px 0px; text-align:center; font-weight:900; color:' + col + '; font-size:15px; vertical-align:middle;">' + Number(val).toFixed(2) + '</td><td style="padding:12px 0px; text-align:center; font-weight:800; color:#4f46e5; font-size:13px; vertical-align:middle; line-height:1.3;">' + parsedTarget + '</td><td style="padding:12px 0px; text-align:center; vertical-align:middle;"><span style="background:' + evalResult.c + '15; color:' + evalResult.c + '; padding:4px 8px; border-radius:4px; font-size:13px; font-weight:800; display:inline-block;">' + evalResult.s + '</span></td><td style="padding:12px 0px 12px 10px; font-size:13px; color:#64748b; line-height:1.5; word-break:keep-all; vertical-align:middle;">' + evalResult.t + '</td></tr>';
                 }
             }
             tableHtml += '</tbody></table>';
             tb.innerHTML = tableHtml;
         }
-
         var wm = {}, bwm = {};
         d.forEach(r => {
             var wi = typeof getWeekInfo === 'function' ? getWeekInfo(r.date) : { key1: r.date, key2: r.date, label1: r.date, label2: r.date };
@@ -1063,12 +1134,10 @@ function renderAdvancedMetrics(d, da, col, pf) {
             if (!bwm[wi.key2]) bwm[wi.key2] = { l: wi.label2, r: [], d: new Set() };
             bwm[wi.key2].r.push(r); bwm[wi.key2].d.add(r.date);
         });
-
         var wk = Object.keys(wm).sort(), bwk = Object.keys(bwm).sort();
         var wl = [], bwl = [], sd = [], hd = [], od = [], cd = [], hud = [], jd = [];
         var ss = new Array(wk.length).fill(null), sh = new Array(wk.length).fill(null), so = new Array(wk.length).fill(null);
         var sc = new Array(bwk.length).fill(null), shu = new Array(bwk.length).fill(null), sj = new Array(bwk.length).fill(null);
-
         wk.forEach((k, i) => {
             var g = wm[k]; wl.push(g.l);
             var tot = g.r.reduce((s, r) => s + r.min, 0) || 1;
@@ -1087,14 +1156,12 @@ function renderAdvancedMetrics(d, da, col, pf) {
             if (weeklyCount === 2) F = 1.25; else if (weeklyCount === 3) F = 1.50; else if (weeklyCount >= 4) F = 2.0;
             var x = weeklyPts * F, p = 2 - (2 / (1 + Math.exp(-2.0 * x)));
             sd.push(sn); hd.push(hi); od.push(p);
-
             var ws = []; Array.from(g.d).forEach(dt2 => { ws = ws.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date && s.date.slice(0, 10) === dt2)); });
             if (ws.length > 0) {
                 var st = ws.map(s => '• ' + s.date.slice(2, 10).replace(/-/g, '.') + '. ' + (s.title || s.name || s['일정'] || s['내용'] || '일정').trim());
                 ss[i] = { schTitle: st }; sh[i] = { schTitle: st }; so[i] = { schTitle: st };
             }
         });
-
         var ps = new Set();
         bwk.forEach((k, i) => {
             var g = bwm[k]; bwl.push(g.l);
@@ -1108,14 +1175,12 @@ function renderAdvancedMetrics(d, da, col, pf) {
             }
             var cs2 = new Set(Object.keys(typeof grp === 'function' ? grp(g.r, 'sub') : {})), it = 0; cs2.forEach(x => { if (ps.has(x)) it++; });
             var un = new Set([...ps, ...cs2]).size, jc = un === 0 ? 0 : it / un; ps = cs2; cd.push(cn); hud.push(hs); jd.push(jc);
-
             var bs = []; Array.from(g.d).forEach(dt2 => { bs = bs.concat((typeof SCHEDULE_DATA !== 'undefined' ? SCHEDULE_DATA : []).filter(s => s.date && s.date.slice(0, 10) === dt2)); });
             if (bs.length > 0) {
                 var st = bs.map(s => '• ' + s.date.slice(2, 10).replace(/-/g, '.') + '. ' + (s.title || s.name || s['일정'] || s['내용'] || '일정').trim());
                 sc[i] = { schTitle: st }; shu[i] = { schTitle: st }; sj[i] = { schTitle: st };
             }
         });
-
         function dmc(id, l, xl, da, sa, cx) {
             if (!document.getElementById(id)) return;
             try {
@@ -1143,7 +1208,7 @@ function renderAdvancedMetrics(d, da, col, pf) {
         }
         dmc(pf + 'OtChart', '정시업무(1-OT)', wl, od, so, '#ef4444'); dmc(pf + 'ShannonChart', 'Shannon', wl, sd, ss, '#14b8a6'); dmc(pf + 'HhiChart', 'HHI', wl, hd, sh, '#f59e0b');
         dmc(pf + 'CvChart', 'CV(Norm)', bwl, cd, sc, '#8b5cf6'); dmc(pf + 'HurstChart', 'Hurst', bwl, hud, shu, '#ec4899'); dmc(pf + 'JaccardChart', 'Jaccard', bwl, jd, sj, '#3b82f6');
-    } catch (e) { console.error("renderAdvancedMetrics Error:", e); }
+} catch (e) { console.error("renderAdvancedMetrics Error:", e); }
 }
 
 function renderEvalTab() {
