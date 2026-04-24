@@ -32,9 +32,22 @@
 
 <nav class="topbar" id="topbar">
   <div class="logo-container">
-    <div><div class="logo-title"><span style="color:#00428E;">GNW</span><span style="color:#38bdf8;">MC</span></div><div class="logo-subtitle">PATH REFLECTION</div></div>
+    <!-- 💡 1. 로고 클릭 시 대시보드(Project) 탭으로 이동하는 기능 추가 (마우스 오버 효과 포함) -->
+    <div style="cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="var firstTab = document.querySelector('.nav-item'); if(firstTab) showView('dashboard', firstTab);">
+      <div class="logo-title"><span style="color:#00428E;">GNW</span><span style="color:#38bdf8;">MC</span></div>
+      <div class="logo-subtitle">PATH REFLECTION</div>
+    </div>
+    
     <div class="logo-divider"></div>
-    <div><div class="logo-desc">경상남도 서부의료원</div><div class="logo-desc">팀원 KPI DASHBOARD</div></div>
+    
+    <div>
+      <div class="logo-desc">경상남도 서부의료원</div>
+      <!-- 💡 2. 텍스트 옆에 ? 아이콘 추가 및 새 창 링크 연결 -->
+      <div class="logo-desc" style="display: flex; align-items: center; gap: 5px;">
+        팀원 KPI DASHBOARD
+        <a href="https://kpi-gns.vercel.app/landing" target="_blank" class="info-icon" style="text-decoration: none; cursor: pointer; margin-top: -1px;" onmouseover="this.style.background='#00428E'" onmouseout="this.style.background='rgba(148,163,184,.8)'" title="가이드라인 및 설명 보기">?</a>
+      </div>
+    </div>
   </div>
   <div class="topbar-center" id="navContainer">
     <div class="nav-slider" id="navSlider"></div>
