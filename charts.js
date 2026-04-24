@@ -666,7 +666,7 @@ function renderWpSwitchBar(d, mos, col) {
     var canvas = document.getElementById('wpSwitchBar');
     if (!canvas) return;
 
-    // 💡 1. index.html에 새로 만든 범례 공간에 HTML 범례 꽂아넣기
+    // 1. HTML 범례 주입 (완벽히 작동 중)
     var legendWrap = document.getElementById('wpSwitchLegendWrap');
     if (legendWrap) {
         legendWrap.innerHTML = `
@@ -679,7 +679,7 @@ function renderWpSwitchBar(d, mos, col) {
         `;
     }
 
-    // 2. 데이터 가공 로직 (기존과 동일)
+    // 2. 데이터 가공
     var sw = {}, pv = null;
     d.forEach(r => {
         var m = r.date.slice(0, 7);
@@ -702,7 +702,7 @@ function renderWpSwitchBar(d, mos, col) {
     var barData = mos.map(m => sw[m] || 0);
     var avgData = mos.map(m => act[m] && act[m].size > 0 ? parseFloat((teamSw[m] / act[m].size).toFixed(1)) : null);
 
-    // 💡 3. 차트 렌더링
+    // 3. 차트 렌더링
     CH.wpSwitchBar = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
@@ -714,7 +714,17 @@ function renderWpSwitchBar(d, mos, col) {
                     data: barData,
                     backgroundColor: col,
                     borderRadius: 4,
-                    order: 2
+                    order: 2,
+                    // 💡 [핵심 수정] 막대 차트 데이터셋 안에 직접 옵션을 박아 넣어서 강제 표시
+                    datalabels: {
+                        display: function(cx) { return cx.raw > 0; }, // 0보다 크면 표시
+                        color: '#1A2B4C', // 남색 폰트
+                        font: { weight: '900', size: 11 },
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 4,
+                        formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
+                    }
                 },
                 {
                     type: 'line',
@@ -727,7 +737,9 @@ function renderWpSwitchBar(d, mos, col) {
                     pointRadius: 4,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#94a3b8',
-                    order: 1
+                    order: 1,
+                    // 💡 [핵심 수정] 선 차트는 확실하게 숨김 처리
+                    datalabels: { display: false }
                 }
             ]
         },
@@ -735,31 +747,19 @@ function renderWpSwitchBar(d, mos, col) {
             responsive: true,
             maintainAspectRatio: false,
             clip: false,
-            // 💡 상단 여백을 극단적으로 줄여서 막대가 천장까지 뻗도록 함
-            layout: { padding: { top: 20, bottom: 0, left: 0, right: 0 } },
+            // 숫자가 들어갈 위쪽 여백 살짝 확보
+            layout: { padding: { top: 25, bottom: 0, left: 0, right: 0 } },
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: false }, // Chart.js 내장 범례는 끄기 (HTML로 만들었으므로)
-                
-                // 💡 전역 설정을 무시하고 막대 차트에만 남색으로 값 레이블 강제 표시
-                datalabels: {
-                    display: function(context) {
-                        return context.dataset.type === 'bar' && context.raw > 0;
-                    },
-                    color: '#1A2B4C', // 남색 폰트
-                    font: { weight: '900', size: 11 },
-                    anchor: 'end',
-                    align: 'end',
-                    offset: 2,
-                    formatter: function(v) { return Number(v).toFixed(1).replace('.0', ''); }
-                }
+                legend: { display: false }
+                // 💡 기존에 여기에 있던 datalabels 옵션은 삭제하여 충돌 방지!
             },
             scales: {
                 x: { grid: { display: false } },
                 y: { 
                     beginAtZero: true, 
                     grid: { color: 'rgba(226,232,240,0.5)' },
-                    grace: '10%' // 위쪽 빈 공간 최소화
+                    grace: '15%' // 상단 여유 공간 설정 (숫자가 차트 바깥으로 잘리지 않게)
                 }
             }
         }
